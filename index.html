@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Portal Dashboard & Administrasi Resto - ADM Priangan 2</title>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      /* Palet Warna Khas Lazatto & Priangan 2 */
+      --lazatto-red: #dc2626;
+      --lazatto-orange: #f97316;
+      --lazatto-yellow: #f59e0b;
+      --lazatto-dark: #1e1b4b;
+      
+      --primary: var(--lazatto-red);
+      --primary-dark: #b91c1c;
+      --primary-soft: #fef2f2;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 10px 25px -5px rgba(220, 38, 38, 0.12);
+      --shadow-lg: 0 20px 30px -10px rgba(220, 38, 38, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ================= LOGIN SECTION MODERN ================= */
+    .login-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      background: linear-gradient(135deg, #1e1b4b 0%, var(--lazatto-red) 50%, var(--lazatto-orange) 85%, var(--lazatto-yellow) 100%);
+      background-size: 200% 200%;
+      animation: gradientShift 10s ease infinite;
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Container Kartu Split-Screen */
+    .login-split-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 880px;
+      min-height: 480px;
+      border-radius: 28px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Sisi Kiri (Banner Brand/Dark Section) */
+    .login-left-banner {
+      flex: 1.1;
+      background: linear-gradient(145deg, #1e1b4b, #31103f, #1e1b4b);
+      color: white;
+      padding: 40px 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%);
+    }
+
+    /* Logo Image Wrapper */
+    .brand-circle-logo {
+      width: 95px;
+      height: 95px;
+      background: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      border: 3px solid rgba(255, 255, 255, 0.8);
+      padding: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .brand-circle-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .login-left-banner h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+      color: #ffffff;
+    }
+
+    .login-left-banner p {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      line-height: 1.5;
+      max-width: 280px;
+      margin-bottom: 20px;
+    }
+
+    .btn-outline-banner {
+      padding: 10px 24px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s;
+    }
+    .btn-outline-banner:hover {
+      background: white;
+      color: var(--lazatto-dark);
+    }
+
+    /* Lingkaran Ikon Tengah Pemisah Desktop */
+    .center-action-badge {
+      position: absolute;
+      left: calc(47% - 25px);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--lazatto-red), var(--lazatto-orange));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+      border: 4px solid white;
+      z-index: 5;
+    }
+
+    /* Sisi Kanan (Form Login) */
+    .login-right-form {
+      flex: 1.2;
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #ffffff;
+      position: relative;
+    }
+
+    .login-header-text {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .login-header-text h2 {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .login-header-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .input-group { margin-bottom: 18px; text-align: left; }
+    .input-group label { display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+    .input-group input, .input-group select {
+      width: 100%;
+      padding: 13px 20px;
+      border: 1.5px solid var(--border);
+      border-radius: 30px;
+      outline: none;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+    }
+    .input-group input:focus, .input-group select:focus {
+      border-color: var(--lazatto-orange);
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
+    }
+
+    .btn-login-submit {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--lazatto-red) 0%, var(--lazatto-orange) 100%);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      box-shadow: 0 6px 18px rgba(220, 38, 38, 0.3);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .btn-login-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(220, 38, 38, 0.4); }
+    .btn-login-submit:active { transform: translateY(0); }
+
+    .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 12px; text-align: center; display: none; font-weight: 600; }
+
+    /* ================= DASHBOARD LAYOUT ================= */
+    .app-container {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--lazatto-red);
+      letter-spacing: -0.02em;
+    }
+
+    .brand-logo-header {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: contain;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 2px;
+    }
+
+    .badge-role {
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .badge-admin { background: #ffe4e6; color: var(--lazatto-red); }
+    .badge-user { background: #fef3c7; color: #92400e; }
+
+    .user-actions { display: flex; align-items: center; gap: 8px; }
+
+    .user-clickable {
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 10px;
+      transition: background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f1f5f9;
+    }
+    .user-clickable:hover { background: #e2e8f0; color: var(--lazatto-red); }
+
+    .btn-change-pass {
+      background: var(--primary-soft);
+      color: var(--lazatto-red);
+      border: 1px solid #fecaca;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.82rem;
+    }
+
+    .btn-logout {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.82rem;
+    }
+
+    /* NAVBAR ADMIN RESPONSIP */
+    .admin-nav-container {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 28px;
+      position: sticky;
+      top: 65px;
+      z-index: 20;
+      box-shadow: 0 4px 15px -5px rgba(15, 23, 42, 0.04);
+    }
+
+    .admin-navbar {
+      display: flex;
+      gap: 8px;
+      background: #f1f5f9;
+      padding: 5px;
+      border-radius: 14px;
+      width: fit-content;
+      max-width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .admin-navbar::-webkit-scrollbar { display: none; }
+
+    .nav-item {
+      padding: 9px 18px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .nav-item:hover { color: var(--text); background: rgba(255, 255, 255, 0.6); }
+    .nav-item.active { color: var(--lazatto-red); background: #ffffff; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08); }
+
+    main {
+      flex: 1;
+      padding: 28px;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* HERO BANNER CABANG */
+    .user-banner {
+      background: linear-gradient(135deg, #1e1b4b 0%, var(--lazatto-red) 50%, var(--lazatto-orange) 100%);
+      color: white;
+      padding: 32px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .banner-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .user-banner h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+    .user-banner p { opacity: 0.9; font-size: 0.9rem; max-width: 600px; }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .status-dot { width: 8px; height: 8px; background: #34d399; border-radius: 50%; }
+
+    /* GRID LAPORAN */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+
+    .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: rgba(220, 38, 38, 0.3); }
+    .card-top { margin-bottom: 18px; }
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; margin-bottom: 14px;
+    }
+    .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 4px; color: var(--text); }
+    .card-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; }
+
+    .card-link-btn {
+      text-decoration: none;
+      background: #f1f5f9;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 10px 14px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+    .card:hover .card-link-btn { background: var(--lazatto-red); color: white; }
+
+    .icon-rose { background: #ffe4e6; color: var(--lazatto-red); }
+    .icon-orange { background: #ffedd5; color: var(--lazatto-orange); }
+    .icon-amber { background: #fef3c7; color: var(--lazatto-yellow); }
+    .icon-purple { background: #f3e8ff; color: #9333ea; }
+    .icon-teal { background: #ccfbf1; color: #0d9488; }
+    .icon-indigo { background: #e0e7ff; color: #4338ca; }
+
+    /* ADMIN DASHBOARD STATS */
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 18px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: #ffe4e6;
+      color: var(--lazatto-red);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem;
+    }
+    .stat-num { font-size: 1.3rem; font-weight: 800; color: var(--text); }
+    .stat-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+
+    .admin-card-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .admin-input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .admin-input-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .admin-input-group input, .admin-input-group select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      background: #ffffff;
+    }
+
+    /* MODAL POPUP */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .modal-card {
+      background: var(--surface);
+      width: 100%;
+      max-width: 400px;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* ================= OPTIMISASI MODUL MOBILE ================= */
+    @media (max-width: 768px) {
+      /* Adaptasi Card Login Mobile */
+      .login-split-card {
+        flex-direction: column;
+        max-width: 360px;
+        min-height: auto;
+        border-radius: 24px;
+      }
+      .login-left-banner {
+        padding: 30px 20px 35px;
+        clip-path: ellipse(150% 100% at 50% 0%);
+      }
+      .login-left-banner p, .btn-outline-banner { display: none; }
+      .brand-circle-logo { width: 75px; height: 75px; margin-bottom: 8px; }
+      .login-left-banner h1 { font-size: 1.35rem; }
+      
+      /* HILANGKAN TANDA PANAH PADA LAYAR MOBILE */
+      .center-action-badge {
+        display: none !important;
+      }
+      
+      .login-right-form { padding: 28px 20px 28px; }
+
+      /* Header & Akses Tombol Mobile */
+      header {
+        padding: 10px 14px;
+      }
+      .brand { font-size: 0.95rem; }
+      .brand-logo-header { width: 30px; height: 30px; }
+      .badge-role { display: none; }
+
+      .user-actions {
+        gap: 6px;
+      }
+      .user-clickable {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+      }
+      .user-clickable span { display: none; }
+
+      .btn-change-pass, .btn-logout {
+        padding: 7px 10px;
+        font-size: 0.78rem;
+        border-radius: 8px;
+      }
+
+      .admin-nav-container {
+        padding: 8px 14px;
+        top: 57px;
+      }
+      .nav-item {
+        padding: 7px 14px;
+        font-size: 0.8rem;
+      }
+
+      main { padding: 14px; }
+      .user-banner { padding: 20px; border-radius: 16px; }
+      .user-banner h2 { font-size: 1.3rem; }
+      
+      /* Grid Laporan & Stat Admin Mobile */
+      .grid-container { grid-template-columns: 1fr; gap: 14px; }
+      .admin-stats-grid { grid-template-columns: 1fr; gap: 12px; }
+
+      .admin-card-item {
+        padding: 16px;
+        border-radius: 14px;
+      }
+      
+      .action-header-mobile {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px;
+      }
+      .action-header-mobile button {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= PAGE 1: LOGIN ================= -->
+  <div id="login-section" class="login-wrapper">
+    <div class="login-split-card">
+      
+      <!-- Sisi Kiri: Brand Banner -->
+      <div class="login-left-banner">
+        <div class="brand-circle-logo">
+          <!-- Logo Gambar Priangan 2 -->
+          <img src="photo_6188450216411862104_y.jpg" alt="Logo Priangan 2" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=P+2&background=dc2626&color=fff';">
+        </div>
+        <h1>ADM PRIANGAN 2</h1>
+        <p>Portal Sistem Operasional Resto & Administrasi Cabang (Tasik - Garut)</p>
+        <button class="btn-outline-banner" onclick="alert('Silahkan hubungi Admin Pusat jika mengalami masalah login.')">Bantuan Akses?</button>
+      </div>
+
+      <!-- Pemisah Lingkaran Tengah (Hanya Tampil di Desktop) -->
+      <div class="center-action-badge">
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+
+      <!-- Sisi Kanan: Form Input Login -->
+      <div class="login-right-form">
+        <div class="login-header-text">
+          <h2>Selamat Datang!</h2>
+          <p>Masuk untuk mengakses portal laporan</p>
+        </div>
+
+        <form id="login-form">
+          <div class="input-group">
+            <label>Username / ID Outlet</label>
+            <input type="text" id="username" placeholder="Masukkan username" required>
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn-login-submit">
+            <i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang
+          </button>
+          <p id="error-msg" class="error-msg">Username atau password salah!</p>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= PAGE 2: DASHBOARD WRAPPER ================= -->
+  <div id="app-section" class="app-container">
+    <header>
+      <div class="brand">
+        <img src="photo_6188450216411862104_y.jpg" class="brand-logo-header" alt="Logo" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=P+2&background=dc2626&color=fff';">
+        <span>ADM PRIANGAN 2</span>
+        <span id="role-badge" class="badge-role"></span>
+      </div>
+      <div class="user-actions">
+        <span id="user-display" class="user-clickable" onclick="toggleChangePassBtn()" title="Klik opsi akun">
+          <i class="fa-solid fa-user-gear"></i>
+          <span id="user-name-text"></span>
+          <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i>
+        </span>
+
+        <button id="btn-change-pass" class="btn-change-pass" onclick="openChangePasswordModal()" style="display: none;">
+          <i class="fa-solid fa-key"></i> Ubah Pass
+        </button>
+
+        <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+      </div>
+    </header>
+
+    <!-- CONTAINER NAVBAR ADMIN -->
+    <div id="admin-sub-navbar" class="admin-nav-container" style="display: none;">
+      <nav class="admin-navbar">
+        <div id="nav-item-links" class="nav-item active" onclick="switchAdminNav('page-links', this)">
+          <i class="fa-solid fa-link"></i>
+          <span>Kelola Link (Area & Cabang)</span>
+        </div>
+        <div id="nav-item-users" class="nav-item" onclick="switchAdminNav('page-users', this)">
+          <i class="fa-solid fa-users-cog"></i>
+          <span>Manajemen User & Password</span>
+        </div>
+        <div id="nav-item-preview" class="nav-item" onclick="switchAdminNav('page-preview-user', this)">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Rekapitulasi Area</span>
+        </div>
+      </nav>
+    </div>
+
+    <main>
+      <!-- ================= TAMPILAN USER BIASA ================= -->
+      <div id="user-view" style="display: none;">
+        <div class="user-banner">
+          <div class="banner-header">
+            <div>
+              <h2 id="user-welcome-title">Dashboard Cabang</h2>
+              <p>Pilih salah satu buku laporan di bawah ini untuk membuka spreadsheet Google secara terintegrasi.</p>
+            </div>
+            <div class="status-pill">
+              <span class="status-dot"></span>
+              <span>Sistem Terhubung</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-container">
+          <div class="card">
+            <div class="card-top">
+              <div class="card-icon icon-rose"><i class="fa-solid fa-book"></i></div>
+              <div class="card-title">Laporan Omset Harian</div>
+              <div class="card-desc">Buku rekapitulasi penjualan harian Outlet.</div>
+            </div>
+            <a id="btn_omset" href="#" target="_blank" class="card-link-btn">
+              <span>Buka Sheet</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          </div>
+
+          <div class="card">
+            <div class="card-top">
+              <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
+              <div class="card-title">Laporan Penjualan</div>
+              <div class="card-desc">Laporan Penjualan Harian Outlet.</div>
+            </div>
+            <a id="btn_outlet" href="#" target="_blank" class="card-link-btn">
+              <span>Buka Sheet</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          </div>
+
+          <div class="card">
+            <div class="card-top">
+              <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
+              <div class="card-title">Tracking Expense</div>
+              <div class="card-desc">Pencatatan Pengeluaran Harian Outlet.</div>
+            </div>
+            <a id="btn_expense" href="#" target="_blank" class="card-link-btn">
+              <span>Buka Sheet</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          </div>
+
+          <div class="card">
+            <div class="card-top">
+              <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
+              <div class="card-title">Form Ganti Minyak</div>
+              <div class="card-desc">Pencatatan Total Goreng Ayam.</div>
+            </div>
+            <a id="btn_ganti_minyak" href="#" target="_blank" class="card-link-btn">
+              <span>Buka Sheet</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          </div>
+
+          <div class="card">
+            <div class="card-top">
+              <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
+              <div class="card-title">Kartu Persiapan Harian (KPH)</div>
+              <div class="card-desc">Pencatatan Prepare Bahan Baku Harian Dalam Kurun Waktu 1 Minggu.</div>
+            </div>
+            <a id="btn_kph" href="#" target="_blank" class="card-link-btn">
+              <span>Buka Sheet</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          </div>
+
+          <div class="card">
+            <div class="card-top">
+              <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
+              <div class="card-title">Form Setor Uang</div>
+              <div class="card-desc">Pencatatan Pendapatan Outlet Yang Harus di Setorkan Pershift.</div>
+            </div>
+            <a id="btn_setor" href="#" target="_blank" class="card-link-btn">
+              <span>Buka Sheet</span>
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= TAMPILAN ADMIN ================= -->
+      <div id="admin-view" style="display: none;">
+        
+        <div class="admin-stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-store"></i></div>
+            <div>
+              <div class="stat-num" id="stat-total-branches">0</div>
+              <div class="stat-label">Total Outlet Cabang</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #dcfce7; color: #166534;"><i class="fa-solid fa-link"></i></div>
+            <div>
+              <div class="stat-num" id="stat-total-links">0</div>
+              <div class="stat-label">Link Spreadsheet Terhubung</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #fef3c7; color: #92400e;"><i class="fa-solid fa-user-shield"></i></div>
+            <div>
+              <div class="stat-num">Pusat</div>
+              <div class="stat-label">Mode Hak Akses Admin</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 1: KELOLA LINK SPREADSHEET -->
+        <div id="page-links" class="admin-page-content">
+          <div class="admin-card-item" style="border: 2px solid #bfdbfe; background: #f8fafc; margin-bottom: 24px;">
+            <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
+              <div>
+                <h4 style="font-size: 1rem; font-weight: 800; color: #1e40af;"><i class="fa-solid fa-chart-pie"></i> Link Rekapitulasi Area</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Kelola link spreadsheet utama untuk 5 menu rekapitulasi area</p>
+              </div>
+              <button onclick="saveAreaLinks()" style="background: var(--lazatto-red); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
+                <i class="fa-solid fa-floppy-disk"></i> Simpan Link Area
+              </button>
+            </div>
+            <div class="admin-input-grid">
+              <div class="admin-input-group"><label>1. Omset Area</label><input type="text" id="area_link_omset" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>2. Promo Area</label><input type="text" id="area_link_promo" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>3. Omset Kotor & Bersih</label><input type="text" id="area_link_kotor_bersih" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>4. Track COGS Lazatto</label><input type="text" id="area_link_cogs_lazatto" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>5. Track COGS Ngeumi</label><input type="text" id="area_link_cogs_ngeumi" placeholder="https://docs.google.com/..."></div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <h4 style="font-size: 1rem; font-weight: 800;"><i class="fa-solid fa-store"></i> Link Spreadsheet Cabang Outlet</h4>
+            <input type="text" id="search-branch" onkeyup="filterBranches()" placeholder="Cari nama outlet cabang..." style="padding: 10px 16px; border: 1.5px solid var(--border); border-radius: 10px; width: 100%; max-width: 300px; font-size: 0.88rem;">
+          </div>
+          <div id="admin-links-list"></div>
+        </div>
+
+        <!-- TAB 2: MANAJEMEN USER & PASSWORD -->
+        <div id="page-users" class="admin-page-content" style="display: none;">
+          <div class="admin-card-item">
+            <h4 style="margin-bottom: 12px; font-weight: 800;"><i class="fa-solid fa-user-plus"></i> Tambah Kredensial User Baru</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+              <div>
+                <label style="font-size: 0.78rem; font-weight: 700;">Username</label>
+                <input type="text" id="new_user_id" placeholder="resto_36" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+              </div>
+              <div>
+                <label style="font-size: 0.78rem; font-weight: 700;">Nama Outlet / Admin</label>
+                <input type="text" id="new_user_name" placeholder="Lazatto - Depok" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+              </div>
+              <div>
+                <label style="font-size: 0.78rem; font-weight: 700;">Password</label>
+                <input type="text" id="new_user_pass" placeholder="pass36" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+              </div>
+              <div>
+                <label style="font-size: 0.78rem; font-weight: 700;">Role Hak Akses</label>
+                <select id="new_user_role" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; background: white;">
+                  <option value="user">User Cabang</option>
+                  <option value="admin">Admin Area</option>
+                </select>
+              </div>
+            </div>
+            <button onclick="addNewUser()" class="btn-login-submit" style="width: auto; padding: 10px 24px;"><i class="fa-solid fa-plus"></i> Simpan User Baru</button>
+          </div>
+
+          <div class="admin-card-item">
+            <h4 style="margin-bottom: 14px; font-weight: 800;"><i class="fa-solid fa-users"></i> Daftar Seluruh User System</h4>
+            <div id="user-table-wrapper" style="overflow-x: auto;"></div>
+          </div>
+        </div>
+
+        <!-- TAB 3: REKAPITULASI AREA -->
+        <div id="page-preview-user" class="admin-page-content" style="display: none;">
+          <div class="user-banner">
+            <div class="banner-header">
+              <div>
+                <h2>Dashboard Rekapitulasi Area</h2>
+                <p>Akses cepat ke rekapitulasi omset, promo, kotor/bersih, serta tracking COGS operasional.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="grid-container">
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-amber"><i class="fa-solid fa-chart-pie"></i></div>
+                <div class="card-title">Omset Area</div>
+                <div class="card-desc">Buku rekapitulasi total omset gabungan seluruh cabang area.</div>
+              </div>
+              <a id="btn_preview_omset" href="#" target="_blank" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-purple"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="card-title">Promo Area</div>
+                <div class="card-desc">Rekapitulasi performa promo & campaign marketing area.</div>
+              </div>
+              <a id="btn_preview_promo" href="#" target="_blank" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-teal"><i class="fa-solid fa-scale-balanced"></i></div>
+                <div class="card-title">Omset Kotor & Bersih</div>
+                <div class="card-desc">Laporan perbandingan Gross Revenue vs Net Revenue cabang.</div>
+              </div>
+              <a id="btn_preview_kotor_bersih" href="#" target="_blank" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-rose"><i class="fa-solid fa-cubes"></i></div>
+                <div class="card-title">Track COGS Lazatto</div>
+                <div class="card-desc">Pencatatan & analisis HPP / Cost of Goods Sold produk Lazatto.</div>
+              </div>
+              <a id="btn_preview_cogs_lazatto" href="#" target="_blank" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-indigo"><i class="fa-solid fa-bowl-rice"></i></div>
+                <div class="card-title">Track COGS Ngeumi</div>
+                <div class="card-desc">Pencatatan & analisis HPP / Cost of Goods Sold produk Ngeumi.</div>
+              </div>
+              <a id="btn_preview_cogs_ngeumi" href="#" target="_blank" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL CHANGE PASSWORD -->
+  <div id="change-pass-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+        <h3 style="font-size:1.1rem; font-weight:800;">Ubah Password</h3>
+        <button onclick="closeChangePasswordModal()" style="border:none; background:none; cursor:pointer; font-size:1.2rem;">✕</button>
+      </div>
+      <form onsubmit="submitChangePassword(event)">
+        <div class="input-group"><label>Password Saat Ini</label><input type="password" id="old_pass" required></div>
+        <div class="input-group"><label>Password Baru</label><input type="password" id="new_pass" required></div>
+        <div class="input-group"><label>Konfirmasi Password Baru</label><input type="password" id="confirm_new_pass" required></div>
+        <button type="submit" class="btn-login-submit">Simpan Password Baru</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwn94FPpsde6D5GxfD7MCth_FfGOz5piJqcm0WxJ3x0HkggzdWKZiCORqr6JMaeQrhLYQ/exec";
+
+    let globalDashboardData = { usersList: [], areaLinks: {}, branchLinks: {} };
+
+    const loginForm = document.getElementById('login-form');
+    const loginSection = document.getElementById('login-section');
+    const appSection = document.getElementById('app-section');
+    const errorMsg = document.getElementById('error-msg');
+    const userNameText = document.getElementById('user-name-text');
+    const roleBadge = document.getElementById('role-badge');
+    const btnChangePass = document.getElementById('btn-change-pass');
+    const adminSubNavbar = document.getElementById('admin-sub-navbar');
+
+    window.onload = function() {
+      const loggedUser = localStorage.getItem('resto_current_user');
+      if (loggedUser) { showDashboard(loggedUser); }
+    };
+
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value.trim();
+
+      try {
+        const response = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({ action: "login", username: user, password: pass })
+        });
+        const result = await response.json();
+
+        if (result.status === "success") {
+          localStorage.setItem('resto_current_user', result.data.username);
+          localStorage.setItem('resto_user_role', result.data.role);
+          localStorage.setItem('resto_user_name', result.data.name);
+          showDashboard(result.data.username);
+        } else {
+          errorMsg.textContent = result.message;
+          errorMsg.style.display = 'block';
+        }
+      } catch (err) {
+        alert("Gagal terhubung ke Server GAS!");
+      }
+    });
+
+    async function fetchInitialDataFromGAS() {
+      try {
+        const response = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({ action: "getInitialData" })
+        });
+        const result = await response.json();
+        if (result.status === "success") {
+          globalDashboardData = result.data;
+        }
+      } catch (e) {
+        console.error("Gagal memuat data awal dari GAS", e);
+      }
+    }
+
+    async function showDashboard(username) {
+      loginSection.style.display = 'none';
+      appSection.style.display = 'flex';
+
+      const userRole = localStorage.getItem('resto_user_role') || 'user';
+      const userName = localStorage.getItem('resto_user_name') || username;
+
+      userNameText.textContent = userName;
+
+      await fetchInitialDataFromGAS();
+
+      if (userRole === 'admin') {
+        document.getElementById('user-view').style.display = 'none';
+        document.getElementById('admin-view').style.display = 'block';
+        adminSubNavbar.style.display = 'block';
+        roleBadge.textContent = 'ADMIN PUSAT';
+        roleBadge.className = 'badge-role badge-admin';
+        
+        loadAreaLinks();
+        renderAdminLinksList();
+        renderUserTable();
+        updateAdminStats();
+      } else {
+        document.getElementById('admin-view').style.display = 'none';
+        adminSubNavbar.style.display = 'none';
+        document.getElementById('user-view').style.display = 'block';
+        roleBadge.textContent = 'OUTLET CABANG';
+        roleBadge.className = 'badge-role badge-user';
+
+        document.getElementById('user-welcome-title').textContent = userName;
+        const userLinks = globalDashboardData.branchLinks[username] || {};
+        document.getElementById('btn_omset').href = userLinks.omset || '#';
+        document.getElementById('btn_outlet').href = userLinks.outlet || '#';
+        document.getElementById('btn_expense').href = userLinks.expense || '#';
+        document.getElementById('btn_ganti_minyak').href = userLinks.ganti_minyak || '#';
+        document.getElementById('btn_kph').href = userLinks.kph || '#';
+        document.getElementById('btn_setor').href = userLinks.setor || '#';
+      }
+    }
+
+    function loadAreaLinks() {
+      const areaLinks = globalDashboardData.areaLinks || {};
+      document.getElementById('area_link_omset').value = areaLinks.omset || '';
+      document.getElementById('area_link_promo').value = areaLinks.promo || '';
+      document.getElementById('area_link_kotor_bersih').value = areaLinks.kotor_bersih || '';
+      document.getElementById('area_link_cogs_lazatto').value = areaLinks.cogs_lazatto || '';
+      document.getElementById('area_link_cogs_ngeumi').value = areaLinks.cogs_ngeumi || '';
+
+      document.getElementById('btn_preview_omset').href = areaLinks.omset || '#';
+      document.getElementById('btn_preview_promo').href = areaLinks.promo || '#';
+      document.getElementById('btn_preview_kotor_bersih').href = areaLinks.kotor_bersih || '#';
+      document.getElementById('btn_preview_cogs_lazatto').href = areaLinks.cogs_lazatto || '#';
+      document.getElementById('btn_preview_cogs_ngeumi').href = areaLinks.cogs_ngeumi || '#';
+    }
+
+    window.saveAreaLinks = async function() {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const payload = {
+        action: "saveAreaLinks",
+        adminUser: currentUser,
+        links: {
+          omset: document.getElementById('area_link_omset').value.trim(),
+          promo: document.getElementById('area_link_promo').value.trim(),
+          kotor_bersih: document.getElementById('area_link_kotor_bersih').value.trim(),
+          cogs_lazatto: document.getElementById('area_link_cogs_lazatto').value.trim(),
+          cogs_ngeumi: document.getElementById('area_link_cogs_ngeumi').value.trim()
+        }
+      };
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        alert(result.message);
+        if (result.status === "success") {
+          await fetchInitialDataFromGAS();
+          loadAreaLinks();
+        }
+      } catch (err) {
+        alert("Gagal menyimpan ke server GAS!");
+      }
+    };
+
+    function switchAdminNav(pageId, element) {
+      document.querySelectorAll('.admin-navbar .nav-item').forEach(item => item.classList.remove('active'));
+      document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
+      element.classList.add('active');
+      document.getElementById(pageId).style.display = 'block';
+    }
+
+    function toggleChangePassBtn() {
+      btnChangePass.style.display = (btnChangePass.style.display === 'none' || btnChangePass.style.display === '') ? 'inline-flex' : 'none';
+    }
+
+    function updateAdminStats() {
+      const branches = globalDashboardData.branchLinks || {};
+      const count = Object.keys(branches).length;
+      document.getElementById('stat-total-branches').textContent = count;
+      document.getElementById('stat-total-links').textContent = (count * 6) + 5;
+    }
+
+    function renderAdminLinksList() {
+      const branches = globalDashboardData.branchLinks || {};
+      const container = document.getElementById('admin-links-list');
+      let html = '';
+
+      for (let key in branches) {
+        const l = branches[key] || {};
+        html += `
+          <div class="admin-card-item branch-card" id="card_branch_${key}" data-name="${key}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+              <span style="font-weight: 800; font-size: 0.95rem;">${key}</span>
+              <button onclick="updateUserLinks('${key}')" style="background: var(--lazatto-red); color: white; border: none; padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 700;">Simpan Link</button>
+            </div>
+            <div class="admin-input-grid">
+              <div class="admin-input-group"><label>1. Omset Harian</label><input type="text" id="link_omset_${key}" value="${l.omset || ''}"></div>
+              <div class="admin-input-group"><label>2. Penjualan</label><input type="text" id="link_outlet_${key}" value="${l.outlet || ''}"></div>
+              <div class="admin-input-group"><label>3. Tracking Expense</label><input type="text" id="link_expense_${key}" value="${l.expense || ''}"></div>
+              <div class="admin-input-group"><label>4. Ganti Minyak</label><input type="text" id="link_ganti_minyak_${key}" value="${l.ganti_minyak || ''}"></div>
+              <div class="admin-input-group"><label>5. KPH</label><input type="text" id="link_kph_${key}" value="${l.kph || ''}"></div>
+              <div class="admin-input-group"><label>6. Form Setor Uang</label><input type="text" id="link_setor_${key}" value="${l.setor || ''}"></div>
+            </div>
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
+    function renderUserTable() {
+      const users = globalDashboardData.usersList || [];
+      const wrapper = document.getElementById('user-table-wrapper');
+      
+      let html = `<table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 500px;">
+        <thead>
+          <tr style="background: #f1f5f9; border-bottom: 2px solid var(--border);">
+            <th style="padding: 12px;">Username</th>
+            <th style="padding: 12px;">Nama Outlet / Admin</th>
+            <th style="padding: 12px;">Password</th>
+            <th style="padding: 12px;">Role</th>
+            <th style="padding: 12px;">Aksi</th>
+          </tr>
+        </thead><tbody>`;
+
+      users.forEach(u => {
+        const badgeColor = u.role === 'admin' ? 'color:var(--lazatto-red); font-weight:700;' : '';
+        html += `
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 12px; font-weight: 700;">${u.username}</td>
+            <td style="padding: 12px;">${u.name}</td>
+            <td style="padding: 12px;"><code>${u.password}</code></td>
+            <td style="padding: 12px; ${badgeColor}">${u.role.toUpperCase()}</td>
+            <td style="padding: 12px; display: flex; gap: 6px;">
+              <button onclick="adminResetPassword('${u.username}', '${u.name}')" style="background:#fef3c7; color:#92400e; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+              </button>
+              ${u.username !== 'admin' ? `
+                <button onclick="deleteUser('${u.username}')" style="background:#fee2e2; color:#dc2626; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">
+                  <i class="fa-solid fa-trash"></i> Hapus
+                </button>
+              ` : ''}
+            </td>
+          </tr>
+        `;
+      });
+      
+      html += `</tbody></table>`;
+      wrapper.innerHTML = html;
+    }
+
+    window.adminResetPassword = async function(targetUsername, name) {
+      const newPass = prompt(`Reset Password untuk ${name} (${targetUsername}):\nMasukkan password baru:`);
+      if (newPass === null) return;
+      if (newPass.trim() === '') {
+        alert('Password tidak boleh kosong!');
+        return;
+      }
+
+      const currentUser = localStorage.getItem('resto_current_user');
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({
+            action: "adminResetPassword",
+            adminUser: currentUser,
+            targetUser: targetUsername,
+            newPass: newPass.trim()
+          })
+        });
+        const result = await res.json();
+        alert(result.message);
+        if (result.status === "success") {
+          await fetchInitialDataFromGAS();
+          renderUserTable();
+        }
+      } catch (err) {
+        alert("Gagal melakukan reset password!");
+      }
+    };
+
+    window.deleteUser = async function(targetUsername) {
+      if (!confirm(`Apakah Anda yakin ingin menghapus user ${targetUsername}?`)) return;
+
+      const currentUser = localStorage.getItem('resto_current_user');
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({
+            action: "deleteUser",
+            adminUser: currentUser,
+            targetUser: targetUsername
+          })
+        });
+        const result = await res.json();
+        alert(result.message);
+        if (result.status === "success") {
+          await fetchInitialDataFromGAS();
+          renderAdminLinksList();
+          renderUserTable();
+          updateAdminStats();
+        }
+      } catch (err) {
+        alert("Gagal menghapus user!");
+      }
+    };
+
+    function focusEditUserLink(username) {
+      switchAdminNav('page-links', document.getElementById('nav-item-links'));
+      document.getElementById('search-branch').value = username;
+      filterBranches();
+      
+      const targetCard = document.getElementById(`card_branch_${username}`);
+      if (targetCard) {
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    window.updateUserLinks = async function(targetUsername) {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const payload = {
+        action: "saveBranchLinks",
+        adminUser: currentUser,
+        targetUser: targetUsername,
+        links: {
+          omset: document.getElementById(`link_omset_${targetUsername}`).value.trim(),
+          outlet: document.getElementById(`link_outlet_${targetUsername}`).value.trim(),
+          expense: document.getElementById(`link_expense_${targetUsername}`).value.trim(),
+          ganti_minyak: document.getElementById(`link_ganti_minyak_${targetUsername}`).value.trim(),
+          kph: document.getElementById(`link_kph_${targetUsername}`).value.trim(),
+          setor: document.getElementById(`link_setor_${targetUsername}`).value.trim()
+        }
+      };
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        alert(result.message);
+        if (result.status === "success") {
+          await fetchInitialDataFromGAS();
+        }
+      } catch (err) {
+        alert("Gagal memperbarui link ke server GAS!");
+      }
+    };
+
+    function filterBranches() {
+      const query = document.getElementById('search-branch').value.toLowerCase();
+      const cards = document.querySelectorAll('.branch-card');
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name').toLowerCase();
+        card.style.display = name.includes(query) ? 'block' : 'none';
+      });
+    }
+
+    window.addNewUser = async function() {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const uid = document.getElementById('new_user_id').value.trim();
+      const uname = document.getElementById('new_user_name').value.trim();
+      const upass = document.getElementById('new_user_pass').value.trim();
+      const urole = document.getElementById('new_user_role').value;
+
+      if (!uid || !uname || !upass) {
+        alert('Mohon isi semua kolom data user baru!');
+        return;
+      }
+
+      const payload = {
+        action: "addUser",
+        adminUser: currentUser,
+        new_user_id: uid,
+        new_user_name: uname,
+        new_user_pass: upass,
+        new_user_role: urole
+      };
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        alert(result.message);
+
+        if (result.status === "success") {
+          document.getElementById('new_user_id').value = '';
+          document.getElementById('new_user_name').value = '';
+          document.getElementById('new_user_pass').value = '';
+          document.getElementById('new_user_role').value = 'user';
+
+          await fetchInitialDataFromGAS();
+          renderAdminLinksList();
+          renderUserTable();
+          updateAdminStats();
+
+          if (urole === 'user') {
+            focusEditUserLink(uid);
+          }
+        }
+      } catch (err) {
+        alert("Gagal menambahkan user!");
+      }
+    };
+
+    function openChangePasswordModal() { document.getElementById('change-pass-modal').style.display = 'flex'; }
+    function closeChangePasswordModal() { document.getElementById('change-pass-modal').style.display = 'none'; }
+
+    async function submitChangePassword(event) {
+      event.preventDefault();
+      const currentUser = localStorage.getItem('resto_current_user');
+      const oldPass = document.getElementById('old_pass').value.trim();
+      const newPass = document.getElementById('new_pass').value.trim();
+      const confirmNewPass = document.getElementById('confirm_new_pass').value.trim();
+
+      if (newPass !== confirmNewPass) {
+        alert('Konfirmasi password baru tidak cocok!');
+        return;
+      }
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({ action: "changePassword", username: currentUser, oldPass: oldPass, newPass: newPass })
+        });
+        const result = await res.json();
+        alert(result.message);
+        if (result.status === "success") { closeChangePasswordModal(); }
+      } catch (e) {
+        alert("Gagal mengubah password!");
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      appSection.style.display = 'none';
+      loginSection.style.display = 'flex';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      errorMsg.style.display = 'none';
+    }
+  </script>
+</body>
+</html>
