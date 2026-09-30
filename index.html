@@ -1663,7 +1663,6 @@
       container.innerHTML = html;
     }
 
-    /* FUNGSI TAMPILAN TABEL USER TERUPDATE */
     function renderUserTable() {
       const users = globalDashboardData.usersList || [];
       const wrapper = document.getElementById('user-table-wrapper');
@@ -1823,7 +1822,7 @@
       });
     }
 
-    /* AKSI TAMBAH USER CABANG (PAYLOAD DITUKAR AGAR PAS KE DATABASE BACKEND) */
+    /* AKSI TAMBAH USER CABANG */
     window.addNewBranchUser = async function() {
       const currentUser = localStorage.getItem('resto_current_user');
       const uid = document.getElementById('branch_user_id').value.trim();
@@ -1839,8 +1838,8 @@
         action: "addUser",
         adminUser: currentUser,
         new_user_id: uid,
-        new_user_name: upass,  /* Nilai dikirim ditukar agar masuk ke kolom Name backend */
-        new_user_pass: uname,  /* Nilai dikirim ditukar agar masuk ke kolom Pass backend */
+        new_user_name: uname,
+        new_user_pass: upass,
         new_user_role: 'user',
         total_resto: 0
       };
@@ -1872,7 +1871,7 @@
       }
     };
 
-    /* AKSI TAMBAH USER INTERNAL (PAYLOAD DITUKAR AGAR PAS KE DATABASE BACKEND) */
+    /* AKSI TAMBAH USER INTERNAL (SPV, PSD, ADMIN) */
     window.addNewInternalUser = async function() {
       const currentUser = localStorage.getItem('resto_current_user');
       const uid = document.getElementById('internal_user_id').value.trim();
@@ -1890,8 +1889,8 @@
         action: "addUser",
         adminUser: currentUser,
         new_user_id: uid,
-        new_user_name: upass,  /* Nilai dikirim ditukar agar masuk ke kolom Name backend */
-        new_user_pass: uname,  /* Nilai dikirim ditukar agar masuk ke kolom Pass backend */
+        new_user_name: uname,
+        new_user_pass: upass,
         new_user_role: urole,
         total_resto: urole === 'supervisor' ? ucoverage : 0
       };
