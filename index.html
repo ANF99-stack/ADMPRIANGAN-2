@@ -846,7 +846,7 @@
         </div>
 
         <div class="grid-container">
-          <!-- 1. COVERAGE RESTO (JUMLAH RESTO) -->
+          <!-- 1. COVERAGE RESTO (JUMLAH RESTO INDIVIDUAL) -->
           <div class="card">
             <div class="card-top">
               <div class="card-icon icon-indigo"><i class="fa-solid fa-store"></i></div>
@@ -859,7 +859,7 @@
             </div>
           </div>
 
-          <!-- 2. CHECK COGS PEKANAN -->
+          <!-- 2. CHECK COGS PEKANAN (MASTER LINK GLOBAL) -->
           <div class="card">
             <div class="card-top">
               <div class="card-icon icon-rose"><i class="fa-solid fa-calculator"></i></div>
@@ -872,7 +872,7 @@
             </a>
           </div>
 
-          <!-- 3. BASE LAPORAN OMSET -->
+          <!-- 3. BASE LAPORAN OMSET (LINK INDIVIDUAL PER USER SPV) -->
           <div class="card">
             <div class="card-top">
               <div class="card-icon icon-amber"><i class="fa-solid fa-database"></i></div>
@@ -885,7 +885,7 @@
             </a>
           </div>
 
-          <!-- 4. OMSET AREA -->
+          <!-- 4. OMSET AREA (MASTER LINK GLOBAL) -->
           <div class="card">
             <div class="card-top">
               <div class="card-icon icon-emerald"><i class="fa-solid fa-chart-pie"></i></div>
@@ -1119,20 +1119,56 @@
           <div id="admin-links-list"></div>
         </div>
 
-        <!-- TAB 3: KELOLA LINK SUPERVISOR -->
+        <!-- TAB 3: KELOLA LINK SUPERVISOR (MASTER & INDIVIDUAL) -->
         <div id="page-spv-links" class="admin-page-content" style="display: none;">
-          <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-            <h4 style="font-size: 1rem; font-weight: 800;"><i class="fa-solid fa-user-tie"></i> Kelola Link User Supervisor</h4>
+          
+          <!-- MASTER LINK SUPERVISOR (BERLAKU UNTUK SEMUA SPV) -->
+          <div class="admin-card-item" style="border: 2px solid #c7d2fe; background: #f5f3ff; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <h4 style="font-size: 1rem; font-weight: 800; color: #4338ca;"><i class="fa-solid fa-globe"></i> Master Link Supervisor (Global)</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Link ini akan dipakai bersama oleh seluruh user Supervisor</p>
+              </div>
+              <button onclick="saveSpvLinksMaster()" style="background: #4338ca; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
+                <i class="fa-solid fa-floppy-disk"></i> Simpan Master SPV
+              </button>
+            </div>
+
+            <div class="admin-input-grid">
+              <div class="admin-input-group"><label>1. Check COGS Pekanan (Master)</label><input type="text" id="master_spv_cogs" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>2. Omset Area (Master)</label><input type="text" id="master_spv_omset_area" placeholder="https://docs.google.com/..."></div>
+            </div>
+          </div>
+
+          <!-- KELOLA LINK & COVERAGE INDIVIDUAL SUPERVISOR -->
+          <div style="margin-bottom: 16px;">
+            <h4 style="font-size: 1rem; font-weight: 800;"><i class="fa-solid fa-user-tie"></i> Pengaturan Khusus per User Supervisor</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Atur Base Omset dan jumlah Coverage Resto khusus masing-masing Supervisor</p>
           </div>
           <div id="admin-spv-links-list"></div>
         </div>
 
-        <!-- TAB 4: KELOLA LINK PSD -->
+        <!-- TAB 4: KELOLA LINK PSD (MASTER GLOBAL UTUH) -->
         <div id="page-psd-links" class="admin-page-content" style="display: none;">
-          <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-            <h4 style="font-size: 1rem; font-weight: 800;"><i class="fa-solid fa-id-card-clip"></i> Kelola Link User PSD</h4>
+          <div class="admin-card-item" style="border: 2px solid #a7f3d0; background: #f0fdf4;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <h4 style="font-size: 1rem; font-weight: 800; color: #15803d;"><i class="fa-solid fa-id-card-clip"></i> Master Link PSD (Global)</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Semua user PSD mengacu secara otomatis ke 5 link master di bawah ini</p>
+              </div>
+              <button onclick="savePsdLinksMaster()" style="background: #15803d; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
+                <i class="fa-solid fa-floppy-disk"></i> Simpan Master Link PSD
+              </button>
+            </div>
+
+            <div class="admin-input-grid">
+              <div class="admin-input-group"><label>1. FCP RESTO</label><input type="text" id="master_psd_fcp" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>2. Checking Kasir</label><input type="text" id="master_psd_checking_kasir" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>3. Checking Leader</label><input type="text" id="master_psd_checking_leader" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>4. Rekap Promo</label><input type="text" id="master_psd_rekap_promo" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>5. Data Karyawan</label><input type="text" id="master_psd_data_karyawan" placeholder="https://docs.google.com/..."></div>
+            </div>
           </div>
-          <div id="admin-psd-links-list"></div>
         </div>
 
         <!-- TAB 5: MANAJEMEN USER & PASSWORD -->
@@ -1157,7 +1193,7 @@
                 <input type="text" id="branch_user_pass" placeholder="pass36" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
               </div>
             </div>
-            <button onclick="addNewBranchUser()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); shadow: 0 6px 18px rgba(217, 119, 6, 0.3);">
+            <button onclick="addNewBranchUser()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
               <i class="fa-solid fa-plus"></i> Simpan User Cabang
             </button>
           </div>
@@ -1193,7 +1229,7 @@
                 <input type="number" id="internal_user_coverage" min="1" max="15" value="5" placeholder="5" style="width:100%; padding:10px; border:1px solid #c7d2fe; border-radius:8px; background: #ffffff;">
               </div>
             </div>
-            <button onclick="addNewInternalUser()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%); shadow: 0 6px 18px rgba(67, 56, 202, 0.3);">
+            <button onclick="addNewInternalUser()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);">
               <i class="fa-solid fa-plus"></i> Simpan User Internal
             </button>
           </div>
@@ -1228,7 +1264,7 @@
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwn94FPpsde6D5GxfD7MCth_FfGOz5piJqcm0WxJ3x0HkggzdWKZiCORqr6JMaeQrhLYQ/exec";
 
-    let globalDashboardData = { usersList: [], areaLinks: {}, branchLinks: {}, spvLinks: {}, psdLinks: {} };
+    let globalDashboardData = { usersList: [], areaLinks: {}, branchLinks: {}, spvLinksMaster: {}, spvLinksIndividual: {}, psdLinksMaster: {} };
 
     const loginForm = document.getElementById('login-form');
     const loginSection = document.getElementById('login-section');
@@ -1283,8 +1319,9 @@
         const result = await response.json();
         if (result.status === "success") {
           globalDashboardData = result.data;
-          if (!globalDashboardData.spvLinks) globalDashboardData.spvLinks = {};
-          if (!globalDashboardData.psdLinks) globalDashboardData.psdLinks = {};
+          if (!globalDashboardData.spvLinksMaster) globalDashboardData.spvLinksMaster = {};
+          if (!globalDashboardData.spvLinksIndividual) globalDashboardData.spvLinksIndividual = {};
+          if (!globalDashboardData.psdLinksMaster) globalDashboardData.psdLinksMaster = {};
         }
       } catch (e) {
         console.error("Gagal memuat data awal dari GAS", e);
@@ -1327,9 +1364,10 @@
         switchAdminNav('page-preview-user', document.getElementById('nav-item-preview'));
 
         loadAreaLinks();
+        loadSpvMasterLinksForm();
+        renderAdminSpvIndividualList();
+        loadPsdMasterLinksForm();
         renderAdminLinksList();
-        renderAdminSpvLinksList();
-        renderAdminPsdLinksList();
         renderUserTable();
         updateAdminStats();
 
@@ -1339,13 +1377,17 @@
         roleBadge.className = 'badge-role badge-supervisor';
         document.getElementById('spv-welcome-title').textContent = userName;
 
-        const spvData = globalDashboardData.spvLinks[username] || {};
-        
-        document.getElementById('btn_spv_cogs').href = spvData.cogs_pekanan || '#';
-        document.getElementById('btn_spv_base_omset').href = spvData.base_omset || '#';
-        document.getElementById('btn_spv_omset_area').href = spvData.omset_area || '#';
+        // 1. LINK MASTER GLOBAL UNTUK SPV
+        const spvMaster = globalDashboardData.spvLinksMaster || {};
+        document.getElementById('btn_spv_cogs').href = spvMaster.cogs_pekanan || '#';
+        document.getElementById('btn_spv_omset_area').href = spvMaster.omset_area || '#';
 
-        const totalResto = spvData.total_resto || 0;
+        // 2. LINK & DATA INDIVIDUAL SUPERVISOR
+        const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[username] || {};
+        document.getElementById('btn_spv_base_omset').href = spvIndiv.base_omset || '#';
+
+        const currentUserData = (globalDashboardData.usersList || []).find(u => u.username === username) || {};
+        const totalResto = spvIndiv.total_resto || currentUserData.total_resto || 5;
         document.getElementById('spv-total-resto-display').textContent = `${totalResto} Resto`;
 
       } else if (userRole === 'psd') {
@@ -1354,12 +1396,13 @@
         roleBadge.className = 'badge-role badge-psd';
         document.getElementById('psd-welcome-title').textContent = userName;
 
-        const psdData = globalDashboardData.psdLinks[username] || {};
-        document.getElementById('btn_psd_fcp').href = psdData.fcp || '#';
-        document.getElementById('btn_psd_checking_kasir').href = psdData.checking_kasir || '#';
-        document.getElementById('btn_psd_checking_leader').href = psdData.checking_leader || '#';
-        document.getElementById('btn_psd_rekap_promo').href = psdData.rekap_promo || '#';
-        document.getElementById('btn_psd_data_karyawan').href = psdData.data_karyawan || '#';
+        // MASTER LINK GLOBAL UTUH UNTUK PSD
+        const psdMaster = globalDashboardData.psdLinksMaster || {};
+        document.getElementById('btn_psd_fcp').href = psdMaster.fcp || '#';
+        document.getElementById('btn_psd_checking_kasir').href = psdMaster.checking_kasir || '#';
+        document.getElementById('btn_psd_checking_leader').href = psdMaster.checking_leader || '#';
+        document.getElementById('btn_psd_rekap_promo').href = psdMaster.rekap_promo || '#';
+        document.getElementById('btn_psd_data_karyawan').href = psdMaster.data_karyawan || '#';
 
       } else {
         document.getElementById('user-view').style.display = 'block';
@@ -1390,6 +1433,61 @@
       document.getElementById('btn_preview_kotor_bersih').href = areaLinks.kotor_bersih || '#';
       document.getElementById('btn_preview_cogs_lazatto').href = areaLinks.cogs_lazatto || '#';
       document.getElementById('btn_preview_cogs_ngeumi').href = areaLinks.cogs_ngeumi || '#';
+    }
+
+    function loadSpvMasterLinksForm() {
+      const m = globalDashboardData.spvLinksMaster || {};
+      document.getElementById('master_spv_cogs').value = m.cogs_pekanan || '';
+      document.getElementById('master_spv_omset_area').value = m.omset_area || '';
+    }
+
+    function renderAdminSpvIndividualList() {
+      const users = globalDashboardData.usersList || [];
+      const spvUsers = users.filter(u => u.role === 'supervisor');
+      const indivData = globalDashboardData.spvLinksIndividual || {};
+      const container = document.getElementById('admin-spv-links-list');
+
+      if (spvUsers.length === 0) {
+        container.innerHTML = `<div class="admin-card-item"><p style="color:var(--text-muted); font-size:0.88rem;">Belum ada user dengan role Supervisor.</p></div>`;
+        return;
+      }
+
+      let html = '';
+      spvUsers.forEach(spv => {
+        const key = spv.username;
+        const data = indivData[key] || {};
+
+        html += `
+          <div class="admin-card-item" style="border: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+              <span style="font-weight: 800; font-size: 0.95rem; color: #4338ca;"><i class="fa-solid fa-user-tie"></i> ${spv.name} (${key})</span>
+              <button onclick="saveSpvIndividualData('${key}')" style="background: #4338ca; color: white; border: none; padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 700;">Simpan Data SPV</button>
+            </div>
+
+            <div class="admin-input-grid">
+              <div class="admin-input-group">
+                <label style="color:#4338ca;">Total Coverage Resto</label>
+                <input type="number" id="spv_indiv_total_resto_${key}" value="${data.total_resto || spv.total_resto || 5}" min="1" max="15">
+              </div>
+              <div class="admin-input-group">
+                <label>Base Laporan Omset (Individual)</label>
+                <input type="text" id="spv_indiv_base_omset_${key}" value="${data.base_omset || ''}" placeholder="https://docs.google.com/...">
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function loadPsdMasterLinksForm() {
+      const m = globalDashboardData.psdLinksMaster || {};
+      document.getElementById('master_psd_fcp').value = m.fcp || '';
+      document.getElementById('master_psd_checking_kasir').value = m.checking_kasir || '';
+      document.getElementById('master_psd_checking_leader').value = m.checking_leader || '';
+      document.getElementById('master_psd_rekap_promo').value = m.rekap_promo || '';
+      document.getElementById('master_psd_data_karyawan').value = m.data_karyawan || '';
     }
 
     window.saveAreaLinks = async function() {
@@ -1424,6 +1522,96 @@
       }
     };
 
+    window.saveSpvLinksMaster = async function() {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const payload = {
+        action: "saveSpvLinksMaster",
+        adminUser: currentUser,
+        links: {
+          cogs_pekanan: document.getElementById('master_spv_cogs').value.trim(),
+          omset_area: document.getElementById('master_spv_omset_area').value.trim()
+        }
+      };
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        alert(result.message);
+        if (result.status === "success") {
+          await fetchInitialDataFromGAS();
+          loadSpvMasterLinksForm();
+        }
+      } catch (err) {
+        alert("Gagal menyimpan master link Supervisor!");
+      }
+    };
+
+    window.saveSpvIndividualData = async function(targetUsername) {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const payload = {
+        action: "saveSpvIndividualData",
+        adminUser: currentUser,
+        targetUser: targetUsername,
+        data: {
+          total_resto: parseInt(document.getElementById(`spv_indiv_total_resto_${targetUsername}`).value) || 5,
+          base_omset: document.getElementById(`spv_indiv_base_omset_${targetUsername}`).value.trim()
+        }
+      };
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        alert(result.message);
+        if (result.status === "success") {
+          await fetchInitialDataFromGAS();
+        }
+      } catch (err) {
+        alert("Gagal menyimpan data individual Supervisor!");
+      }
+    };
+
+    window.savePsdLinksMaster = async function() {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const payload = {
+        action: "savePsdLinksMaster",
+        adminUser: currentUser,
+        links: {
+          fcp: document.getElementById('master_psd_fcp').value.trim(),
+          checking_kasir: document.getElementById('master_psd_checking_kasir').value.trim(),
+          checking_leader: document.getElementById('master_psd_checking_leader').value.trim(),
+          rekap_promo: document.getElementById('master_psd_rekap_promo').value.trim(),
+          data_karyawan: document.getElementById('master_psd_data_karyawan').value.trim()
+        }
+      };
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        alert(result.message);
+        if (result.status === "success") {
+          await fetchInitialDataFromGAS();
+          loadPsdMasterLinksForm();
+        }
+      } catch (err) {
+        alert("Gagal menyimpan master link PSD!");
+      }
+    };
+
     function switchAdminNav(pageId, element) {
       document.querySelectorAll('.admin-navbar .nav-item').forEach(item => item.classList.remove('active'));
       document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
@@ -1445,7 +1633,7 @@
       document.getElementById('stat-total-branches').textContent = count;
       document.getElementById('stat-total-spv').textContent = spvCount;
       document.getElementById('stat-total-psd').textContent = psdCount;
-      document.getElementById('stat-total-links').textContent = (count * 6) + (spvCount * 3) + (psdCount * 5) + 5;
+      document.getElementById('stat-total-links').textContent = (count * 6) + spvCount + 7;
     }
 
     function renderAdminLinksList() {
@@ -1474,147 +1662,6 @@
       }
       container.innerHTML = html;
     }
-
-    function renderAdminSpvLinksList() {
-      const users = globalDashboardData.usersList || [];
-      const spvUsers = users.filter(u => u.role === 'supervisor');
-      const spvLinks = globalDashboardData.spvLinks || {};
-      const container = document.getElementById('admin-spv-links-list');
-
-      if (spvUsers.length === 0) {
-        container.innerHTML = `<div class="admin-card-item"><p style="color:var(--text-muted); font-size:0.88rem;">Belum ada user dengan role Supervisor.</p></div>`;
-        return;
-      }
-
-      let html = '';
-      spvUsers.forEach(spv => {
-        const key = spv.username;
-        const data = spvLinks[key] || {};
-
-        html += `
-          <div class="admin-card-item" style="border: 2px solid #c7d2fe;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-              <span style="font-weight: 800; font-size: 1rem; color: #4338ca;"><i class="fa-solid fa-user-tie"></i> ${spv.name} (${key})</span>
-              <button onclick="saveSpvLinks('${key}')" style="background: #4338ca; color: white; border: none; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 700;">Simpan Data SPV</button>
-            </div>
-
-            <div class="admin-input-grid">
-              <div class="admin-input-group">
-                <label style="color:#4338ca;">Total Coverage Resto (Jumlah)</label>
-                <input type="number" id="spv_total_resto_${key}" value="${data.total_resto || 5}" min="1" max="15">
-              </div>
-              <div class="admin-input-group"><label>1. Check COGS Pekanan</label><input type="text" id="spv_cogs_${key}" value="${data.cogs_pekanan || ''}"></div>
-              <div class="admin-input-group"><label>2. Base Laporan Omset</label><input type="text" id="spv_base_omset_${key}" value="${data.base_omset || ''}"></div>
-              <div class="admin-input-group"><label>3. Omset Area</label><input type="text" id="spv_omset_area_${key}" value="${data.omset_area || ''}"></div>
-            </div>
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
-    }
-
-    function renderAdminPsdLinksList() {
-      const users = globalDashboardData.usersList || [];
-      const psdUsers = users.filter(u => u.role === 'psd');
-      const psdLinks = globalDashboardData.psdLinks || {};
-      const container = document.getElementById('admin-psd-links-list');
-
-      if (psdUsers.length === 0) {
-        container.innerHTML = `<div class="admin-card-item"><p style="color:var(--text-muted); font-size:0.88rem;">Belum ada user dengan role PSD.</p></div>`;
-        return;
-      }
-
-      let html = '';
-      psdUsers.forEach(psd => {
-        const key = psd.username;
-        const data = psdLinks[key] || {};
-
-        html += `
-          <div class="admin-card-item" style="border: 2px solid #a7f3d0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-              <span style="font-weight: 800; font-size: 1rem; color: #15803d;"><i class="fa-solid fa-id-card-clip"></i> ${psd.name} (${key})</span>
-              <button onclick="savePsdLinks('${key}')" style="background: #15803d; color: white; border: none; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 700;">Simpan Link PSD</button>
-            </div>
-
-            <div class="admin-input-grid">
-              <div class="admin-input-group"><label>1. FCP RESTO</label><input type="text" id="psd_fcp_${key}" value="${data.fcp || ''}"></div>
-              <div class="admin-input-group"><label>2. Checking Kasir</label><input type="text" id="psd_checking_kasir_${key}" value="${data.checking_kasir || ''}"></div>
-              <div class="admin-input-group"><label>3. Checking Leader</label><input type="text" id="psd_checking_leader_${key}" value="${data.checking_leader || ''}"></div>
-              <div class="admin-input-group"><label>4. Rekap Promo</label><input type="text" id="psd_rekap_promo_${key}" value="${data.rekap_promo || ''}"></div>
-              <div class="admin-input-group"><label>5. Data Karyawan</label><input type="text" id="psd_data_karyawan_${key}" value="${data.data_karyawan || ''}"></div>
-            </div>
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
-    }
-
-    window.saveSpvLinks = async function(targetUsername) {
-      const currentUser = localStorage.getItem('resto_current_user');
-      
-      const payload = {
-        action: "saveSpvLinks",
-        adminUser: currentUser,
-        targetUser: targetUsername,
-        links: {
-          total_resto: parseInt(document.getElementById(`spv_total_resto_${targetUsername}`).value) || 0,
-          cogs_pekanan: document.getElementById(`spv_cogs_${targetUsername}`).value.trim(),
-          base_omset: document.getElementById(`spv_base_omset_${targetUsername}`).value.trim(),
-          omset_area: document.getElementById(`spv_omset_area_${targetUsername}`).value.trim()
-        }
-      };
-
-      try {
-        const res = await fetch(GAS_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          redirect: "follow",
-          body: JSON.stringify(payload)
-        });
-        const result = await res.json();
-        alert(result.message);
-        if (result.status === "success") {
-          await fetchInitialDataFromGAS();
-        }
-      } catch (err) {
-        alert("Gagal memperbarui data supervisor ke server GAS!");
-      }
-    };
-
-    window.savePsdLinks = async function(targetUsername) {
-      const currentUser = localStorage.getItem('resto_current_user');
-      
-      const payload = {
-        action: "savePsdLinks",
-        adminUser: currentUser,
-        targetUser: targetUsername,
-        links: {
-          fcp: document.getElementById(`psd_fcp_${targetUsername}`).value.trim(),
-          checking_kasir: document.getElementById(`psd_checking_kasir_${targetUsername}`).value.trim(),
-          checking_leader: document.getElementById(`psd_checking_leader_${targetUsername}`).value.trim(),
-          rekap_promo: document.getElementById(`psd_rekap_promo_${targetUsername}`).value.trim(),
-          data_karyawan: document.getElementById(`psd_data_karyawan_${targetUsername}`).value.trim()
-        }
-      };
-
-      try {
-        const res = await fetch(GAS_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          redirect: "follow",
-          body: JSON.stringify(payload)
-        });
-        const result = await res.json();
-        alert(result.message);
-        if (result.status === "success") {
-          await fetchInitialDataFromGAS();
-        }
-      } catch (err) {
-        alert("Gagal memperbarui data PSD ke server GAS!");
-      }
-    };
 
     function renderUserTable() {
       const users = globalDashboardData.usersList || [];
@@ -1713,8 +1760,7 @@
         if (result.status === "success") {
           await fetchInitialDataFromGAS();
           renderAdminLinksList();
-          renderAdminSpvLinksList();
-          renderAdminPsdLinksList();
+          renderAdminSpvIndividualList();
           renderUserTable();
           updateAdminStats();
         }
@@ -1815,8 +1861,6 @@
 
           await fetchInitialDataFromGAS();
           renderAdminLinksList();
-          renderAdminSpvLinksList();
-          renderAdminPsdLinksList();
           renderUserTable();
           updateAdminStats();
 
@@ -1868,8 +1912,7 @@
 
           await fetchInitialDataFromGAS();
           renderAdminLinksList();
-          renderAdminSpvLinksList();
-          renderAdminPsdLinksList();
+          renderAdminSpvIndividualList();
           renderUserTable();
           updateAdminStats();
 
