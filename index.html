@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html><!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -624,6 +623,19 @@
       padding: 28px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
+
+    /* BADGE STATUS LAST ONLINE */
+    .online-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .online-now { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .online-time { background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border); }
 
     /* ================= OPTIMISASI MODUL MOBILE ================= */
     @media (max-width: 768px) {
@@ -1469,6 +1481,41 @@
     const loginBtnSpinner = document.getElementById('login-btn-spinner');
     const loginBtnText = document.getElementById('login-btn-text');
 
+    /* ================= SYSTEM LAST ONLINE TRACKER ================= */
+    function recordUserActivity(username) {
+      if (!username) return;
+      const now = Date.now();
+      localStorage.setItem(`resto_user_last_online_${username}`, now.toString());
+    }
+
+    function getUserLastOnlineText(username) {
+      const storedTime = localStorage.getItem(`resto_user_last_online_${username}`);
+      if (!storedTime) {
+        return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> Belum ada aktivitas</span>`;
+      }
+      
+      const lastTime = parseInt(storedTime);
+      const diffMs = Date.now() - lastTime;
+      const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+      if (diffMinutes < 5) {
+        return `<span class="online-indicator online-now"><span class="status-dot"></span> Online</span>`;
+      } else {
+        const d = new Date(lastTime);
+        const dateStr = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+        const timeStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> ${dateStr}, ${timeStr}</span>`;
+      }
+    }
+
+    // Interval Heartbeat Pembaruan Waktu Online User
+    setInterval(() => {
+      const loggedUser = localStorage.getItem('resto_current_user');
+      if (loggedUser) {
+        recordUserActivity(loggedUser);
+      }
+    }, 60000);
+
     function setLoginLoadingState(isLoading) {
       if (isLoading) {
         btnSubmitLogin.disabled = true;
@@ -1485,7 +1532,10 @@
 
     window.onload = function() {
       const loggedUser = localStorage.getItem('resto_current_user');
-      if (loggedUser) { showDashboard(loggedUser); }
+      if (loggedUser) { 
+        recordUserActivity(loggedUser);
+        showDashboard(loggedUser); 
+      }
     };
 
     loginForm.addEventListener('submit', async function(e) {
@@ -1509,6 +1559,8 @@
           localStorage.setItem('resto_current_user', result.data.username);
           localStorage.setItem('resto_user_role', result.data.role);
           localStorage.setItem('resto_user_name', result.data.name);
+          
+          recordUserActivity(result.data.username);
           await showDashboard(result.data.username);
         } else {
           errorMsg.textContent = result.message;
@@ -1559,6 +1611,7 @@
       const userName = localStorage.getItem('resto_user_name') || username;
 
       userNameText.textContent = userName;
+      recordUserActivity(username);
 
       await fetchInitialDataFromGAS();
 
@@ -1910,13 +1963,14 @@
       const users = globalDashboardData.usersList || [];
       const wrapper = document.getElementById('user-table-wrapper');
       
-      let html = `<table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 550px; background: white;">
+      let html = `<table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 650px; background: white;">
         <thead>
           <tr style="background: #f8fafc; border-bottom: 2px solid var(--border);">
             <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Username</th>
             <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Nama / Label</th>
             <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Password</th>
             <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Role</th>
+            <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Last Online</th>
             <th style="padding: 14px; color: var(--text-muted); font-weight: 800; text-align: center;">Aksi</th>
           </tr>
         </thead><tbody>`;
@@ -1927,12 +1981,15 @@
         else if (u.role === 'supervisor') badgeColor = 'color:#4338ca; font-weight:800;';
         else if (u.role === 'psd') badgeColor = 'color:#15803d; font-weight:800;';
 
+        const lastOnlineHtml = getUserLastOnlineText(u.username);
+
         html += `
           <tr style="border-bottom: 1px solid var(--border);">
             <td style="padding: 12px 14px; font-weight: 700; color: var(--text);">${u.username}</td>
             <td style="padding: 12px 14px; color: var(--text);">${u.name}</td>
             <td style="padding: 12px 14px;"><code style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem;">${u.password}</code></td>
             <td style="padding: 12px 14px; ${badgeColor}">${u.role.toUpperCase()}</td>
+            <td style="padding: 12px 14px;">${lastOnlineHtml}</td>
             <td style="padding: 12px 14px; text-align: center;">
               <div style="display: flex; gap: 6px; justify-content: center;">
                 <button onclick="adminResetPassword('${u.username}', '${u.name}')" style="background:#fef3c7; color:#92400e; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:700; font-size: 0.78rem;">
@@ -2203,7 +2260,10 @@
     }
 
     function logout() {
-      localStorage.clear();
+      localStorage.removeItem('resto_current_user');
+      localStorage.removeItem('resto_user_role');
+      localStorage.removeItem('resto_user_name');
+      
       appSection.style.display = 'none';
       loginSection.style.display = 'flex';
       document.getElementById('username').value = '';
