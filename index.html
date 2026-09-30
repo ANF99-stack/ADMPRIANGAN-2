@@ -751,7 +751,17 @@
       .badge-role { display: none; }
 
       .user-actions { gap: 6px; }
-      .user-clickable { padding: 6px 10px; font-size: 0.8rem; }
+      .user-clickable {
+        padding: 8px;
+        font-size: 1rem;
+        border-radius: 10px;
+      }
+      
+      /* SEMBUNYIKAN TEKS NAMA & ARROW DOWN DI MOBILE (HANYA MUNCUL IKON) */
+      .user-clickable span#user-name-text,
+      .user-clickable i.fa-chevron-down {
+        display: none !important;
+      }
 
       .btn-logout {
         padding: 7px 10px;
@@ -847,7 +857,7 @@
         <span id="role-badge" class="badge-role"></span>
       </div>
       <div class="user-actions">
-        <!-- NAMA USER / ADMIN (KLIK UNTUK MEMBUKA POP-UP KOTAK PESAN & UBAH PASSWORD) -->
+        <!-- NAMA USER / ADMIN (MODE MOBILE HANYA TAMPIL IKON DAN BADGE) -->
         <span id="user-display" class="user-clickable" onclick="openUserMenuModal()" title="Klik untuk Opsi Akun & Pesan">
           <i class="fa-solid fa-user-gear"></i>
           <span id="user-name-text">Admin</span>
