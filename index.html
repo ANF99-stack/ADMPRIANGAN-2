@@ -14,7 +14,7 @@
       --lazatto-red: #dc2626;
       --lazatto-orange: #f97316;
       --lazatto-yellow: #f59e0b;
-      --lazatto-dark: #1e1b4b;
+      --lazatto-dark: #0f172a;
       
       --primary: var(--lazatto-red);
       --primary-dark: #b91c1c;
@@ -25,9 +25,9 @@
       --text-muted: #64748b;
       --border: #e2e8f0;
       --radius: 16px;
-      --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
       --shadow-md: 0 10px 25px -5px rgba(220, 38, 38, 0.12);
-      --shadow-lg: 0 20px 30px -10px rgba(220, 38, 38, 0.2);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
     }
 
     * {
@@ -45,6 +45,22 @@
       display: flex;
       flex-direction: column;
       -webkit-font-smoothing: antialiased;
+    }
+
+    /* ================= ANIMASI SPINNER LOADING LOGIN ================= */
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #ffffff;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     /* ================= LOGIN SECTION MODERN ================= */
@@ -227,11 +243,12 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
       margin-top: 8px;
     }
     .btn-login-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(220, 38, 38, 0.4); }
     .btn-login-submit:active { transform: translateY(0); }
+    .btn-login-submit:disabled { opacity: 0.75; cursor: not-allowed; transform: none; }
 
     .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 12px; text-align: center; display: none; font-weight: 600; }
 
@@ -243,9 +260,10 @@
     }
 
     header {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
       padding: 14px 28px;
       display: flex;
       justify-content: space-between;
@@ -253,12 +271,13 @@
       position: sticky;
       top: 0;
       z-index: 30;
+      box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.03);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       font-weight: 800;
       font-size: 1.15rem;
       color: var(--lazatto-red);
@@ -266,40 +285,42 @@
     }
 
     .brand-logo-header {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       object-fit: contain;
       background: #ffffff;
       border: 1px solid var(--border);
       padding: 2px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
 
     .badge-role {
       font-size: 0.72rem;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 20px;
-      font-weight: 700;
-      letter-spacing: 0.03em;
+      font-weight: 800;
+      letter-spacing: 0.04em;
     }
-    .badge-admin { background: #ffe4e6; color: var(--lazatto-red); }
-    .badge-supervisor { background: #e0e7ff; color: #4338ca; }
-    .badge-psd { background: #dcfce7; color: #15803d; }
-    .badge-user { background: #fef3c7; color: #92400e; }
+    .badge-admin { background: #ffe4e6; color: var(--lazatto-red); border: 1px solid #fecaca; }
+    .badge-supervisor { background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
+    .badge-psd { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-user { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
-    .user-actions { display: flex; align-items: center; gap: 8px; }
+    .user-actions { display: flex; align-items: center; gap: 10px; }
 
     .user-clickable {
       font-size: 0.88rem;
       font-weight: 700;
       cursor: pointer;
-      padding: 8px 12px;
-      border-radius: 10px;
-      transition: background 0.2s;
+      padding: 8px 14px;
+      border-radius: 12px;
+      transition: all 0.2s;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       background: #f1f5f9;
+      border: 1px solid var(--border);
     }
     .user-clickable:hover { background: #e2e8f0; color: var(--lazatto-red); }
 
@@ -307,31 +328,35 @@
       background: var(--primary-soft);
       color: var(--lazatto-red);
       border: 1px solid #fecaca;
-      padding: 8px 12px;
-      border-radius: 10px;
+      padding: 8px 14px;
+      border-radius: 12px;
       font-weight: 700;
       cursor: pointer;
       font-size: 0.82rem;
+      transition: all 0.2s;
     }
+    .btn-change-pass:hover { background: #fee2e2; }
 
     .btn-logout {
       background: #fef2f2;
       color: #dc2626;
       border: 1px solid #fecaca;
-      padding: 8px 12px;
-      border-radius: 10px;
+      padding: 8px 14px;
+      border-radius: 12px;
       font-weight: 700;
       cursor: pointer;
       font-size: 0.82rem;
+      transition: all 0.2s;
     }
+    .btn-logout:hover { background: #dc2626; color: white; border-color: #dc2626; }
 
-    /* NAVBAR ADMIN RESPONSIP */
+    /* NAVBAR ADMIN MODERN RESPONSIP */
     .admin-nav-container {
       background: #ffffff;
       border-bottom: 1px solid var(--border);
       padding: 10px 28px;
       position: sticky;
-      top: 65px;
+      top: 67px;
       z-index: 20;
       box-shadow: 0 4px 15px -5px rgba(15, 23, 42, 0.04);
     }
@@ -340,8 +365,8 @@
       display: flex;
       gap: 8px;
       background: #f1f5f9;
-      padding: 5px;
-      border-radius: 14px;
+      padding: 6px;
+      border-radius: 16px;
       width: fit-content;
       max-width: 100%;
       overflow-x: auto;
@@ -350,13 +375,13 @@
     .admin-navbar::-webkit-scrollbar { display: none; }
 
     .nav-item {
-      padding: 9px 18px;
+      padding: 10px 20px;
       font-size: 0.85rem;
       font-weight: 700;
       color: var(--text-muted);
       cursor: pointer;
-      border-radius: 10px;
-      transition: all 0.2s;
+      border-radius: 12px;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -364,7 +389,7 @@
     }
 
     .nav-item:hover { color: var(--text); background: rgba(255, 255, 255, 0.6); }
-    .nav-item.active { color: var(--lazatto-red); background: #ffffff; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08); }
+    .nav-item.active { color: var(--lazatto-red); background: #ffffff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); }
 
     main {
       flex: 1;
@@ -374,32 +399,38 @@
       width: 100%;
     }
 
-    /* HERO BANNERS */
+    /* HERO BANNERS MODERN */
     .user-banner {
       background: linear-gradient(135deg, #1e1b4b 0%, var(--lazatto-red) 50%, var(--lazatto-orange) 100%);
       color: white;
       padding: 32px;
-      border-radius: 20px;
+      border-radius: 24px;
       margin-bottom: 30px;
       box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
     }
 
     .supervisor-banner {
       background: linear-gradient(135deg, #31103f 0%, #4338ca 50%, #6366f1 100%);
       color: white;
       padding: 32px;
-      border-radius: 20px;
+      border-radius: 24px;
       margin-bottom: 30px;
       box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
     }
 
     .psd-banner {
       background: linear-gradient(135deg, #064e3b 0%, #059669 50%, #10b981 100%);
       color: white;
       padding: 32px;
-      border-radius: 20px;
+      border-radius: 24px;
       margin-bottom: 30px;
       box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
     }
 
     .banner-header {
@@ -410,23 +441,24 @@
       flex-wrap: wrap;
     }
 
-    .user-banner h2, .supervisor-banner h2, .psd-banner h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
-    .user-banner p, .supervisor-banner p, .psd-banner p { opacity: 0.9; font-size: 0.9rem; max-width: 600px; }
+    .user-banner h2, .supervisor-banner h2, .psd-banner h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em; }
+    .user-banner p, .supervisor-banner p, .psd-banner p { opacity: 0.9; font-size: 0.9rem; max-width: 600px; line-height: 1.5; }
 
     .status-pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.18);
       backdrop-filter: blur(8px);
-      padding: 6px 14px;
+      padding: 6px 16px;
       border-radius: 30px;
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.25);
     }
-    .status-dot { width: 8px; height: 8px; background: #34d399; border-radius: 50%; }
+    .status-dot { width: 8px; height: 8px; background: #34d399; border-radius: 50%; box-shadow: 0 0 8px #34d399; }
 
-    /* GRID LAPORAN */
+    /* GRID LAPORAN & CARD DESIGN */
     .grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -450,12 +482,12 @@
     .card-top { margin-bottom: 18px; }
     .card-icon {
       width: 48px; height: 48px;
-      border-radius: 12px;
+      border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
       font-size: 1.25rem; margin-bottom: 14px;
     }
-    .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 4px; color: var(--text); }
-    .card-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; }
+    .card-title { font-size: 1rem; font-weight: 800; margin-bottom: 6px; color: var(--text); letter-spacing: -0.01em; }
+    .card-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.45; }
 
     .card-link-btn {
       text-decoration: none;
@@ -463,8 +495,8 @@
       color: var(--text);
       font-weight: 700;
       font-size: 0.85rem;
-      padding: 10px 14px;
-      border-radius: 10px;
+      padding: 10px 16px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -484,9 +516,9 @@
     /* INFO BOX SUPERVISOR RESTO COUNT */
     .coverage-display-box {
       margin-top: 15px;
-      padding: 12px;
+      padding: 14px;
       background: #f0f3ff;
-      border-radius: 12px;
+      border-radius: 14px;
       border: 1px dashed #4338ca;
       text-align: center;
     }
@@ -505,62 +537,70 @@
       letter-spacing: 0.05em;
     }
 
-    /* ADMIN DASHBOARD STATS */
+    /* ADMIN DASHBOARD MODERN STATS & CARDS */
     .admin-stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
     }
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      padding: 18px;
+      padding: 20px;
       border-radius: var(--radius);
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
       box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
     }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
     .stat-icon {
-      width: 44px; height: 44px;
-      border-radius: 12px;
+      width: 52px; height: 52px;
+      border-radius: 16px;
       background: #ffe4e6;
       color: var(--lazatto-red);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.25rem;
+      font-size: 1.35rem; flex-shrink: 0;
     }
-    .stat-num { font-size: 1.3rem; font-weight: 800; color: var(--text); }
-    .stat-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+    .stat-num { font-size: 1.45rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
 
     .admin-card-item {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 18px;
+      padding: 24px;
+      margin-bottom: 20px;
       box-shadow: var(--shadow-sm);
     }
     .admin-input-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-top: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
     }
     .admin-input-group label {
       display: block;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: var(--text-muted);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .admin-input-group input, .admin-input-group select {
       width: 100%;
-      padding: 9px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.85rem;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.88rem;
       background: #ffffff;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .admin-input-group input:focus, .admin-input-group select:focus {
+      border-color: var(--lazatto-red);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
 
     /* MODAL POPUP */
@@ -568,7 +608,7 @@
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
       display: none;
       justify-content: center;
       align-items: center;
@@ -578,22 +618,22 @@
     .modal-card {
       background: var(--surface);
       width: 100%;
-      max-width: 400px;
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: var(--shadow-lg);
+      max-width: 420px;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
 
     /* ================= OPTIMISASI MODUL MOBILE ================= */
     @media (max-width: 768px) {
       .login-split-card {
         flex-direction: column;
-        max-width: 360px;
+        max-width: 380px;
         min-height: auto;
         border-radius: 24px;
       }
       .login-left-banner {
-        padding: 30px 20px 35px;
+        padding: 28px 20px 32px;
         clip-path: ellipse(150% 100% at 50% 0%);
       }
       .login-left-banner p, .btn-outline-banner { display: none; }
@@ -603,9 +643,9 @@
       .center-action-badge { display: none !important; }
       .login-right-form { padding: 28px 20px 28px; }
 
-      header { padding: 10px 14px; }
-      .brand { font-size: 0.95rem; }
-      .brand-logo-header { width: 30px; height: 30px; }
+      header { padding: 12px 16px; }
+      .brand { font-size: 0.95rem; gap: 8px; }
+      .brand-logo-header { width: 32px; height: 32px; }
       .badge-role { display: none; }
 
       .user-actions { gap: 6px; }
@@ -615,25 +655,30 @@
       .btn-change-pass, .btn-logout {
         padding: 7px 10px;
         font-size: 0.78rem;
-        border-radius: 8px;
+        border-radius: 10px;
       }
 
-      .admin-nav-container { padding: 8px 14px; top: 57px; }
-      .nav-item { padding: 7px 14px; font-size: 0.8rem; }
+      .admin-nav-container { padding: 8px 14px; top: 61px; }
+      .nav-item { padding: 8px 14px; font-size: 0.8rem; border-radius: 10px; }
 
-      main { padding: 14px; }
-      .user-banner, .supervisor-banner, .psd-banner { padding: 20px; border-radius: 16px; }
+      main { padding: 16px; }
+      .user-banner, .supervisor-banner, .psd-banner { padding: 22px; border-radius: 18px; margin-bottom: 20px; }
       .user-banner h2, .supervisor-banner h2, .psd-banner h2 { font-size: 1.3rem; }
       
       .grid-container { grid-template-columns: 1fr; gap: 14px; }
-      .admin-stats-grid { grid-template-columns: 1fr; gap: 12px; }
+      .admin-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .stat-card { padding: 14px; gap: 10px; border-radius: 14px; }
+      .stat-icon { width: 42px; height: 42px; font-size: 1.1rem; border-radius: 12px; }
+      .stat-num { font-size: 1.2rem; }
+      .stat-label { font-size: 0.72rem; }
 
-      .admin-card-item { padding: 16px; border-radius: 14px; }
-      
+      .admin-card-item { padding: 18px; border-radius: 16px; margin-bottom: 14px; }
+      .admin-input-grid { grid-template-columns: 1fr; gap: 10px; }
+
       .action-header-mobile {
         flex-direction: column;
         align-items: flex-start !important;
-        gap: 10px;
+        gap: 12px;
       }
       .action-header-mobile button {
         width: 100%;
@@ -680,8 +725,10 @@
             <label>Password</label>
             <input type="password" id="password" placeholder="••••••••" required>
           </div>
-          <button type="submit" class="btn-login-submit">
-            <i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang
+          <button type="submit" id="btn-submit-login" class="btn-login-submit">
+            <span id="login-btn-icon"><i class="fa-solid fa-right-to-bracket"></i></span>
+            <span id="login-btn-spinner" class="spinner" style="display: none;"></span>
+            <span id="login-btn-text">Masuk Sekarang</span>
           </button>
           <p id="error-msg" class="error-msg">Username atau password salah!</p>
         </form>
@@ -983,7 +1030,7 @@
         </div>
       </div>
 
-      <!-- ================= TAMPILAN ADMIN ================= -->
+      <!-- ================= TAMPILAN ADMIN MODERN ================= -->
       <div id="admin-view" style="display: none;">
         
         <div class="admin-stats-grid">
@@ -1099,7 +1146,7 @@
                 <h4 style="font-size: 1rem; font-weight: 800; color: #1e40af;"><i class="fa-solid fa-chart-pie"></i> Link Rekapitulasi Area</h4>
                 <p style="font-size: 0.8rem; color: var(--text-muted);">Kelola link spreadsheet utama untuk 5 menu rekapitulasi area</p>
               </div>
-              <button onclick="saveAreaLinks()" style="background: var(--lazatto-red); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
+              <button onclick="saveAreaLinks()" style="background: var(--lazatto-red); color: white; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
                 <i class="fa-solid fa-floppy-disk"></i> Simpan Link Area
               </button>
             </div>
@@ -1114,7 +1161,7 @@
 
           <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <h4 style="font-size: 1rem; font-weight: 800;"><i class="fa-solid fa-store"></i> Link Spreadsheet Cabang Outlet</h4>
-            <input type="text" id="search-branch" onkeyup="filterBranches()" placeholder="Cari nama outlet cabang..." style="padding: 10px 16px; border: 1.5px solid var(--border); border-radius: 10px; width: 100%; max-width: 300px; font-size: 0.88rem;">
+            <input type="text" id="search-branch" onkeyup="filterBranches()" placeholder="Cari nama outlet cabang..." style="padding: 10px 16px; border: 1.5px solid var(--border); border-radius: 12px; width: 100%; max-width: 300px; font-size: 0.88rem; outline:none;">
           </div>
           <div id="admin-links-list"></div>
         </div>
@@ -1124,12 +1171,12 @@
           
           <!-- MASTER LINK SUPERVISOR (BERLAKU UNTUK SEMUA SPV) -->
           <div class="admin-card-item" style="border: 2px solid #c7d2fe; background: #f5f3ff; margin-bottom: 24px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
               <div>
                 <h4 style="font-size: 1rem; font-weight: 800; color: #4338ca;"><i class="fa-solid fa-globe"></i> Master Link Supervisor (Global)</h4>
                 <p style="font-size: 0.8rem; color: var(--text-muted);">Link ini akan dipakai bersama oleh seluruh user Supervisor</p>
               </div>
-              <button onclick="saveSpvLinksMaster()" style="background: #4338ca; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
+              <button onclick="saveSpvLinksMaster()" style="background: #4338ca; color: white; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
                 <i class="fa-solid fa-floppy-disk"></i> Simpan Master SPV
               </button>
             </div>
@@ -1151,12 +1198,12 @@
         <!-- TAB 4: KELOLA LINK PSD (MASTER GLOBAL UTUH) -->
         <div id="page-psd-links" class="admin-page-content" style="display: none;">
           <div class="admin-card-item" style="border: 2px solid #a7f3d0; background: #f0fdf4;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
               <div>
                 <h4 style="font-size: 1rem; font-weight: 800; color: #15803d;"><i class="fa-solid fa-id-card-clip"></i> Master Link PSD (Global)</h4>
                 <p style="font-size: 0.8rem; color: var(--text-muted);">Semua user PSD mengacu secara otomatis ke 5 link master di bawah ini</p>
               </div>
-              <button onclick="savePsdLinksMaster()" style="background: #15803d; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
+              <button onclick="savePsdLinksMaster()" style="background: #15803d; color: white; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
                 <i class="fa-solid fa-floppy-disk"></i> Simpan Master Link PSD
               </button>
             </div>
@@ -1181,16 +1228,16 @@
             </h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
               <div>
-                <label style="font-size: 0.78rem; font-weight: 700;">Username / ID Outlet</label>
-                <input type="text" id="branch_user_id" placeholder="resto_36" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Username / ID Outlet</label>
+                <input type="text" id="branch_user_id" placeholder="resto_36" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
               </div>
               <div>
-                <label style="font-size: 0.78rem; font-weight: 700;">Nama Outlet / Cabang</label>
-                <input type="text" id="branch_user_name" placeholder="Lazatto - Depok" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Nama Outlet / Cabang</label>
+                <input type="text" id="branch_user_name" placeholder="Lazatto - Depok" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
               </div>
               <div>
-                <label style="font-size: 0.78rem; font-weight: 700;">Password</label>
-                <input type="text" id="branch_user_pass" placeholder="pass36" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Password</label>
+                <input type="text" id="branch_user_pass" placeholder="pass36" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
               </div>
             </div>
             <button onclick="addNewBranchUser()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
@@ -1205,28 +1252,28 @@
             </h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
               <div>
-                <label style="font-size: 0.78rem; font-weight: 700;">Username</label>
-                <input type="text" id="internal_user_id" placeholder="spv_tasik / psd_tasik" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Username</label>
+                <input type="text" id="internal_user_id" placeholder="spv_tasik / psd_tasik" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
               </div>
               <div>
-                <label style="font-size: 0.78rem; font-weight: 700;">Nama Lengkap / Label</label>
-                <input type="text" id="internal_user_name" placeholder="Supervisor Area Tasik" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Nama Lengkap / Label</label>
+                <input type="text" id="internal_user_name" placeholder="Supervisor Area Tasik" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
               </div>
               <div>
-                <label style="font-size: 0.78rem; font-weight: 700;">Password</label>
-                <input type="text" id="internal_user_pass" placeholder="pass123" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Password</label>
+                <input type="text" id="internal_user_pass" placeholder="pass123" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
               </div>
               <div>
-                <label style="font-size: 0.78rem; font-weight: 700;">Role Hak Akses</label>
-                <select id="internal_user_role" onchange="toggleSpvCoverageInput()" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; background: white;">
+                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Role Hak Akses</label>
+                <select id="internal_user_role" onchange="toggleSpvCoverageInput()" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; background: white; font-size:0.88rem;">
                   <option value="supervisor">Supervisor</option>
                   <option value="psd">PSD</option>
                   <option value="admin">Admin Area</option>
                 </select>
               </div>
               <div id="group_spv_coverage">
-                <label style="font-size: 0.78rem; font-weight: 700; color:#4338ca;">Total Resto Coverage (5-7)</label>
-                <input type="number" id="internal_user_coverage" min="1" max="15" value="5" placeholder="5" style="width:100%; padding:10px; border:1px solid #c7d2fe; border-radius:8px; background: #ffffff;">
+                <label style="font-size: 0.78rem; font-weight: 700; color:#4338ca; display: block; margin-bottom: 4px;">Total Resto Coverage (5-7)</label>
+                <input type="number" id="internal_user_coverage" min="1" max="15" value="5" placeholder="5" style="width:100%; padding:10px 14px; border:1.5px solid #c7d2fe; border-radius:10px; background: #ffffff; font-size:0.88rem;">
               </div>
             </div>
             <button onclick="addNewInternalUser()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);">
@@ -1237,7 +1284,7 @@
           <!-- DAFTAR USER -->
           <div class="admin-card-item">
             <h4 style="margin-bottom: 14px; font-weight: 800;"><i class="fa-solid fa-users"></i> Daftar Seluruh User System</h4>
-            <div id="user-table-wrapper" style="overflow-x: auto;"></div>
+            <div id="user-table-wrapper" style="overflow-x: auto; border-radius: 12px; border: 1px solid var(--border);"></div>
           </div>
         </div>
 
@@ -1248,9 +1295,9 @@
   <!-- MODAL CHANGE PASSWORD -->
   <div id="change-pass-modal" class="modal-overlay">
     <div class="modal-card">
-      <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h3 style="font-size:1.1rem; font-weight:800;">Ubah Password</h3>
-        <button onclick="closeChangePasswordModal()" style="border:none; background:none; cursor:pointer; font-size:1.2rem;">✕</button>
+        <button onclick="closeChangePasswordModal()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color:var(--text-muted);">✕</button>
       </div>
       <form onsubmit="submitChangePassword(event)">
         <div class="input-group"><label>Password Saat Ini</label><input type="password" id="old_pass" required></div>
@@ -1275,6 +1322,26 @@
     const btnChangePass = document.getElementById('btn-change-pass');
     const adminSubNavbar = document.getElementById('admin-sub-navbar');
 
+    /* ELEMEN TAMPILAN LOADING LOGIN */
+    const btnSubmitLogin = document.getElementById('btn-submit-login');
+    const loginBtnIcon = document.getElementById('login-btn-icon');
+    const loginBtnSpinner = document.getElementById('login-btn-spinner');
+    const loginBtnText = document.getElementById('login-btn-text');
+
+    function setLoginLoadingState(isLoading) {
+      if (isLoading) {
+        btnSubmitLogin.disabled = true;
+        loginBtnIcon.style.display = 'none';
+        loginBtnSpinner.style.display = 'inline-block';
+        loginBtnText.textContent = 'Memuat...';
+      } else {
+        btnSubmitLogin.disabled = false;
+        loginBtnIcon.style.display = 'inline-block';
+        loginBtnSpinner.style.display = 'none';
+        loginBtnText.textContent = 'Masuk Sekarang';
+      }
+    }
+
     window.onload = function() {
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) { showDashboard(loggedUser); }
@@ -1284,6 +1351,9 @@
       e.preventDefault();
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value.trim();
+
+      errorMsg.style.display = 'none';
+      setLoginLoadingState(true);
 
       try {
         const response = await fetch(GAS_API_URL, {
@@ -1298,13 +1368,15 @@
           localStorage.setItem('resto_current_user', result.data.username);
           localStorage.setItem('resto_user_role', result.data.role);
           localStorage.setItem('resto_user_name', result.data.name);
-          showDashboard(result.data.username);
+          await showDashboard(result.data.username);
         } else {
           errorMsg.textContent = result.message;
           errorMsg.style.display = 'block';
         }
       } catch (err) {
         alert("Gagal terhubung ke Server GAS!");
+      } finally {
+        setLoginLoadingState(false);
       }
     });
 
@@ -1459,9 +1531,9 @@
 
         html += `
           <div class="admin-card-item" style="border: 1px solid var(--border);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
               <span style="font-weight: 800; font-size: 0.95rem; color: #4338ca;"><i class="fa-solid fa-user-tie"></i> ${spv.name} (${key})</span>
-              <button onclick="saveSpvIndividualData('${key}')" style="background: #4338ca; color: white; border: none; padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 700;">Simpan Data SPV</button>
+              <button onclick="saveSpvIndividualData('${key}')" style="background: #4338ca; color: white; border: none; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700;">Simpan Data SPV</button>
             </div>
 
             <div class="admin-input-grid">
@@ -1645,9 +1717,9 @@
         const l = branches[key] || {};
         html += `
           <div class="admin-card-item branch-card" id="card_branch_${key}" data-name="${key}">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
-              <span style="font-weight: 800; font-size: 0.95rem;">${key}</span>
-              <button onclick="updateUserLinks('${key}')" style="background: var(--lazatto-red); color: white; border: none; padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 700;">Simpan Link</button>
+            <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+              <span style="font-weight: 800; font-size: 0.95rem;"><i class="fa-solid fa-store" style="color:var(--lazatto-red); margin-right:6px;"></i> ${key}</span>
+              <button onclick="updateUserLinks('${key}')" style="background: var(--lazatto-red); color: white; border: none; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700;">Simpan Link</button>
             </div>
             <div class="admin-input-grid">
               <div class="admin-input-group"><label>1. Omset Harian</label><input type="text" id="link_omset_${key}" value="${l.omset || ''}"></div>
@@ -1667,38 +1739,40 @@
       const users = globalDashboardData.usersList || [];
       const wrapper = document.getElementById('user-table-wrapper');
       
-      let html = `<table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 500px;">
+      let html = `<table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 550px; background: white;">
         <thead>
-          <tr style="background: #f1f5f9; border-bottom: 2px solid var(--border);">
-            <th style="padding: 12px;">Username</th>
-            <th style="padding: 12px;">Nama / Label</th>
-            <th style="padding: 12px;">Password</th>
-            <th style="padding: 12px;">Role</th>
-            <th style="padding: 12px;">Aksi</th>
+          <tr style="background: #f8fafc; border-bottom: 2px solid var(--border);">
+            <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Username</th>
+            <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Nama / Label</th>
+            <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Password</th>
+            <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Role</th>
+            <th style="padding: 14px; color: var(--text-muted); font-weight: 800; text-align: center;">Aksi</th>
           </tr>
         </thead><tbody>`;
 
       users.forEach(u => {
         let badgeColor = '';
-        if (u.role === 'admin') badgeColor = 'color:var(--lazatto-red); font-weight:700;';
-        else if (u.role === 'supervisor') badgeColor = 'color:#4338ca; font-weight:700;';
-        else if (u.role === 'psd') badgeColor = 'color:#15803d; font-weight:700;';
+        if (u.role === 'admin') badgeColor = 'color:var(--lazatto-red); font-weight:800;';
+        else if (u.role === 'supervisor') badgeColor = 'color:#4338ca; font-weight:800;';
+        else if (u.role === 'psd') badgeColor = 'color:#15803d; font-weight:800;';
 
         html += `
           <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 12px; font-weight: 700;">${u.username}</td>
-            <td style="padding: 12px;">${u.name}</td>
-            <td style="padding: 12px;"><code>${u.password}</code></td>
-            <td style="padding: 12px; ${badgeColor}">${u.role.toUpperCase()}</td>
-            <td style="padding: 12px; display: flex; gap: 6px;">
-              <button onclick="adminResetPassword('${u.username}', '${u.name}')" style="background:#fef3c7; color:#92400e; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">
-                <i class="fa-solid fa-rotate-left"></i> Reset
-              </button>
-              ${u.username !== 'admin' ? `
-                <button onclick="deleteUser('${u.username}')" style="background:#fee2e2; color:#dc2626; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">
-                  <i class="fa-solid fa-trash"></i> Hapus
+            <td style="padding: 12px 14px; font-weight: 700; color: var(--text);">${u.username}</td>
+            <td style="padding: 12px 14px; color: var(--text);">${u.name}</td>
+            <td style="padding: 12px 14px;"><code style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem;">${u.password}</code></td>
+            <td style="padding: 12px 14px; ${badgeColor}">${u.role.toUpperCase()}</td>
+            <td style="padding: 12px 14px; text-align: center;">
+              <div style="display: flex; gap: 6px; justify-content: center;">
+                <button onclick="adminResetPassword('${u.username}', '${u.name}')" style="background:#fef3c7; color:#92400e; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:700; font-size: 0.78rem;">
+                  <i class="fa-solid fa-rotate-left"></i> Reset
                 </button>
-              ` : ''}
+                ${u.username !== 'admin' ? `
+                  <button onclick="deleteUser('${u.username}')" style="background:#fee2e2; color:#dc2626; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:700; font-size: 0.78rem;">
+                    <i class="fa-solid fa-trash"></i> Hapus
+                  </button>
+                ` : ''}
+              </div>
             </td>
           </tr>
         `;
