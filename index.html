@@ -212,17 +212,17 @@
 
     .input-group { margin-bottom: 18px; text-align: left; }
     .input-group label { display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: var(--text); }
-    .input-group input, .input-group select {
+    .input-group input, .input-group select, .input-group textarea {
       width: 100%;
       padding: 13px 20px;
       border: 1.5px solid var(--border);
-      border-radius: 30px;
+      border-radius: 16px;
       outline: none;
       font-size: 0.92rem;
       transition: all 0.2s ease;
       background: #f8fafc;
     }
-    .input-group input:focus, .input-group select:focus {
+    .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
       border-color: var(--lazatto-orange);
       background: #ffffff;
       box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
@@ -308,6 +308,40 @@
     .badge-user { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
     .user-actions { display: flex; align-items: center; gap: 10px; }
+
+    .btn-inbox-header {
+      background: #f1f5f9;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .btn-inbox-header:hover { background: #e2e8f0; color: var(--lazatto-red); }
+
+    .inbox-badge-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--lazatto-red);
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.65rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      border: 2px solid white;
+    }
 
     .user-clickable {
       font-size: 0.88rem;
@@ -618,10 +652,13 @@
     .modal-card {
       background: var(--surface);
       width: 100%;
-      max-width: 420px;
+      max-width: 500px;
       border-radius: 24px;
       padding: 28px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
     }
 
     /* BADGE STATUS LAST ONLINE */
@@ -636,6 +673,57 @@
     }
     .online-now { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .online-time { background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border); }
+
+    /* DESAIN ITEM KOTAK MASUK / INBOX */
+    .inbox-list-container {
+      overflow-y: auto;
+      flex: 1;
+      margin-top: 14px;
+      padding-right: 4px;
+    }
+    .inbox-item {
+      padding: 14px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+    .inbox-item.unread {
+      background: #fef2f2;
+      border-color: #fecaca;
+    }
+    .inbox-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .inbox-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .inbox-time {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .inbox-body {
+      font-size: 0.85rem;
+      color: #334155;
+      line-height: 1.45;
+      white-space: pre-line;
+    }
+    .inbox-target-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: #e2e8f0;
+      color: #475569;
+      margin-top: 8px;
+    }
 
     /* ================= OPTIMISASI MODUL MOBILE ================= */
     @media (max-width: 768px) {
@@ -665,7 +753,7 @@
       .user-clickable { padding: 6px 10px; font-size: 0.8rem; }
       .user-clickable span { display: none; }
 
-      .btn-change-pass, .btn-logout {
+      .btn-change-pass, .btn-logout, .btn-inbox-header {
         padding: 7px 10px;
         font-size: 0.78rem;
         border-radius: 10px;
@@ -759,6 +847,13 @@
         <span id="role-badge" class="badge-role"></span>
       </div>
       <div class="user-actions">
+        <!-- TOMBOL KOTAK MASUK / INBOX -->
+        <button class="btn-inbox-header" onclick="openInboxModal()" title="Buka Kotak Masuk Pesan">
+          <i class="fa-solid fa-envelope"></i>
+          <span>Pesan</span>
+          <span id="inbox-unread-count" class="inbox-badge-count" style="display: none;">0</span>
+        </button>
+
         <span id="user-display" class="user-clickable" onclick="toggleChangePassBtn()" title="Klik opsi akun">
           <i class="fa-solid fa-user-gear"></i>
           <span id="user-name-text"></span>
@@ -1371,9 +1466,38 @@
           </div>
         </div>
 
-        <!-- TAB 5: MANAJEMEN USER & PASSWORD -->
+        <!-- TAB 5: MANAJEMEN USER, PASSWORD & KIRIM PESAN PENGUMUMAN -->
         <div id="page-users" class="admin-page-content" style="display: none;">
           
+          <!-- MODUL BARU: KIRIM PESAN PENGUMUMAN OLEH ADMIN -->
+          <div class="admin-card-item" style="border: 2px solid #38bdf8; background: #f0f9ff;">
+            <h4 style="margin-bottom: 12px; font-weight: 800; color: #0369a1;">
+              <i class="fa-solid fa-paper-plane"></i> Kirim Pesan Pengumuman ke User
+            </h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
+              <div>
+                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Kategori / Target Role</label>
+                <select id="msg_target_role" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; background: white; font-size:0.88rem;">
+                  <option value="all">Semua User (Global)</option>
+                  <option value="supervisor">Khusus Supervisor (SPV)</option>
+                  <option value="psd">Khusus PSD</option>
+                  <option value="user">Khusus Outlet Cabang</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Judul Pesan / Pengumuman</label>
+                <input type="text" id="msg_title" placeholder="Contoh: Info Pemutakhiran System" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
+              </div>
+            </div>
+            <div style="margin-bottom: 14px;">
+              <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Isi Pesan</label>
+              <textarea id="msg_content" rows="3" placeholder="Tuliskan pesan atau pengumuman penting di sini..." style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem; outline:none; resize: vertical;"></textarea>
+            </div>
+            <button onclick="sendAdminBroadCastMessage()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+              <i class="fa-solid fa-paper-plane"></i> Kirim Pesan Pengumuman
+            </button>
+          </div>
+
           <!-- FORM 1: TAMBAH USER CABANG -->
           <div class="admin-card-item" style="border: 2px solid #fef3c7; background: #fffbeb;">
             <h4 style="margin-bottom: 12px; font-weight: 800; color: #92400e;">
@@ -1461,6 +1585,22 @@
     </div>
   </div>
 
+  <!-- MODAL KOTAK MASUK / INBOX ALL USER -->
+  <div id="inbox-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+        <h3 style="font-size:1.1rem; font-weight:800; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-inbox" style="color: var(--lazatto-red);"></i> Kotak Masuk Pesan
+        </h3>
+        <button onclick="closeInboxModal()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color:var(--text-muted);">✕</button>
+      </div>
+      
+      <div id="inbox-list-wrapper" class="inbox-list-container">
+        <!-- Daftar Pesan Dihasilkan Otomatis -->
+      </div>
+    </div>
+  </div>
+
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwn94FPpsde6D5GxfD7MCth_FfGOz5piJqcm0WxJ3x0HkggzdWKZiCORqr6JMaeQrhLYQ/exec";
 
@@ -1515,6 +1655,124 @@
         recordUserActivity(loggedUser);
       }
     }, 60000);
+
+    /* ================= SYSTEM KOTAK MASUK & PESAN BROADCAST ================= */
+    function getStoredMessages() {
+      const msgs = localStorage.getItem('resto_system_messages');
+      return msgs ? JSON.parse(msgs) : [];
+    }
+
+    function getReadStateMap(username) {
+      const key = `resto_read_messages_${username}`;
+      const state = localStorage.getItem(key);
+      return state ? JSON.parse(state) : {};
+    }
+
+    function markMessageAsRead(msgId) {
+      const username = localStorage.getItem('resto_current_user');
+      if (!username) return;
+      
+      const key = `resto_read_messages_${username}`;
+      const readState = getReadStateMap(username);
+      readState[msgId] = true;
+      localStorage.setItem(key, JSON.stringify(readState));
+      updateInboxBadgeCount();
+    }
+
+    function sendAdminBroadCastMessage() {
+      const targetRole = document.getElementById('msg_target_role').value;
+      const title = document.getElementById('msg_title').value.trim();
+      const content = document.getElementById('msg_content').value.trim();
+
+      if (!title || !content) {
+        alert('Mohon isi judul dan isi pesan pengumuman!');
+        return;
+      }
+
+      const messages = getStoredMessages();
+      const newMsg = {
+        id: 'msg_' + Date.now(),
+        targetRole: targetRole,
+        title: title,
+        content: content,
+        timestamp: Date.now(),
+        sender: 'Admin Area'
+      };
+
+      messages.unshift(newMsg);
+      localStorage.setItem('resto_system_messages', JSON.stringify(messages));
+
+      document.getElementById('msg_title').value = '';
+      document.getElementById('msg_content').value = '';
+
+      alert('Pesan pengumuman berhasil dikirim!');
+      updateInboxBadgeCount();
+    }
+
+    function updateInboxBadgeCount() {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const currentRole = localStorage.getItem('resto_user_role') || 'user';
+      if (!currentUser) return;
+
+      const allMsgs = getStoredMessages();
+      const readState = getReadStateMap(currentUser);
+
+      const relevantMsgs = allMsgs.filter(m => m.targetRole === 'all' || m.targetRole === currentRole);
+      const unreadCount = relevantMsgs.filter(m => !readState[m.id]).length;
+
+      const badge = document.getElementById('inbox-unread-count');
+      if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function openInboxModal() {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const currentRole = localStorage.getItem('resto_user_role') || 'user';
+      const wrapper = document.getElementById('inbox-list-wrapper');
+
+      const allMsgs = getStoredMessages();
+      const readState = getReadStateMap(currentUser);
+
+      const relevantMsgs = allMsgs.filter(m => m.targetRole === 'all' || m.targetRole === currentRole);
+
+      if (relevantMsgs.length === 0) {
+        wrapper.innerHTML = `<p style="text-align:center; padding: 30px; color: var(--text-muted); font-size: 0.88rem;">Belum ada pesan pengumuman masuk.</p>`;
+      } else {
+        let html = '';
+        relevantMsgs.forEach(m => {
+          const isRead = !!readState[m.id];
+          const d = new Date(m.timestamp);
+          const timeStr = `${d.toLocaleDateString('id-ID')} ${d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}`;
+          
+          let roleLabel = 'Semua User';
+          if (m.targetRole === 'supervisor') roleLabel = 'Khusus SPV';
+          else if (m.targetRole === 'psd') roleLabel = 'Khusus PSD';
+          else if (m.targetRole === 'user') roleLabel = 'Khusus Outlet';
+
+          html += `
+            <div class="inbox-item ${isRead ? '' : 'unread'}" onclick="markMessageAsRead('${m.id}'); this.classList.remove('unread');">
+              <div class="inbox-item-header">
+                <div class="inbox-title">${m.title}</div>
+                <div class="inbox-time">${timeStr}</div>
+              </div>
+              <div class="inbox-body">${m.content}</div>
+              <span class="inbox-target-tag">${roleLabel}</span>
+            </div>
+          `;
+        });
+        wrapper.innerHTML = html;
+      }
+
+      document.getElementById('inbox-modal').style.display = 'flex';
+    }
+
+    function closeInboxModal() {
+      document.getElementById('inbox-modal').style.display = 'none';
+    }
 
     function setLoginLoadingState(isLoading) {
       if (isLoading) {
@@ -1612,6 +1870,7 @@
 
       userNameText.textContent = userName;
       recordUserActivity(username);
+      updateInboxBadgeCount();
 
       await fetchInitialDataFromGAS();
 
