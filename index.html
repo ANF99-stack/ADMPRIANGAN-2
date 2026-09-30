@@ -309,24 +309,24 @@
 
     .user-actions { display: flex; align-items: center; gap: 10px; }
 
-    .btn-inbox-header {
-      background: #f1f5f9;
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
-      border-radius: 12px;
+    .user-clickable {
+      font-size: 0.88rem;
       font-weight: 700;
       cursor: pointer;
-      font-size: 0.85rem;
+      padding: 8px 14px;
+      border-radius: 12px;
+      transition: all 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
       position: relative;
-      transition: all 0.2s;
     }
-    .btn-inbox-header:hover { background: #e2e8f0; color: var(--lazatto-red); }
+    .user-clickable:hover { background: #e2e8f0; color: var(--lazatto-red); }
 
-    .inbox-badge-count {
+    /* INDIKATOR BADGE PESAN DI NAMA USER */
+    .user-badge-count {
       position: absolute;
       top: -5px;
       right: -5px;
@@ -342,34 +342,6 @@
       font-weight: 800;
       border: 2px solid white;
     }
-
-    .user-clickable {
-      font-size: 0.88rem;
-      font-weight: 700;
-      cursor: pointer;
-      padding: 8px 14px;
-      border-radius: 12px;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-    }
-    .user-clickable:hover { background: #e2e8f0; color: var(--lazatto-red); }
-
-    .btn-change-pass {
-      background: var(--primary-soft);
-      color: var(--lazatto-red);
-      border: 1px solid #fecaca;
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 0.82rem;
-      transition: all 0.2s;
-    }
-    .btn-change-pass:hover { background: #fee2e2; }
 
     .btn-logout {
       background: #fef2f2;
@@ -637,7 +609,7 @@
       box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
 
-    /* MODAL POPUP DESAIN UNIFORM */
+    /* MODAL POPUP DESAIN UNIFORM & MOBILE OPTIMIZED */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -652,11 +624,11 @@
     .modal-card {
       background: var(--surface);
       width: 100%;
-      max-width: 480px;
+      max-width: 440px;
       border-radius: 24px;
-      padding: 28px;
+      padding: 24px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      max-height: 90vh;
+      max-height: 85vh;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
@@ -674,6 +646,34 @@
     }
     .online-now { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .online-time { background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border); }
+
+    /* TOMBOL OPSI PADA MENU POP-UP USER */
+    .menu-option-btn {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 12px;
+    }
+    .menu-option-btn:hover {
+      background: var(--primary-soft);
+      border-color: #fecaca;
+      color: var(--lazatto-red);
+    }
+    .menu-option-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
     /* DESAIN ITEM KOTAK MASUK / INBOX */
     .inbox-list-container {
@@ -752,9 +752,8 @@
 
       .user-actions { gap: 6px; }
       .user-clickable { padding: 6px 10px; font-size: 0.8rem; }
-      .user-clickable span { display: none; }
 
-      .btn-change-pass, .btn-logout, .btn-inbox-header {
+      .btn-logout {
         padding: 7px 10px;
         font-size: 0.78rem;
         border-radius: 10px;
@@ -848,22 +847,13 @@
         <span id="role-badge" class="badge-role"></span>
       </div>
       <div class="user-actions">
-        <!-- TOMBOL KOTAK MASUK / INBOX POP-UP ALL USER -->
-        <button class="btn-inbox-header" onclick="openInboxModal()" title="Buka Kotak Masuk Pesan">
-          <i class="fa-solid fa-envelope"></i>
-          <span>Pesan</span>
-          <span id="inbox-unread-count" class="inbox-badge-count" style="display: none;">0</span>
-        </button>
-
-        <span id="user-display" class="user-clickable" onclick="toggleChangePassBtn()" title="Klik opsi akun">
+        <!-- NAMA USER / ADMIN (KLIK UNTUK MEMBUKA POP-UP KOTAK PESAN & UBAH PASSWORD) -->
+        <span id="user-display" class="user-clickable" onclick="openUserMenuModal()" title="Klik untuk Opsi Akun & Pesan">
           <i class="fa-solid fa-user-gear"></i>
-          <span id="user-name-text"></span>
+          <span id="user-name-text">Admin</span>
           <i class="fa-solid fa-chevron-down" style="font-size: 0.65rem;"></i>
+          <span id="inbox-unread-count" class="user-badge-count" style="display: none;">0</span>
         </span>
-
-        <button id="btn-change-pass" class="btn-change-pass" onclick="openChangePasswordModal()" style="display: none;">
-          <i class="fa-solid fa-key"></i> Ubah Pass
-        </button>
 
         <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
       </div>
@@ -1477,7 +1467,7 @@
               <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Kirimkan pesan pengumuman ke user berdasarkan kategori role secara terpusat</p>
             </div>
             <button onclick="openSendMessageModal()" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
-              <i class="fa-solid fa-paper-plane"></i> Kirim Pesan Pop-Up
+              <i class="fa-solid fa-paper-plane"></i> Kirim Pesan Broadcast
             </button>
           </div>
 
@@ -1552,7 +1542,35 @@
     </main>
   </div>
 
-  <!-- POP-UP MODAL 1: CHANGE PASSWORD -->
+  <!-- POP-UP MODAL 1: MENU UTAMA AKUN (PESAN & UBAH PASSWORD) -->
+  <div id="user-menu-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">
+        <h3 style="font-size:1.1rem; font-weight:800; display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-user-gear" style="color:var(--lazatto-red);"></i> Pengaturan & Pesan
+        </h3>
+        <button onclick="closeUserMenuModal()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color:var(--text-muted);">✕</button>
+      </div>
+
+      <button class="menu-option-btn" onclick="closeUserMenuModal(); openInboxModal();">
+        <div class="menu-option-btn-left">
+          <i class="fa-solid fa-envelope" style="color:var(--lazatto-red); font-size:1.1rem;"></i>
+          <span>Kotak Masuk / Pesan</span>
+        </div>
+        <span id="menu-inbox-badge" style="background:var(--lazatto-red); color:white; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:12px; display:none;">0 Pesan</span>
+      </button>
+
+      <button class="menu-option-btn" onclick="closeUserMenuModal(); openChangePasswordModal();">
+        <div class="menu-option-btn-left">
+          <i class="fa-solid fa-key" style="color:var(--lazatto-orange); font-size:1.1rem;"></i>
+          <span>Ubah Password</span>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="font-size:0.8rem; color:var(--text-muted);"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- POP-UP MODAL 2: CHANGE PASSWORD -->
   <div id="change-pass-modal" class="modal-overlay">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -1568,7 +1586,7 @@
     </div>
   </div>
 
-  <!-- POP-UP MODAL 2: KIRIM PESAN ANNOUNCEMENT (SISI ADMIN) -->
+  <!-- POP-UP MODAL 3: KIRIM PESAN ANNOUNCEMENT (SISI ADMIN) -->
   <div id="send-msg-modal" class="modal-overlay">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -1602,7 +1620,7 @@
     </div>
   </div>
 
-  <!-- POP-UP MODAL 3: KOTAK MASUK / INBOX (SISI ALL USER) -->
+  <!-- POP-UP MODAL 4: KOTAK MASUK / INBOX (SISI ALL USER) -->
   <div id="inbox-modal" class="modal-overlay">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
@@ -1629,7 +1647,6 @@
     const errorMsg = document.getElementById('error-msg');
     const userNameText = document.getElementById('user-name-text');
     const roleBadge = document.getElementById('role-badge');
-    const btnChangePass = document.getElementById('btn-change-pass');
     const adminSubNavbar = document.getElementById('admin-sub-navbar');
 
     /* ELEMEN TAMPILAN LOADING LOGIN */
@@ -1696,6 +1713,14 @@
       updateInboxBadgeCount();
     }
 
+    function openUserMenuModal() {
+      document.getElementById('user-menu-modal').style.display = 'flex';
+    }
+
+    function closeUserMenuModal() {
+      document.getElementById('user-menu-modal').style.display = 'none';
+    }
+
     function openSendMessageModal() {
       document.getElementById('send-msg-modal').style.display = 'flex';
     }
@@ -1748,11 +1773,19 @@
       const unreadCount = relevantMsgs.filter(m => !readState[m.id]).length;
 
       const badge = document.getElementById('inbox-unread-count');
+      const menuBadge = document.getElementById('menu-inbox-badge');
+
       if (unreadCount > 0) {
         badge.textContent = unreadCount;
         badge.style.display = 'flex';
+
+        if (menuBadge) {
+          menuBadge.textContent = `${unreadCount} Baru`;
+          menuBadge.style.display = 'inline-block';
+        }
       } else {
         badge.style.display = 'none';
+        if (menuBadge) menuBadge.style.display = 'none';
       }
     }
 
@@ -2199,10 +2232,6 @@
       document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
       element.classList.add('active');
       document.getElementById(pageId).style.display = 'block';
-    }
-
-    function toggleChangePassBtn() {
-      btnChangePass.style.display = (btnChangePass.style.display === 'none' || btnChangePass.style.display === '') ? 'inline-flex' : 'none';
     }
 
     function updateAdminStats() {
