@@ -637,7 +637,7 @@
       box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
 
-    /* MODAL POPUP */
+    /* MODAL POPUP DESAIN UNIFORM */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -652,13 +652,14 @@
     .modal-card {
       background: var(--surface);
       width: 100%;
-      max-width: 500px;
+      max-width: 480px;
       border-radius: 24px;
       padding: 28px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      max-height: 85vh;
+      max-height: 90vh;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
     }
 
     /* BADGE STATUS LAST ONLINE */
@@ -847,7 +848,7 @@
         <span id="role-badge" class="badge-role"></span>
       </div>
       <div class="user-actions">
-        <!-- TOMBOL KOTAK MASUK / INBOX -->
+        <!-- TOMBOL KOTAK MASUK / INBOX POP-UP ALL USER -->
         <button class="btn-inbox-header" onclick="openInboxModal()" title="Buka Kotak Masuk Pesan">
           <i class="fa-solid fa-envelope"></i>
           <span>Pesan</span>
@@ -1466,35 +1467,17 @@
           </div>
         </div>
 
-        <!-- TAB 5: MANAJEMEN USER, PASSWORD & KIRIM PESAN PENGUMUMAN -->
+        <!-- TAB 5: MANAJEMEN USER & PASSWORD -->
         <div id="page-users" class="admin-page-content" style="display: none;">
           
-          <!-- MODUL BARU: KIRIM PESAN PENGUMUMAN OLEH ADMIN -->
-          <div class="admin-card-item" style="border: 2px solid #38bdf8; background: #f0f9ff;">
-            <h4 style="margin-bottom: 12px; font-weight: 800; color: #0369a1;">
-              <i class="fa-solid fa-paper-plane"></i> Kirim Pesan Pengumuman ke User
-            </h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
-              <div>
-                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Kategori / Target Role</label>
-                <select id="msg_target_role" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; background: white; font-size:0.88rem;">
-                  <option value="all">Semua User (Global)</option>
-                  <option value="supervisor">Khusus Supervisor (SPV)</option>
-                  <option value="psd">Khusus PSD</option>
-                  <option value="user">Khusus Outlet Cabang</option>
-                </select>
-              </div>
-              <div>
-                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Judul Pesan / Pengumuman</label>
-                <input type="text" id="msg_title" placeholder="Contoh: Info Pemutakhiran System" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
-              </div>
+          <!-- TOMBOL TRIGGER POP-UP PESAN UNTUK ADMIN -->
+          <div class="admin-card-item" style="border: 2px solid #38bdf8; background: #f0f9ff; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h4 style="font-weight: 800; color: #0369a1;"><i class="fa-solid fa-paper-plane"></i> Pengumuman System & Broadcast Pesan</h4>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Kirimkan pesan pengumuman ke user berdasarkan kategori role secara terpusat</p>
             </div>
-            <div style="margin-bottom: 14px;">
-              <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Isi Pesan</label>
-              <textarea id="msg_content" rows="3" placeholder="Tuliskan pesan atau pengumuman penting di sini..." style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem; outline:none; resize: vertical;"></textarea>
-            </div>
-            <button onclick="sendAdminBroadCastMessage()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
-              <i class="fa-solid fa-paper-plane"></i> Kirim Pesan Pengumuman
+            <button onclick="openSendMessageModal()" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
+              <i class="fa-solid fa-paper-plane"></i> Kirim Pesan Pop-Up
             </button>
           </div>
 
@@ -1569,7 +1552,7 @@
     </main>
   </div>
 
-  <!-- MODAL CHANGE PASSWORD -->
+  <!-- POP-UP MODAL 1: CHANGE PASSWORD -->
   <div id="change-pass-modal" class="modal-overlay">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -1585,7 +1568,41 @@
     </div>
   </div>
 
-  <!-- MODAL KOTAK MASUK / INBOX ALL USER -->
+  <!-- POP-UP MODAL 2: KIRIM PESAN ANNOUNCEMENT (SISI ADMIN) -->
+  <div id="send-msg-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="font-size:1.1rem; font-weight:800; color:#0369a1; display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-paper-plane"></i> Kirim Pesan Pengumuman
+        </h3>
+        <button onclick="closeSendMessageModal()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color:var(--text-muted);">✕</button>
+      </div>
+      <form onsubmit="submitAdminBroadcastMessage(event)">
+        <div class="input-group">
+          <label>Kategori Target Role</label>
+          <select id="msg_target_role">
+            <option value="all">Semua User (Global)</option>
+            <option value="supervisor">Khusus Supervisor (SPV)</option>
+            <option value="psd">Khusus PSD</option>
+            <option value="user">Khusus Outlet Cabang</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Judul Pesan</label>
+          <input type="text" id="msg_title" placeholder="Contoh: Info Pemutakhiran System" required>
+        </div>
+        <div class="input-group">
+          <label>Isi Pesan Pengumuman</label>
+          <textarea id="msg_content" rows="4" placeholder="Tuliskan isi pesan pengumuman..." required></textarea>
+        </div>
+        <button type="submit" class="btn-login-submit" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+          <i class="fa-solid fa-paper-plane"></i> Kirim Pesan Sekarang
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- POP-UP MODAL 3: KOTAK MASUK / INBOX (SISI ALL USER) -->
   <div id="inbox-modal" class="modal-overlay">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
@@ -1596,7 +1613,7 @@
       </div>
       
       <div id="inbox-list-wrapper" class="inbox-list-container">
-        <!-- Daftar Pesan Dihasilkan Otomatis -->
+        <!-- List Pesan Dihasilkan Otomatis -->
       </div>
     </div>
   </div>
@@ -1656,7 +1673,7 @@
       }
     }, 60000);
 
-    /* ================= SYSTEM KOTAK MASUK & PESAN BROADCAST ================= */
+    /* ================= SYSTEM KOTAK MASUK & PESAN BROADCAST POP-UP ================= */
     function getStoredMessages() {
       const msgs = localStorage.getItem('resto_system_messages');
       return msgs ? JSON.parse(msgs) : [];
@@ -1679,7 +1696,16 @@
       updateInboxBadgeCount();
     }
 
-    function sendAdminBroadCastMessage() {
+    function openSendMessageModal() {
+      document.getElementById('send-msg-modal').style.display = 'flex';
+    }
+
+    function closeSendMessageModal() {
+      document.getElementById('send-msg-modal').style.display = 'none';
+    }
+
+    function submitAdminBroadcastMessage(event) {
+      event.preventDefault();
       const targetRole = document.getElementById('msg_target_role').value;
       const title = document.getElementById('msg_title').value.trim();
       const content = document.getElementById('msg_content').value.trim();
@@ -1705,6 +1731,7 @@
       document.getElementById('msg_title').value = '';
       document.getElementById('msg_content').value = '';
 
+      closeSendMessageModal();
       alert('Pesan pengumuman berhasil dikirim!');
       updateInboxBadgeCount();
     }
