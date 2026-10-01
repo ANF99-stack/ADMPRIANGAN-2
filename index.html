@@ -507,6 +507,9 @@
       align-items: center;
       justify-content: space-between;
       transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+      width: 100%;
     }
     .card:hover .card-link-btn { background: var(--lazatto-red); color: white; }
 
@@ -1305,74 +1308,172 @@
 
         <!-- TAB 1 (UTAMA): REKAPITULASI AREA -->
         <div id="page-preview-user" class="admin-page-content">
-          <div class="user-banner">
-            <div class="banner-header">
-              <div>
-                <h2>Dashboard Rekapitulasi Area</h2>
-                <p>Akses cepat ke rekapitulasi omset, promo, kotor/bersih, serta tracking COGS operasional.</p>
+          <!-- TAMPILAN UTAMA TAB REKAPITULASI AREA -->
+          <div id="adm-main-rekap-view">
+            <div class="user-banner">
+              <div class="banner-header">
+                <div>
+                  <h2>Dashboard Rekapitulasi Area</h2>
+                  <p>Akses cepat ke rekapitulasi omset, promo, kotor/bersih, tracking COGS operasional, serta administrasi resto.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="grid-container">
+              <!-- TOMBOL BARU: ADM RESTO -->
+              <div class="card" style="border: 2px solid var(--lazatto-red); background: #fef2f2;">
+                <div class="card-top">
+                  <div class="card-icon icon-rose"><i class="fa-solid fa-building-user"></i></div>
+                  <div class="card-title" style="color: var(--lazatto-red);">ADM RESTO</div>
+                  <div class="card-desc">Portal laporan operasional, KPH, ganti minyak, expense, dan setor uang cabang.</div>
+                </div>
+                <button onclick="showAdmRestoSubPage()" class="card-link-btn" style="background: var(--lazatto-red); color: white;">
+                  <span>Buka ADM RESTO</span>
+                  <i class="fa-solid fa-folder-open"></i>
+                </button>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-amber"><i class="fa-solid fa-chart-pie"></i></div>
+                  <div class="card-title">Omset Area</div>
+                  <div class="card-desc">Buku rekapitulasi total omset gabungan seluruh cabang area.</div>
+                </div>
+                <a id="btn_preview_omset" href="#" target="_blank" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-purple"><i class="fa-solid fa-bullhorn"></i></div>
+                  <div class="card-title">Promo Area</div>
+                  <div class="card-desc">Rekapitulasi performa promo & campaign marketing area.</div>
+                </div>
+                <a id="btn_preview_promo" href="#" target="_blank" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-teal"><i class="fa-solid fa-scale-balanced"></i></div>
+                  <div class="card-title">Omset Kotor & Bersih</div>
+                  <div class="card-desc">Laporan perbandingan Gross Revenue vs Net Revenue cabang.</div>
+                </div>
+                <a id="btn_preview_kotor_bersih" href="#" target="_blank" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-rose"><i class="fa-solid fa-cubes"></i></div>
+                  <div class="card-title">Track COGS Lazatto</div>
+                  <div class="card-desc">Pencatatan & analisis HPP / Cost of Goods Sold produk Lazatto.</div>
+                </div>
+                <a id="btn_preview_cogs_lazatto" href="#" target="_blank" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-indigo"><i class="fa-solid fa-bowl-rice"></i></div>
+                  <div class="card-title">Track COGS Ngeumi</div>
+                  <div class="card-desc">Pencatatan & analisis HPP / Cost of Goods Sold produk Ngeumi.</div>
+                </div>
+                <a id="btn_preview_cogs_ngeumi" href="#" target="_blank" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
             </div>
           </div>
-          
-          <div class="grid-container">
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-amber"><i class="fa-solid fa-chart-pie"></i></div>
-                <div class="card-title">Omset Area</div>
-                <div class="card-desc">Buku rekapitulasi total omset gabungan seluruh cabang area.</div>
+
+          <!-- SUB-HALAMAN ADM RESTO (MUNCUL SAAT TOMBOL ADM RESTO DIKLIK) -->
+          <div id="adm-resto-sub-view" style="display: none;">
+            <div class="user-banner" style="background: linear-gradient(135deg, #1e1b4b 0%, #dc2626 100%);">
+              <div class="banner-header">
+                <div>
+                  <h2>Portal Laporan ADM RESTO</h2>
+                  <p>Halaman khusus laporan operasional resto yang terhubung secara otomatis dengan Master Link Supervisor.</p>
+                </div>
+                <button onclick="hideAdmRestoSubPage()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
               </div>
-              <a id="btn_preview_omset" href="#" target="_blank" class="card-link-btn">
-                <span>Buka Sheet</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
             </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-purple"><i class="fa-solid fa-bullhorn"></i></div>
-                <div class="card-title">Promo Area</div>
-                <div class="card-desc">Rekapitulasi performa promo & campaign marketing area.</div>
+            <div class="grid-container">
+              <!-- 1. LAPORAN PENJUALAN -->
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
+                  <div class="card-title">Laporan Penjualan</div>
+                  <div class="card-desc">Laporan detail hasil penjualan harian resto area.</div>
+                </div>
+                <a id="btn_adm_penjualan" href="#" target="_blank" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_preview_promo" href="#" target="_blank" class="card-link-btn">
-                <span>Buka Sheet</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-teal"><i class="fa-solid fa-scale-balanced"></i></div>
-                <div class="card-title">Omset Kotor & Bersih</div>
-                <div class="card-desc">Laporan perbandingan Gross Revenue vs Net Revenue cabang.</div>
+              <!-- 2. KPH -->
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
+                  <div class="card-title">KPH</div>
+                  <div class="card-desc">Kartu Persiapan Harian untuk kontrol bahan baku area.</div>
+                </div>
+                <a id="btn_adm_kph" href="#" target="_blank" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_preview_kotor_bersih" href="#" target="_blank" class="card-link-btn">
-                <span>Buka Sheet</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-rose"><i class="fa-solid fa-cubes"></i></div>
-                <div class="card-title">Track COGS Lazatto</div>
-                <div class="card-desc">Pencatatan & analisis HPP / Cost of Goods Sold produk Lazatto.</div>
+              <!-- 3. FORM GANTI MINYAK -->
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
+                  <div class="card-title">Form Ganti Minyak</div>
+                  <div class="card-desc">Pencatatan & pengawasan penggunaan minyak goreng area.</div>
+                </div>
+                <a id="btn_adm_ganti_minyak" href="#" target="_blank" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_preview_cogs_lazatto" href="#" target="_blank" class="card-link-btn">
-                <span>Buka Sheet</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-indigo"><i class="fa-solid fa-bowl-rice"></i></div>
-                <div class="card-title">Track COGS Ngeumi</div>
-                <div class="card-desc">Pencatatan & analisis HPP / Cost of Goods Sold produk Ngeumi.</div>
+              <!-- 4. TRACKING EXPENSE -->
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
+                  <div class="card-title">Tracking Expense</div>
+                  <div class="card-desc">Monitoring & pencatatan pengeluaran operasional resto area.</div>
+                </div>
+                <a id="btn_adm_expense" href="#" target="_blank" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_preview_cogs_ngeumi" href="#" target="_blank" class="card-link-btn">
-                <span>Buka Sheet</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
+
+              <!-- 5. FORM SETOR UANG -->
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                  <div class="card-title">Form Setor Uang</div>
+                  <div class="card-desc">Validasi dan rekapitulasi setoran uang harian resto.</div>
+                </div>
+                <a id="btn_adm_setor" href="#" target="_blank" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -2025,6 +2126,25 @@
       }
     }
 
+    /* NAVIGASI SUB-PAGE ADM RESTO */
+    function showAdmRestoSubPage() {
+      document.getElementById('adm-main-rekap-view').style.display = 'none';
+      document.getElementById('adm-resto-sub-view').style.display = 'block';
+
+      // Hubungkan langsung link dari Master Link Supervisor (spvLinksMaster)
+      const spvMaster = globalDashboardData.spvLinksMaster || {};
+      document.getElementById('btn_adm_penjualan').href = spvMaster.penjualan || '#';
+      document.getElementById('btn_adm_kph').href = spvMaster.kph || '#';
+      document.getElementById('btn_adm_ganti_minyak').href = spvMaster.ganti_minyak || '#';
+      document.getElementById('btn_adm_expense').href = spvMaster.expense || '#';
+      document.getElementById('btn_adm_setor').href = spvMaster.setor || '#';
+    }
+
+    function hideAdmRestoSubPage() {
+      document.getElementById('adm-resto-sub-view').style.display = 'none';
+      document.getElementById('adm-main-rekap-view').style.display = 'block';
+    }
+
     function loadAreaLinks() {
       const areaLinks = globalDashboardData.areaLinks || {};
       document.getElementById('area_link_omset').value = areaLinks.omset || '';
@@ -2242,6 +2362,11 @@
       document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
       element.classList.add('active');
       document.getElementById(pageId).style.display = 'block';
+
+      // Pastikan saat klik tab 'Rekapitulasi Area' kembali ke tampilan utama rekap
+      if(pageId === 'page-preview-user') {
+        hideAdmRestoSubPage();
+      }
     }
 
     function updateAdminStats() {
