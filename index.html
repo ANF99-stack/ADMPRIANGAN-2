@@ -358,7 +358,7 @@
     }
     .btn-logout:hover { background: #dc2626; color: white; border-color: #dc2626; }
 
-    .admin-nav-container {
+    .app-nav-container {
       background: #ffffff;
       border-bottom: 1px solid var(--border);
       padding: 10px 28px;
@@ -368,7 +368,7 @@
       box-shadow: 0 4px 15px -5px rgba(15, 23, 42, 0.04);
     }
 
-    .admin-navbar {
+    .app-navbar {
       display: flex;
       gap: 8px;
       background: #f1f5f9;
@@ -379,7 +379,7 @@
       overflow-x: auto;
       scrollbar-width: none;
     }
-    .admin-navbar::-webkit-scrollbar { display: none; }
+    .app-navbar::-webkit-scrollbar { display: none; }
 
     .nav-item {
       padding: 10px 20px;
@@ -589,6 +589,93 @@
       box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
 
+    /* UI TOGGLE SWITCH STYLES */
+    .switch-toggle-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      padding: 14px 18px;
+      border-radius: 16px;
+      border: 1.5px solid var(--border);
+      margin-bottom: 20px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 56px;
+      height: 30px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: .3s;
+      border-radius: 34px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    input:checked + .toggle-slider {
+      background-color: #059669;
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(26px);
+    }
+
+    .coming-soon-box {
+      text-align: center;
+      padding: 48px 24px;
+      background: #ffffff;
+      border-radius: 20px;
+      border: 2px dashed #cbd5e1;
+      max-width: 560px;
+      margin: 20px auto;
+    }
+
+    .coming-soon-icon {
+      font-size: 3.5rem;
+      color: #f59e0b;
+      margin-bottom: 16px;
+    }
+
+    .coming-soon-badge {
+      display: inline-block;
+      background: #fef3c7;
+      color: #b45309;
+      font-weight: 800;
+      font-size: 0.78rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      border: 1px solid #fde68a;
+      letter-spacing: 0.05em;
+    }
+
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -702,6 +789,64 @@
       margin-top: 8px;
     }
 
+    .badge-status {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+    .badge-status.shift { background: #e0e7ff; color: #4338ca; }
+    .badge-status.terlambat { background: #fee2e2; color: #dc2626; }
+    .badge-status.absent { background: #fef3c7; color: #b45309; }
+
+    /* STYLES KAMERA REALTIME TIMESTAMP */
+    .camera-box-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #0f172a;
+      border: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .camera-video {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      background: #0f172a;
+    }
+    .camera-preview-img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      display: none;
+    }
+    .camera-controls {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      width: 100%;
+      background: #1e293b;
+      justify-content: center;
+    }
+    .btn-camera {
+      padding: 8px 16px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-camera-snap { background: var(--lazatto-red); color: white; }
+    .btn-camera-reset { background: #64748b; color: white; }
+
     @media (max-width: 768px) {
       .login-split-card {
         flex-direction: column;
@@ -743,7 +888,7 @@
         border-radius: 10px;
       }
 
-      .admin-nav-container { padding: 8px 14px; top: 61px; }
+      .app-nav-container { padding: 8px 14px; top: 61px; }
       .nav-item { padding: 8px 14px; font-size: 0.8rem; border-radius: 10px; }
 
       main { padding: 16px; }
@@ -839,382 +984,549 @@
       </div>
     </header>
 
-    <div id="admin-sub-navbar" class="admin-nav-container" style="display: none;">
-      <nav class="admin-navbar">
-        <div id="nav-item-preview" class="nav-item active" onclick="switchAdminNav('page-preview-user', this)">
-          <i class="fa-solid fa-chart-line"></i>
-          <span>Rekapitulasi Area</span>
-        </div>
-        <div id="nav-item-links" class="nav-item" onclick="switchAdminNav('page-links', this)">
-          <i class="fa-solid fa-link"></i>
-          <span>Kelola Link (Area & Cabang)</span>
-        </div>
-        <div id="nav-item-spv-links" class="nav-item" onclick="switchAdminNav('page-spv-links', this)">
-          <i class="fa-solid fa-user-tie"></i>
-          <span>Kelola Link Supervisor</span>
-        </div>
-        <div id="nav-item-psd-links" class="nav-item" onclick="switchAdminNav('page-psd-links', this)">
-          <i class="fa-solid fa-id-card-clip"></i>
-          <span>Kelola Link PSD</span>
-        </div>
-        <div id="nav-item-users" class="nav-item" onclick="switchAdminNav('page-users', this)">
-          <i class="fa-solid fa-users-cog"></i>
-          <span>Manajemen User & Password</span>
-        </div>
+    <!-- SIDEBAR / NAVBAR TOP MENU UNTUK SEMUA ROLE -->
+    <div id="main-app-navbar" class="app-nav-container">
+      <nav class="app-navbar" id="app-navbar-items">
+        <!-- Rendered dynamically by JS depending on User Role -->
       </nav>
     </div>
 
     <main>
-      <!-- ================= USER VIEW ================= -->
+      <!-- ================= USER CABANG VIEW ================= -->
       <div id="user-view" style="display: none;">
-        <div class="user-banner">
-          <div class="banner-header">
-            <div>
-              <h2 id="user-welcome-title">Dashboard Cabang</h2>
-              <p>Pilih salah satu buku laporan di bawah ini untuk membuka spreadsheet Google secara terintegrasi.</p>
+        
+        <!-- PAGE 1: LAPORAN CABANG -->
+        <div id="page-user-laporan" class="role-page-content">
+          <div class="user-banner">
+            <div class="banner-header">
+              <div>
+                <h2 id="user-welcome-title">Dashboard Cabang</h2>
+                <p>Pilih salah satu buku laporan di bawah ini untuk membuka spreadsheet Google secara terintegrasi.</p>
+              </div>
+              <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>Sistem Terhubung</span>
+              </div>
             </div>
-            <div class="status-pill">
-              <span class="status-dot"></span>
-              <span>Sistem Terhubung</span>
+          </div>
+
+          <div class="grid-container">
+            <!-- 1. LAPORAN OMSET HARIAN -->
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-rose"><i class="fa-solid fa-book"></i></div>
+                <div class="card-title">Laporan Omset Harian</div>
+                <div class="card-desc">Buku rekapitulasi penjualan harian Outlet.</div>
+              </div>
+              <a id="btn_omset" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <!-- 2. INPUT PROMO PENJUALAN (TEPAT DI BAWAH LAPORAN OMSET HARIAN - HANYA UNTUK LAZATTO) -->
+            <div class="card" id="card_promo_penjualan_wrapper" style="display: none;">
+              <div class="card-top">
+                <div class="card-icon icon-rose"><i class="fa-solid fa-tags"></i></div>
+                <div class="card-title">INPUT PROMO PENJUALAN</div>
+                <div class="card-desc">Form / Sheet Input Promo Penjualan Harian Outlet Lazatto.</div>
+              </div>
+              <a id="btn_promo_penjualan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <!-- 3. LAPORAN PENJUALAN -->
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="card-title">Laporan Penjualan</div>
+                <div class="card-desc">Laporan Penjualan Harian Outlet.</div>
+              </div>
+              <a id="btn_outlet" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <!-- 4. TRACKING EXPENSE -->
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
+                <div class="card-title">Tracking Expense</div>
+                <div class="card-desc">Pencatatan Pengeluaran Harian Outlet.</div>
+              </div>
+              <a id="btn_expense" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <!-- 5. FORM GANTI MINYAK -->
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
+                <div class="card-title">Form Ganti Minyak</div>
+                <div class="card-desc">Pencatatan Total Goreng Ayam.</div>
+              </div>
+              <a id="btn_ganti_minyak" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <!-- 6. KARTU PERSIAPAN HARIAN (KPH) -->
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
+                <div class="card-title">Kartu Persiapan Harian (KPH)</div>
+                <div class="card-desc">Pencatatan Prepare Bahan Baku Harian Dalam Kurun Waktu 1 Minggu.</div>
+              </div>
+              <a id="btn_kph" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <!-- 7. FORM SETOR UANG -->
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                <div class="card-title">Form Setor Uang</div>
+                <div class="card-desc">Pencatatan Pendapatan Outlet Yang Harus di Setorkan Pershift.</div>
+              </div>
+              <a id="btn_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Sheet</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
             </div>
           </div>
         </div>
 
-        <div class="grid-container">
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-rose"><i class="fa-solid fa-book"></i></div>
-              <div class="card-title">Laporan Omset Harian</div>
-              <div class="card-desc">Buku rekapitulasi penjualan harian Outlet.</div>
-            </div>
-            <a id="btn_omset" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Sheet</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
+        <!-- PAGE 2: SIDEBAR PAGE - CHECKIN KARYAWAN REALTIME KAMERA -->
+        <div id="page-user-checkin" class="role-page-content" style="display: none;">
+          
+          <!-- BANNER COMING SOON (DITAMPILKAN JIKA ADMIN SWITCH OFF) -->
+          <div id="checkin_coming_soon_view" class="coming-soon-box" style="display: none;">
+            <div class="coming-soon-icon"><i class="fa-solid fa-person-digging"></i></div>
+            <span class="coming-soon-badge"><i class="fa-solid fa-clock"></i> COMING SOON</span>
+            <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--text); margin-bottom: 8px;">Fitur Check-in Karyawan Belum Aktif</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+              Halaman absensi dan check-in karyawan via kamera realtime saat ini sedang dalam proses penyiapan oleh Admin Area. Mohon tunggu pembaruan selanjutnya.
+            </p>
           </div>
 
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
-              <div class="card-title">Laporan Penjualan</div>
-              <div class="card-desc">Laporan Penjualan Harian Outlet.</div>
+          <!-- FORM CHECKIN KARYAWAN (DITAMPILKAN JIKA ADMIN SWITCH ON) -->
+          <div id="checkin_active_view" class="admin-card-item" style="border: 2px solid var(--lazatto-red); background: #ffffff;">
+            <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px;">
+              <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--lazatto-red); display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-camera"></i> CHECKIN KARYAWAN
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Absensi langsung menggunakan kamera timestamp realtime perangkat.</p>
             </div>
-            <a id="btn_outlet" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Sheet</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
 
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
-              <div class="card-title">Tracking Expense</div>
-              <div class="card-desc">Pencatatan Pengeluaran Harian Outlet.</div>
-            </div>
-            <a id="btn_expense" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Sheet</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
+            <form onsubmit="submitCheckinKaryawan(event)" style="max-width: 600px;">
+              <div class="input-group">
+                <label>AUTO TANGGAL DAN WAKTU</label>
+                <input type="text" id="checkin_datetime" readonly style="background:#f1f5f9; font-weight:700;">
+              </div>
+              <div class="input-group">
+                <label>RESTO CABANG</label>
+                <input type="text" id="checkin_resto_label" readonly style="background:#f1f5f9; font-weight:800; color:var(--lazatto-red);">
+              </div>
+              <div class="input-group">
+                <label>NIK KARYAWAN</label>
+                <input type="text" id="checkin_nik" placeholder="Masukkan NIK Karyawan" required>
+              </div>
+              <div class="input-group">
+                <label>NAMA LENGKAP</label>
+                <input type="text" id="checkin_nama" placeholder="Masukkan Nama Lengkap" required>
+              </div>
+              <div class="input-group">
+                <label>SHIFTING / KETERANGAN ABSEN</label>
+                <select id="checkin_shifting" onchange="toggleKameraTimestamp()" required>
+                  <option value="SHIFT 1">SHIFT 1</option>
+                  <option value="SHIFT 2">SHIFT 2</option>
+                  <option value="SHIFT 3">SHIFT 3</option>
+                  <option value="MIDDLE">MIDDLE</option>
+                  <option value="OFF">OFF</option>
+                  <option value="SAKIT">SAKIT</option>
+                  <option value="IZIN">IZIN</option>
+                  <option value="CUTI">CUTI</option>
+                </select>
+              </div>
 
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
-              <div class="card-title">Form Ganti Minyak</div>
-              <div class="card-desc">Pencatatan Total Goreng Ayam.</div>
-            </div>
-            <a id="btn_ganti_minyak" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Sheet</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
+              <!-- LIVE STREAM KAMERA WEBCAM TIMESTAMP -->
+              <div id="group_kamera_timestamp" class="input-group">
+                <label>KAMERA TIMESTAMP (PENGAMBILAN FOTO LIVE)</label>
+                <div class="camera-box-wrapper">
+                  <video id="camera_video" class="camera-video" autoplay playsinline></video>
+                  <img id="camera_preview" class="camera-preview-img" alt="Pratinjau Foto Absensi">
+                  <canvas id="camera_canvas" style="display:none;"></canvas>
+                  
+                  <div class="camera-controls">
+                    <button type="button" id="btn_snap_photo" onclick="takePhotoSnap()" class="btn-camera btn-camera-snap">
+                      <i class="fa-solid fa-camera"></i> Ambil Foto
+                    </button>
+                    <button type="button" id="btn_retake_photo" onclick="retakePhotoSnap()" class="btn-camera btn-camera-reset" style="display:none;">
+                      <i class="fa-solid fa-rotate-right"></i> Foto Ulang
+                    </button>
+                  </div>
+                </div>
+              </div>
 
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
-              <div class="card-title">Kartu Persiapan Harian (KPH)</div>
-              <div class="card-desc">Pencatatan Prepare Bahan Baku Harian Dalam Kurun Waktu 1 Minggu.</div>
-            </div>
-            <a id="btn_kph" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Sheet</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
-              <div class="card-title">Form Setor Uang</div>
-              <div class="card-desc">Pencatatan Pendapatan Outlet Yang Harus di Setorkan Pershift.</div>
-            </div>
-            <a id="btn_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Sheet</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
+              <button type="submit" class="btn-login-submit" style="width: auto; padding: 12px 28px; margin-top: 15px;">
+                <i class="fa-solid fa-paper-plane"></i> Kirim Checkin Sekarang
+              </button>
+            </form>
           </div>
         </div>
+
       </div>
 
       <!-- ================= SUPERVISOR VIEW ================= -->
       <div id="supervisor-view" style="display: none;">
-        <div class="supervisor-banner">
-          <div class="banner-header">
-            <div>
-              <h2 id="spv-welcome-title">Dashboard Supervisor</h2>
-              <p>Monitoring kinerja resto coverage, evaluasi COGS pekanan, base omset, laporan omset area, serta form pengawasan operasional lainnya.</p>
+        
+        <!-- PAGE 1: MONITORING SUPERVISOR -->
+        <div id="page-spv-monitoring" class="role-page-content">
+          <div class="supervisor-banner">
+            <div class="banner-header">
+              <div>
+                <h2 id="spv-welcome-title">Dashboard Supervisor</h2>
+                <p>Monitoring kinerja resto coverage, evaluasi COGS pekanan, base omset, laporan omset area, serta form pengawasan operasional lainnya.</p>
+              </div>
+              <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>Hak Akses Supervisor</span>
+              </div>
             </div>
-            <div class="status-pill">
-              <span class="status-dot"></span>
-              <span>Hak Akses Supervisor</span>
+          </div>
+
+          <div class="grid-container">
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-indigo"><i class="fa-solid fa-store"></i></div>
+                <div class="card-title">Coverage Resto</div>
+                <div class="card-desc">Total outlet resto yang dipegang dan diawasi oleh supervisor.</div>
+              </div>
+              <div class="coverage-display-box">
+                <div id="spv-total-resto-display" class="coverage-num">0</div>
+                <div class="coverage-text">Resto Dipegang</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-rose"><i class="fa-solid fa-calculator"></i></div>
+                <div class="card-title">Check COGS Pekanan</div>
+                <div class="card-desc">Pemeriksaan dan kontrol HPP / Cost of Goods Sold mingguan cabang area.</div>
+              </div>
+              <a id="btn_spv_cogs" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Sheet COGS Pekanan</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-amber"><i class="fa-solid fa-database"></i></div>
+                <div class="card-title">Base Laporan Omset</div>
+                <div class="card-desc">Master data dan basis pencatatan omset operasional supervisor.</div>
+              </div>
+              <a id="btn_spv_base_omset" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Base Omset</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-emerald"><i class="fa-solid fa-chart-pie"></i></div>
+                <div class="card-title">Omset Area</div>
+                <div class="card-desc">Rekapitulasi performa penjualan dan total omset keseluruhan wilayah area.</div>
+              </div>
+              <a id="btn_spv_omset_area" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Omset Area</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
+                <div class="card-title">Form Ganti Minyak</div>
+                <div class="card-desc">Pencatatan & pengawasan pemakaian minyak goreng area.</div>
+              </div>
+              <a id="btn_spv_ganti_minyak" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Sheet Ganti Minyak</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
+                <div class="card-title">Kartu Persiapan Harian (KPH)</div>
+                <div class="card-desc">Pencatatan & kontrol persiapan bahan baku harian area.</div>
+              </div>
+              <a id="btn_spv_kph" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka KPH Area</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
+                <div class="card-title">Tracking Expense</div>
+                <div class="card-desc">Pencatatan & monitoring pengeluaran operasional cabang area.</div>
+              </div>
+              <a id="btn_spv_expense" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Tracking Expense</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                <div class="card-title">Form Setor Uang</div>
+                <div class="card-desc">Pencatatan & validasi setoran uang pendapatan harian.</div>
+              </div>
+              <a id="btn_spv_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Form Setor Uang</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="card-title">Laporan Penjualan</div>
+                <div class="card-desc">Laporan detail hasil penjualan harian resto area.</div>
+              </div>
+              <a id="btn_spv_penjualan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Laporan Penjualan</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
             </div>
           </div>
         </div>
 
-        <div class="grid-container">
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-indigo"><i class="fa-solid fa-store"></i></div>
-              <div class="card-title">Coverage Resto</div>
-              <div class="card-desc">Total outlet resto yang dipegang dan diawasi oleh supervisor.</div>
-            </div>
-            <div class="coverage-display-box">
-              <div id="spv-total-resto-display" class="coverage-num">0</div>
-              <div class="coverage-text">Resto Dipegang</div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-rose"><i class="fa-solid fa-calculator"></i></div>
-              <div class="card-title">Check COGS Pekanan</div>
-              <div class="card-desc">Pemeriksaan dan kontrol HPP / Cost of Goods Sold mingguan cabang area.</div>
-            </div>
-            <a id="btn_spv_cogs" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Sheet COGS Pekanan</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-amber"><i class="fa-solid fa-database"></i></div>
-              <div class="card-title">Base Laporan Omset</div>
-              <div class="card-desc">Master data dan basis pencatatan omset operasional supervisor.</div>
-            </div>
-            <a id="btn_spv_base_omset" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Base Omset</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-emerald"><i class="fa-solid fa-chart-pie"></i></div>
-              <div class="card-title">Omset Area</div>
-              <div class="card-desc">Rekapitulasi performa penjualan dan total omset keseluruhan wilayah area.</div>
-            </div>
-            <a id="btn_spv_omset_area" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Omset Area</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
-              <div class="card-title">Form Ganti Minyak</div>
-              <div class="card-desc">Pencatatan & pengawasan pemakaian minyak goreng area.</div>
-            </div>
-            <a id="btn_spv_ganti_minyak" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Sheet Ganti Minyak</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
-              <div class="card-title">Kartu Persiapan Harian (KPH)</div>
-              <div class="card-desc">Pencatatan & kontrol persiapan bahan baku harian area.</div>
-            </div>
-            <a id="btn_spv_kph" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka KPH Area</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
-              <div class="card-title">Tracking Expense</div>
-              <div class="card-desc">Pencatatan & monitoring pengeluaran operasional cabang area.</div>
-            </div>
-            <a id="btn_spv_expense" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Tracking Expense</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
-              <div class="card-title">Form Setor Uang</div>
-              <div class="card-desc">Pencatatan & validasi setoran uang pendapatan harian.</div>
-            </div>
-            <a id="btn_spv_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Form Setor Uang</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
-              <div class="card-title">Laporan Penjualan</div>
-              <div class="card-desc">Laporan detail hasil penjualan harian resto area.</div>
-            </div>
-            <a id="btn_spv_penjualan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Laporan Penjualan</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-        </div>
       </div>
 
       <!-- ================= PSD VIEW ================= -->
       <div id="psd-view" style="display: none;">
-        <div class="psd-banner">
-          <div class="banner-header">
-            <div>
-              <h2 id="psd-welcome-title">Dashboard PSD</h2>
-              <p>Portal evaluasi operasional, kontrol transaksi kasir & leader, rekapitulasi promo, database karyawan, serta form pengawasan cabang.</p>
+        
+        <!-- PAGE 1: MONITORING PSD -->
+        <div id="page-psd-monitoring" class="role-page-content">
+          <div class="psd-banner">
+            <div class="banner-header">
+              <div>
+                <h2 id="psd-welcome-title">Dashboard PSD</h2>
+                <p>Portal evaluasi operasional, kontrol transaksi kasir & leader, rekapitulasi promo, database karyawan, serta form pengawasan cabang.</p>
+              </div>
+              <div class="status-pill">
+                <span class="status-dot"></span>
+                <span>Hak Akses PSD</span>
+              </div>
             </div>
-            <div class="status-pill">
-              <span class="status-dot"></span>
-              <span>Hak Akses PSD</span>
+          </div>
+
+          <div class="grid-container">
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-emerald"><i class="fa-solid fa-utensils"></i></div>
+                <div class="card-title">FCP RESTO</div>
+                <div class="card-desc">Buku rekapitulasi & evaluasi Food Cost Percentage resto.</div>
+              </div>
+              <a id="btn_psd_fcp" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka FCP Resto</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-teal"><i class="fa-solid fa-cash-register"></i></div>
+                <div class="card-title">Checking Kasir</div>
+                <div class="card-desc">Monitoring & audit transaksi keuangan operasional kasir resto.</div>
+              </div>
+              <a id="btn_psd_checking_kasir" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Checking Kasir</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-cyan"><i class="fa-solid fa-user-check"></i></div>
+                <div class="card-title">Checking Leader</div>
+                <div class="card-desc">Form pengawasan dan kontrol performa leader/head shift outlet.</div>
+              </div>
+              <a id="btn_psd_checking_leader" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Checking Leader</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-purple"><i class="fa-solid fa-tags"></i></div>
+                <div class="card-title">Rekap Promo</div>
+                <div class="card-desc">Rekapitulasi pencapaian dan efektivitas campaign promo di cabang.</div>
+              </div>
+              <a id="btn_psd_rekap_promo" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Rekap Promo</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-indigo"><i class="fa-solid fa-address-book"></i></div>
+                <div class="card-title">Data Karyawan</div>
+                <div class="card-desc">Database master informasi & personalia karyawan resto.</div>
+              </div>
+              <a id="btn_psd_data_karyawan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Data Karyawan</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
+                <div class="card-title">Form Ganti Minyak</div>
+                <div class="card-desc">Pencatatan & pengawasan pemakaian minyak goreng area.</div>
+              </div>
+              <a id="btn_psd_ganti_minyak" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Sheet Ganti Minyak</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
+                <div class="card-title">Kartu Persiapan Harian (KPH)</div>
+                <div class="card-desc">Pencatatan & kontrol persiapan bahan baku harian area.</div>
+              </div>
+              <a id="btn_psd_kph" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka KPH Area</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
+                <div class="card-title">Tracking Expense</div>
+                <div class="card-desc">Pencatatan & monitoring pengeluaran operasional cabang area.</div>
+              </div>
+              <a id="btn_psd_expense" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Tracking Expense</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                <div class="card-title">Form Setor Uang</div>
+                <div class="card-desc">Pencatatan & validasi setoran uang pendapatan harian.</div>
+              </div>
+              <a id="btn_psd_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Form Setor Uang</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="card-title">Laporan Penjualan</div>
+                <div class="card-desc">Laporan detail hasil penjualan harian resto area.</div>
+              </div>
+              <a id="btn_psd_penjualan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Laporan Penjualan</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
             </div>
           </div>
         </div>
 
-        <div class="grid-container">
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-emerald"><i class="fa-solid fa-utensils"></i></div>
-              <div class="card-title">FCP RESTO</div>
-              <div class="card-desc">Buku rekapitulasi & evaluasi Food Cost Percentage resto.</div>
+      </div>
+
+      <!-- ================= SHARED PAGE: OPERASIONAL RESTO (SPV, PSD, ADMIN) ================= -->
+      <div id="page-shared-operasional" class="role-page-content" style="display: none;">
+        <div class="admin-card-item" style="border: 2px solid #4338ca; background: #ffffff;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-size: 1.3rem; font-weight: 800; color: #4338ca; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-clipboard-user"></i> OPERASIONAL RESTO
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Rekapitulasi output checkin karyawan, shifting resto, kategorial absensi & keterlambatan.</p>
             </div>
-            <a id="btn_psd_fcp" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka FCP Resto</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
           </div>
 
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-teal"><i class="fa-solid fa-cash-register"></i></div>
-              <div class="card-title">Checking Kasir</div>
-              <div class="card-desc">Monitoring & audit transaksi keuangan operasional kasir resto.</div>
+          <!-- SWITCH ADMIN CONTROL UNTUK MENGAKTIFKAN / MATIKAN HALAMAN CHECKIN CABANG (COMING SOON) -->
+          <div id="admin-checkin-switch-wrapper" class="switch-toggle-wrapper" style="display: none; border-color: #c7d2fe; background: #f5f3ff;">
+            <div>
+              <h4 style="font-size: 0.95rem; font-weight: 800; color: #4338ca; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-sliders"></i> KONTROL HAK AKSES FEATURE "CHECKIN KARYAWAN"
+              </h4>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+                Aktifkan switch ini untuk membuka form Check-in Karyawan di User Cabang. Jika OFF, halaman cabang akan menampilkan status "Coming Soon".
+              </p>
             </div>
-            <a id="btn_psd_checking_kasir" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Checking Kasir</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span id="checkin_switch_status_text" style="font-weight: 800; font-size: 0.85rem; color: #dc2626;">OFF (COMING SOON)</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="checkin_toggle_switch" onchange="toggleCheckinFeatureAdmin(this.checked)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
           </div>
 
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-cyan"><i class="fa-solid fa-user-check"></i></div>
-              <div class="card-title">Checking Leader</div>
-              <div class="card-desc">Form pengawasan dan kontrol performa leader/head shift outlet.</div>
+          <!-- INFORMASI WAKTU MINIMAL CHECKIN PER RESTO (4 WAKTU SHIFTING) -->
+          <div style="background:#f0fdf4; border:1px dashed #059669; padding:14px 18px; border-radius:14px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div>
+                <h5 style="font-weight:800; color:#047857; font-size:0.9rem;"><i class="fa-solid fa-clock"></i> Batas Maksimal Check-in Per Shift Resto (Pengaturan Admin)</h5>
+                <p style="font-size:0.78rem; color:#065f46; margin-top:2px;">Sistem memverifikasi keterlambatan karyawan secara otomatis berdasarkan Shift (1, 2, 3, Middle) & Outlet Resto tempatnya bekerja.</p>
+              </div>
             </div>
-            <a id="btn_psd_checking_leader" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Checking Leader</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
+            <div id="spv-resto-timings-summary" style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+              <!-- Rendered by JS -->
+            </div>
           </div>
 
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-purple"><i class="fa-solid fa-tags"></i></div>
-              <div class="card-title">Rekap Promo</div>
-              <div class="card-desc">Rekapitulasi pencapaian dan efektivitas campaign promo di cabang.</div>
-            </div>
-            <a id="btn_psd_rekap_promo" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Rekap Promo</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
+          <!-- TAB KATEGORI SHIFTING & ABSEN -->
+          <div style="display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:6px;">
+            <button id="tab_op_all" onclick="filterOperasionalCategory('ALL')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Semua Data Checkin</button>
+            <button id="tab_op_shift" onclick="filterOperasionalCategory('SHIFT')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Shifting By Resto</button>
+            <button id="tab_op_absent" onclick="filterOperasionalCategory('ABSENT')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Karyawan OFF / Sakit / Izin / Cuti</button>
+            <button id="tab_op_terlambat" onclick="filterOperasionalCategory('LATE')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Karyawan Terlambat</button>
           </div>
 
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-indigo"><i class="fa-solid fa-address-book"></i></div>
-              <div class="card-title">Data Karyawan</div>
-              <div class="card-desc">Database master informasi & personalia karyawan resto.</div>
-            </div>
-            <a id="btn_psd_data_karyawan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Data Karyawan</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
-              <div class="card-title">Form Ganti Minyak</div>
-              <div class="card-desc">Pencatatan & pengawasan pemakaian minyak goreng area.</div>
-            </div>
-            <a id="btn_psd_ganti_minyak" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Sheet Ganti Minyak</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
-              <div class="card-title">Kartu Persiapan Harian (KPH)</div>
-              <div class="card-desc">Pencatatan & kontrol persiapan bahan baku harian area.</div>
-            </div>
-            <a id="btn_psd_kph" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka KPH Area</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
-              <div class="card-title">Tracking Expense</div>
-              <div class="card-desc">Pencatatan & monitoring pengeluaran operasional cabang area.</div>
-            </div>
-            <a id="btn_psd_expense" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Tracking Expense</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
-              <div class="card-title">Form Setor Uang</div>
-              <div class="card-desc">Pencatatan & validasi setoran uang pendapatan harian.</div>
-            </div>
-            <a id="btn_psd_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Form Setor Uang</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-          </div>
-
-          <div class="card">
-            <div class="card-top">
-              <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
-              <div class="card-title">Laporan Penjualan</div>
-              <div class="card-desc">Laporan detail hasil penjualan harian resto area.</div>
-            </div>
-            <a id="btn_psd_penjualan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-              <span>Buka Laporan Penjualan</span>
-              <i class="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
+          <!-- TABEL DATA OPERASIONAL -->
+          <div style="overflow-x: auto; border-radius: 12px; border: 1px solid var(--border);">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 650px;">
+              <thead>
+                <tr style="background: #f8fafc; border-bottom: 2px solid var(--border);">
+                  <th style="padding: 12px 14px; font-weight: 800;">Resto Cabang</th>
+                  <th style="padding: 12px 14px; font-weight: 800;">Tanggal & Waktu</th>
+                  <th style="padding: 12px 14px; font-weight: 800;">NIK & Nama Karyawan</th>
+                  <th style="padding: 12px 14px; font-weight: 800;">Shifting / Status</th>
+                  <th style="padding: 12px 14px; font-weight: 800;">Bukti Kamera Timestamp</th>
+                </tr>
+              </thead>
+              <tbody id="operasional-table-body">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1420,8 +1732,8 @@
           <div class="admin-card-item" style="border: 2px solid #bfdbfe; background: #f8fafc; margin-bottom: 24px;">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
               <div>
-                <h4 style="font-size: 1rem; font-weight: 800; color: #1e40af;"><i class="fa-solid fa-chart-pie"></i> Link Rekapitulasi Area</h4>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">Kelola link spreadsheet utama untuk 5 menu rekapitulasi area</p>
+                <h4 style="font-size: 1rem; font-weight: 800; color: #1e40af;"><i class="fa-solid fa-chart-pie"></i> Link Rekapitulasi Area & Link Master Promo</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Kelola link spreadsheet utama area dan link master input promo penjualan cabang</p>
               </div>
               <button onclick="saveAreaLinks()" style="background: var(--lazatto-red); color: white; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
                 <i class="fa-solid fa-floppy-disk"></i> Simpan Link Area
@@ -1433,6 +1745,12 @@
               <div class="admin-input-group"><label>3. Omset Kotor & Bersih</label><input type="text" id="area_link_kotor_bersih" placeholder="https://docs.google.com/..."></div>
               <div class="admin-input-group"><label>4. Track COGS Lazatto</label><input type="text" id="area_link_cogs_lazatto" placeholder="https://docs.google.com/..."></div>
               <div class="admin-input-group"><label>5. Track COGS Ngeumi</label><input type="text" id="area_link_cogs_ngeumi" placeholder="https://docs.google.com/..."></div>
+              
+              <!-- FIELD MASTER LINK PROMO PENJUALAN LAZATTO (GLOBAL UNTUK SEMUA RESTO LAZATTO) -->
+              <div class="admin-input-group" style="grid-column: 1 / -1; background: #fef2f2; padding: 12px; border-radius: 12px; border: 1.5px solid #fecaca;">
+                <label style="color: var(--lazatto-red); font-weight: 800;"><i class="fa-solid fa-tags"></i> 6. Link Master Input Promo Penjualan (Tampil Otomatis di User Cabang Lazatto)</label>
+                <input type="text" id="area_link_promo_penjualan_master" placeholder="https://docs.google.com/..." style="border-color: #fca5a5;">
+              </div>
             </div>
           </div>
 
@@ -1468,7 +1786,7 @@
 
           <div style="margin-bottom: 16px;">
             <h4 style="font-size: 1rem; font-weight: 800;"><i class="fa-solid fa-user-tie"></i> Pengaturan Khusus per User Supervisor</h4>
-            <p style="font-size: 0.8rem; color: var(--text-muted);">Atur Base Omset dan jumlah Coverage Resto khusus masing-masing Supervisor</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Atur Base Omset, Coverage Resto (Maksimal 8 Resto), serta Batas 4 Jam Shifting Check-in (Shift 1, 2, 3, Middle) Masing-masing Resto</p>
           </div>
           <div id="admin-spv-links-list"></div>
         </div>
@@ -1541,11 +1859,11 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
               <div>
                 <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Username</label>
-                <input type="text" id="internal_user_id" placeholder="spv_tasik / psd_tasik" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
+                <input type="text" id="internal_user_id" placeholder="Ali1 / psd_tasik" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
               </div>
               <div>
                 <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Nama Lengkap / Label</label>
-                <input type="text" id="internal_user_name" placeholder="Supervisor Area Tasik" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
+                <input type="text" id="internal_user_name" placeholder="Supervisor Ali" style="width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.88rem;">
               </div>
               <div>
                 <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Password</label>
@@ -1560,8 +1878,8 @@
                 </select>
               </div>
               <div id="group_spv_coverage">
-                <label style="font-size: 0.78rem; font-weight: 700; color:#4338ca; display: block; margin-bottom: 4px;">Total Resto Coverage (5-7)</label>
-                <input type="number" id="internal_user_coverage" min="1" max="15" value="5" placeholder="5" style="width:100%; padding:10px 14px; border:1.5px solid #c7d2fe; border-radius:10px; background: #ffffff; font-size:0.88rem;">
+                <label style="font-size: 0.78rem; font-weight: 700; color:#4338ca; display: block; margin-bottom: 4px;">Total Resto Coverage (Maksimal 8 Resto)</label>
+                <input type="number" id="internal_user_coverage" min="1" max="8" value="5" placeholder="8" style="width:100%; padding:10px 14px; border:1.5px solid #c7d2fe; border-radius:10px; background: #ffffff; font-size:0.88rem;">
               </div>
             </div>
             <button onclick="addNewInternalUser()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);">
@@ -1674,7 +1992,13 @@
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwn94FPpsde6D5GxfD7MCth_FfGOz5piJqcm0WxJ3x0HkggzdWKZiCORqr6JMaeQrhLYQ/exec";
 
-    // MENGGUNAKAN LOCALSTORAGE UNTUK CACHE DASHBOARD AGAR RENDER SEKETIKA (INSTANT LOAD)
+    // HELPER UNTUK FORMAT NAMA RESTO MENJADI UPPERCASE TANPA STRIP
+    function formatRestoName(str) {
+      if (!str) return '';
+      return str.replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim().toUpperCase();
+    }
+
+    // CACHE DATA LOCAL STORAGE
     let globalDashboardData = (function() {
       try {
         const cached = localStorage.getItem('resto_cached_data');
@@ -1689,40 +2013,466 @@
     const errorMsg = document.getElementById('error-msg');
     const userNameText = document.getElementById('user-name-text');
     const roleBadge = document.getElementById('role-badge');
-    const adminSubNavbar = document.getElementById('admin-sub-navbar');
+    const mainAppNavbar = document.getElementById('main-app-navbar');
+    const appNavbarItems = document.getElementById('app-navbar-items');
 
     const btnSubmitLogin = document.getElementById('btn-submit-login');
     const loginBtnIcon = document.getElementById('login-btn-icon');
     const loginBtnSpinner = document.getElementById('login-btn-spinner');
     const loginBtnText = document.getElementById('login-btn-text');
 
-    function recordUserActivity(username) {
-      if (!username) return;
-      localStorage.setItem(`resto_user_last_online_${username}`, Date.now().toString());
+    let cameraStream = null;
+    let capturedSnapDataUrl = null;
+
+    // FUNGSI PING HEARTBEAT REALTIME KE SERVER GAS (SETIAP 15 DETIK)
+    async function sendPingToServer() {
+      const currentUser = localStorage.getItem('resto_current_user');
+      if (!currentUser) return;
+
+      try {
+        await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({ action: "pingUserOnline", username: currentUser, timestamp: Date.now() })
+        });
+      } catch (e) {
+        console.warn("Ping online ke server terhambat.", e);
+      }
     }
 
-    function getUserLastOnlineText(username) {
-      const storedTime = localStorage.getItem(`resto_user_last_online_${username}`);
-      if (!storedTime) {
-        return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> Belum ada aktivitas</span>`;
+    setInterval(sendPingToServer, 15000);
+
+    // AUTO REFRESH DARI SERVER GAS UNTUK ADMIN (SETIAP 10 DETIK)
+    async function fetchLatestUserData() {
+      try {
+        const response = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({ action: "getInitialData" })
+        });
+        const result = await response.json();
+        if (result.status === "success") {
+          globalDashboardData = result.data;
+          renderUserTable();
+        }
+      } catch (e) {
+        console.error("Gagal memperbarui status user dari server.", e);
+      }
+    }
+
+    setInterval(() => {
+      const loggedRole = localStorage.getItem('resto_user_role');
+      if (loggedRole === 'admin') {
+        fetchLatestUserData();
+      }
+    }, 10000);
+
+    // FUNGSI MANAGEMENT SWITCH CHECKIN FEATURE (ADMIN)
+    function isCheckinFeatureEnabled() {
+      const val = localStorage.getItem('resto_checkin_feature_enabled');
+      return val === 'true'; // Default false / coming soon
+    }
+
+    function toggleCheckinFeatureAdmin(isEnabled) {
+      localStorage.setItem('resto_checkin_feature_enabled', isEnabled ? 'true' : 'false');
+      updateCheckinSwitchUI();
+    }
+
+    function updateCheckinSwitchUI() {
+      const isEnabled = isCheckinFeatureEnabled();
+      const switchToggle = document.getElementById('checkin_toggle_switch');
+      const switchText = document.getElementById('checkin_switch_status_text');
+
+      if (switchToggle) switchToggle.checked = isEnabled;
+      if (switchText) {
+        if (isEnabled) {
+          switchText.textContent = 'ON (FITUR AKTIF)';
+          switchText.style.color = '#059669';
+        } else {
+          switchText.textContent = 'OFF (COMING SOON)';
+          switchText.style.color = '#dc2626';
+        }
+      }
+
+      // Update Tampilan untuk User Cabang
+      const activeView = document.getElementById('checkin_active_view');
+      const comingSoonView = document.getElementById('checkin_coming_soon_view');
+
+      if (activeView && comingSoonView) {
+        if (isEnabled) {
+          activeView.style.display = 'block';
+          comingSoonView.style.display = 'none';
+        } else {
+          activeView.style.display = 'none';
+          comingSoonView.style.display = 'block';
+          stopCameraStream();
+        }
+      }
+    }
+
+    // MANAGEMENT KAMERA REALTIME
+    async function startCameraStream() {
+      if (!isCheckinFeatureEnabled()) return; // Jangan jalankan jika coming soon
+
+      const videoEl = document.getElementById('camera_video');
+      const previewEl = document.getElementById('camera_preview');
+      const btnSnap = document.getElementById('btn_snap_photo');
+      const btnRetake = document.getElementById('btn_retake_photo');
+
+      if (!videoEl) return;
+
+      capturedSnapDataUrl = null;
+      previewEl.style.display = 'none';
+      videoEl.style.display = 'block';
+      btnSnap.style.display = 'inline-flex';
+      btnRetake.style.display = 'none';
+
+      try {
+        if (cameraStream) stopCameraStream();
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: false
+        });
+        videoEl.srcObject = cameraStream;
+      } catch (err) {
+        alert("Gagal mengakses kamera realtime. Pastikan izin kamera telah diberikan.");
+      }
+    }
+
+    function stopCameraStream() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+    }
+
+    function takePhotoSnap() {
+      const videoEl = document.getElementById('camera_video');
+      const canvasEl = document.getElementById('camera_canvas');
+      const previewEl = document.getElementById('camera_preview');
+      const btnSnap = document.getElementById('btn_snap_photo');
+      const btnRetake = document.getElementById('btn_retake_photo');
+
+      if (!videoEl || !canvasEl) return;
+
+      canvasEl.width = videoEl.videoWidth || 640;
+      canvasEl.height = videoEl.videoHeight || 480;
+      const ctx = canvasEl.getContext('2d');
+      ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+
+      const now = new Date();
+      const timeStampStr = `${now.toLocaleDateString('id-ID')} ${now.toLocaleTimeString('id-ID')}`;
+      ctx.font = 'bold 20px "Plus Jakarta Sans", sans-serif';
+      ctx.fillStyle = '#dc2626';
+      ctx.fillRect(10, canvasEl.height - 40, 280, 30);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(timeStampStr, 20, canvasEl.height - 18);
+
+      capturedSnapDataUrl = canvasEl.toDataURL('image/jpeg', 0.85);
+
+      previewEl.src = capturedSnapDataUrl;
+      previewEl.style.display = 'block';
+      videoEl.style.display = 'none';
+
+      btnSnap.style.display = 'none';
+      btnRetake.style.display = 'inline-flex';
+
+      stopCameraStream();
+    }
+
+    function retakePhotoSnap() {
+      startCameraStream();
+    }
+
+    function getStoredCheckinData() {
+      const data = localStorage.getItem('resto_checkin_database');
+      return data ? JSON.parse(data) : [];
+    }
+
+    function saveCheckinDataToStorage(list) {
+      localStorage.setItem('resto_checkin_database', JSON.stringify(list));
+    }
+
+    function updateAutoDateTimeInput() {
+      const el = document.getElementById('checkin_datetime');
+      if (el) {
+        const now = new Date();
+        el.value = `${now.toLocaleDateString('id-ID')} ${now.toLocaleTimeString('id-ID')}`;
       }
       
-      const lastTime = parseInt(storedTime);
+      const restoLabelEl = document.getElementById('checkin_resto_label');
+      if (restoLabelEl) {
+        const currentName = localStorage.getItem('resto_user_name') || localStorage.getItem('resto_current_user') || 'CABANG';
+        restoLabelEl.value = formatRestoName(currentName);
+      }
+    }
+
+    function toggleKameraTimestamp() {
+      if (!isCheckinFeatureEnabled()) return;
+
+      const shift = document.getElementById('checkin_shifting').value;
+      const groupFoto = document.getElementById('group_kamera_timestamp');
+      if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) {
+        groupFoto.style.display = 'none';
+        stopCameraStream();
+      } else {
+        groupFoto.style.display = 'block';
+        startCameraStream();
+      }
+    }
+
+    function submitCheckinKaryawan(event) {
+      event.preventDefault();
+
+      if (!isCheckinFeatureEnabled()) {
+        alert("Fitur Checkin Karyawan belum diaktifkan oleh Admin Area.");
+        return;
+      }
+
+      const currentUser = localStorage.getItem('resto_current_user') || 'cabang';
+      const rawName = localStorage.getItem('resto_user_name') || currentUser;
+      const formattedRestoName = formatRestoName(rawName);
+      const dateTime = document.getElementById('checkin_datetime').value;
+      const nik = document.getElementById('checkin_nik').value.trim();
+      const nama = document.getElementById('checkin_nama').value.trim();
+      const shifting = document.getElementById('checkin_shifting').value;
+
+      let fotoUrl = '-';
+      if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shifting)) {
+        fotoUrl = 'Tertutup (Sesuai Keterangan)';
+      } else if (capturedSnapDataUrl) {
+        fotoUrl = '<span style="color:#059669; font-weight:800;"><i class="fa-solid fa-circle-check"></i> Foto Live Kamera Ada</span>';
+      } else {
+        alert('Mohon ambil foto timestamp karyawan menggunakan kamera!');
+        return;
+      }
+
+      const newRecord = {
+        id: 'chk_' + Date.now(),
+        restoUser: currentUser,
+        restoName: formattedRestoName,
+        dateTime: dateTime,
+        timestampMs: Date.now(),
+        nik: nik,
+        nama: nama,
+        shifting: shifting,
+        foto: fotoUrl
+      };
+
+      const list = getStoredCheckinData();
+      list.unshift(newRecord);
+      saveCheckinDataToStorage(list);
+
+      alert('Checkin Karyawan Berhasil Disimpan!');
+
+      document.getElementById('checkin_nik').value = '';
+      document.getElementById('checkin_nama').value = '';
+      capturedSnapDataUrl = null;
+      updateAutoDateTimeInput();
+      toggleKameraTimestamp();
+    }
+
+    let currentOpFilter = 'ALL';
+
+    function filterOperasionalCategory(category) {
+      currentOpFilter = category;
+      renderOperasionalTable();
+    }
+
+    function getRestoMaxCheckinMap() {
+      const indivData = globalDashboardData.spvLinksIndividual || {};
+      const map = {};
+
+      for (let spvKey in indivData) {
+        const item = indivData[spvKey] || {};
+        const timings = item.resto_timings || {};
+        for (let rName in timings) {
+          const formattedKey = formatRestoName(rName);
+          map[formattedKey] = timings[rName];
+        }
+      }
+      return map;
+    }
+
+    function getMaxTimeForShift(restoTimeObj, shiftName) {
+      if (!restoTimeObj) return '08:00';
+      if (typeof restoTimeObj === 'string') return restoTimeObj; 
+      
+      switch (shiftName) {
+        case 'SHIFT 1': return restoTimeObj.s1 || '08:00';
+        case 'SHIFT 2': return restoTimeObj.s2 || '15:00';
+        case 'SHIFT 3': return restoTimeObj.s3 || '22:00';
+        case 'MIDDLE':  return restoTimeObj.mid || '11:00';
+        default:        return '08:00';
+      }
+    }
+
+    function renderOperasionalTable() {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const list = getStoredCheckinData();
+      const restoTimeMap = getRestoMaxCheckinMap();
+
+      const summaryBox = document.getElementById('spv-resto-timings-summary');
+      if (summaryBox) {
+        let badgesHtml = '';
+        if (Object.keys(restoTimeMap).length === 0) {
+          badgesHtml = `<span style="font-size:0.8rem; color:#065f46; font-weight:700;">Default Standar -> S1: 08:00 | S2: 15:00 | S3: 22:00 | MID: 11:00</span>`;
+        } else {
+          for (let r in restoTimeMap) {
+            const obj = restoTimeMap[r];
+            if (typeof obj === 'object') {
+              badgesHtml += `
+                <div style="background:#059669; color:white; font-size:0.75rem; font-weight:800; padding:6px 12px; border-radius:8px; display:inline-block; margin-right:6px; margin-bottom:6px;">
+                  <i class="fa-solid fa-store"></i> ${formatRestoName(r)} &rarr; Shift 1: ${obj.s1 || '08:00'} | Shift 2: ${obj.s2 || '15:00'} | Shift 3: ${obj.s3 || '22:00'} | Middle: ${obj.mid || '11:00'}
+                </div>
+              `;
+            } else {
+              badgesHtml += `<span style="background:#059669; color:white; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:8px; margin-right:6px;"><i class="fa-solid fa-store"></i> ${formatRestoName(r)}: ${obj}</span>`;
+            }
+          }
+        }
+        summaryBox.innerHTML = badgesHtml;
+      }
+
+      const tbody = document.getElementById('operasional-table-body');
+      if (!tbody) return;
+
+      let filtered = list;
+
+      if (currentOpFilter === 'SHIFT') {
+        filtered = list.filter(item => ['SHIFT 1', 'SHIFT 2', 'SHIFT 3', 'MIDDLE'].includes(item.shifting));
+      } else if (currentOpFilter === 'ABSENT') {
+        filtered = list.filter(item => ['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting));
+      } else if (currentOpFilter === 'LATE') {
+        filtered = list.filter(item => {
+          if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting)) return false;
+          const d = new Date(item.timestampMs);
+          const hours = String(d.getHours()).padStart(2, '0');
+          const mins = String(d.getMinutes()).padStart(2, '0');
+          const timeStr = `${hours}:${mins}`;
+
+          const rKey = formatRestoName(item.restoName);
+          const restoTimingObj = restoTimeMap[rKey];
+          const maxAllowed = getMaxTimeForShift(restoTimingObj, item.shifting);
+
+          return timeStr > maxAllowed;
+        });
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Tidak ada data checkin karyawan.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(item => {
+        let statusBadge = `<span class="badge-status shift">${item.shifting}</span>`;
+        if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting)) {
+          statusBadge = `<span class="badge-status absent">${item.shifting}</span>`;
+        }
+
+        const d = new Date(item.timestampMs);
+        const hours = String(d.getHours()).padStart(2, '0');
+        const mins = String(d.getMinutes()).padStart(2, '0');
+        const timeStr = `${hours}:${mins}`;
+
+        const rKey = formatRestoName(item.restoName);
+        const restoTimingObj = restoTimeMap[rKey];
+        const maxAllowed = getMaxTimeForShift(restoTimingObj, item.shifting);
+
+        if (!['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting) && timeStr > maxAllowed) {
+          statusBadge += ` <span class="badge-status terlambat">Terlambat (> ${maxAllowed})</span>`;
+        }
+
+        html += `
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding:10px 14px; font-weight:700;">${formatRestoName(item.restoName)}</td>
+            <td style="padding:10px 14px;">${item.dateTime}</td>
+            <td style="padding:10px 14px;"><b>${item.nama}</b><br><small style="color:var(--text-muted);">${item.nik}</small></td>
+            <td style="padding:10px 14px;">${statusBadge}</td>
+            <td style="padding:10px 14px;">${item.foto}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function setupNavbarForRole(role) {
+      let html = '';
+
+      if (role === 'admin') {
+        html = `
+          <div class="nav-item active" onclick="switchAdminNav('page-preview-user', this)"><i class="fa-solid fa-chart-line"></i><span>Rekapitulasi Area</span></div>
+          <div class="nav-item" onclick="switchAdminNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>Operasional Resto</span></div>
+          <div class="nav-item" onclick="switchAdminNav('page-links', this)"><i class="fa-solid fa-link"></i><span>Kelola Link (Area & Cabang)</span></div>
+          <div class="nav-item" onclick="switchAdminNav('page-spv-links', this)"><i class="fa-solid fa-user-tie"></i><span>Kelola Link Supervisor</span></div>
+          <div class="nav-item" onclick="switchAdminNav('page-psd-links', this)"><i class="fa-solid fa-id-card-clip"></i><span>Kelola Link PSD</span></div>
+          <div class="nav-item" onclick="switchAdminNav('page-users', this)"><i class="fa-solid fa-users-cog"></i><span>Manajemen User & Password</span></div>
+        `;
+      } else if (role === 'supervisor') {
+        html = `
+          <div class="nav-item active" onclick="switchRoleNav('page-spv-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
+        `;
+      } else if (role === 'psd') {
+        html = `
+          <div class="nav-item active" onclick="switchRoleNav('page-psd-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
+        `;
+      } else {
+        html = `
+          <div class="nav-item active" onclick="switchRoleNav('page-user-laporan', this)"><i class="fa-solid fa-folder-open"></i><span>Laporan Cabang</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-user-checkin', this)"><i class="fa-solid fa-camera"></i><span>CHECKIN KARYAWAN</span></div>
+        `;
+      }
+
+      appNavbarItems.innerHTML = html;
+    }
+
+    function switchRoleNav(pageId, element) {
+      stopCameraStream();
+      document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
+      document.querySelectorAll('.role-page-content').forEach(page => page.style.display = 'none');
+      element.classList.add('active');
+      
+      const targetPage = document.getElementById(pageId);
+      if (targetPage) targetPage.style.display = 'block';
+
+      if (pageId === 'page-user-checkin') {
+        updateCheckinSwitchUI();
+        updateAutoDateTimeInput();
+        toggleKameraTimestamp();
+      } else if (pageId === 'page-shared-operasional') {
+        filterOperasionalCategory('ALL');
+      }
+    }
+
+    function recordUserActivity(username) {
+      if (!username) return;
+      sendPingToServer();
+    }
+
+    function getUserLastOnlineText(lastOnlineTimestamp) {
+      if (!lastOnlineTimestamp) {
+        return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> Belum Aktif</span>`;
+      }
+      
+      const lastTime = parseInt(lastOnlineTimestamp);
       const diffMs = Date.now() - lastTime;
       const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-      if (diffMinutes < 5) {
-        return `<span class="online-indicator online-now"><span class="status-dot"></span> Online</span>`;
+      if (diffMs < 45000) {
+        return `<span class="online-indicator online-now"><span class="status-dot"></span> Online (Sangat Aktif)</span>`;
+      } else if (diffMinutes <= 3) {
+        return `<span class="online-indicator online-now"><span class="status-dot"></span> Online (${diffMinutes}m lalu)</span>`;
       } else {
         const d = new Date(lastTime);
         return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> ${d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}, ${d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>`;
       }
     }
-
-    setInterval(() => {
-      const loggedUser = localStorage.getItem('resto_current_user');
-      if (loggedUser) recordUserActivity(loggedUser);
-    }, 60000);
 
     function getStoredMessages() {
       const msgs = localStorage.getItem('resto_system_messages');
@@ -1893,7 +2643,6 @@
       }
     });
 
-    // AMBIL DATA DI BACKGROUND DAN SIMPAN KE CACHE LOCALSTORAGE
     async function fetchInitialDataFromGAS(onSuccess) {
       try {
         const response = await fetch(GAS_API_URL, {
@@ -1909,7 +2658,6 @@
           if (!globalDashboardData.spvLinksIndividual) globalDashboardData.spvLinksIndividual = {};
           if (!globalDashboardData.psdLinksMaster) globalDashboardData.psdLinksMaster = {};
           
-          // Save to local cache
           try {
             localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
           } catch(e) {}
@@ -1965,12 +2713,27 @@
         document.getElementById('btn_psd_penjualan').href = psdMaster.penjualan || '#';
       } else {
         const userLinks = (globalDashboardData.branchLinks || {})[username] || {};
+        const areaLinks = globalDashboardData.areaLinks || {};
+
         document.getElementById('btn_omset').href = userLinks.omset || '#';
         document.getElementById('btn_outlet').href = userLinks.outlet || '#';
         document.getElementById('btn_expense').href = userLinks.expense || '#';
         document.getElementById('btn_ganti_minyak').href = userLinks.ganti_minyak || '#';
         document.getElementById('btn_kph').href = userLinks.kph || '#';
         document.getElementById('btn_setor').href = userLinks.setor || '#';
+
+        // PENGECEKAN NAMA/LABEL RESTO CABANG (HANYA MUNCULKAN UNTUK RESTO LAZATTO)
+        const rawName = localStorage.getItem('resto_user_name') || username;
+        const formattedName = formatRestoName(rawName);
+        const cardPromoWrapper = document.getElementById('card_promo_penjualan_wrapper');
+        const btnPromo = document.getElementById('btn_promo_penjualan');
+
+        if (formattedName.includes('LAZATTO')) {
+          if (cardPromoWrapper) cardPromoWrapper.style.display = 'flex';
+          if (btnPromo) btnPromo.href = areaLinks.promo_penjualan_master || userLinks.promo_penjualan || '#';
+        } else {
+          if (cardPromoWrapper) cardPromoWrapper.style.display = 'none';
+        }
       }
     }
 
@@ -1981,43 +2744,45 @@
       const userRole = localStorage.getItem('resto_user_role') || 'user';
       const userName = localStorage.getItem('resto_user_name') || username;
 
-      userNameText.textContent = userName;
+      userNameText.textContent = formatRestoName(userName);
       recordUserActivity(username);
       updateInboxBadgeCount();
+
+      setupNavbarForRole(userRole);
 
       document.getElementById('user-view').style.display = 'none';
       document.getElementById('supervisor-view').style.display = 'none';
       document.getElementById('psd-view').style.display = 'none';
       document.getElementById('admin-view').style.display = 'none';
-      adminSubNavbar.style.display = 'none';
+      document.getElementById('page-shared-operasional').style.display = 'none';
 
       if (userRole === 'admin') {
         document.getElementById('admin-view').style.display = 'block';
-        adminSubNavbar.style.display = 'block';
         roleBadge.textContent = 'ADMIN AREA';
         roleBadge.className = 'badge-role badge-admin';
-        switchAdminNav('page-preview-user', document.getElementById('nav-item-preview'));
+        switchAdminNav('page-preview-user', document.querySelector('#app-navbar-items .nav-item'));
       } else if (userRole === 'supervisor') {
         document.getElementById('supervisor-view').style.display = 'block';
         roleBadge.textContent = 'SUPERVISOR';
         roleBadge.className = 'badge-role badge-supervisor';
-        document.getElementById('spv-welcome-title').textContent = userName;
+        document.getElementById('spv-welcome-title').textContent = formatRestoName(userName);
+        switchRoleNav('page-spv-monitoring', document.querySelector('#app-navbar-items .nav-item'));
       } else if (userRole === 'psd') {
         document.getElementById('psd-view').style.display = 'block';
         roleBadge.textContent = 'PSD';
         roleBadge.className = 'badge-role badge-psd';
-        document.getElementById('psd-welcome-title').textContent = userName;
+        document.getElementById('psd-welcome-title').textContent = formatRestoName(userName);
+        switchRoleNav('page-psd-monitoring', document.querySelector('#app-navbar-items .nav-item'));
       } else {
         document.getElementById('user-view').style.display = 'block';
         roleBadge.textContent = 'OUTLET CABANG';
         roleBadge.className = 'badge-role badge-user';
-        document.getElementById('user-welcome-title').textContent = userName;
+        document.getElementById('user-welcome-title').textContent = formatRestoName(userName);
+        switchRoleNav('page-user-laporan', document.querySelector('#app-navbar-items .nav-item'));
       }
 
-      // Render dari cache secara instan
       applyDashboardDataToUI(username, userRole);
 
-      // Ambil data terbaru di latar belakang (Background Sync)
       fetchInitialDataFromGAS(() => {
         applyDashboardDataToUI(username, userRole);
       });
@@ -2047,6 +2812,7 @@
       document.getElementById('area_link_kotor_bersih').value = areaLinks.kotor_bersih || '';
       document.getElementById('area_link_cogs_lazatto').value = areaLinks.cogs_lazatto || '';
       document.getElementById('area_link_cogs_ngeumi').value = areaLinks.cogs_ngeumi || '';
+      document.getElementById('area_link_promo_penjualan_master').value = areaLinks.promo_penjualan_master || '';
 
       document.getElementById('btn_preview_omset').href = areaLinks.omset || '#';
       document.getElementById('btn_preview_promo').href = areaLinks.promo || '#';
@@ -2064,6 +2830,63 @@
       document.getElementById('master_spv_expense').value = m.expense || '';
       document.getElementById('master_spv_setor').value = m.setor || '';
       document.getElementById('master_spv_penjualan').value = m.penjualan || '';
+    }
+
+    function generateRestoTimingsInputs(key) {
+      const namesStr = document.getElementById(`spv_indiv_resto_names_${key}`).value;
+      const container = document.getElementById(`spv_resto_timings_container_${key}`);
+      if (!container) return;
+
+      let rawRestoArray = namesStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+      if (rawRestoArray.length > 8) {
+        rawRestoArray = rawRestoArray.slice(0, 8);
+      }
+
+      const existingTimings = ((globalDashboardData.spvLinksIndividual || {})[key] || {}).resto_timings || {};
+
+      if (rawRestoArray.length === 0) {
+        container.innerHTML = `<p style="font-size:0.78rem; color:var(--text-muted); padding:4px 0;">Ketikkan nama resto di atas (pisahkan koma, maksimal 8 resto) untuk mengatur batas jam check-in per shift.</p>`;
+        return;
+      }
+
+      let html = '';
+      rawRestoArray.forEach((rName, idx) => {
+        const formattedRestoLabel = formatRestoName(rName);
+        const tData = existingTimings[rName] || existingTimings[formattedRestoLabel] || { s1: '08:00', s2: '15:00', s3: '22:00', mid: '11:00' };
+        
+        const s1 = typeof tData === 'string' ? tData : (tData.s1 || '08:00');
+        const s2 = typeof tData === 'object' ? (tData.s2 || '15:00') : '15:00';
+        const s3 = typeof tData === 'object' ? (tData.s3 || '22:00') : '22:00';
+        const mid = typeof tData === 'object' ? (tData.mid || '11:00') : '11:00';
+
+        html += `
+          <div style="background: #ffffff; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border); margin-top: 8px;">
+            <div style="font-size: 0.85rem; font-weight: 800; color: #334155; margin-bottom: 8px;">
+              <i class="fa-solid fa-store" style="color:var(--lazatto-red);"></i> Resto ${idx + 1}: <b>${formattedRestoLabel}</b>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+              <div>
+                <label style="font-size: 0.72rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Shift 1</label>
+                <input type="time" class="spv-resto-s1-${key}" data-resto="${formattedRestoLabel}" value="${s1}" style="width:100%; padding:4px 8px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Shift 2</label>
+                <input type="time" class="spv-resto-s2-${key}" data-resto="${formattedRestoLabel}" value="${s2}" style="width:100%; padding:4px 8px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Shift 3</label>
+                <input type="time" class="spv-resto-s3-${key}" data-resto="${formattedRestoLabel}" value="${s3}" style="width:100%; padding:4px 8px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Middle</label>
+                <input type="time" class="spv-resto-mid-${key}" data-resto="${formattedRestoLabel}" value="${mid}" style="width:100%; padding:4px 8px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
     }
 
     function renderAdminSpvIndividualList() {
@@ -2091,10 +2914,18 @@
 
             <div class="admin-input-grid">
               <div class="admin-input-group">
-                <label style="color:#4338ca;">Total Coverage Resto</label>
-                <input type="number" id="spv_indiv_total_resto_${key}" value="${data.total_resto || spv.total_resto || 5}" min="1" max="15">
+                <label style="color:#4338ca;">Total Coverage Resto (Maksimal 8 Resto)</label>
+                <input type="number" id="spv_indiv_total_resto_${key}" value="${data.total_resto || spv.total_resto || 5}" min="1" max="8">
               </div>
               <div class="admin-input-group">
+                <label style="color:#4338ca;">Daftar Nama Resto Coverage (Pisahkan Koma, Maks 8)</label>
+                <input type="text" id="spv_indiv_resto_names_${key}" oninput="generateRestoTimingsInputs('${key}')" value="${data.resto_names || 'LAZATTO AMPERA, LAZATTO CEMPAKA'}" placeholder="LAZATTO AMPERA, LAZATTO CEMPAKA, dst">
+              </div>
+              <div class="admin-input-group" style="grid-column: 1 / -1; background:#f8fafc; padding:12px; border-radius:12px; border:1px solid var(--border);">
+                <label style="color:#4338ca; font-size:0.85rem;"><i class="fa-solid fa-clock"></i> Maksimal Waktu Check-in Masing-Masing Resto (Shift 1, 2, 3, & Middle)</label>
+                <div id="spv_resto_timings_container_${key}" style="margin-top:6px;"></div>
+              </div>
+              <div class="admin-input-group" style="grid-column: 1 / -1;">
                 <label>Base Laporan Omset (Individual)</label>
                 <input type="text" id="spv_indiv_base_omset_${key}" value="${data.base_omset || ''}" placeholder="https://docs.google.com/...">
               </div>
@@ -2104,6 +2935,8 @@
       });
 
       container.innerHTML = html;
+
+      spvUsers.forEach(spv => generateRestoTimingsInputs(spv.username));
     }
 
     function loadPsdMasterLinksForm() {
@@ -2130,7 +2963,8 @@
           promo: document.getElementById('area_link_promo').value.trim(),
           kotor_bersih: document.getElementById('area_link_kotor_bersih').value.trim(),
           cogs_lazatto: document.getElementById('area_link_cogs_lazatto').value.trim(),
-          cogs_ngeumi: document.getElementById('area_link_cogs_ngeumi').value.trim()
+          cogs_ngeumi: document.getElementById('area_link_cogs_ngeumi').value.trim(),
+          promo_penjualan_master: document.getElementById('area_link_promo_penjualan_master').value.trim()
         }
       };
 
@@ -2186,12 +3020,39 @@
 
     window.saveSpvIndividualData = async function(targetUsername) {
       const currentUser = localStorage.getItem('resto_current_user');
+      
+      const restoTimingsObj = {};
+      const s1Inputs = document.querySelectorAll(`.spv-resto-s1-${targetUsername}`);
+      
+      s1Inputs.forEach(input => {
+        const rName = input.getAttribute('data-resto');
+        const formattedRName = formatRestoName(rName);
+        const s2Val = document.querySelector(`.spv-resto-s2-${targetUsername}[data-resto="${rName}"]`)?.value || '15:00';
+        const s3Val = document.querySelector(`.spv-resto-s3-${targetUsername}[data-resto="${rName}"]`)?.value || '22:00';
+        const midVal = document.querySelector(`.spv-resto-mid-${targetUsername}[data-resto="${rName}"]`)?.value || '11:00';
+
+        restoTimingsObj[formattedRName] = {
+          s1: input.value || '08:00',
+          s2: s2Val,
+          s3: s3Val,
+          mid: midVal
+        };
+      });
+
+      let totalRestoVal = parseInt(document.getElementById(`spv_indiv_total_resto_${targetUsername}`).value) || 5;
+      if (totalRestoVal > 8) totalRestoVal = 8;
+
+      const rawRestoNames = document.getElementById(`spv_indiv_resto_names_${targetUsername}`).value.trim();
+      const formattedRestoNames = rawRestoNames.split(',').map(s => formatRestoName(s)).join(', ');
+
       const payload = {
         action: "saveSpvIndividualData",
         adminUser: currentUser,
         targetUser: targetUsername,
         data: {
-          total_resto: parseInt(document.getElementById(`spv_indiv_total_resto_${targetUsername}`).value) || 5,
+          total_resto: totalRestoVal,
+          resto_names: formattedRestoNames,
+          resto_timings: restoTimingsObj,
           base_omset: document.getElementById(`spv_indiv_base_omset_${targetUsername}`).value.trim()
         }
       };
@@ -2250,13 +3111,28 @@
     };
 
     function switchAdminNav(pageId, element) {
-      document.querySelectorAll('.admin-navbar .nav-item').forEach(item => item.classList.remove('active'));
-      document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
+      stopCameraStream();
+      document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
       element.classList.add('active');
-      document.getElementById(pageId).style.display = 'block';
 
-      if(pageId === 'page-preview-user') {
-        hideAdmRestoSubPage();
+      const adminSwitchWrapper = document.getElementById('admin-checkin-switch-wrapper');
+
+      if (pageId === 'page-shared-operasional') {
+        document.getElementById('admin-view').style.display = 'none';
+        document.getElementById('page-shared-operasional').style.display = 'block';
+        if (adminSwitchWrapper) adminSwitchWrapper.style.display = 'flex';
+        updateCheckinSwitchUI();
+        filterOperasionalCategory('ALL');
+      } else {
+        document.getElementById('page-shared-operasional').style.display = 'none';
+        document.getElementById('admin-view').style.display = 'block';
+        if (adminSwitchWrapper) adminSwitchWrapper.style.display = 'none';
+        document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
+        document.getElementById(pageId).style.display = 'block';
+
+        if (pageId === 'page-preview-user') {
+          hideAdmRestoSubPage();
+        }
       }
     }
 
@@ -2270,9 +3146,10 @@
       document.getElementById('stat-total-branches').textContent = count;
       document.getElementById('stat-total-spv').textContent = spvCount;
       document.getElementById('stat-total-psd').textContent = psdCount;
-      document.getElementById('stat-total-links').textContent = (count * 6) + spvCount + 17;
+      document.getElementById('stat-total-links').textContent = (count * 6) + spvCount + 18;
     }
 
+    // LIST SPREADSHEET CABANG DI MENU ADMIN
     function renderAdminLinksList() {
       const branches = globalDashboardData.branchLinks || {};
       const container = document.getElementById('admin-links-list');
@@ -2280,10 +3157,11 @@
 
       for (let key in branches) {
         const l = branches[key] || {};
+        const formattedBranchName = formatRestoName(key);
         html += `
-          <div class="admin-card-item branch-card" id="card_branch_${key}" data-name="${key}">
+          <div class="admin-card-item branch-card" id="card_branch_${key}" data-name="${formattedBranchName}">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-              <span style="font-weight: 800; font-size: 0.95rem;"><i class="fa-solid fa-store" style="color:var(--lazatto-red); margin-right:6px;"></i> ${key}</span>
+              <span style="font-weight: 800; font-size: 0.95rem;"><i class="fa-solid fa-store" style="color:var(--lazatto-red); margin-right:6px;"></i> ${formattedBranchName} (${key})</span>
               <button onclick="updateUserLinks('${key}')" style="background: var(--lazatto-red); color: white; border: none; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700;">Simpan Link</button>
             </div>
             <div class="admin-input-grid">
@@ -2322,18 +3200,19 @@
         else if (u.role === 'supervisor') badgeColor = 'color:#4338ca; font-weight:800;';
         else if (u.role === 'psd') badgeColor = 'color:#15803d; font-weight:800;';
 
-        const lastOnlineHtml = getUserLastOnlineText(u.username);
+        const lastOnlineHtml = getUserLastOnlineText(u.last_online || u.lastOnline);
+        const displayName = u.role === 'user' ? formatRestoName(u.name) : u.name;
 
         html += `
           <tr style="border-bottom: 1px solid var(--border);">
             <td style="padding: 12px 14px; font-weight: 700; color: var(--text);">${u.username}</td>
-            <td style="padding: 12px 14px; color: var(--text);">${u.name}</td>
+            <td style="padding: 12px 14px; color: var(--text);">${displayName}</td>
             <td style="padding: 12px 14px;"><code style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem;">${u.password}</code></td>
             <td style="padding: 12px 14px; ${badgeColor}">${u.role.toUpperCase()}</td>
             <td style="padding: 12px 14px;">${lastOnlineHtml}</td>
             <td style="padding: 12px 14px; text-align: center;">
               <div style="display: flex; gap: 6px; justify-content: center;">
-                <button onclick="adminResetPassword('${u.username}', '${u.name}')" style="background:#fef3c7; color:#92400e; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:700; font-size: 0.78rem;">
+                <button onclick="adminResetPassword('${u.username}', '${displayName}')" style="background:#fef3c7; color:#92400e; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:700; font-size: 0.78rem;">
                   <i class="fa-solid fa-rotate-left"></i> Reset
                 </button>
                 ${u.username !== 'admin' ? `
@@ -2413,7 +3292,7 @@
     };
 
     function focusEditUserLink(username) {
-      switchAdminNav('page-links', document.getElementById('nav-item-links'));
+      switchAdminNav('page-links', document.querySelectorAll('#app-navbar-items .nav-item')[2]);
       document.getElementById('search-branch').value = username;
       filterBranches();
       
@@ -2476,11 +3355,13 @@
         return;
       }
 
+      const formattedUname = formatRestoName(uname);
+
       const payload = {
         action: "addUser",
         adminUser: currentUser,
         new_user_id: uid,
-        new_user_name: uname,
+        new_user_name: formattedUname,
         new_user_pass: upass,
         new_user_role: 'user',
         total_resto: 0
@@ -2519,7 +3400,8 @@
       const uname = document.getElementById('internal_user_name').value.trim();
       const upass = document.getElementById('internal_user_pass').value.trim();
       const urole = document.getElementById('internal_user_role').value;
-      const ucoverage = parseInt(document.getElementById('internal_user_coverage').value) || 5;
+      let ucoverage = parseInt(document.getElementById('internal_user_coverage').value) || 5;
+      if (ucoverage > 8) ucoverage = 8;
 
       if (!uid || !uname || !upass) {
         alert('Mohon isi semua kolom data user internal baru!');
@@ -2558,9 +3440,9 @@
             updateAdminStats();
 
             if (urole === 'supervisor') {
-              switchAdminNav('page-spv-links', document.getElementById('nav-item-spv-links'));
+              switchAdminNav('page-spv-links', document.querySelectorAll('#app-navbar-items .nav-item')[3]);
             } else if (urole === 'psd') {
-              switchAdminNav('page-psd-links', document.getElementById('nav-item-psd-links'));
+              switchAdminNav('page-psd-links', document.querySelectorAll('#app-navbar-items .nav-item')[4]);
             }
           });
         }
@@ -2600,6 +3482,7 @@
     }
 
     function logout() {
+      stopCameraStream();
       localStorage.removeItem('resto_current_user');
       localStorage.removeItem('resto_user_role');
       localStorage.removeItem('resto_user_name');
