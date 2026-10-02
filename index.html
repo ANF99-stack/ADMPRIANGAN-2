@@ -1526,7 +1526,7 @@
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <div>
                   <h5 style="font-weight:800; color:#047857; font-size:0.9rem;"><i class="fa-solid fa-clock"></i> Batas Maksimal Check-in Per Shift Resto (Pengaturan Admin)</h5>
-                  <p style="font-size:0.78rem; color:#065f46; margin-top:2px;">Sistem memverifikasi keterlambatan karyawan secara otomatis berdasarkan Shift (1, 2, 3, Middle) & Outlet Resto tempatnya bekerja.</p>
+                  <p style="font-size:0.78rem; color:#065f46; margin-top:2px;">Sistem memverifikasi keterlambatan karyawan secara otomatis berdasarkan Shift (1, 2, 3, Middle), Kategori Resto (24 Jam / Reguler) & Outlet Resto tempatnya bekerja.</p>
                 </div>
               </div>
               <div id="spv-resto-timings-summary" style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
@@ -1834,12 +1834,15 @@
               <div class="admin-input-group"><label>7. Laporan Penjualan (Master)</label><input type="text" id="master_spv_penjualan" placeholder="https://docs.google.com/..."></div>
             </div>
           </div>
+        </div>
 
+        <!-- PAGE BARU KHUSUS UPDATE COVERAGE SPV -->
+        <div id="page-spv-coverage-update" class="admin-page-content" style="display: none;">
           <div style="margin-bottom: 16px;">
-            <h4 style="font-size: 1rem; font-weight: 800;"><i class="fa-solid fa-user-tie"></i> Pengaturan Khusus per User Supervisor</h4>
-            <p style="font-size: 0.8rem; color: var(--text-muted);">Atur Base Omset, Coverage Resto (Maksimal 8 Resto), serta Batas 4 Jam Shifting Check-in (Shift 1, 2, 3, Middle) Masing-masing Resto</p>
+            <h4 style="font-size: 1.1rem; font-weight: 800; color:#4338ca;"><i class="fa-solid fa-sliders"></i> Update Coverage SPV & Penambahan Resto</h4>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Atur Base Omset, Dropdown Pemilihan Resto Coverage (Maksimal 10 Resto Khusus Label <b>LAZATTO & NGEUMI</b>), Kategori Operasional Resto (24 Jam / Reguler), serta Batas Jam Check-in Shifting Karyawan Masing-masing Resto.</p>
           </div>
-          <div id="admin-spv-links-list"></div>
+          <div id="admin-spv-coverage-list"></div>
         </div>
 
         <div id="page-psd-links" class="admin-page-content" style="display: none;">
@@ -1929,8 +1932,8 @@
                 </select>
               </div>
               <div id="group_spv_coverage">
-                <label style="font-size: 0.78rem; font-weight: 700; color:#4338ca; display: block; margin-bottom: 4px;">Total Resto Coverage (Maksimal 8 Resto)</label>
-                <input type="number" id="internal_user_coverage" min="1" max="8" value="5" placeholder="8" style="width:100%; padding:10px 14px; border:1.5px solid #c7d2fe; border-radius:10px; background: #ffffff; font-size:0.88rem;">
+                <label style="font-size: 0.78rem; font-weight: 700; color:#4338ca; display: block; margin-bottom: 4px;">Total Resto Coverage (Maksimal 10 Resto)</label>
+                <input type="number" id="internal_user_coverage" min="1" max="10" value="5" placeholder="10" style="width:100%; padding:10px 14px; border:1.5px solid #c7d2fe; border-radius:10px; background: #ffffff; font-size:0.88rem;">
               </div>
             </div>
             <button onclick="addNewInternalUser()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);">
@@ -2327,7 +2330,7 @@
       const ctx = canvasEl.getContext('2d');
       ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
 
-      // 1. Format Tanggal & Jam (Contoh: 02/10/26, 20.15)
+      // 1. Format Tanggal & Jam
       const d = new Date();
       const dateStr = d.toLocaleDateString('id-ID', {
         timeZone: 'Asia/Jakarta',
@@ -2543,12 +2546,19 @@
       if (!restoTimeObj) return '08:00';
       if (typeof restoTimeObj === 'string') return restoTimeObj; 
       
+      const type = restoTimeObj.type || '24jam';
+      
       switch (shiftName) {
-        case 'SHIFT 1': return restoTimeObj.s1 || '08:00';
-        case 'SHIFT 2': return restoTimeObj.s2 || '15:00';
-        case 'SHIFT 3': return restoTimeObj.s3 || '22:00';
-        case 'MIDDLE':  return restoTimeObj.mid || '11:00';
-        default:        return '08:00';
+        case 'SHIFT 1': 
+          return restoTimeObj.s1 || (type === 'reguler' ? '05:30' : '07:30');
+        case 'SHIFT 2': 
+          return restoTimeObj.s2 || (type === 'reguler' ? '13:30' : '15:30');
+        case 'SHIFT 3': 
+          return restoTimeObj.s3 || (type === 'reguler' ? '21:30' : '23:30');
+        case 'MIDDLE':  
+          return null;
+        default:        
+          return '08:00';
       }
     }
 
@@ -2593,14 +2603,16 @@
       if (summaryBox) {
         let badgesHtml = '';
         if (Object.keys(restoTimeMap).length === 0) {
-          badgesHtml = `<span style="font-size:0.8rem; color:#065f46; font-weight:700;">Default Standar -> S1: 08:00 | S2: 15:00 | S3: 22:00 | MID: 11:00</span>`;
+          badgesHtml = `<span style="font-size:0.8rem; color:#065f46; font-weight:700;">Default Standar -> 24 Jam [S1: 07:30 | S2: 15:30 | S3: 23:30] | Reguler [S1: 05:30 | S2: 13:30]</span>`;
         } else {
           for (let r in restoTimeMap) {
             const obj = restoTimeMap[r];
             if (typeof obj === 'object') {
+              const rType = obj.type === 'reguler' ? 'REGULER' : '24 JAM';
+              const midTxt = 'Middle: Tidak Ada Terlambat';
               badgesHtml += `
                 <div style="background:#059669; color:white; font-size:0.75rem; font-weight:800; padding:6px 12px; border-radius:8px; display:inline-block; margin-right:6px; margin-bottom:6px;">
-                  <i class="fa-solid fa-store"></i> ${formatRestoName(r)} &rarr; Shift 1: ${obj.s1 || '08:00'} | Shift 2: ${obj.s2 || '15:00'} | Shift 3: ${obj.s3 || '22:00'} | Middle: ${obj.mid || '11:00'}
+                  <i class="fa-solid fa-store"></i> ${formatRestoName(r)} (${rType}) &rarr; Shift 1: ${obj.s1 || '-'} | Shift 2: ${obj.s2 || '-'} | Shift 3: ${obj.s3 || '-'} | ${midTxt}
                 </div>
               `;
             } else {
@@ -2648,7 +2660,7 @@
         filtered = filtered.filter(item => ['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting));
       } else if (currentOpFilter === 'LATE') {
         filtered = filtered.filter(item => {
-          if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting)) return false;
+          if (['OFF', 'SAKIT', 'IZIN', 'CUTI', 'MIDDLE'].includes(item.shifting)) return false;
           const d = new Date(item.timestampMs);
           const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Jakarta', hour12: false, hour: '2-digit', minute: '2-digit' }).formatToParts(d);
           const hours = parts.find(p => p.type === 'hour').value;
@@ -2659,7 +2671,7 @@
           const restoTimingObj = restoTimeMap[rKey];
           const maxAllowed = getMaxTimeForShift(restoTimingObj, item.shifting);
 
-          return timeStr > maxAllowed;
+          return maxAllowed && timeStr > maxAllowed;
         });
       }
 
@@ -2685,7 +2697,7 @@
         const restoTimingObj = restoTimeMap[rKey];
         const maxAllowed = getMaxTimeForShift(restoTimingObj, item.shifting);
 
-        if (!['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting) && timeStr > maxAllowed) {
+        if (!['OFF', 'SAKIT', 'IZIN', 'CUTI', 'MIDDLE'].includes(item.shifting) && maxAllowed && timeStr > maxAllowed) {
           statusBadge += ` <span class="badge-status terlambat">Terlambat (> ${maxAllowed})</span>`;
         }
 
@@ -2723,6 +2735,7 @@
         html = `
           <div class="nav-item active" onclick="switchAdminNav('page-preview-user', this)"><i class="fa-solid fa-chart-line"></i><span>Rekapitulasi Area</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>Operasional Resto</span></div>
+          <div class="nav-item" onclick="switchAdminNav('page-spv-coverage-update', this)"><i class="fa-solid fa-store"></i><span>Update Coverage SPV</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-links', this)"><i class="fa-solid fa-link"></i><span>Kelola Link (Area & Cabang)</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-spv-links', this)"><i class="fa-solid fa-user-tie"></i><span>Kelola Link Supervisor</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-psd-links', this)"><i class="fa-solid fa-id-card-clip"></i><span>Kelola Link PSD</span></div>
@@ -3210,68 +3223,187 @@
       document.getElementById('master_spv_penjualan').value = m.penjualan || '';
     }
 
-    function generateRestoTimingsInputs(key) {
-      const namesStr = document.getElementById(`spv_indiv_resto_names_${key}`).value;
+    // HELPER MEMPERTANGGUNGJAWABKAN PILIHAN KATEGORI OPERASIONAL (24 JAM vs REGULER)
+    function onRestoTypeChange(key, index) {
+      const typeSelect = document.getElementById(`spv_resto_type_${key}_${index}`);
+      if (!typeSelect) return;
+      const val = typeSelect.value;
+
+      const s1 = document.getElementById(`spv_s1_${key}_${index}`);
+      const s2 = document.getElementById(`spv_s2_${key}_${index}`);
+      const s3 = document.getElementById(`spv_s3_${key}_${index}`);
+
+      if (val === '24jam') {
+        if (s1) s1.value = '07:30';
+        if (s2) s2.value = '15:30';
+        if (s3) s3.value = '23:30';
+      } else {
+        if (s1) s1.value = '05:30';
+        if (s2) s2.value = '13:30';
+        if (s3) s3.value = '21:30';
+      }
+    }
+
+    // HELPER MENGAMBIL DAFTAR NAMA RESTO DARI DATABASE UTAMA (KHUSUS HANYA LAZATTO & NGEUMI, EKSKLUSI OT)
+    function getAvailableRestoListFromDatabase() {
+      const branchObj = globalDashboardData.branchLinks || {};
+      const usersList = globalDashboardData.usersList || [];
+      const restoSet = new Set();
+
+      for (let k in branchObj) {
+        const formatted = formatRestoName(k);
+        // HANYA AMBIL LAZATTO ATAU NGEUMI DAN TANPA OT
+        if ((formatted.includes('LAZATTO') || formatted.includes('NGEUMI')) && !formatted.includes('OT')) {
+          restoSet.add(formatted);
+        }
+      }
+      usersList.forEach(u => {
+        if (u.role === 'user' && u.name) {
+          const formatted = formatRestoName(u.name);
+          if ((formatted.includes('LAZATTO') || formatted.includes('NGEUMI')) && !formatted.includes('OT')) {
+            restoSet.add(formatted);
+          }
+        }
+      });
+
+      return Array.from(restoSet).filter(r => r.length > 0).sort();
+    }
+
+    function addSpvRestoItem(key, restoName = '', restoTimingData = null) {
       const container = document.getElementById(`spv_resto_timings_container_${key}`);
       if (!container) return;
 
-      let rawRestoArray = namesStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
-      if (rawRestoArray.length > 8) {
-        rawRestoArray = rawRestoArray.slice(0, 8);
-      }
-
-      const existingTimings = ((globalDashboardData.spvLinksIndividual || {})[key] || {}).resto_timings || {};
-
-      if (rawRestoArray.length === 0) {
-        container.innerHTML = `<p style="font-size:0.78rem; color:var(--text-muted); padding:4px 0;">Ketikkan nama resto di atas (pisahkan koma, maksimal 8 resto) untuk mengatur batas jam check-in per shift.</p>`;
+      const currentItems = container.querySelectorAll('.spv-resto-single-item');
+      if (currentItems.length >= 10) {
+        alert('Maksimal 10 resto coverage per Supervisor.');
         return;
       }
 
-      let html = '';
-      rawRestoArray.forEach((rName, idx) => {
-        const formattedRestoLabel = formatRestoName(rName);
-        const tData = existingTimings[rName] || existingTimings[formattedRestoLabel] || { s1: '08:00', s2: '15:00', s3: '22:00', mid: '11:00' };
-        
-        const s1 = typeof tData === 'string' ? tData : (tData.s1 || '08:00');
-        const s2 = typeof tData === 'object' ? (tData.s2 || '15:00') : '15:00';
-        const s3 = typeof tData === 'object' ? (tData.s3 || '22:00') : '22:00';
-        const mid = typeof tData === 'object' ? (tData.mid || '11:00') : '11:00';
+      const index = Date.now() + Math.floor(Math.random() * 1000);
+      const availableRestos = getAvailableRestoListFromDatabase();
 
-        html += `
-          <div style="background: #ffffff; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border); margin-top: 8px;">
-            <div style="font-size: 0.85rem; font-weight: 800; color: #334155; margin-bottom: 8px;">
-              <i class="fa-solid fa-store" style="color:var(--lazatto-red);"></i> Resto ${idx + 1}: <b>${formattedRestoLabel}</b>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
-              <div>
-                <label style="font-size: 0.72rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Shift 1</label>
-                <input type="time" class="spv-resto-s1-${key}" data-resto="${formattedRestoLabel}" value="${s1}" style="width:100%; padding:4px 8px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
-              </div>
-              <div>
-                <label style="font-size: 0.72rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Shift 2</label>
-                <input type="time" class="spv-resto-s2-${key}" data-resto="${formattedRestoLabel}" value="${s2}" style="width:100%; padding:4px 8px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
-              </div>
-              <div>
-                <label style="font-size: 0.72rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Shift 3</label>
-                <input type="time" class="spv-resto-s3-${key}" data-resto="${formattedRestoLabel}" value="${s3}" style="width:100%; padding:4px 8px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
-              </div>
-              <div>
-                <label style="font-size: 0.72rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Middle</label>
-                <input type="time" class="spv-resto-mid-${key}" data-resto="${formattedRestoLabel}" value="${mid}" style="width:100%; padding:4px 8px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
-              </div>
-            </div>
-          </div>
-        `;
+      const tData = restoTimingData || { type: '24jam', s1: '07:30', s2: '15:30', s3: '23:30', mid: 'MIDDLE' };
+      const selectedType = typeof tData === 'object' && tData.type ? tData.type : '24jam';
+
+      let s1Val = typeof tData === 'object' ? (tData.s1 || (selectedType === 'reguler' ? '05:30' : '07:30')) : '07:30';
+      let s2Val = typeof tData === 'object' ? (tData.s2 || (selectedType === 'reguler' ? '13:30' : '15:30')) : '15:30';
+      let s3Val = typeof tData === 'object' ? (tData.s3 || (selectedType === 'reguler' ? '21:30' : '23:30')) : '23:30';
+
+      let optionsHtml = '<option value="">-- Pilih Outlet Resto (Lazatto / Ngeumi) --</option>';
+      let foundInOptions = false;
+
+      availableRestos.forEach(r => {
+        const formattedR = formatRestoName(r);
+        const isSelected = (formattedR === formatRestoName(restoName));
+        if (isSelected) foundInOptions = true;
+        optionsHtml += `<option value="${formattedR}" ${isSelected ? 'selected' : ''}>${formattedR}</option>`;
       });
 
-      container.innerHTML = html;
+      if (restoName && !foundInOptions) {
+        optionsHtml += `<option value="${formatRestoName(restoName)}" selected>${formatRestoName(restoName)}</option>`;
+      }
+
+      const itemCard = document.createElement('div');
+      itemCard.className = 'spv-resto-single-item';
+      itemCard.style.cssText = 'background: #ffffff; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); margin-top: 10px; position: relative;';
+
+      itemCard.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <label style="font-size: 0.75rem; font-weight: 800; color: #334155; display: block; margin-bottom: 4px;">PILIH OUTLET RESTO (KHUSUS LAZATTO & NGEUMI)</label>
+            <select class="spv-resto-select-name-${key}" style="width:100%; padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-weight:800; font-size:0.85rem; background:#f8fafc; outline:none;" onchange="syncSpvRestoNamesText('${key}')">
+              ${optionsHtml}
+            </select>
+          </div>
+          <div style="width: 180px;">
+            <label style="font-size: 0.75rem; font-weight: 800; color: #4338ca; display: block; margin-bottom: 4px;">OPERASIONAL RESTO</label>
+            <select id="spv_resto_type_${key}_${index}" class="spv-resto-type-${key}" style="width:100%; padding:8px 10px; border:1.5px solid #c7d2fe; border-radius:8px; font-weight:800; font-size:0.82rem; background:#f5f3ff; color:#4338ca; outline:none;" onchange="onRestoTypeChange('${key}', '${index}')">
+              <option value="24jam" ${selectedType === '24jam' ? 'selected' : ''}>Resto 24 Jam</option>
+              <option value="reguler" ${selectedType === 'reguler' ? 'selected' : ''}>Resto Reguler</option>
+            </select>
+          </div>
+          <button type="button" onclick="removeSpvRestoItem(this, '${key}')" style="background:#fee2e2; color:#dc2626; border:none; padding:8px 12px; border-radius:8px; font-weight:800; font-size:0.78rem; cursor:pointer; height:38px; align-self:flex-end;">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed var(--border);">
+          <div>
+            <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Shift 1</label>
+            <input type="time" id="spv_s1_${key}_${index}" class="spv-resto-s1-${key}" value="${s1Val}" style="width:100%; padding:4px 6px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
+          </div>
+          <div>
+            <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Shift 2</label>
+            <input type="time" id="spv_s2_${key}_${index}" class="spv-resto-s2-${key}" value="${s2Val}" style="width:100%; padding:4px 6px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
+          </div>
+          <div>
+            <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Shift 3</label>
+            <input type="time" id="spv_s3_${key}_${index}" class="spv-resto-s3-${key}" value="${s3Val}" style="width:100%; padding:4px 6px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
+          </div>
+          <div>
+            <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Middle</label>
+            <input type="text" value="Tidak ada terlambat" readonly style="width:100%; padding:4px 6px; border-radius:6px; border:1px solid var(--border); font-weight:700; background:#e2e8f0; font-size:0.68rem; color:#475569;">
+          </div>
+        </div>
+      `;
+
+      container.appendChild(itemCard);
+      syncSpvRestoNamesText(key);
+    }
+
+    function removeSpvRestoItem(btn, key) {
+      const card = btn.closest('.spv-resto-single-item');
+      if (card) {
+        card.remove();
+        syncSpvRestoNamesText(key);
+      }
+    }
+
+    function syncSpvRestoNamesText(key) {
+      const selectEls = document.querySelectorAll(`.spv-resto-select-name-${key}`);
+      const selectedNames = [];
+      selectEls.forEach(sel => {
+        if (sel.value) selectedNames.push(formatRestoName(sel.value));
+      });
+
+      const totalInput = document.getElementById(`spv_indiv_total_resto_${key}`);
+      const namesInput = document.getElementById(`spv_indiv_resto_names_${key}`);
+
+      if (totalInput) totalInput.value = selectedNames.length;
+      if (namesInput) namesInput.value = selectedNames.join(', ');
+    }
+
+    function generateRestoTimingsInputs(key) {
+      const container = document.getElementById(`spv_resto_timings_container_${key}`);
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      const indivData = (globalDashboardData.spvLinksIndividual || {})[key] || {};
+      const existingTimings = indivData.resto_timings || {};
+      const namesStr = indivData.resto_names || document.getElementById(`spv_indiv_resto_names_${key}`)?.value || '';
+
+      let rawRestoArray = namesStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+      if (rawRestoArray.length > 10) rawRestoArray = rawRestoArray.slice(0, 10);
+
+      if (rawRestoArray.length === 0) {
+        addSpvRestoItem(key, '', null);
+      } else {
+        rawRestoArray.forEach(rName => {
+          const formattedRestoLabel = formatRestoName(rName);
+          const tData = existingTimings[rName] || existingTimings[formattedRestoLabel] || null;
+          addSpvRestoItem(key, formattedRestoLabel, tData);
+        });
+      }
     }
 
     function renderAdminSpvIndividualList() {
       const users = globalDashboardData.usersList || [];
       const spvUsers = users.filter(u => u.role === 'supervisor');
       const indivData = globalDashboardData.spvLinksIndividual || {};
-      const container = document.getElementById('admin-spv-links-list');
+      const container = document.getElementById('admin-spv-coverage-list');
+
+      if (!container) return;
 
       if (spvUsers.length === 0) {
         container.innerHTML = `<div class="admin-card-item"><p style="color:var(--text-muted); font-size:0.88rem;">Belum ada user dengan role Supervisor.</p></div>`;
@@ -3292,17 +3424,26 @@
 
             <div class="admin-input-grid">
               <div class="admin-input-group">
-                <label style="color:#4338ca;">Total Coverage Resto (Maksimal 8 Resto)</label>
-                <input type="number" id="spv_indiv_total_resto_${key}" value="${data.total_resto || spv.total_resto || 5}" min="1" max="8">
+                <label style="color:#4338ca;">Total Coverage Resto (Maksimal 10 Resto)</label>
+                <input type="number" id="spv_indiv_total_resto_${key}" value="${data.total_resto || spv.total_resto || 5}" min="1" max="10" readonly style="background:#f1f5f9; font-weight:800; color:#4338ca;">
               </div>
               <div class="admin-input-group">
-                <label style="color:#4338ca;">Daftar Nama Resto Coverage (Pisahkan Koma, Maks 8)</label>
-                <input type="text" id="spv_indiv_resto_names_${key}" oninput="generateRestoTimingsInputs('${key}')" value="${data.resto_names || 'LAZATTO AMPERA, LAZATTO CEMPAKA'}" placeholder="LAZATTO AMPERA, LAZATTO CEMPAKA, dst">
+                <label style="color:#4338ca;">Daftar Nama Resto Coverage (Terisi Otomatis Dari Dropdown)</label>
+                <input type="text" id="spv_indiv_resto_names_${key}" value="${data.resto_names || ''}" readonly style="background:#f1f5f9; font-weight:700;">
               </div>
-              <div class="admin-input-group" style="grid-column: 1 / -1; background:#f8fafc; padding:12px; border-radius:12px; border:1px solid var(--border);">
-                <label style="color:#4338ca; font-size:0.85rem;"><i class="fa-solid fa-clock"></i> Maksimal Waktu Check-in Masing-Masing Resto (Shift 1, 2, 3, & Middle)</label>
-                <div id="spv_resto_timings_container_${key}" style="margin-top:6px;"></div>
+
+              <div class="admin-input-group" style="grid-column: 1 / -1; background:#f8fafc; padding:14px; border-radius:14px; border:1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                  <label style="color:#4338ca; font-size:0.88rem; font-weight:800; margin-bottom:0;">
+                    <i class="fa-solid fa-store"></i> PENGATURAN OPERASIONAL RESTO COVERAGE SPV (KHUSUS LAZATTO & NGEUMI)
+                  </label>
+                  <button type="button" onclick="addSpvRestoItem('${key}', '', null)" style="background:#4338ca; color:white; border:none; padding:6px 14px; border-radius:8px; font-weight:800; font-size:0.78rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-plus"></i> Tambah Resto Coverage SPV
+                  </button>
+                </div>
+                <div id="spv_resto_timings_container_${key}"></div>
               </div>
+
               <div class="admin-input-group" style="grid-column: 1 / -1;">
                 <label>Base Laporan Omset (Individual)</label>
                 <input type="text" id="spv_indiv_base_omset_${key}" value="${data.base_omset || ''}" placeholder="https://docs.google.com/...">
@@ -3400,28 +3541,37 @@
       const currentUser = localStorage.getItem('resto_current_user');
       
       const restoTimingsObj = {};
-      const s1Inputs = document.querySelectorAll(`.spv-resto-s1-${targetUsername}`);
-      
-      s1Inputs.forEach(input => {
-        const rName = input.getAttribute('data-resto');
-        const formattedRName = formatRestoName(rName);
-        const s2Val = document.querySelector(`.spv-resto-s2-${targetUsername}[data-resto="${rName}"]`)?.value || '15:00';
-        const s3Val = document.querySelector(`.spv-resto-s3-${targetUsername}[data-resto="${rName}"]`)?.value || '22:00';
-        const midVal = document.querySelector(`.spv-resto-mid-${targetUsername}[data-resto="${rName}"]`)?.value || '11:00';
+      const selectNameEls = document.querySelectorAll(`.spv-resto-select-name-${targetUsername}`);
+      const typeEls = document.querySelectorAll(`.spv-resto-type-${targetUsername}`);
+      const s1Els = document.querySelectorAll(`.spv-resto-s1-${targetUsername}`);
+      const s2Els = document.querySelectorAll(`.spv-resto-s2-${targetUsername}`);
+      const s3Els = document.querySelectorAll(`.spv-resto-s3-${targetUsername}`);
 
-        restoTimingsObj[formattedRName] = {
-          s1: input.value || '08:00',
-          s2: s2Val,
-          s3: s3Val,
-          mid: midVal
-        };
+      const restoNamesList = [];
+
+      selectNameEls.forEach((sel, idx) => {
+        const rName = sel.value ? formatRestoName(sel.value) : '';
+        if (rName) {
+          restoNamesList.push(rName);
+          const rType = typeEls[idx] ? typeEls[idx].value : '24jam';
+          const s1Val = s1Els[idx] ? s1Els[idx].value : (rType === 'reguler' ? '05:30' : '07:30');
+          const s2Val = s2Els[idx] ? s2Els[idx].value : (rType === 'reguler' ? '13:30' : '15:30');
+          const s3Val = s3Els[idx] ? s3Els[idx].value : (rType === 'reguler' ? '21:30' : '23:30');
+
+          restoTimingsObj[rName] = {
+            type: rType,
+            s1: s1Val,
+            s2: s2Val,
+            s3: s3Val,
+            mid: 'MIDDLE'
+          };
+        }
       });
 
-      let totalRestoVal = parseInt(document.getElementById(`spv_indiv_total_resto_${targetUsername}`).value) || 5;
-      if (totalRestoVal > 8) totalRestoVal = 8;
+      let totalRestoVal = restoNamesList.length;
+      if (totalRestoVal > 10) totalRestoVal = 10;
 
-      const rawRestoNames = document.getElementById(`spv_indiv_resto_names_${targetUsername}`).value.trim();
-      const formattedRestoNames = rawRestoNames.split(',').map(s => formatRestoName(s)).join(', ');
+      const formattedRestoNames = restoNamesList.join(', ');
 
       const payload = {
         action: "saveSpvIndividualData",
@@ -3669,7 +3819,7 @@
     };
 
     function focusEditUserLink(username) {
-      switchAdminNav('page-links', document.querySelectorAll('#app-navbar-items .nav-item')[2]);
+      switchAdminNav('page-links', document.querySelectorAll('#app-navbar-items .nav-item')[3]);
       document.getElementById('search-branch').value = username;
       filterBranches();
       
@@ -3778,7 +3928,7 @@
       const upass = document.getElementById('internal_user_pass').value.trim();
       const urole = document.getElementById('internal_user_role').value;
       let ucoverage = parseInt(document.getElementById('internal_user_coverage').value) || 5;
-      if (ucoverage > 8) ucoverage = 8;
+      if (ucoverage > 10) ucoverage = 10;
 
       if (!uid || !uname || !upass) {
         alert('Mohon isi semua kolom data user internal baru!');
@@ -3817,9 +3967,9 @@
             updateAdminStats();
 
             if (urole === 'supervisor') {
-              switchAdminNav('page-spv-links', document.querySelectorAll('#app-navbar-items .nav-item')[3]);
+              switchAdminNav('page-spv-coverage-update', document.querySelectorAll('#app-navbar-items .nav-item')[2]);
             } else if (urole === 'psd') {
-              switchAdminNav('page-psd-links', document.querySelectorAll('#app-navbar-items .nav-item')[4]);
+              switchAdminNav('page-psd-links', document.querySelectorAll('#app-navbar-items .nav-item')[5]);
             }
           });
         }
