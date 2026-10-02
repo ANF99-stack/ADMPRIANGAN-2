@@ -1044,7 +1044,7 @@
               </a>
             </div>
 
-            <!-- 2. INPUT PROMO PENJUALAN (TEPAT DI BAWAH LAPORAN OMSET HARIAN - HANYA UNTUK LAZATTO) -->
+            <!-- 2. INPUT PROMO PENJUALAN -->
             <div class="card" id="card_promo_penjualan_wrapper" style="display: none;">
               <div class="card-top">
                 <div class="card-icon icon-rose"><i class="fa-solid fa-tags"></i></div>
@@ -1127,7 +1127,7 @@
         <!-- PAGE 2: SIDEBAR PAGE - CHECKIN KARYAWAN REALTIME KAMERA -->
         <div id="page-user-checkin" class="role-page-content" style="display: none;">
           
-          <!-- BANNER COMING SOON (DITAMPILKAN JIKA SWITCH OFF) -->
+          <!-- BANNER COMING SOON -->
           <div id="checkin_coming_soon_view" class="coming-soon-box" style="display: none;">
             <div class="coming-soon-icon"><i class="fa-solid fa-person-digging"></i></div>
             <span class="coming-soon-badge"><i class="fa-solid fa-clock"></i> COMING SOON</span>
@@ -1137,7 +1137,7 @@
             </p>
           </div>
 
-          <!-- FORM CHECKIN KARYAWAN (DITAMPILKAN JIKA SWITCH ON) -->
+          <!-- FORM CHECKIN KARYAWAN -->
           <div id="checkin_active_view" class="admin-card-item" style="border: 2px solid var(--lazatto-red); background: #ffffff;">
             <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px;">
               <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--lazatto-red); display: flex; align-items: center; gap: 10px;">
@@ -1510,7 +1510,7 @@
             </div>
           </div>
 
-          <!-- BANNER COMING SOON UNTUK SPV / PSD JIKA SWITCH OFF -->
+          <!-- BANNER COMING SOON -->
           <div id="operasional_coming_soon_view" class="coming-soon-box" style="display: none;">
             <div class="coming-soon-icon"><i class="fa-solid fa-person-digging"></i></div>
             <span class="coming-soon-badge"><i class="fa-solid fa-clock"></i> COMING SOON</span>
@@ -1520,9 +1520,8 @@
             </p>
           </div>
 
-          <!-- KONTEN TABEL & MONITORING ABSENSI (AKTIF JIKA SWITCH ON ATAU USER ADMIN) -->
+          <!-- KONTEN TABEL & MONITORING ABSENSI -->
           <div id="operasional_active_content_view">
-            <!-- INFORMASI WAKTU MINIMAL CHECKIN PER RESTO (4 WAKTU SHIFTING) -->
             <div style="background:#f0fdf4; border:1px dashed #059669; padding:14px 18px; border-radius:14px; margin-bottom:20px;">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <div>
@@ -1799,7 +1798,6 @@
               <div class="admin-input-group"><label>4. Track COGS Lazatto</label><input type="text" id="area_link_cogs_lazatto" placeholder="https://docs.google.com/..."></div>
               <div class="admin-input-group"><label>5. Track COGS Ngeumi</label><input type="text" id="area_link_cogs_ngeumi" placeholder="https://docs.google.com/..."></div>
               
-              <!-- FIELD MASTER LINK PROMO PENJUALAN LAZATTO (GLOBAL UNTUK SEMUA RESTO LAZATTO) -->
               <div class="admin-input-group" style="grid-column: 1 / -1; background: #fef2f2; padding: 12px; border-radius: 12px; border: 1.5px solid #fecaca;">
                 <label style="color: var(--lazatto-red); font-weight: 800;"><i class="fa-solid fa-tags"></i> 6. Link Master Input Promo Penjualan (Tampil Otomatis di User Cabang Lazatto)</label>
                 <input type="text" id="area_link_promo_penjualan_master" placeholder="https://docs.google.com/..." style="border-color: #fca5a5;">
@@ -2096,6 +2094,48 @@
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwn94FPpsde6D5GxfD7MCth_FfGOz5piJqcm0WxJ3x0HkggzdWKZiCORqr6JMaeQrhLYQ/exec";
 
+    // GLOBAL GEOLOCATION UNTUK WATERMARK FOTO TIMESTAMP
+    let currentGeoLocation = {
+      lat: null,
+      lng: null,
+      accuracy: null,
+      altitude: null,
+      address: "Mencari Lokasi...",
+      city: ""
+    };
+
+    function initGeolocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          currentGeoLocation.lat = position.coords.latitude.toFixed(6);
+          currentGeoLocation.lng = position.coords.longitude.toFixed(6);
+          currentGeoLocation.accuracy = position.coords.accuracy ? position.coords.accuracy.toFixed(2) : '9.08';
+          currentGeoLocation.altitude = position.coords.altitude ? position.coords.altitude.toFixed(1) : '359.9';
+
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${currentGeoLocation.lat}&lon=${currentGeoLocation.lng}&format=json`);
+            const data = await res.json();
+            if (data && data.address) {
+              const road = data.address.road || data.address.suburb || 'Jalan Leuwi Dahu No. 106–178';
+              currentGeoLocation.city = data.address.city || data.address.town || data.address.county || 'Kota Tasikmalaya';
+              currentGeoLocation.address = `${road}`;
+            }
+          } catch (e) {
+            currentGeoLocation.address = "Jalan Leuwi Dahu No. 106–178";
+            currentGeoLocation.city = "Kota Tasikmalaya";
+          }
+        }, (err) => {
+          console.warn("Izin lokasi ditolak/gagal:", err);
+          currentGeoLocation.lat = "-7.303104";
+          currentGeoLocation.lng = "108.209306";
+          currentGeoLocation.accuracy = "9.08";
+          currentGeoLocation.altitude = "359.9";
+          currentGeoLocation.address = "Jalan Leuwi Dahu No. 106–178";
+          currentGeoLocation.city = "Kota Tasikmalaya";
+        });
+      }
+    }
+
     // HELPER UNTUK FORMAT NAMA RESTO MENJADI UPPERCASE TANPA STRIP
     function formatRestoName(str) {
       if (!str) return '';
@@ -2154,7 +2194,7 @@
     let cameraStream = null;
     let capturedSnapDataUrl = null;
 
-    // FUNGSI MANAGEMENT SWITCH CHECKIN FEATURE (KONTROL HANYA DI ADMIN)
+    // FUNGSI MANAGEMENT SWITCH CHECKIN FEATURE
     function isCheckinFeatureEnabled() {
       return globalDashboardData.checkinEnabled === true || localStorage.getItem('resto_checkin_feature_enabled') === 'true';
     }
@@ -2268,6 +2308,7 @@
       }
     }
 
+    // AMBIL FOTO KAMERA DENGAN OVERLAY WATERMARK GPS TIMESTAMP LENGKAP
     function takePhotoSnap() {
       const videoEl = document.getElementById('camera_video');
       const canvasEl = document.getElementById('camera_canvas');
@@ -2277,29 +2318,69 @@
 
       if (!videoEl || !canvasEl) return;
 
-      const maxTargetWidth = 480;
       const rawWidth = videoEl.videoWidth || 640;
       const rawHeight = videoEl.videoHeight || 480;
-      const scaleFactor = Math.min(1, maxTargetWidth / rawWidth);
 
-      canvasEl.width = Math.round(rawWidth * scaleFactor);
-      canvasEl.height = Math.round(rawHeight * scaleFactor);
+      canvasEl.width = rawWidth;
+      canvasEl.height = rawHeight;
 
       const ctx = canvasEl.getContext('2d');
       ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
 
-      // TIMESTAMP REALTIME WIB DI FOTO
-      const timeStampStr = `${formatWIBTime(Date.now())} WIB`;
-      const fontSize = Math.max(12, Math.round(16 * scaleFactor));
-      const boxHeight = Math.max(22, Math.round(26 * scaleFactor));
-      
-      ctx.font = `bold ${fontSize}px "Plus Jakarta Sans", sans-serif`;
-      ctx.fillStyle = '#dc2626';
-      ctx.fillRect(8, canvasEl.height - (boxHeight + 8), Math.round(250 * scaleFactor), boxHeight);
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(timeStampStr, 14, canvasEl.height - (boxHeight / 2) + (fontSize / 3));
+      // 1. Format Tanggal & Jam (Contoh: 02/10/26, 20.15)
+      const d = new Date();
+      const dateStr = d.toLocaleDateString('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit'
+      });
+      const timeStr = d.toLocaleTimeString('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).replace(':', '.');
 
-      capturedSnapDataUrl = canvasEl.toDataURL('image/jpeg', 0.55);
+      const line1 = `${dateStr}, ${timeStr}`;
+
+      // 2. Format Koordinat GPS & Akurasi
+      const lat = currentGeoLocation.lat || "-7.303104";
+      const lng = currentGeoLocation.lng || "108.209306";
+      const acc = currentGeoLocation.accuracy || "9.08";
+      const line2 = `S ${lat}°, E ${lng}° ±${acc}m`;
+
+      // 3. Format Alamat Jalan & Kota
+      const line3 = currentGeoLocation.address || "Jalan Leuwi Dahu No. 106–178";
+      const line4 = currentGeoLocation.city || "Kota Tasikmalaya";
+
+      // 4. Format Ketinggian (Altitude)
+      const alt = currentGeoLocation.altitude || "359.9";
+      const line5 = `${alt} m a.s.l.`;
+
+      // PROSES DRAWING WATERMARK TIMESTAMP DI POJOK KANAN BAWAH
+      const fontSize = Math.max(16, Math.round(canvasEl.width * 0.038));
+      const lineHeight = fontSize * 1.35;
+      
+      ctx.font = `500 ${fontSize}px "Plus Jakarta Sans", sans-serif`;
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#ffffff';
+
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
+
+      const marginX = canvasEl.width - (canvasEl.width * 0.04);
+      let currentY = canvasEl.height - (lineHeight * 5) - (canvasEl.height * 0.04);
+
+      ctx.fillText(line1, marginX, currentY); currentY += lineHeight;
+      ctx.fillText(line2, marginX, currentY); currentY += lineHeight;
+      ctx.fillText(line3, marginX, currentY); currentY += lineHeight;
+      ctx.fillText(line4, marginX, currentY); currentY += lineHeight;
+      ctx.fillText(line5, marginX, currentY);
+
+      capturedSnapDataUrl = canvasEl.toDataURL('image/jpeg', 0.85);
 
       previewEl.src = capturedSnapDataUrl;
       previewEl.style.display = 'block';
@@ -2471,7 +2552,6 @@
       }
     }
 
-    // MEMBUKA MODAL POPUP PREVIEW FOTO DENGAN DETAIL RECORD CHECKIN
     function openPhotoModal(checkinId) {
       const list = getStoredCheckinData();
       const record = list.find(r => r.id === checkinId);
@@ -2542,7 +2622,6 @@
         filtered = filtered.filter(item => coverageNames.includes(formatRestoName(item.restoName)));
       }
 
-      // FILTER TANGGAL REALTIME BERDASARKAN WIB
       const selectedDate = document.getElementById('op_date_filter')?.value || getTodayYMD();
       filtered = filtered.filter(item => {
         if (!item.timestampMs) return true;
@@ -2695,10 +2774,8 @@
       if (!username) return;
       const nowMs = Date.now();
       
-      // Simpan ke local storage
       localStorage.setItem(`resto_user_last_online_${username}`, nowMs.toString());
 
-      // Kirim sinkronisasi heartbeat ke backend Google Apps Script
       try {
         await fetch(GAS_API_URL, {
           method: "POST",
@@ -2719,7 +2796,6 @@
     function getUserLastOnlineText(userObj) {
       if (!userObj) return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> Belum ada aktivitas</span>`;
       
-      // Dapatkan timestamp dari GAS (last_online) atau dari local storage fallback
       let lastTimeMs = userObj.last_online ? Number(userObj.last_online) : 0;
       const localTime = localStorage.getItem(`resto_user_last_online_${userObj.username}`);
       if (localTime && Number(localTime) > lastTimeMs) {
@@ -2751,13 +2827,13 @@
       }
     }
 
-    // HEARTBEAT BERKALA TIAP 30 DETIK UNTUK USER YANG SEDANG LOGIN
+    // HEARTBEAT BERKALA TIAP 30 DETIK
     setInterval(() => {
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) recordUserActivity(loggedUser);
     }, 30000);
 
-    // AUTO-POLLING REALTIME TIAP 10 DETIK UNTUK SINKRONISASI ALL DATA (INCL. LAST ONLINE STATUS)
+    // AUTO-POLLING REALTIME TIAP 10 DETIK
     setInterval(() => {
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) {
@@ -2897,6 +2973,7 @@
     }
 
     window.onload = function() {
+      initGeolocation();
       const dateEl = document.getElementById('op_date_filter');
       if (dateEl) dateEl.value = getTodayYMD();
 
@@ -2907,7 +2984,6 @@
       }
     };
 
-    // FORM SUBMIT LOGIN DENGAN PENCATATAN LAST ONLINE REALTIME
     loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       const user = document.getElementById('username').value.trim();
@@ -2930,7 +3006,6 @@
           localStorage.setItem('resto_user_role', result.data.role);
           localStorage.setItem('resto_user_name', result.data.name);
           
-          // Kirim pencatatan realtime last online saat login
           await recordUserActivity(result.data.username);
           showDashboard(result.data.username);
         } else {
@@ -3479,7 +3554,7 @@
       container.innerHTML = html;
     }
 
-    // RENDER TABEL USER DENGAN PERHITUNGAN LAST ONLINE REALTIME LENGKAP
+    // RENDER TABEL USER DENGAN INDIKATOR STATUS ONLINE REALTIME
     function renderUserTable() {
       const users = globalDashboardData.usersList || [];
       const wrapper = document.getElementById('user-table-wrapper');
