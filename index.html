@@ -2554,7 +2554,7 @@
         case 'SHIFT 2': 
           return restoTimeObj.s2 || (type === 'reguler' ? '13:30' : '15:30');
         case 'SHIFT 3': 
-          return restoTimeObj.s3 || (type === 'reguler' ? '21:30' : '23:30');
+          return type === 'reguler' ? null : (restoTimeObj.s3 || '23:30');
         case 'MIDDLE':  
           return null;
         default:        
@@ -2609,10 +2609,11 @@
             const obj = restoTimeMap[r];
             if (typeof obj === 'object') {
               const rType = obj.type === 'reguler' ? 'REGULER' : '24 JAM';
+              const s3Txt = obj.type === 'reguler' ? 'Shift 3: N/A' : `Shift 3: ${obj.s3 || '-'}`;
               const midTxt = 'Middle: Tidak Ada Terlambat';
               badgesHtml += `
                 <div style="background:#059669; color:white; font-size:0.75rem; font-weight:800; padding:6px 12px; border-radius:8px; display:inline-block; margin-right:6px; margin-bottom:6px;">
-                  <i class="fa-solid fa-store"></i> ${formatRestoName(r)} (${rType}) &rarr; Shift 1: ${obj.s1 || '-'} | Shift 2: ${obj.s2 || '-'} | Shift 3: ${obj.s3 || '-'} | ${midTxt}
+                  <i class="fa-solid fa-store"></i> ${formatRestoName(r)} (${rType}) &rarr; Shift 1: ${obj.s1 || '-'} | Shift 2: ${obj.s2 || '-'} | ${s3Txt} | ${midTxt}
                 </div>
               `;
             } else {
@@ -3232,15 +3233,18 @@
       const s1 = document.getElementById(`spv_s1_${key}_${index}`);
       const s2 = document.getElementById(`spv_s2_${key}_${index}`);
       const s3 = document.getElementById(`spv_s3_${key}_${index}`);
+      const s3Container = document.getElementById(`spv_s3_container_${key}_${index}`);
 
       if (val === '24jam') {
         if (s1) s1.value = '07:30';
         if (s2) s2.value = '15:30';
         if (s3) s3.value = '23:30';
+        if (s3Container) s3Container.style.display = 'block';
       } else {
         if (s1) s1.value = '05:30';
         if (s2) s2.value = '13:30';
-        if (s3) s3.value = '21:30';
+        if (s3) s3.value = '';
+        if (s3Container) s3Container.style.display = 'none';
       }
     }
 
@@ -3287,7 +3291,7 @@
 
       let s1Val = typeof tData === 'object' ? (tData.s1 || (selectedType === 'reguler' ? '05:30' : '07:30')) : '07:30';
       let s2Val = typeof tData === 'object' ? (tData.s2 || (selectedType === 'reguler' ? '13:30' : '15:30')) : '15:30';
-      let s3Val = typeof tData === 'object' ? (tData.s3 || (selectedType === 'reguler' ? '21:30' : '23:30')) : '23:30';
+      let s3Val = typeof tData === 'object' ? (tData.s3 || (selectedType === 'reguler' ? '' : '23:30')) : '23:30';
 
       let optionsHtml = '<option value="">-- Pilih Outlet Resto (Lazatto / Ngeumi) --</option>';
       let foundInOptions = false;
@@ -3336,7 +3340,7 @@
             <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Shift 2</label>
             <input type="time" id="spv_s2_${key}_${index}" class="spv-resto-s2-${key}" value="${s2Val}" style="width:100%; padding:4px 6px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
           </div>
-          <div>
+          <div id="spv_s3_container_${key}_${index}" style="display: ${selectedType === 'reguler' ? 'none' : 'block'};">
             <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 2px;">Shift 3</label>
             <input type="time" id="spv_s3_${key}_${index}" class="spv-resto-s3-${key}" value="${s3Val}" style="width:100%; padding:4px 6px; border-radius:6px; border:1px solid var(--border); font-weight:700;">
           </div>
@@ -3556,7 +3560,7 @@
           const rType = typeEls[idx] ? typeEls[idx].value : '24jam';
           const s1Val = s1Els[idx] ? s1Els[idx].value : (rType === 'reguler' ? '05:30' : '07:30');
           const s2Val = s2Els[idx] ? s2Els[idx].value : (rType === 'reguler' ? '13:30' : '15:30');
-          const s3Val = s3Els[idx] ? s3Els[idx].value : (rType === 'reguler' ? '21:30' : '23:30');
+          const s3Val = rType === 'reguler' ? '' : (s3Els[idx] ? s3Els[idx].value : '23:30');
 
           restoTimingsObj[rName] = {
             type: rType,
