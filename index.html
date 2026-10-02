@@ -2004,7 +2004,7 @@
         const cached = localStorage.getItem('resto_cached_data');
         if (cached) return JSON.parse(cached);
       } catch(e) {}
-      return { usersList: [], areaLinks: {}, branchLinks: {}, spvLinksMaster: {}, spvLinksIndividual: {}, psdLinksMaster: {} };
+      return { usersList: [], areaLinks: {}, branchLinks: {}, spvLinksMaster: {}, spvLinksIndividual: {}, psdLinksMaster: {}, checkinEnabled: false, checkinsList: [] };
     })();
 
     const loginForm = document.getElementById('login-form');
@@ -2024,60 +2024,31 @@
     let cameraStream = null;
     let capturedSnapDataUrl = null;
 
-    // FUNGSI PING HEARTBEAT REALTIME KE SERVER GAS (SETIAP 15 DETIK)
-    async function sendPingToServer() {
-      const currentUser = localStorage.getItem('resto_current_user');
-      if (!currentUser) return;
+    // FUNGSI MANAGEMENT SWITCH CHECKIN FEATURE (ADMIN)
+    function isCheckinFeatureEnabled() {
+      return globalDashboardData.checkinEnabled === true || localStorage.getItem('resto_checkin_feature_enabled') === 'true';
+    }
 
+    async function toggleCheckinFeatureAdmin(isEnabled) {
+      localStorage.setItem('resto_checkin_feature_enabled', isEnabled ? 'true' : 'false');
+      globalDashboardData.checkinEnabled = isEnabled;
+      updateCheckinSwitchUI();
+
+      const currentUser = localStorage.getItem('resto_current_user');
       try {
         await fetch(GAS_API_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           redirect: "follow",
-          body: JSON.stringify({ action: "pingUserOnline", username: currentUser, timestamp: Date.now() })
+          body: JSON.stringify({
+            action: "saveCheckinSwitchStatus",
+            adminUser: currentUser,
+            isEnabled: isEnabled
+          })
         });
-      } catch (e) {
-        console.warn("Ping online ke server terhambat.", e);
+      } catch (err) {
+        console.error("Gagal sinkronisasi status switch ke server", err);
       }
-    }
-
-    setInterval(sendPingToServer, 15000);
-
-    // AUTO REFRESH DARI SERVER GAS UNTUK ADMIN (SETIAP 10 DETIK)
-    async function fetchLatestUserData() {
-      try {
-        const response = await fetch(GAS_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          redirect: "follow",
-          body: JSON.stringify({ action: "getInitialData" })
-        });
-        const result = await response.json();
-        if (result.status === "success") {
-          globalDashboardData = result.data;
-          renderUserTable();
-        }
-      } catch (e) {
-        console.error("Gagal memperbarui status user dari server.", e);
-      }
-    }
-
-    setInterval(() => {
-      const loggedRole = localStorage.getItem('resto_user_role');
-      if (loggedRole === 'admin') {
-        fetchLatestUserData();
-      }
-    }, 10000);
-
-    // FUNGSI MANAGEMENT SWITCH CHECKIN FEATURE (ADMIN)
-    function isCheckinFeatureEnabled() {
-      const val = localStorage.getItem('resto_checkin_feature_enabled');
-      return val === 'true'; // Default false / coming soon
-    }
-
-    function toggleCheckinFeatureAdmin(isEnabled) {
-      localStorage.setItem('resto_checkin_feature_enabled', isEnabled ? 'true' : 'false');
-      updateCheckinSwitchUI();
     }
 
     function updateCheckinSwitchUI() {
@@ -2114,7 +2085,7 @@
 
     // MANAGEMENT KAMERA REALTIME
     async function startCameraStream() {
-      if (!isCheckinFeatureEnabled()) return; // Jangan jalankan jika coming soon
+      if (!isCheckinFeatureEnabled()) return;
 
       const videoEl = document.getElementById('camera_video');
       const previewEl = document.getElementById('camera_preview');
@@ -2186,13 +2157,9 @@
       startCameraStream();
     }
 
+    // FUNGSI MEMBACA DATA CHECKIN DARI GLOBAL DATA CACHE (SERVER GAS)
     function getStoredCheckinData() {
-      const data = localStorage.getItem('resto_checkin_database');
-      return data ? JSON.parse(data) : [];
-    }
-
-    function saveCheckinDataToStorage(list) {
-      localStorage.setItem('resto_checkin_database', JSON.stringify(list));
+      return globalDashboardData.checkinsList || [];
     }
 
     function updateAutoDateTimeInput() {
@@ -2223,7 +2190,8 @@
       }
     }
 
-    function submitCheckinKaryawan(event) {
+    // SUBMIT ABSENSI CHECKIN KARYAWAN KE GOOGLE APPS SCRIPT
+    async function submitCheckinKaryawan(event) {
       event.preventDefault();
 
       if (!isCheckinFeatureEnabled()) {
@@ -2261,17 +2229,44 @@
         foto: fotoUrl
       };
 
-      const list = getStoredCheckinData();
-      list.unshift(newRecord);
-      saveCheckinDataToStorage(list);
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Menyimpan ke Server...';
 
-      alert('Checkin Karyawan Berhasil Disimpan!');
+      try {
+        const response = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({
+            action: "saveCheckinData",
+            checkinRecord: newRecord
+          })
+        });
 
-      document.getElementById('checkin_nik').value = '';
-      document.getElementById('checkin_nama').value = '';
-      capturedSnapDataUrl = null;
-      updateAutoDateTimeInput();
-      toggleKameraTimestamp();
+        const result = await response.json();
+
+        if (result.status === "success") {
+          alert('Checkin Karyawan Berhasil Tersimpan dan Terkirim ke Supervisor/Admin!');
+          document.getElementById('checkin_nik').value = '';
+          document.getElementById('checkin_nama').value = '';
+          capturedSnapDataUrl = null;
+          updateAutoDateTimeInput();
+          toggleKameraTimestamp();
+
+          fetchInitialDataFromGAS(() => {
+            renderOperasionalTable();
+          });
+        } else {
+          alert("Gagal menyimpan checkin: " + result.message);
+        }
+      } catch (err) {
+        alert("Gagal terhubung ke server saat mengirim data checkin!");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
     }
 
     let currentOpFilter = 'ALL';
@@ -2452,27 +2447,42 @@
 
     function recordUserActivity(username) {
       if (!username) return;
-      sendPingToServer();
+      localStorage.setItem(`resto_user_last_online_${username}`, Date.now().toString());
     }
 
-    function getUserLastOnlineText(lastOnlineTimestamp) {
-      if (!lastOnlineTimestamp) {
-        return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> Belum Aktif</span>`;
+    function getUserLastOnlineText(username) {
+      const storedTime = localStorage.getItem(`resto_user_last_online_${username}`);
+      if (!storedTime) {
+        return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> Belum ada aktivitas</span>`;
       }
       
-      const lastTime = parseInt(lastOnlineTimestamp);
+      const lastTime = parseInt(storedTime);
       const diffMs = Date.now() - lastTime;
       const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-      if (diffMs < 45000) {
-        return `<span class="online-indicator online-now"><span class="status-dot"></span> Online (Sangat Aktif)</span>`;
-      } else if (diffMinutes <= 3) {
-        return `<span class="online-indicator online-now"><span class="status-dot"></span> Online (${diffMinutes}m lalu)</span>`;
+      if (diffMinutes < 5) {
+        return `<span class="online-indicator online-now"><span class="status-dot"></span> Online</span>`;
       } else {
         const d = new Date(lastTime);
         return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> ${d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}, ${d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>`;
       }
     }
+
+    setInterval(() => {
+      const loggedUser = localStorage.getItem('resto_current_user');
+      if (loggedUser) recordUserActivity(loggedUser);
+    }, 60000);
+
+    // AUTO-POLLING REALTIME TIAP 10 DETIK UNTUK INTEGRASI SWITCH & LISTING CHECKIN DI SUPERVISOR/ADMIN/PSD
+    setInterval(() => {
+      const loggedUser = localStorage.getItem('resto_current_user');
+      if (loggedUser) {
+        fetchInitialDataFromGAS(() => {
+          updateCheckinSwitchUI();
+          renderOperasionalTable();
+        });
+      }
+    }, 10000);
 
     function getStoredMessages() {
       const msgs = localStorage.getItem('resto_system_messages');
@@ -2657,7 +2667,10 @@
           if (!globalDashboardData.spvLinksMaster) globalDashboardData.spvLinksMaster = {};
           if (!globalDashboardData.spvLinksIndividual) globalDashboardData.spvLinksIndividual = {};
           if (!globalDashboardData.psdLinksMaster) globalDashboardData.psdLinksMaster = {};
+          if (!globalDashboardData.checkinsList) globalDashboardData.checkinsList = [];
           
+          localStorage.setItem('resto_checkin_feature_enabled', globalDashboardData.checkinEnabled ? 'true' : 'false');
+
           try {
             localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
           } catch(e) {}
@@ -2722,7 +2735,6 @@
         document.getElementById('btn_kph').href = userLinks.kph || '#';
         document.getElementById('btn_setor').href = userLinks.setor || '#';
 
-        // PENGECEKAN NAMA/LABEL RESTO CABANG (HANYA MUNCULKAN UNTUK RESTO LAZATTO)
         const rawName = localStorage.getItem('resto_user_name') || username;
         const formattedName = formatRestoName(rawName);
         const cardPromoWrapper = document.getElementById('card_promo_penjualan_wrapper');
@@ -3149,7 +3161,6 @@
       document.getElementById('stat-total-links').textContent = (count * 6) + spvCount + 18;
     }
 
-    // LIST SPREADSHEET CABANG DI MENU ADMIN
     function renderAdminLinksList() {
       const branches = globalDashboardData.branchLinks || {};
       const container = document.getElementById('admin-links-list');
@@ -3200,7 +3211,7 @@
         else if (u.role === 'supervisor') badgeColor = 'color:#4338ca; font-weight:800;';
         else if (u.role === 'psd') badgeColor = 'color:#15803d; font-weight:800;';
 
-        const lastOnlineHtml = getUserLastOnlineText(u.last_online || u.lastOnline);
+        const lastOnlineHtml = getUserLastOnlineText(u.username);
         const displayName = u.role === 'user' ? formatRestoName(u.name) : u.name;
 
         html += `
