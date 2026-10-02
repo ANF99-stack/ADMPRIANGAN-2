@@ -723,42 +723,6 @@
       border: 1px solid var(--border);
     }
 
-    .photo-thumbnail-container {
-      position: relative;
-      display: inline-block;
-      cursor: pointer;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 2px solid var(--border);
-      transition: all 0.2s ease;
-      background: #0f172a;
-    }
-
-    .photo-thumbnail-container:hover {
-      border-color: var(--lazatto-red);
-      transform: scale(1.03);
-      box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
-    }
-
-    .photo-thumbnail-img {
-      width: 64px;
-      height: 64px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .photo-thumbnail-badge {
-      position: absolute;
-      bottom: 2px;
-      right: 2px;
-      background: rgba(15, 23, 42, 0.75);
-      color: white;
-      font-size: 0.65rem;
-      padding: 2px 5px;
-      border-radius: 6px;
-      backdrop-filter: blur(4px);
-    }
-
     .online-indicator {
       display: inline-flex;
       align-items: center;
@@ -1526,11 +1490,11 @@
               <h3 style="font-size: 1.3rem; font-weight: 800; color: #4338ca; display: flex; align-items: center; gap: 10px;">
                 <i class="fa-solid fa-clipboard-user"></i> OPERASIONAL RESTO
               </h3>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Rekapitulasi output checkin karyawan, shifting resto, kategorial absensi & keterlambatan.</p>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Rekapitulasi output checkin karyawan, shifting resto, kategorial absensi & keterlambatan hari ini.</p>
             </div>
           </div>
 
-          <!-- SWITCH ADMIN CONTROL UNTUK MENGAKTIFKAN / MATIKAN HALAMAN CHECKIN CABANG (COMING SOON) -->
+          <!-- SWITCH ADMIN CONTROL UNTUK MENGAKTIFKAN / MATIKAN HALAMAN CHECKIN CABANG (HANYA DITAMPILKAN UNTUK ADMIN) -->
           <div id="admin-checkin-switch-wrapper" class="switch-toggle-wrapper" style="display: none; border-color: #c7d2fe; background: #f5f3ff;">
             <div>
               <h4 style="font-size: 0.95rem; font-weight: 800; color: #4338ca; display: flex; align-items: center; gap: 8px;">
@@ -1562,10 +1526,29 @@
             </div>
           </div>
 
+          <!-- AREA SEARCH DAN FILTER TANGGAL METADATA ABSENSI -->
+          <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 12px; border-radius: 14px; border: 1px solid var(--border);">
+            <div style="flex: 1; min-width: 200px;">
+              <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">CARI KARYAWAN / RESTO</label>
+              <div style="position: relative;">
+                <input type="text" id="op_search_input" onkeyup="renderOperasionalTable()" placeholder="Cari NIK, Nama, atau Resto..." style="width: 100%; padding: 8px 12px 8px 32px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--text-muted);"></i>
+              </div>
+            </div>
+            <div style="min-width: 160px;">
+              <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">FILTER TANGGAL</label>
+              <input type="date" id="op_date_filter" onchange="renderOperasionalTable()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff; font-weight: 700;">
+            </div>
+            <div style="align-self: flex-end;">
+              <button onclick="resetOperasionalFilter()" style="padding: 8px 14px; border: 1px solid var(--border); border-radius: 10px; background: #ffffff; font-size: 0.8rem; font-weight: 700; cursor: pointer; color: var(--text-muted);">
+                <i class="fa-solid fa-rotate-right"></i> Reset Hari Ini
+              </button>
+            </div>
+          </div>
+
           <!-- TAB KATEGORI SHIFTING & ABSEN -->
           <div style="display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:6px;">
             <button id="tab_op_all" onclick="filterOperasionalCategory('ALL')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Semua Data Checkin</button>
-            <button id="tab_op_shift" onclick="filterOperasionalCategory('SHIFT')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Shifting By Resto</button>
             <button id="tab_op_absent" onclick="filterOperasionalCategory('ABSENT')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Karyawan OFF / Sakit / Izin / Cuti</button>
             <button id="tab_op_terlambat" onclick="filterOperasionalCategory('LATE')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Karyawan Terlambat</button>
           </div>
@@ -2108,6 +2091,14 @@
       return str.replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim().toUpperCase();
     }
 
+    // HELPER FORMAT YYYY-MM-DD UNTUK FILTER TANGGAL
+    function getTodayYMD() {
+      const d = new Date();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${d.getFullYear()}-${month}-${day}`;
+    }
+
     // CACHE DATA LOCAL STORAGE
     let globalDashboardData = (function() {
       try {
@@ -2399,6 +2390,15 @@
       renderOperasionalTable();
     }
 
+    function resetOperasionalFilter() {
+      const dateEl = document.getElementById('op_date_filter');
+      const searchEl = document.getElementById('op_search_input');
+      if (dateEl) dateEl.value = getTodayYMD();
+      if (searchEl) searchEl.value = '';
+      currentOpFilter = 'ALL';
+      renderOperasionalTable();
+    }
+
     function getRestoMaxCheckinMap() {
       const indivData = globalDashboardData.spvLinksIndividual || {};
       const map = {};
@@ -2461,6 +2461,7 @@
 
     function renderOperasionalTable() {
       const currentUser = localStorage.getItem('resto_current_user');
+      const userRole = localStorage.getItem('resto_user_role') || 'user';
       const list = getStoredCheckinData();
       const restoTimeMap = getRestoMaxCheckinMap();
 
@@ -2491,12 +2492,41 @@
 
       let filtered = list;
 
-      if (currentOpFilter === 'SHIFT') {
-        filtered = list.filter(item => ['SHIFT 1', 'SHIFT 2', 'SHIFT 3', 'MIDDLE'].includes(item.shifting));
-      } else if (currentOpFilter === 'ABSENT') {
-        filtered = list.filter(item => ['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting));
+      // 1. FILTER BERDASARKAN COVERAGE RESTO JIKA USER SPV
+      if (userRole === 'supervisor') {
+        const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
+        const coverageNames = (spvIndiv.resto_names || '').split(',').map(s => formatRestoName(s)).filter(s => s.length > 0);
+        filtered = filtered.filter(item => coverageNames.includes(formatRestoName(item.restoName)));
+      }
+
+      // 2. FILTER TANGGAL (DEFAULT: RESET HARIAN TER-SET HARI INI)
+      const selectedDate = document.getElementById('op_date_filter')?.value || getTodayYMD();
+      filtered = filtered.filter(item => {
+        if (!item.timestampMs) return true;
+        const d = new Date(item.timestampMs);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const itemYMD = `${yyyy}-${mm}-${dd}`;
+        return itemYMD === selectedDate;
+      });
+
+      // 3. FILTER SEARCH KEYWORD (NIK / NAMA / RESTO)
+      const searchQuery = (document.getElementById('op_search_input')?.value || '').toLowerCase().trim();
+      if (searchQuery) {
+        filtered = filtered.filter(item => {
+          const name = (item.nama || '').toLowerCase();
+          const nik = (item.nik || '').toLowerCase();
+          const resto = formatRestoName(item.restoName).toLowerCase();
+          return name.includes(searchQuery) || nik.includes(searchQuery) || resto.includes(searchQuery);
+        });
+      }
+
+      // 4. FILTER CATEGORY ABSENSI
+      if (currentOpFilter === 'ABSENT') {
+        filtered = filtered.filter(item => ['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting));
       } else if (currentOpFilter === 'LATE') {
-        filtered = list.filter(item => {
+        filtered = filtered.filter(item => {
           if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting)) return false;
           const d = new Date(item.timestampMs);
           const hours = String(d.getHours()).padStart(2, '0');
@@ -2536,25 +2566,13 @@
           statusBadge += ` <span class="badge-status terlambat">Terlambat (> ${maxAllowed})</span>`;
         }
 
-        // RENDER FOTO TIMESTAMP THUMBNAIL & TOMBOL POP-UP
+        // RENDER HANYA TOMBOL LIHAT FOTO TANPA THUMBNAIL PRATINJAU
         const photoData = item.photoUrl || item.foto;
         let fotoRender = '-';
 
-        if (photoData && (photoData.startsWith('data:image') || photoData.startsWith('http') || photoData.startsWith('blob:'))) {
+        if (photoData && (photoData.startsWith('data:image') || photoData.startsWith('http') || photoData.startsWith('blob:') || photoData.includes('Foto Live Kamera Ada'))) {
           fotoRender = `
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <div class="photo-thumbnail-container" onclick="openPhotoModal('${item.id}')" title="Klik untuk Pratinjau Foto Pop-Up">
-                <img src="${photoData}" class="photo-thumbnail-img" alt="Thumbnail Checkin">
-                <span class="photo-thumbnail-badge"><i class="fa-solid fa-expand"></i></span>
-              </div>
-              <button type="button" onclick="openPhotoModal('${item.id}')" class="btn-camera btn-camera-snap" style="padding: 6px 12px; font-size: 0.78rem; border-radius: 8px; cursor: pointer; white-space: nowrap;">
-                <i class="fa-solid fa-eye"></i> Lihat Foto
-              </button>
-            </div>
-          `;
-        } else if (photoData && photoData.includes('Foto Live Kamera Ada')) {
-          fotoRender = `
-            <button type="button" onclick="openPhotoModal('${item.id}')" class="btn-camera btn-camera-snap" style="padding: 6px 12px; font-size: 0.78rem; border-radius: 8px; cursor: pointer;">
+            <button type="button" onclick="openPhotoModal('${item.id}')" class="btn-camera btn-camera-snap" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 8px; cursor: pointer; white-space: nowrap;">
               <i class="fa-solid fa-eye"></i> Lihat Foto
             </button>
           `;
@@ -2617,11 +2635,17 @@
       const targetPage = document.getElementById(pageId);
       if (targetPage) targetPage.style.display = 'block';
 
+      // HIDE SWITCH UNTUK ROLE NON-ADMIN
+      const adminSwitchWrapper = document.getElementById('admin-checkin-switch-wrapper');
+      if (adminSwitchWrapper) adminSwitchWrapper.style.display = 'none';
+
       if (pageId === 'page-user-checkin') {
         updateCheckinSwitchUI();
         updateAutoDateTimeInput();
         toggleKameraTimestamp();
       } else if (pageId === 'page-shared-operasional') {
+        const dateEl = document.getElementById('op_date_filter');
+        if (dateEl && !dateEl.value) dateEl.value = getTodayYMD();
         filterOperasionalCategory('ALL');
       }
     }
@@ -2792,6 +2816,10 @@
     }
 
     window.onload = function() {
+      // SET DEFAULT TANGGAL FILTER
+      const dateEl = document.getElementById('op_date_filter');
+      if (dateEl) dateEl.value = getTodayYMD();
+
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) { 
         recordUserActivity(loggedUser);
@@ -3315,6 +3343,9 @@
         document.getElementById('page-shared-operasional').style.display = 'block';
         if (adminSwitchWrapper) adminSwitchWrapper.style.display = 'flex';
         updateCheckinSwitchUI();
+        
+        const dateEl = document.getElementById('op_date_filter');
+        if (dateEl && !dateEl.value) dateEl.value = getTodayYMD();
         filterOperasionalCategory('ALL');
       } else {
         document.getElementById('page-shared-operasional').style.display = 'none';
