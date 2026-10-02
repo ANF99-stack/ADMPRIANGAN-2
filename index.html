@@ -679,14 +679,22 @@
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(6px);
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 1000;
       padding: 16px;
+      animation: fadeIn 0.25s ease-out;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
     .modal-card {
       background: var(--surface);
       width: 100%;
@@ -698,6 +706,57 @@
       display: flex;
       flex-direction: column;
       overflow-y: auto;
+    }
+
+    /* STYLES KHUSUS POPUP PRATINJAU FOTO CHECKIN */
+    .photo-modal-card {
+      background: var(--surface);
+      width: 100%;
+      max-width: 580px;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+
+    .photo-thumbnail-container {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      transition: all 0.2s ease;
+      background: #0f172a;
+    }
+
+    .photo-thumbnail-container:hover {
+      border-color: var(--lazatto-red);
+      transform: scale(1.03);
+      box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
+    }
+
+    .photo-thumbnail-img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-thumbnail-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      background: rgba(15, 23, 42, 0.75);
+      color: white;
+      font-size: 0.65rem;
+      padding: 2px 5px;
+      border-radius: 6px;
+      backdrop-filter: blur(4px);
     }
 
     .online-indicator {
@@ -1898,7 +1957,7 @@
   </div>
 
   <!-- MODAL 1: MENU UTAMA AKUN -->
-  <div id="user-menu-modal" class="modal-overlay">
+  <div id="user-menu-modal" class="modal-overlay" onclick="if(event.target===this) closeUserMenuModal();">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">
         <h3 style="font-size:1.1rem; font-weight:800; display:flex; align-items:center; gap:8px;">
@@ -1926,7 +1985,7 @@
   </div>
 
   <!-- MODAL 2: CHANGE PASSWORD -->
-  <div id="change-pass-modal" class="modal-overlay">
+  <div id="change-pass-modal" class="modal-overlay" onclick="if(event.target===this) closeChangePasswordModal();">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h3 style="font-size:1.1rem; font-weight:800;">Ubah Password</h3>
@@ -1942,7 +2001,7 @@
   </div>
 
   <!-- MODAL 3: KIRIM PESAN ANNOUNCEMENT -->
-  <div id="send-msg-modal" class="modal-overlay">
+  <div id="send-msg-modal" class="modal-overlay" onclick="if(event.target===this) closeSendMessageModal();">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h3 style="font-size:1.1rem; font-weight:800; color:#0369a1; display:flex; align-items:center; gap:8px;">
@@ -1976,7 +2035,7 @@
   </div>
 
   <!-- MODAL 4: INBOX -->
-  <div id="inbox-modal" class="modal-overlay">
+  <div id="inbox-modal" class="modal-overlay" onclick="if(event.target===this) closeInboxModal();">
     <div class="modal-card">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
         <h3 style="font-size:1.1rem; font-weight:800; display: flex; align-items: center; gap: 8px;">
@@ -1986,6 +2045,57 @@
       </div>
       
       <div id="inbox-list-wrapper" class="inbox-list-container"></div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: POPUP PRATINJAU FOTO CHECKIN KARYAWAN -->
+  <div id="photo-preview-modal" class="modal-overlay" onclick="if(event.target===this) closePhotoModal();">
+    <div class="photo-modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:16px;">
+        <h3 style="font-size:1.15rem; font-weight:800; color:var(--lazatto-red); display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-camera"></i> Bukti Kamera Check-in Karyawan
+        </h3>
+        <button onclick="closePhotoModal()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color:var(--text-muted);">✕</button>
+      </div>
+
+      <div style="text-align:center; background:#0f172a; border-radius:16px; padding:12px; border:2px solid var(--border); margin-bottom:16px; overflow:hidden;">
+        <img id="photo_modal_img" src="" alt="Bukti Checkin Karyawan" style="max-width:100%; max-height:420px; object-fit:contain; border-radius:12px; display:block; margin:0 auto; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+      </div>
+
+      <!-- METADATA DETAIL CHECKIN -->
+      <div style="background:#f8fafc; border-radius:16px; border:1px solid var(--border); padding:16px; margin-bottom:16px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; font-size:0.85rem;">
+          <div>
+            <span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.75rem;">NAMA KARYAWAN</span>
+            <b id="photo_modal_nama" style="font-size:1rem; color:var(--text);">-</b>
+          </div>
+          <div>
+            <span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.75rem;">NIK KARYAWAN</span>
+            <span id="photo_modal_nik" style="font-weight:700; color:var(--text);">-</span>
+          </div>
+          <div>
+            <span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.75rem;">RESTO CABANG</span>
+            <b id="photo_modal_resto" style="color:var(--lazatto-red); font-size:0.92rem;">-</b>
+          </div>
+          <div>
+            <span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.75rem;">SHIFTING / STATUS</span>
+            <span id="photo_modal_shifting">-</span>
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.75rem;">TANGGAL & WAKTU ABSEN</span>
+            <b id="photo_modal_time" style="color:#334155;">-</b>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; gap:10px;">
+        <a id="photo_modal_download_btn" href="#" download="checkin-karyawan.jpg" target="_blank" class="btn-camera btn-camera-snap" style="text-decoration:none; justify-content:center; flex:1; padding:12px;">
+          <i class="fa-solid fa-download"></i> Unduh Foto High-Res
+        </a>
+        <button onclick="closePhotoModal()" class="btn-camera btn-camera-reset" style="padding:12px 24px;">
+          Tutup
+        </button>
+      </div>
     </div>
   </div>
 
@@ -2128,20 +2238,32 @@
 
       if (!videoEl || !canvasEl) return;
 
-      canvasEl.width = videoEl.videoWidth || 640;
-      canvasEl.height = videoEl.videoHeight || 480;
+      // OPTIMASI: Batasi lebar maksimal gambar ke 480px untuk kompresi data Base64
+      const maxTargetWidth = 480;
+      const rawWidth = videoEl.videoWidth || 640;
+      const rawHeight = videoEl.videoHeight || 480;
+      const scaleFactor = Math.min(1, maxTargetWidth / rawWidth);
+
+      canvasEl.width = Math.round(rawWidth * scaleFactor);
+      canvasEl.height = Math.round(rawHeight * scaleFactor);
+
       const ctx = canvasEl.getContext('2d');
       ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
 
+      // Render Timestamp Overlay yang disesuaikan ukurannya
       const now = new Date();
       const timeStampStr = `${now.toLocaleDateString('id-ID')} ${now.toLocaleTimeString('id-ID')}`;
-      ctx.font = 'bold 20px "Plus Jakarta Sans", sans-serif';
+      const fontSize = Math.max(12, Math.round(16 * scaleFactor));
+      const boxHeight = Math.max(22, Math.round(26 * scaleFactor));
+      
+      ctx.font = `bold ${fontSize}px "Plus Jakarta Sans", sans-serif`;
       ctx.fillStyle = '#dc2626';
-      ctx.fillRect(10, canvasEl.height - 40, 280, 30);
+      ctx.fillRect(8, canvasEl.height - (boxHeight + 8), Math.round(230 * scaleFactor), boxHeight);
       ctx.fillStyle = '#ffffff';
-      ctx.fillText(timeStampStr, 20, canvasEl.height - 18);
+      ctx.fillText(timeStampStr, 14, canvasEl.height - (boxHeight / 2) + (fontSize / 3));
 
-      capturedSnapDataUrl = canvasEl.toDataURL('image/jpeg', 0.85);
+      // KOMPRESI RINGKAS: Menggunakan format JPEG dengan kualitas 0.55 agar loading cepat
+      capturedSnapDataUrl = canvasEl.toDataURL('image/jpeg', 0.55);
 
       previewEl.src = capturedSnapDataUrl;
       previewEl.style.display = 'block';
@@ -2211,7 +2333,7 @@
       if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shifting)) {
         fotoUrl = 'Tertutup (Sesuai Keterangan)';
       } else if (capturedSnapDataUrl) {
-        fotoUrl = '<span style="color:#059669; font-weight:800;"><i class="fa-solid fa-circle-check"></i> Foto Live Kamera Ada</span>';
+        fotoUrl = capturedSnapDataUrl;
       } else {
         alert('Mohon ambil foto timestamp karyawan menggunakan kamera!');
         return;
@@ -2226,7 +2348,8 @@
         nik: nik,
         nama: nama,
         shifting: shifting,
-        foto: fotoUrl
+        foto: fotoUrl,
+        photoUrl: fotoUrl
       };
 
       const submitBtn = event.target.querySelector('button[type="submit"]');
@@ -2302,6 +2425,38 @@
         case 'MIDDLE':  return restoTimeObj.mid || '11:00';
         default:        return '08:00';
       }
+    }
+
+    // MEMBUKA MODAL POPUP PREVIEW FOTO DENGAN DETAIL RECORD CHECKIN
+    function openPhotoModal(checkinId) {
+      const list = getStoredCheckinData();
+      const record = list.find(r => r.id === checkinId);
+      if (!record) return;
+
+      const photoSrc = record.photoUrl || record.foto;
+      if (!photoSrc || (!photoSrc.startsWith('data:image') && !photoSrc.startsWith('http') && !photoSrc.startsWith('blob:'))) {
+        alert("Foto tidak tersedia atau karyawan tidak mengambil foto.");
+        return;
+      }
+
+      document.getElementById('photo_modal_img').src = photoSrc;
+      document.getElementById('photo_modal_nama').textContent = record.nama || '-';
+      document.getElementById('photo_modal_nik').textContent = record.nik || '-';
+      document.getElementById('photo_modal_resto').textContent = formatRestoName(record.restoName) || '-';
+      document.getElementById('photo_modal_time').textContent = record.dateTime || '-';
+      document.getElementById('photo_modal_download_btn').href = photoSrc;
+
+      let badgeHtml = `<span class="badge-status shift">${record.shifting}</span>`;
+      if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(record.shifting)) {
+        badgeHtml = `<span class="badge-status absent">${record.shifting}</span>`;
+      }
+      document.getElementById('photo_modal_shifting').innerHTML = badgeHtml;
+
+      document.getElementById('photo-preview-modal').style.display = 'flex';
+    }
+
+    function closePhotoModal() {
+      document.getElementById('photo-preview-modal').style.display = 'none';
     }
 
     function renderOperasionalTable() {
@@ -2381,13 +2536,39 @@
           statusBadge += ` <span class="badge-status terlambat">Terlambat (> ${maxAllowed})</span>`;
         }
 
+        // RENDER FOTO TIMESTAMP THUMBNAIL & TOMBOL POP-UP
+        const photoData = item.photoUrl || item.foto;
+        let fotoRender = '-';
+
+        if (photoData && (photoData.startsWith('data:image') || photoData.startsWith('http') || photoData.startsWith('blob:'))) {
+          fotoRender = `
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <div class="photo-thumbnail-container" onclick="openPhotoModal('${item.id}')" title="Klik untuk Pratinjau Foto Pop-Up">
+                <img src="${photoData}" class="photo-thumbnail-img" alt="Thumbnail Checkin">
+                <span class="photo-thumbnail-badge"><i class="fa-solid fa-expand"></i></span>
+              </div>
+              <button type="button" onclick="openPhotoModal('${item.id}')" class="btn-camera btn-camera-snap" style="padding: 6px 12px; font-size: 0.78rem; border-radius: 8px; cursor: pointer; white-space: nowrap;">
+                <i class="fa-solid fa-eye"></i> Lihat Foto
+              </button>
+            </div>
+          `;
+        } else if (photoData && photoData.includes('Foto Live Kamera Ada')) {
+          fotoRender = `
+            <button type="button" onclick="openPhotoModal('${item.id}')" class="btn-camera btn-camera-snap" style="padding: 6px 12px; font-size: 0.78rem; border-radius: 8px; cursor: pointer;">
+              <i class="fa-solid fa-eye"></i> Lihat Foto
+            </button>
+          `;
+        } else {
+          fotoRender = `<span style="color:var(--text-muted); font-size:0.8rem;"><i class="fa-solid fa-ban"></i> ${item.foto || 'Tidak ada foto'}</span>`;
+        }
+
         html += `
           <tr style="border-bottom: 1px solid var(--border);">
             <td style="padding:10px 14px; font-weight:700;">${formatRestoName(item.restoName)}</td>
             <td style="padding:10px 14px;">${item.dateTime}</td>
             <td style="padding:10px 14px;"><b>${item.nama}</b><br><small style="color:var(--text-muted);">${item.nik}</small></td>
             <td style="padding:10px 14px;">${statusBadge}</td>
-            <td style="padding:10px 14px;">${item.foto}</td>
+            <td style="padding:10px 14px;">${fotoRender}</td>
           </tr>
         `;
       });
