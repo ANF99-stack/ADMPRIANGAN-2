@@ -1522,17 +1522,6 @@
 
           <!-- KONTEN TABEL & MONITORING ABSENSI -->
           <div id="operasional_active_content_view">
-            <div style="background:#f0fdf4; border:1px dashed #059669; padding:14px 18px; border-radius:14px; margin-bottom:20px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                <div>
-                  <h5 style="font-weight:800; color:#047857; font-size:0.9rem;"><i class="fa-solid fa-clock"></i> Batas Maksimal Check-in Per Shift Resto (Pengaturan Admin)</h5>
-                  <p style="font-size:0.78rem; color:#065f46; margin-top:2px;">Sistem memverifikasi keterlambatan karyawan secara otomatis berdasarkan Shift (1, 2, 3, Middle), Kategori Resto (24 Jam / Reguler) & Outlet Resto tempatnya bekerja.</p>
-                </div>
-              </div>
-              <div id="spv-resto-timings-summary" style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
-                <!-- Rendered by JS -->
-              </div>
-            </div>
 
             <!-- AREA SEARCH DAN FILTER TANGGAL METADATA ABSENSI -->
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 12px; border-radius: 14px; border: 1px solid var(--border);">
@@ -2598,31 +2587,6 @@
       const userRole = localStorage.getItem('resto_user_role') || 'user';
       const list = getStoredCheckinData();
       const restoTimeMap = getRestoMaxCheckinMap();
-
-      const summaryBox = document.getElementById('spv-resto-timings-summary');
-      if (summaryBox) {
-        let badgesHtml = '';
-        if (Object.keys(restoTimeMap).length === 0) {
-          badgesHtml = `<span style="font-size:0.8rem; color:#065f46; font-weight:700;">Default Standar -> 24 Jam [S1: 07:30 | S2: 15:30 | S3: 23:30] | Reguler [S1: 05:30 | S2: 13:30]</span>`;
-        } else {
-          for (let r in restoTimeMap) {
-            const obj = restoTimeMap[r];
-            if (typeof obj === 'object') {
-              const rType = obj.type === 'reguler' ? 'REGULER' : '24 JAM';
-              const s3Txt = obj.type === 'reguler' ? 'Shift 3: N/A' : `Shift 3: ${obj.s3 || '-'}`;
-              const midTxt = 'Middle: Tidak Ada Terlambat';
-              badgesHtml += `
-                <div style="background:#059669; color:white; font-size:0.75rem; font-weight:800; padding:6px 12px; border-radius:8px; display:inline-block; margin-right:6px; margin-bottom:6px;">
-                  <i class="fa-solid fa-store"></i> ${formatRestoName(r)} (${rType}) &rarr; Shift 1: ${obj.s1 || '-'} | Shift 2: ${obj.s2 || '-'} | ${s3Txt} | ${midTxt}
-                </div>
-              `;
-            } else {
-              badgesHtml += `<span style="background:#059669; color:white; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:8px; margin-right:6px;"><i class="fa-solid fa-store"></i> ${formatRestoName(r)}: ${obj}</span>`;
-            }
-          }
-        }
-        summaryBox.innerHTML = badgesHtml;
-      }
 
       const tbody = document.getElementById('operasional-table-body');
       if (!tbody) return;
