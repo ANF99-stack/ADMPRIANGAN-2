@@ -589,7 +589,7 @@
       box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
 
-    /* UI TOGGLE SWITCH STYLES */
+    /* UI TOGGLE SWITCH STYLES - KHUSUS ADMIN */
     .switch-toggle-wrapper {
       display: flex;
       align-items: center;
@@ -708,7 +708,6 @@
       overflow-y: auto;
     }
 
-    /* STYLES KHUSUS POPUP PRATINJAU FOTO CHECKIN */
     .photo-modal-card {
       background: var(--surface);
       width: 100%;
@@ -822,7 +821,6 @@
     .badge-status.terlambat { background: #fee2e2; color: #dc2626; }
     .badge-status.absent { background: #fef3c7; color: #b45309; }
 
-    /* STYLES KAMERA REALTIME TIMESTAMP */
     .camera-box-wrapper {
       position: relative;
       width: 100%;
@@ -1130,17 +1128,17 @@
         <!-- PAGE 2: SIDEBAR PAGE - CHECKIN KARYAWAN REALTIME KAMERA -->
         <div id="page-user-checkin" class="role-page-content" style="display: none;">
           
-          <!-- BANNER COMING SOON (DITAMPILKAN JIKA ADMIN SWITCH OFF) -->
+          <!-- BANNER COMING SOON (DITAMPILKAN JIKA SWITCH OFF) -->
           <div id="checkin_coming_soon_view" class="coming-soon-box" style="display: none;">
             <div class="coming-soon-icon"><i class="fa-solid fa-person-digging"></i></div>
             <span class="coming-soon-badge"><i class="fa-solid fa-clock"></i> COMING SOON</span>
             <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--text); margin-bottom: 8px;">Fitur Check-in Karyawan Belum Aktif</h3>
             <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
-              Halaman absensi dan check-in karyawan via kamera realtime saat ini sedang dalam proses penyiapan oleh Admin Area. Mohon tunggu pembaruan selanjutnya.
+              Halaman absensi dan check-in karyawan via kamera realtime saat ini sedang dalam proses penyiapan. Mohon tunggu pembaruan selanjutnya.
             </p>
           </div>
 
-          <!-- FORM CHECKIN KARYAWAN (DITAMPILKAN JIKA ADMIN SWITCH ON) -->
+          <!-- FORM CHECKIN KARYAWAN (DITAMPILKAN JIKA SWITCH ON) -->
           <div id="checkin_active_view" class="admin-card-item" style="border: 2px solid var(--lazatto-red); background: #ffffff;">
             <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px;">
               <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--lazatto-red); display: flex; align-items: center; gap: 10px;">
@@ -1151,7 +1149,7 @@
 
             <form onsubmit="submitCheckinKaryawan(event)" style="max-width: 600px;">
               <div class="input-group">
-                <label>AUTO TANGGAL DAN WAKTU</label>
+                <label>AUTO TANGGAL DAN WAKTU (WIB)</label>
                 <input type="text" id="checkin_datetime" readonly style="background:#f1f5f9; font-weight:700;">
               </div>
               <div class="input-group">
@@ -1494,14 +1492,14 @@
             </div>
           </div>
 
-          <!-- SWITCH ADMIN CONTROL UNTUK MENGAKTIFKAN / MATIKAN HALAMAN CHECKIN CABANG (HANYA DITAMPILKAN UNTUK ADMIN) -->
+          <!-- SWITCH KONTROL HANYA MUNCUL DI USER ADMIN -->
           <div id="admin-checkin-switch-wrapper" class="switch-toggle-wrapper" style="display: none; border-color: #c7d2fe; background: #f5f3ff;">
             <div>
               <h4 style="font-size: 0.95rem; font-weight: 800; color: #4338ca; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-sliders"></i> KONTROL HAK AKSES FEATURE "CHECKIN KARYAWAN"
+                <i class="fa-solid fa-sliders"></i> KONTROL HAK AKSES FEATURE "CHECKIN KARYAWAN" (KHUSUS ADMIN)
               </h4>
               <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
-                Aktifkan switch ini untuk membuka form Check-in Karyawan di User Cabang. Jika OFF, halaman cabang akan menampilkan status "Coming Soon".
+                Aktifkan switch ini untuk membuka form Check-in Karyawan di User Cabang. Jika OFF, seluruh halaman check-in akan menampilkan status "Coming Soon".
               </p>
             </div>
             <div style="display: flex; align-items: center; gap: 12px;">
@@ -1513,63 +1511,77 @@
             </div>
           </div>
 
-          <!-- INFORMASI WAKTU MINIMAL CHECKIN PER RESTO (4 WAKTU SHIFTING) -->
-          <div style="background:#f0fdf4; border:1px dashed #059669; padding:14px 18px; border-radius:14px; margin-bottom:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-              <div>
-                <h5 style="font-weight:800; color:#047857; font-size:0.9rem;"><i class="fa-solid fa-clock"></i> Batas Maksimal Check-in Per Shift Resto (Pengaturan Admin)</h5>
-                <p style="font-size:0.78rem; color:#065f46; margin-top:2px;">Sistem memverifikasi keterlambatan karyawan secara otomatis berdasarkan Shift (1, 2, 3, Middle) & Outlet Resto tempatnya bekerja.</p>
+          <!-- BANNER COMING SOON UNTUK SPV / PSD JIKA SWITCH OFF -->
+          <div id="operasional_coming_soon_view" class="coming-soon-box" style="display: none;">
+            <div class="coming-soon-icon"><i class="fa-solid fa-person-digging"></i></div>
+            <span class="coming-soon-badge"><i class="fa-solid fa-clock"></i> COMING SOON</span>
+            <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--text); margin-bottom: 8px;">Fitur Operasional Absensi Belum Aktif</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+              Halaman absensi dan listing check-in karyawan via kamera realtime saat ini sedang dalam proses penyiapan. Mohon tunggu pembaruan selanjutnya.
+            </p>
+          </div>
+
+          <!-- KONTEN TABEL & MONITORING ABSENSI (AKTIF JIKA SWITCH ON ATAU USER ADMIN) -->
+          <div id="operasional_active_content_view">
+            <!-- INFORMASI WAKTU MINIMAL CHECKIN PER RESTO (4 WAKTU SHIFTING) -->
+            <div style="background:#f0fdf4; border:1px dashed #059669; padding:14px 18px; border-radius:14px; margin-bottom:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                  <h5 style="font-weight:800; color:#047857; font-size:0.9rem;"><i class="fa-solid fa-clock"></i> Batas Maksimal Check-in Per Shift Resto (Pengaturan Admin)</h5>
+                  <p style="font-size:0.78rem; color:#065f46; margin-top:2px;">Sistem memverifikasi keterlambatan karyawan secara otomatis berdasarkan Shift (1, 2, 3, Middle) & Outlet Resto tempatnya bekerja.</p>
+                </div>
               </div>
-            </div>
-            <div id="spv-resto-timings-summary" style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
-              <!-- Rendered by JS -->
-            </div>
-          </div>
-
-          <!-- AREA SEARCH DAN FILTER TANGGAL METADATA ABSENSI -->
-          <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 12px; border-radius: 14px; border: 1px solid var(--border);">
-            <div style="flex: 1; min-width: 200px;">
-              <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">CARI KARYAWAN / RESTO</label>
-              <div style="position: relative;">
-                <input type="text" id="op_search_input" onkeyup="renderOperasionalTable()" placeholder="Cari NIK, Nama, atau Resto..." style="width: 100%; padding: 8px 12px 8px 32px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff;">
-                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--text-muted);"></i>
-              </div>
-            </div>
-            <div style="min-width: 160px;">
-              <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">FILTER TANGGAL</label>
-              <input type="date" id="op_date_filter" onchange="renderOperasionalTable()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff; font-weight: 700;">
-            </div>
-            <div style="align-self: flex-end;">
-              <button onclick="resetOperasionalFilter()" style="padding: 8px 14px; border: 1px solid var(--border); border-radius: 10px; background: #ffffff; font-size: 0.8rem; font-weight: 700; cursor: pointer; color: var(--text-muted);">
-                <i class="fa-solid fa-rotate-right"></i> Reset Hari Ini
-              </button>
-            </div>
-          </div>
-
-          <!-- TAB KATEGORI SHIFTING & ABSEN -->
-          <div style="display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:6px;">
-            <button id="tab_op_all" onclick="filterOperasionalCategory('ALL')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Semua Data Checkin</button>
-            <button id="tab_op_absent" onclick="filterOperasionalCategory('ABSENT')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Karyawan OFF / Sakit / Izin / Cuti</button>
-            <button id="tab_op_terlambat" onclick="filterOperasionalCategory('LATE')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Karyawan Terlambat</button>
-          </div>
-
-          <!-- TABEL DATA OPERASIONAL -->
-          <div style="overflow-x: auto; border-radius: 12px; border: 1px solid var(--border);">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 650px;">
-              <thead>
-                <tr style="background: #f8fafc; border-bottom: 2px solid var(--border);">
-                  <th style="padding: 12px 14px; font-weight: 800;">Resto Cabang</th>
-                  <th style="padding: 12px 14px; font-weight: 800;">Tanggal & Waktu</th>
-                  <th style="padding: 12px 14px; font-weight: 800;">NIK & Nama Karyawan</th>
-                  <th style="padding: 12px 14px; font-weight: 800;">Shifting / Status</th>
-                  <th style="padding: 12px 14px; font-weight: 800;">Bukti Kamera Timestamp</th>
-                </tr>
-              </thead>
-              <tbody id="operasional-table-body">
+              <div id="spv-resto-timings-summary" style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
                 <!-- Rendered by JS -->
-              </tbody>
-            </table>
+              </div>
+            </div>
+
+            <!-- AREA SEARCH DAN FILTER TANGGAL METADATA ABSENSI -->
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 12px; border-radius: 14px; border: 1px solid var(--border);">
+              <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">CARI KARYAWAN / RESTO</label>
+                <div style="position: relative;">
+                  <input type="text" id="op_search_input" onkeyup="renderOperasionalTable()" placeholder="Cari NIK, Nama, atau Resto..." style="width: 100%; padding: 8px 12px 8px 32px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff;">
+                  <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--text-muted);"></i>
+                </div>
+              </div>
+              <div style="min-width: 160px;">
+                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">FILTER TANGGAL (WIB)</label>
+                <input type="date" id="op_date_filter" onchange="renderOperasionalTable()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff; font-weight: 700;">
+              </div>
+              <div style="align-self: flex-end;">
+                <button onclick="resetOperasionalFilter()" style="padding: 8px 14px; border: 1px solid var(--border); border-radius: 10px; background: #ffffff; font-size: 0.8rem; font-weight: 700; cursor: pointer; color: var(--text-muted);">
+                  <i class="fa-solid fa-rotate-right"></i> Reset Hari Ini
+                </button>
+              </div>
+            </div>
+
+            <!-- TAB KATEGORI SHIFTING & ABSEN -->
+            <div style="display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:6px;">
+              <button id="tab_op_all" onclick="filterOperasionalCategory('ALL')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Semua Data Checkin</button>
+              <button id="tab_op_absent" onclick="filterOperasionalCategory('ABSENT')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Karyawan OFF / Sakit / Izin / Cuti</button>
+              <button id="tab_op_terlambat" onclick="filterOperasionalCategory('LATE')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Karyawan Terlambat</button>
+            </div>
+
+            <!-- TABEL DATA OPERASIONAL -->
+            <div style="overflow-x: auto; border-radius: 12px; border: 1px solid var(--border);">
+              <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 650px;">
+                <thead>
+                  <tr style="background: #f8fafc; border-bottom: 2px solid var(--border);">
+                    <th style="padding: 12px 14px; font-weight: 800;">Resto Cabang</th>
+                    <th style="padding: 12px 14px; font-weight: 800;">Tanggal & Waktu (WIB)</th>
+                    <th style="padding: 12px 14px; font-weight: 800;">NIK & Nama Karyawan</th>
+                    <th style="padding: 12px 14px; font-weight: 800;">Shifting / Status</th>
+                    <th style="padding: 12px 14px; font-weight: 800;">Bukti Kamera Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody id="operasional-table-body">
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
           </div>
+
         </div>
       </div>
 
@@ -2065,7 +2077,7 @@
             <span id="photo_modal_shifting">-</span>
           </div>
           <div style="grid-column: 1 / -1;">
-            <span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.75rem;">TANGGAL & WAKTU ABSEN</span>
+            <span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.75rem;">TANGGAL & WAKTU ABSEN (WIB)</span>
             <b id="photo_modal_time" style="color:#334155;">-</b>
           </div>
         </div>
@@ -2091,12 +2103,30 @@
       return str.replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim().toUpperCase();
     }
 
-    // HELPER FORMAT YYYY-MM-DD UNTUK FILTER TANGGAL
+    // HELPER FORMAT YYYY-MM-DD BERDASARKAN STANDAR WAKTU WIB (ASIA/JAKARTA) REALTIME
     function getTodayYMD() {
       const d = new Date();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${d.getFullYear()}-${month}-${day}`;
+      const options = { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' };
+      const parts = new Intl.DateTimeFormat('en-CA', options).formatToParts(d);
+      const year = parts.find(p => p.type === 'year').value;
+      const month = parts.find(p => p.type === 'month').value;
+      const day = parts.find(p => p.type === 'day').value;
+      return `${year}-${month}-${day}`;
+    }
+
+    // HELPER MEMFORMAT TIMESTAMP REALTIME KE WIB (ASIA/JAKARTA)
+    function formatWIBTime(dateObjOrMs) {
+      const d = new Date(dateObjOrMs || Date.now());
+      return d.toLocaleString('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      }).replace(/\./g, ':');
     }
 
     // CACHE DATA LOCAL STORAGE
@@ -2125,7 +2155,7 @@
     let cameraStream = null;
     let capturedSnapDataUrl = null;
 
-    // FUNGSI MANAGEMENT SWITCH CHECKIN FEATURE (ADMIN)
+    // FUNGSI MANAGEMENT SWITCH CHECKIN FEATURE (KONTROL HANYA DI ADMIN)
     function isCheckinFeatureEnabled() {
       return globalDashboardData.checkinEnabled === true || localStorage.getItem('resto_checkin_feature_enabled') === 'true';
     }
@@ -2154,8 +2184,15 @@
 
     function updateCheckinSwitchUI() {
       const isEnabled = isCheckinFeatureEnabled();
+      const userRole = localStorage.getItem('resto_user_role') || 'user';
+      
+      const switchWrapper = document.getElementById('admin-checkin-switch-wrapper');
       const switchToggle = document.getElementById('checkin_toggle_switch');
       const switchText = document.getElementById('checkin_switch_status_text');
+
+      if (switchWrapper) {
+        switchWrapper.style.display = (userRole === 'admin') ? 'flex' : 'none';
+      }
 
       if (switchToggle) switchToggle.checked = isEnabled;
       if (switchText) {
@@ -2168,7 +2205,6 @@
         }
       }
 
-      // Update Tampilan untuk User Cabang
       const activeView = document.getElementById('checkin_active_view');
       const comingSoonView = document.getElementById('checkin_coming_soon_view');
 
@@ -2180,6 +2216,19 @@
           activeView.style.display = 'none';
           comingSoonView.style.display = 'block';
           stopCameraStream();
+        }
+      }
+
+      const opContentView = document.getElementById('operasional_active_content_view');
+      const opComingSoonView = document.getElementById('operasional_coming_soon_view');
+
+      if (opContentView && opComingSoonView) {
+        if (isEnabled || userRole === 'admin') {
+          opContentView.style.display = 'block';
+          opComingSoonView.style.display = 'none';
+        } else {
+          opContentView.style.display = 'none';
+          opComingSoonView.style.display = 'block';
         }
       }
     }
@@ -2229,7 +2278,6 @@
 
       if (!videoEl || !canvasEl) return;
 
-      // OPTIMASI: Batasi lebar maksimal gambar ke 480px untuk kompresi data Base64
       const maxTargetWidth = 480;
       const rawWidth = videoEl.videoWidth || 640;
       const rawHeight = videoEl.videoHeight || 480;
@@ -2241,19 +2289,17 @@
       const ctx = canvasEl.getContext('2d');
       ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
 
-      // Render Timestamp Overlay yang disesuaikan ukurannya
-      const now = new Date();
-      const timeStampStr = `${now.toLocaleDateString('id-ID')} ${now.toLocaleTimeString('id-ID')}`;
+      // TIMESTAMP REALTIME WIB DI FOTO
+      const timeStampStr = `${formatWIBTime(Date.now())} WIB`;
       const fontSize = Math.max(12, Math.round(16 * scaleFactor));
       const boxHeight = Math.max(22, Math.round(26 * scaleFactor));
       
       ctx.font = `bold ${fontSize}px "Plus Jakarta Sans", sans-serif`;
       ctx.fillStyle = '#dc2626';
-      ctx.fillRect(8, canvasEl.height - (boxHeight + 8), Math.round(230 * scaleFactor), boxHeight);
+      ctx.fillRect(8, canvasEl.height - (boxHeight + 8), Math.round(250 * scaleFactor), boxHeight);
       ctx.fillStyle = '#ffffff';
       ctx.fillText(timeStampStr, 14, canvasEl.height - (boxHeight / 2) + (fontSize / 3));
 
-      // KOMPRESI RINGKAS: Menggunakan format JPEG dengan kualitas 0.55 agar loading cepat
       capturedSnapDataUrl = canvasEl.toDataURL('image/jpeg', 0.55);
 
       previewEl.src = capturedSnapDataUrl;
@@ -2270,7 +2316,6 @@
       startCameraStream();
     }
 
-    // FUNGSI MEMBACA DATA CHECKIN DARI GLOBAL DATA CACHE (SERVER GAS)
     function getStoredCheckinData() {
       return globalDashboardData.checkinsList || [];
     }
@@ -2278,8 +2323,7 @@
     function updateAutoDateTimeInput() {
       const el = document.getElementById('checkin_datetime');
       if (el) {
-        const now = new Date();
-        el.value = `${now.toLocaleDateString('id-ID')} ${now.toLocaleTimeString('id-ID')}`;
+        el.value = `${formatWIBTime(Date.now())} WIB`;
       }
       
       const restoLabelEl = document.getElementById('checkin_resto_label');
@@ -2308,7 +2352,7 @@
       event.preventDefault();
 
       if (!isCheckinFeatureEnabled()) {
-        alert("Fitur Checkin Karyawan belum diaktifkan oleh Admin Area.");
+        alert("Fitur Checkin Karyawan belum diaktifkan.");
         return;
       }
 
@@ -2330,12 +2374,13 @@
         return;
       }
 
+      const nowMs = Date.now();
       const newRecord = {
-        id: 'chk_' + Date.now(),
+        id: 'chk_' + nowMs,
         restoUser: currentUser,
         restoName: formattedRestoName,
         dateTime: dateTime,
-        timestampMs: Date.now(),
+        timestampMs: nowMs,
         nik: nik,
         nama: nama,
         shifting: shifting,
@@ -2362,7 +2407,7 @@
         const result = await response.json();
 
         if (result.status === "success") {
-          alert('Checkin Karyawan Berhasil Tersimpan dan Terkirim ke Supervisor/Admin!');
+          alert('Checkin Karyawan Berhasil Tersimpan dan Terkirim!');
           document.getElementById('checkin_nik').value = '';
           document.getElementById('checkin_nama').value = '';
           capturedSnapDataUrl = null;
@@ -2492,26 +2537,25 @@
 
       let filtered = list;
 
-      // 1. FILTER BERDASARKAN COVERAGE RESTO JIKA USER SPV
       if (userRole === 'supervisor') {
         const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
         const coverageNames = (spvIndiv.resto_names || '').split(',').map(s => formatRestoName(s)).filter(s => s.length > 0);
         filtered = filtered.filter(item => coverageNames.includes(formatRestoName(item.restoName)));
       }
 
-      // 2. FILTER TANGGAL (DEFAULT: RESET HARIAN TER-SET HARI INI)
+      // FILTER TANGGAL REALTIME BERDASARKAN WIB
       const selectedDate = document.getElementById('op_date_filter')?.value || getTodayYMD();
       filtered = filtered.filter(item => {
         if (!item.timestampMs) return true;
         const d = new Date(item.timestampMs);
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
+        const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(d);
+        const yyyy = parts.find(p => p.type === 'year').value;
+        const mm = parts.find(p => p.type === 'month').value;
+        const dd = parts.find(p => p.type === 'day').value;
         const itemYMD = `${yyyy}-${mm}-${dd}`;
         return itemYMD === selectedDate;
       });
 
-      // 3. FILTER SEARCH KEYWORD (NIK / NAMA / RESTO)
       const searchQuery = (document.getElementById('op_search_input')?.value || '').toLowerCase().trim();
       if (searchQuery) {
         filtered = filtered.filter(item => {
@@ -2522,15 +2566,15 @@
         });
       }
 
-      // 4. FILTER CATEGORY ABSENSI
       if (currentOpFilter === 'ABSENT') {
         filtered = filtered.filter(item => ['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting));
       } else if (currentOpFilter === 'LATE') {
         filtered = filtered.filter(item => {
           if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting)) return false;
           const d = new Date(item.timestampMs);
-          const hours = String(d.getHours()).padStart(2, '0');
-          const mins = String(d.getMinutes()).padStart(2, '0');
+          const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Jakarta', hour12: false, hour: '2-digit', minute: '2-digit' }).formatToParts(d);
+          const hours = parts.find(p => p.type === 'hour').value;
+          const mins = parts.find(p => p.type === 'minute').value;
           const timeStr = `${hours}:${mins}`;
 
           const rKey = formatRestoName(item.restoName);
@@ -2554,8 +2598,9 @@
         }
 
         const d = new Date(item.timestampMs);
-        const hours = String(d.getHours()).padStart(2, '0');
-        const mins = String(d.getMinutes()).padStart(2, '0');
+        const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Jakarta', hour12: false, hour: '2-digit', minute: '2-digit' }).formatToParts(d);
+        const hours = parts.find(p => p.type === 'hour').value;
+        const mins = parts.find(p => p.type === 'minute').value;
         const timeStr = `${hours}:${mins}`;
 
         const rKey = formatRestoName(item.restoName);
@@ -2566,7 +2611,6 @@
           statusBadge += ` <span class="badge-status terlambat">Terlambat (> ${maxAllowed})</span>`;
         }
 
-        // RENDER HANYA TOMBOL LIHAT FOTO TANPA THUMBNAIL PRATINJAU
         const photoData = item.photoUrl || item.foto;
         let fotoRender = '-';
 
@@ -2635,56 +2679,68 @@
       const targetPage = document.getElementById(pageId);
       if (targetPage) targetPage.style.display = 'block';
 
-      // HIDE SWITCH UNTUK ROLE NON-ADMIN
-      const adminSwitchWrapper = document.getElementById('admin-checkin-switch-wrapper');
-      if (adminSwitchWrapper) adminSwitchWrapper.style.display = 'none';
-
       if (pageId === 'page-user-checkin') {
         updateCheckinSwitchUI();
         updateAutoDateTimeInput();
         toggleKameraTimestamp();
       } else if (pageId === 'page-shared-operasional') {
+        updateCheckinSwitchUI();
         const dateEl = document.getElementById('op_date_filter');
         if (dateEl && !dateEl.value) dateEl.value = getTodayYMD();
         filterOperasionalCategory('ALL');
       }
     }
 
+    // MEMPERBAARUI LAST ONLINE USER SECARA REALTIME TIMESTAMP MILIDETIK STANDAR
     function recordUserActivity(username) {
       if (!username) return;
       localStorage.setItem(`resto_user_last_online_${username}`, Date.now().toString());
     }
 
+    // PARSING INDIKATOR STATUS ONLINE / LAST ONLINE BERDASARKAN WIB
     function getUserLastOnlineText(username) {
       const storedTime = localStorage.getItem(`resto_user_last_online_${username}`);
       if (!storedTime) {
         return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> Belum ada aktivitas</span>`;
       }
       
-      const lastTime = parseInt(storedTime);
-      const diffMs = Date.now() - lastTime;
+      const lastTimeMs = parseInt(storedTime);
+      const nowMs = Date.now();
+      const diffMs = nowMs - lastTimeMs;
       const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
       if (diffMinutes < 5) {
         return `<span class="online-indicator online-now"><span class="status-dot"></span> Online</span>`;
       } else {
-        const d = new Date(lastTime);
-        return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> ${d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}, ${d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>`;
+        const d = new Date(lastTimeMs);
+        const formattedWIB = d.toLocaleString('id-ID', {
+          timeZone: 'Asia/Jakarta',
+          day: 'numeric',
+          month: 'short',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }).replace(/\./g, ':');
+
+        return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> ${formattedWIB} WIB</span>`;
       }
     }
 
     setInterval(() => {
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) recordUserActivity(loggedUser);
-    }, 60000);
+    }, 30000);
 
-    // AUTO-POLLING REALTIME TIAP 10 DETIK UNTUK INTEGRASI SWITCH & LISTING CHECKIN DI SUPERVISOR/ADMIN/PSD
+    // AUTO-POLLING REALTIME TIAP 10 DETIK UNTUK SINKRONISASI ONLINE STATUS & ABSENSI
     setInterval(() => {
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) {
         fetchInitialDataFromGAS(() => {
           updateCheckinSwitchUI();
           renderOperasionalTable();
+          if (localStorage.getItem('resto_user_role') === 'admin') {
+            renderUserTable();
+          }
         });
       }
     }, 10000);
@@ -2786,8 +2842,7 @@
         let html = '';
         relevantMsgs.forEach(m => {
           const isRead = !!readState[m.id];
-          const d = new Date(m.timestamp);
-          const timeStr = `${d.toLocaleDateString('id-ID')} ${d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}`;
+          const timeStr = `${formatWIBTime(m.timestamp)} WIB`;
           let roleLabel = m.targetRole === 'supervisor' ? 'Khusus SPV' : (m.targetRole === 'psd' ? 'Khusus PSD' : (m.targetRole === 'user' ? 'Khusus Outlet' : 'Semua User'));
 
           html += `
@@ -2816,7 +2871,6 @@
     }
 
     window.onload = function() {
-      // SET DEFAULT TANGGAL FILTER
       const dateEl = document.getElementById('op_date_filter');
       if (dateEl) dateEl.value = getTodayYMD();
 
@@ -3336,12 +3390,9 @@
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
       element.classList.add('active');
 
-      const adminSwitchWrapper = document.getElementById('admin-checkin-switch-wrapper');
-
       if (pageId === 'page-shared-operasional') {
         document.getElementById('admin-view').style.display = 'none';
         document.getElementById('page-shared-operasional').style.display = 'block';
-        if (adminSwitchWrapper) adminSwitchWrapper.style.display = 'flex';
         updateCheckinSwitchUI();
         
         const dateEl = document.getElementById('op_date_filter');
@@ -3350,7 +3401,6 @@
       } else {
         document.getElementById('page-shared-operasional').style.display = 'none';
         document.getElementById('admin-view').style.display = 'block';
-        if (adminSwitchWrapper) adminSwitchWrapper.style.display = 'none';
         document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
         document.getElementById(pageId).style.display = 'block';
 
@@ -3412,7 +3462,7 @@
             <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Nama / Label</th>
             <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Password</th>
             <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Role</th>
-            <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Last Online</th>
+            <th style="padding: 14px; color: var(--text-muted); font-weight: 800;">Last Online (WIB Realtime)</th>
             <th style="padding: 14px; color: var(--text-muted); font-weight: 800; text-align: center;">Aksi</th>
           </tr>
         </thead><tbody>`;
