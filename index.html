@@ -589,7 +589,6 @@
       box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
     }
 
-    /* UI TOGGLE SWITCH STYLES - KHUSUS ADMIN */
     .switch-toggle-wrapper {
       display: flex;
       align-items: center;
@@ -2691,20 +2690,46 @@
       }
     }
 
-    // MEMPERBAARUI LAST ONLINE USER SECARA REALTIME TIMESTAMP MILIDETIK STANDAR
-    function recordUserActivity(username) {
+    // MEMPERBARUI LAST ONLINE USER SECARA REALTIME KE SERVER GAS & LOCAL STORAGE
+    async function recordUserActivity(username) {
       if (!username) return;
-      localStorage.setItem(`resto_user_last_online_${username}`, Date.now().toString());
+      const nowMs = Date.now();
+      
+      // Simpan ke local storage
+      localStorage.setItem(`resto_user_last_online_${username}`, nowMs.toString());
+
+      // Kirim sinkronisasi heartbeat ke backend Google Apps Script
+      try {
+        await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({
+            action: "updateLastOnline",
+            username: username,
+            timestampMs: nowMs
+          })
+        });
+      } catch (err) {
+        console.warn("Gagal update last online ke GAS:", err);
+      }
     }
 
-    // PARSING INDIKATOR STATUS ONLINE / LAST ONLINE BERDASARKAN WIB
-    function getUserLastOnlineText(username) {
-      const storedTime = localStorage.getItem(`resto_user_last_online_${username}`);
-      if (!storedTime) {
+    // PARSING INDIKATOR STATUS ONLINE / LAST ONLINE BERDASARKAN WIB & TIMESTAMP GAS
+    function getUserLastOnlineText(userObj) {
+      if (!userObj) return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> Belum ada aktivitas</span>`;
+      
+      // Dapatkan timestamp dari GAS (last_online) atau dari local storage fallback
+      let lastTimeMs = userObj.last_online ? Number(userObj.last_online) : 0;
+      const localTime = localStorage.getItem(`resto_user_last_online_${userObj.username}`);
+      if (localTime && Number(localTime) > lastTimeMs) {
+        lastTimeMs = Number(localTime);
+      }
+
+      if (!lastTimeMs) {
         return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> Belum ada aktivitas</span>`;
       }
       
-      const lastTimeMs = parseInt(storedTime);
       const nowMs = Date.now();
       const diffMs = nowMs - lastTimeMs;
       const diffMinutes = Math.floor(diffMs / (1000 * 60));
@@ -2726,12 +2751,13 @@
       }
     }
 
+    // HEARTBEAT BERKALA TIAP 30 DETIK UNTUK USER YANG SEDANG LOGIN
     setInterval(() => {
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) recordUserActivity(loggedUser);
     }, 30000);
 
-    // AUTO-POLLING REALTIME TIAP 10 DETIK UNTUK SINKRONISASI ONLINE STATUS & ABSENSI
+    // AUTO-POLLING REALTIME TIAP 10 DETIK UNTUK SINKRONISASI ALL DATA (INCL. LAST ONLINE STATUS)
     setInterval(() => {
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) {
@@ -2881,6 +2907,7 @@
       }
     };
 
+    // FORM SUBMIT LOGIN DENGAN PENCATATAN LAST ONLINE REALTIME
     loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       const user = document.getElementById('username').value.trim();
@@ -2903,7 +2930,8 @@
           localStorage.setItem('resto_user_role', result.data.role);
           localStorage.setItem('resto_user_name', result.data.name);
           
-          recordUserActivity(result.data.username);
+          // Kirim pencatatan realtime last online saat login
+          await recordUserActivity(result.data.username);
           showDashboard(result.data.username);
         } else {
           errorMsg.textContent = result.message;
@@ -3451,6 +3479,7 @@
       container.innerHTML = html;
     }
 
+    // RENDER TABEL USER DENGAN PERHITUNGAN LAST ONLINE REALTIME LENGKAP
     function renderUserTable() {
       const users = globalDashboardData.usersList || [];
       const wrapper = document.getElementById('user-table-wrapper');
@@ -3473,7 +3502,7 @@
         else if (u.role === 'supervisor') badgeColor = 'color:#4338ca; font-weight:800;';
         else if (u.role === 'psd') badgeColor = 'color:#15803d; font-weight:800;';
 
-        const lastOnlineHtml = getUserLastOnlineText(u.username);
+        const lastOnlineHtml = getUserLastOnlineText(u);
         const displayName = u.role === 'user' ? formatRestoName(u.name) : u.name;
 
         html += `
