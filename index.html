@@ -1664,7 +1664,7 @@
                 </div>
               </div>
               <div style="min-width: 160px;">
-                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">FILTER TANGGAL (WIB)</label>
+                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">FILTER TANGGAL (MAKS 30 HARI)</label>
                 <input type="date" id="op_date_filter" onchange="renderOperasionalTable()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff; font-weight: 700;">
               </div>
               <div style="align-self: flex-end;">
@@ -2345,6 +2345,12 @@
       </div>
 
       <form onsubmit="submitMutasiKaryawan(event)">
+        <!-- AUTO TANGGAL MUTASI -->
+        <div class="input-group">
+          <label>TANGGAL MUTASI (WIB)</label>
+          <input type="text" id="mutasi_datetime" readonly style="background:#f1f5f9; font-weight:700;" required>
+        </div>
+
         <!-- RESTO ASAL (Dropdown dari Coverage SPV) -->
         <div class="input-group">
           <label>RESTO ASAL</label>
@@ -2448,6 +2454,32 @@
       const month = parts.find(p => p.type === 'month').value;
       const day = parts.find(p => p.type === 'day').value;
       return `${year}-${month}-${day}`;
+    }
+
+    // HELPER MEMFORMAT TANGGAL DENGAN OFFSET HARI
+    function getYMDWithOffset(offsetDays = 0) {
+      const d = new Date();
+      d.setDate(d.getDate() + offsetDays);
+      const options = { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' };
+      const parts = new Intl.DateTimeFormat('en-CA', options).formatToParts(d);
+      const year = parts.find(p => p.type === 'year').value;
+      const month = parts.find(p => p.type === 'month').value;
+      const day = parts.find(p => p.type === 'day').value;
+      return `${year}-${month}-${day}`;
+    }
+
+    // SETUP BATAS FILTER TANGGAL MAKSIMAL 30 HARI KE BELAKANG
+    function setupOperasionalDateFilterLimits() {
+      const dateEl = document.getElementById('op_date_filter');
+      if (dateEl) {
+        const todayStr = getTodayYMD();
+        const min30DaysStr = getYMDWithOffset(-30);
+        dateEl.setAttribute('max', todayStr);
+        dateEl.setAttribute('min', min30DaysStr);
+        if (!dateEl.value) {
+          dateEl.value = todayStr;
+        }
+      }
     }
 
     // HELPER MEMFORMAT TIMESTAMP REALTIME KE WIB (ASIA/JAKARTA)
@@ -3030,6 +3062,12 @@
       const currentUser = localStorage.getItem('resto_current_user');
       const userRole = localStorage.getItem('resto_user_role') || 'user';
       
+      // AUTO SET TANGGAL & WAKTU MUTASI (WIB)
+      const mutasiDateInput = document.getElementById('mutasi_datetime');
+      if (mutasiDateInput) {
+        mutasiDateInput.value = `${formatWIBTime(Date.now())} WIB`;
+      }
+
       // 1. Ambil resto coverage milik SPV aktif
       const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
       const coverageNames = (spvIndiv.resto_names || '').split(',').map(s => formatRestoName(s)).filter(s => s.length > 0);
@@ -3117,6 +3155,7 @@
     async function submitMutasiKaryawan(event) {
       event.preventDefault();
 
+      const tanggalMutasi = document.getElementById('mutasi_datetime').value;
       const restoAsal = document.getElementById('mutasi_resto_asal').value;
       const nik = document.getElementById('mutasi_nik').value;
       const jabatan = document.getElementById('mutasi_jabatan').value;
@@ -3150,6 +3189,7 @@
             action: "mutasiKaryawan",
             adminUser: currentUser,
             mutasiData: {
+              tanggalMutasi: tanggalMutasi,
               nik: nik,
               nama: namaKaryawan,
               jabatan: jabatan,
@@ -3190,7 +3230,7 @@
     function resetOperasionalFilter() {
       const dateEl = document.getElementById('op_date_filter');
       const searchEl = document.getElementById('op_search_input');
-      if (dateEl) dateEl.value = getTodayYMD();
+      setupOperasionalDateFilterLimits();
       if (searchEl) searchEl.value = '';
       currentOpFilter = 'ALL';
       renderOperasionalTable();
@@ -3279,6 +3319,7 @@
         filtered = filtered.filter(item => coverageNames.includes(formatRestoName(item.restoName)));
       }
 
+      setupOperasionalDateFilterLimits();
       const selectedDate = document.getElementById('op_date_filter')?.value || getTodayYMD();
       filtered = filtered.filter(item => {
         if (!item.timestampMs) return true;
@@ -3429,8 +3470,7 @@
         hidePsdAdmRestoSubPage();
       } else if (pageId === 'page-shared-operasional') {
         updateCheckinSwitchUI();
-        const dateEl = document.getElementById('op_date_filter');
-        if (dateEl && !dateEl.value) dateEl.value = getTodayYMD();
+        setupOperasionalDateFilterLimits();
         filterOperasionalCategory('ALL');
       } else if (pageId === 'page-daftar-karyawan') {
         renderKaryawanTable();
@@ -3639,8 +3679,7 @@
 
     window.onload = function() {
       initGeolocation();
-      const dateEl = document.getElementById('op_date_filter');
-      if (dateEl) dateEl.value = getTodayYMD();
+      setupOperasionalDateFilterLimits();
 
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) { 
@@ -4342,9 +4381,7 @@
         document.getElementById('page-daftar-karyawan').style.display = 'none';
         document.getElementById('page-shared-operasional').style.display = 'block';
         updateCheckinSwitchUI();
-        
-        const dateEl = document.getElementById('op_date_filter');
-        if (dateEl && !dateEl.value) dateEl.value = getTodayYMD();
+        setupOperasionalDateFilterLimits();
         filterOperasionalCategory('ALL');
       } else if (pageId === 'page-daftar-karyawan') {
         document.getElementById('admin-view').style.display = 'none';
