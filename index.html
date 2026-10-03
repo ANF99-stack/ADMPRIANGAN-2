@@ -1160,11 +1160,11 @@
               </div>
               <div class="input-group">
                 <label>NIK KARYAWAN</label>
-                <input type="text" id="checkin_nik" placeholder="Masukkan NIK Karyawan" required>
+                <input type="text" id="checkin_nik" placeholder="Masukkan NIK Karyawan" oninput="autoFillNamaByNIK()" onchange="autoFillNamaByNIK()" required>
               </div>
               <div class="input-group">
-                <label>NAMA LENGKAP</label>
-                <input type="text" id="checkin_nama" placeholder="Masukkan Nama Lengkap" required>
+                <label>NAMA LENGKAP (TERISI OTOMATIS BERDASARKAN NIK)</label>
+                <input type="text" id="checkin_nama" placeholder="Terisi Otomatis..." readonly style="background:#f1f5f9; font-weight:700; cursor:not-allowed;" required>
               </div>
               <div class="input-group">
                 <label>SHIFTING / KETERANGAN ABSEN</label>
@@ -2365,6 +2365,28 @@
     let cameraStream = null;
     let capturedSnapDataUrl = null;
 
+    // FUNGSI AUTO-FILL NAMA KARYAWAN BERDASARKAN NIK YANG DI-INPUT
+    function autoFillNamaByNIK() {
+      const nikInput = document.getElementById('checkin_nik');
+      const namaInput = document.getElementById('checkin_nama');
+      if (!nikInput || !namaInput) return;
+
+      const inputVal = nikInput.value.trim().toLowerCase();
+      if (!inputVal) {
+        namaInput.value = '';
+        return;
+      }
+
+      const karyawanList = getStoredKaryawanData();
+      const match = karyawanList.find(k => (k.nik || '').toString().trim().toLowerCase() === inputVal);
+
+      if (match && match.nama) {
+        namaInput.value = match.nama;
+      } else {
+        namaInput.value = '';
+      }
+    }
+
     // MANAGEMENT SWITCH CHECKIN FEATURE
     function isCheckinFeatureEnabled() {
       return globalDashboardData.checkinEnabled === true || localStorage.getItem('resto_checkin_feature_enabled') === 'true';
@@ -2616,6 +2638,11 @@
       const nik = document.getElementById('checkin_nik').value.trim();
       const nama = document.getElementById('checkin_nama').value.trim();
       const shifting = document.getElementById('checkin_shifting').value;
+
+      if (!nama) {
+        alert('NIK Karyawan tidak ditemukan di database. Pastikan NIK terdaftar!');
+        return;
+      }
 
       let fotoUrl = '-';
       if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shifting)) {
