@@ -1618,7 +1618,7 @@
               <h3 style="font-size: 1.3rem; font-weight: 800; color: #4338ca; display: flex; align-items: center; gap: 10px;">
                 <i class="fa-solid fa-clipboard-user"></i> OPERASIONAL RESTO
               </h3>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Rekapitulasi output checkin karyawan, shifting resto, kategorial absensi & keterlambatan hari ini.</p>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Rekapitulasi output checkin karyawan, shifting resto, kategorial absensi & keterlambatan.</p>
             </div>
           </div>
 
@@ -1654,7 +1654,7 @@
           <!-- KONTEN TABEL & MONITORING ABSENSI -->
           <div id="operasional_active_content_view">
 
-            <!-- AREA SEARCH DAN FILTER TANGGAL METADATA ABSENSI -->
+            <!-- AREA SEARCH DAN FILTER RENTANG TANGGAL (LEBIH DARI 1 TANGGAL) -->
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 12px; border-radius: 14px; border: 1px solid var(--border);">
               <div style="flex: 1; min-width: 200px;">
                 <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">CARI KARYAWAN / RESTO</label>
@@ -1663,10 +1663,19 @@
                   <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--text-muted);"></i>
                 </div>
               </div>
-              <div style="min-width: 160px;">
-                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">FILTER TANGGAL (MAKS 30 HARI)</label>
-                <input type="date" id="op_date_filter" onchange="renderOperasionalTable()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff; font-weight: 700;">
+              
+              <!-- FILTER TANGGAL MULAI (START DATE) -->
+              <div style="min-width: 150px;">
+                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">DARI TANGGAL</label>
+                <input type="date" id="op_start_date_filter" onchange="renderOperasionalTable()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff; font-weight: 700;">
               </div>
+
+              <!-- FILTER TANGGAL AKHIR (END DATE) -->
+              <div style="min-width: 150px;">
+                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">SAMPAI TANGGAL</label>
+                <input type="date" id="op_end_date_filter" onchange="renderOperasionalTable()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff; font-weight: 700;">
+              </div>
+
               <div style="align-self: flex-end;">
                 <button onclick="resetOperasionalFilter()" style="padding: 8px 14px; border: 1px solid var(--border); border-radius: 10px; background: #ffffff; font-size: 0.8rem; font-weight: 700; cursor: pointer; color: var(--text-muted);">
                   <i class="fa-solid fa-rotate-right"></i> Reset Hari Ini
@@ -1756,7 +1765,7 @@
             </div>
           </div>
 
-          <!-- TABEL MASTER LIST KARYAWAN (TANPA KOLOM TELEPON) -->
+          <!-- TABEL MASTER LIST KARYAWAN -->
           <div style="overflow-x: auto; border-radius: 12px; border: 1px solid var(--border);">
             <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 600px;">
               <thead>
@@ -2007,7 +2016,7 @@
           <div id="admin-links-list"></div>
         </div>
 
-        <!-- PAGE KELOLA LINK SUPERVISOR (TERMASUK INPUT SO & CEK SO) -->
+        <!-- PAGE KELOLA LINK SUPERVISOR -->
         <div id="page-spv-links" class="admin-page-content" style="display: none;">
           <div class="admin-card-item" style="border: 2px solid #c7d2fe; background: #f5f3ff; margin-bottom: 24px;">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
@@ -2028,8 +2037,6 @@
               <div class="admin-input-group"><label>5. Tracking Expense (Master)</label><input type="text" id="master_spv_expense" placeholder="https://docs.google.com/..."></div>
               <div class="admin-input-group"><label>6. Form Setor Uang (Master)</label><input type="text" id="master_spv_setor" placeholder="https://docs.google.com/..."></div>
               <div class="admin-input-group"><label>7. Laporan Penjualan (Master)</label><input type="text" id="master_spv_penjualan" placeholder="https://docs.google.com/..."></div>
-              
-              <!-- TAMBAHAN FIELD INPUT SO & CEK SO PADA MASTER LINK SPV -->
               <div class="admin-input-group"><label>8. Input SO (Master)</label><input type="text" id="master_spv_input_so" placeholder="https://docs.google.com/..."></div>
               <div class="admin-input-group"><label>9. Cek Stok Opname (Master)</label><input type="text" id="master_spv_cek_so" placeholder="https://docs.google.com/..."></div>
             </div>
@@ -2040,7 +2047,7 @@
         <div id="page-spv-coverage-update" class="admin-page-content" style="display: none;">
           <div style="margin-bottom: 16px;">
             <h4 style="font-size: 1.1rem; font-weight: 800; color:#4338ca;"><i class="fa-solid fa-sliders"></i> Update Coverage SPV & Penambahan Resto</h4>
-            <p style="font-size: 0.82rem; color: var(--text-muted);">Atur Base Omset, Dropdown Pemilihan Resto Coverage (Maksimal 10 Resto Khusus Label <b>LAZATTO & NGEUMI</b>), Kategori Operasional Resto (24 Jam / Reguler), serta Batas Jam Check-in Shifting Karyawan Masing-masing Resto.</p>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Atur Base Omset, Dropdown Pemilihan Resto Coverage, Kategori Operasional Resto, serta Batas Jam Check-in Shifting Karyawan.</p>
           </div>
           <div id="admin-spv-coverage-list"></div>
         </div>
@@ -2257,7 +2264,6 @@
         <img id="photo_modal_img" src="" alt="Bukti Checkin Karyawan" style="max-width:100%; max-height:420px; object-fit:contain; border-radius:12px; display:block; margin:0 auto; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
       </div>
 
-      <!-- METADATA DETAIL CHECKIN -->
       <div style="background:#f8fafc; border-radius:16px; border:1px solid var(--border); padding:16px; margin-bottom:16px;">
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; font-size:0.85rem;">
           <div>
@@ -2345,13 +2351,11 @@
       </div>
 
       <form onsubmit="submitMutasiKaryawan(event)">
-        <!-- AUTO TANGGAL MUTASI -->
         <div class="input-group">
           <label>TANGGAL MUTASI (WIB)</label>
           <input type="text" id="mutasi_datetime" readonly style="background:#f1f5f9; font-weight:700;" required>
         </div>
 
-        <!-- RESTO ASAL (Dropdown dari Coverage SPV) -->
         <div class="input-group">
           <label>RESTO ASAL</label>
           <select id="mutasi_resto_asal" onchange="onRestoAsalChange()" required>
@@ -2359,7 +2363,6 @@
           </select>
         </div>
 
-        <!-- NAMA KARYAWAN (Dropdown dari Resto Asal yang dipilih) -->
         <div class="input-group">
           <label>NAMA KARYAWAN</label>
           <select id="mutasi_nama_karyawan" onchange="onKaryawanSelectChange()" required disabled>
@@ -2367,19 +2370,16 @@
           </select>
         </div>
 
-        <!-- NIK (Otomatis) -->
         <div class="input-group">
           <label>NIK (OTOMATIS)</label>
           <input type="text" id="mutasi_nik" placeholder="Terisi Otomatis..." readonly style="background:#f1f5f9; font-weight:700; cursor:not-allowed;" required>
         </div>
 
-        <!-- JABATAN (Otomatis) -->
         <div class="input-group">
           <label>JABATAN (OTOMATIS)</label>
           <input type="text" id="mutasi_jabatan" placeholder="Terisi Otomatis..." readonly style="background:#f1f5f9; font-weight:700; cursor:not-allowed;" required>
         </div>
 
-        <!-- RESTO BARU (Dropdown dari Database All Resto) -->
         <div class="input-group">
           <label>RESTO BARU</label>
           <select id="mutasi_resto_baru" required>
@@ -2397,7 +2397,6 @@
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwn94FPpsde6D5GxfD7MCth_FfGOz5piJqcm0WxJ3x0HkggzdWKZiCORqr6JMaeQrhLYQ/exec";
 
-    // GLOBAL GEOLOCATION UNTUK WATERMARK FOTO TIMESTAMP
     let currentGeoLocation = {
       lat: null,
       lng: null,
@@ -2439,13 +2438,11 @@
       }
     }
 
-    // HELPER UNTUK FORMAT NAMA RESTO MENJADI UPPERCASE TANPA STRIP
     function formatRestoName(str) {
       if (!str) return '';
       return str.replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim().toUpperCase();
     }
 
-    // HELPER FORMAT YYYY-MM-DD BERDASARKAN STANDAR WAKTU WIB (ASIA/JAKARTA) REALTIME
     function getTodayYMD() {
       const d = new Date();
       const options = { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -2456,7 +2453,6 @@
       return `${year}-${month}-${day}`;
     }
 
-    // HELPER MEMFORMAT TANGGAL DENGAN OFFSET HARI
     function getYMDWithOffset(offsetDays = 0) {
       const d = new Date();
       d.setDate(d.getDate() + offsetDays);
@@ -2468,21 +2464,28 @@
       return `${year}-${month}-${day}`;
     }
 
-    // SETUP BATAS FILTER TANGGAL MAKSIMAL 30 HARI KE BELAKANG
+    // SETUP BATAS FILTER RENTANG TANGGAL
     function setupOperasionalDateFilterLimits() {
-      const dateEl = document.getElementById('op_date_filter');
-      if (dateEl) {
+      const startEl = document.getElementById('op_start_date_filter');
+      const endEl = document.getElementById('op_end_date_filter');
+      if (startEl && endEl) {
         const todayStr = getTodayYMD();
         const min30DaysStr = getYMDWithOffset(-30);
-        dateEl.setAttribute('max', todayStr);
-        dateEl.setAttribute('min', min30DaysStr);
-        if (!dateEl.value) {
-          dateEl.value = todayStr;
+        
+        startEl.setAttribute('max', todayStr);
+        startEl.setAttribute('min', min30DaysStr);
+        endEl.setAttribute('max', todayStr);
+        endEl.setAttribute('min', min30DaysStr);
+
+        if (!startEl.value) {
+          startEl.value = getYMDWithOffset(-7); // Default rentang 7 hari terakhir
+        }
+        if (!endEl.value) {
+          endEl.value = todayStr;
         }
       }
     }
 
-    // HELPER MEMFORMAT TIMESTAMP REALTIME KE WIB (ASIA/JAKARTA)
     function formatWIBTime(dateObjOrMs) {
       const d = new Date(dateObjOrMs || Date.now());
       return d.toLocaleString('id-ID', {
@@ -2497,7 +2500,6 @@
       }).replace(/\./g, ':');
     }
 
-    // CACHE DATA LOCAL STORAGE
     let globalDashboardData = (function() {
       try {
         const cached = localStorage.getItem('resto_cached_data');
@@ -2523,7 +2525,6 @@
     let cameraStream = null;
     let capturedSnapDataUrl = null;
 
-    // FUNGSI AUTO-FILL NAMA KARYAWAN BERDASARKAN NIK YANG DI-INPUT
     function autoFillNamaByNIK() {
       const nikInput = document.getElementById('checkin_nik');
       const namaInput = document.getElementById('checkin_nama');
@@ -2545,7 +2546,6 @@
       }
     }
 
-    // MANAGEMENT SWITCH CHECKIN FEATURE
     function isCheckinFeatureEnabled() {
       return globalDashboardData.checkinEnabled === true || localStorage.getItem('resto_checkin_feature_enabled') === 'true';
     }
@@ -2622,14 +2622,12 @@
         }
       }
 
-      // Visiabilitas Tombol Mutasi khusus SPV
       const mutasiBtnContainer = document.getElementById('spv-mutasi-btn-container');
       if (mutasiBtnContainer) {
         mutasiBtnContainer.style.display = (userRole === 'supervisor') ? 'block' : 'none';
       }
     }
 
-    // MANAGEMENT KAMERA REALTIME
     async function startCameraStream() {
       if (!isCheckinFeatureEnabled()) return;
 
@@ -2665,7 +2663,6 @@
       }
     }
 
-    // AMBIL FOTO KAMERA DENGAN OVERLAY WATERMARK GPS TIMESTAMP LENGKAP
     function takePhotoSnap() {
       const videoEl = document.getElementById('camera_video');
       const canvasEl = document.getElementById('camera_canvas');
@@ -2684,7 +2681,6 @@
       const ctx = canvasEl.getContext('2d');
       ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
 
-      // 1. Format Tanggal & Jam
       const d = new Date();
       const dateStr = d.toLocaleDateString('id-ID', {
         timeZone: 'Asia/Jakarta',
@@ -2700,22 +2696,15 @@
       }).replace(':', '.');
 
       const line1 = `${dateStr}, ${timeStr}`;
-
-      // 2. Format Koordinat GPS & Akurasi
       const lat = currentGeoLocation.lat || "-7.303104";
       const lng = currentGeoLocation.lng || "108.209306";
       const acc = currentGeoLocation.accuracy || "9.08";
       const line2 = `S ${lat}°, E ${lng}° ±${acc}m`;
-
-      // 3. Format Alamat Jalan & Kota
       const line3 = currentGeoLocation.address || "Jalan Leuwi Dahu No. 106–178";
       const line4 = currentGeoLocation.city || "Kota Tasikmalaya";
-
-      // 4. Format Ketinggian (Altitude)
       const alt = currentGeoLocation.altitude || "359.9";
       const line5 = `${alt} m a.s.l.`;
 
-      // PROSES DRAWING WATERMARK TIMESTAMP DI POJOK KANAN BAWAH
       const fontSize = Math.max(16, Math.round(canvasEl.width * 0.038));
       const lineHeight = fontSize * 1.35;
       
@@ -2786,7 +2775,6 @@
       }
     }
 
-    // SUBMIT ABSENSI CHECKIN KARYAWAN KE GOOGLE APPS SCRIPT
     async function submitCheckinKaryawan(event) {
       event.preventDefault();
 
@@ -2872,7 +2860,6 @@
       }
     }
 
-    // ================= FITUR DAFTAR, TEMPLATE & MANUAL KARYAWAN =================
     function updateKaryawanActionButtonsForRole() {
       const userRole = localStorage.getItem('resto_user_role') || 'user';
       const btnDownload = document.getElementById('btn_download_template_karyawan');
@@ -3056,19 +3043,14 @@
       reader.readAsArrayBuffer(file);
     }
 
-    // ================= LOGIKA POPUP FORM MUTASI KARYAWAN =================
-
     function openModalMutasiKaryawan() {
       const currentUser = localStorage.getItem('resto_current_user');
-      const userRole = localStorage.getItem('resto_user_role') || 'user';
       
-      // AUTO SET TANGGAL & WAKTU MUTASI (WIB)
       const mutasiDateInput = document.getElementById('mutasi_datetime');
       if (mutasiDateInput) {
         mutasiDateInput.value = `${formatWIBTime(Date.now())} WIB`;
       }
 
-      // 1. Ambil resto coverage milik SPV aktif
       const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
       const coverageNames = (spvIndiv.resto_names || '').split(',').map(s => formatRestoName(s)).filter(s => s.length > 0);
 
@@ -3079,13 +3061,11 @@
         selectRestoAsal.innerHTML += `<option value="${r}">${r}</option>`;
       });
 
-      // Reset Input
       document.getElementById('mutasi_nama_karyawan').innerHTML = '<option value="">-- Pilih Resto Asal Terlebih Dahulu --</option>';
       document.getElementById('mutasi_nama_karyawan').disabled = true;
       document.getElementById('mutasi_nik').value = '';
       document.getElementById('mutasi_jabatan').value = '';
 
-      // 2. Populate Dropdown Resto Baru dari Database All Resto
       const selectRestoBaru = document.getElementById('mutasi_resto_baru');
       selectRestoBaru.innerHTML = '<option value="">-- Pilih Resto Baru --</option>';
 
@@ -3101,7 +3081,6 @@
       document.getElementById('mutasi-karyawan-modal').style.display = 'none';
     }
 
-    // Event handler ketika RESTO ASAL dipilih
     function onRestoAsalChange() {
       const selectedResto = document.getElementById('mutasi_resto_asal').value;
       const selectNama = document.getElementById('mutasi_nama_karyawan');
@@ -3115,7 +3094,6 @@
         return;
       }
 
-      // Filter karyawan yang ada di resto asal tersebut
       const allKaryawan = getStoredKaryawanData();
       const filteredKaryawan = allKaryawan.filter(k => formatRestoName(k.resto) === selectedResto && (k.status || 'Aktif') === 'Aktif');
 
@@ -3133,7 +3111,6 @@
       selectNama.disabled = false;
     }
 
-    // Event handler ketika NAMA KARYAWAN dipilih -> Auto-fill NIK dan Jabatan
     function onKaryawanSelectChange() {
       const selectedNik = document.getElementById('mutasi_nama_karyawan').value;
       if (!selectedNik) {
@@ -3151,7 +3128,6 @@
       }
     }
 
-    // Submit data mutasi ke Google Apps Script / Spreadsheet
     async function submitMutasiKaryawan(event) {
       event.preventDefault();
 
@@ -3205,7 +3181,6 @@
           alert(`Mutasi Karyawan Berhasil!\n${namaKaryawan} (NIK: ${nik}) telah dipindahkan dari ${restoAsal} ke ${restoBaru}.`);
           closeModalMutasiKaryawan();
           
-          // Refresh Data Master
           fetchInitialDataFromGAS(() => {
             renderKaryawanTable();
           });
@@ -3228,8 +3203,10 @@
     }
 
     function resetOperasionalFilter() {
-      const dateEl = document.getElementById('op_date_filter');
+      const startEl = document.getElementById('op_start_date_filter');
+      const endEl = document.getElementById('op_end_date_filter');
       const searchEl = document.getElementById('op_search_input');
+      
       setupOperasionalDateFilterLimits();
       if (searchEl) searchEl.value = '';
       currentOpFilter = 'ALL';
@@ -3302,6 +3279,7 @@
       document.getElementById('photo-preview-modal').style.display = 'none';
     }
 
+    // FUNGSI RENDER TABEL OPERASIONAL DENGAN RENTANG TANGGAL (LEBIH DARI 1 TANGGAL)
     function renderOperasionalTable() {
       const currentUser = localStorage.getItem('resto_current_user');
       const userRole = localStorage.getItem('resto_user_role') || 'user';
@@ -3320,7 +3298,10 @@
       }
 
       setupOperasionalDateFilterLimits();
-      const selectedDate = document.getElementById('op_date_filter')?.value || getTodayYMD();
+      const startDate = document.getElementById('op_start_date_filter')?.value || getYMDWithOffset(-7);
+      const endDate = document.getElementById('op_end_date_filter')?.value || getTodayYMD();
+
+      // Filter berdasarkan rentang tanggal (dari startDate s.d. endDate)
       filtered = filtered.filter(item => {
         if (!item.timestampMs) return true;
         const d = new Date(item.timestampMs);
@@ -3329,7 +3310,8 @@
         const mm = parts.find(p => p.type === 'month').value;
         const dd = parts.find(p => p.type === 'day').value;
         const itemYMD = `${yyyy}-${mm}-${dd}`;
-        return itemYMD === selectedDate;
+        
+        return itemYMD >= startDate && itemYMD <= endDate;
       });
 
       const searchQuery = (document.getElementById('op_search_input')?.value || '').toLowerCase().trim();
@@ -3362,7 +3344,7 @@
       }
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Tidak ada data checkin karyawan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Tidak ada data checkin karyawan dalam rentang tanggal tersebut.</td></tr>`;
         return;
       }
 
@@ -4041,7 +4023,7 @@
       itemCard.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 200px;">
-            <label style="font-size: 0.75rem; font-weight: 800; color: #334155; display: block; margin-bottom: 4px;">PILIH OUTLET RESTO (KHUSUS LAZATTO & NGEUMI)</label>
+            <label style="font-size: 0.75rem; font-weight: 800; color: #334155; display: block; margin-bottom: 4px;">PILIH OUTLET RESTO</label>
             <select class="spv-resto-select-name-${key}" style="width:100%; padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-weight:800; font-size:0.85rem; background:#f8fafc; outline:none;" onchange="syncSpvRestoNamesText('${key}')">
               ${optionsHtml}
             </select>
@@ -4155,21 +4137,21 @@
 
             <div class="admin-input-grid">
               <div class="admin-input-group">
-                <label style="color:#4338ca;">Total Coverage Resto (Maksimal 10 Resto)</label>
+                <label style="color:#4338ca;">Total Coverage Resto</label>
                 <input type="number" id="spv_indiv_total_resto_${key}" value="${data.total_resto || spv.total_resto || 5}" min="1" max="10" readonly style="background:#f1f5f9; font-weight:800; color:#4338ca;">
               </div>
               <div class="admin-input-group">
-                <label style="color:#4338ca;">Daftar Nama Resto Coverage (Terisi Otomatis Dari Dropdown)</label>
+                <label style="color:#4338ca;">Daftar Nama Resto Coverage</label>
                 <input type="text" id="spv_indiv_resto_names_${key}" value="${data.resto_names || ''}" readonly style="background:#f1f5f9; font-weight:700;">
               </div>
 
               <div class="admin-input-group" style="grid-column: 1 / -1; background:#f8fafc; padding:14px; border-radius:14px; border:1px solid var(--border);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
                   <label style="color:#4338ca; font-size:0.88rem; font-weight:800; margin-bottom:0;">
-                    <i class="fa-solid fa-store"></i> PENGATURAN OPERASIONAL RESTO COVERAGE SPV (KHUSUS LAZATTO & NGEUMI)
+                    <i class="fa-solid fa-store"></i> PENGATURAN OPERASIONAL RESTO COVERAGE SPV
                   </label>
                   <button type="button" onclick="addSpvRestoItem('${key}', '', null)" style="background:#4338ca; color:white; border:none; padding:6px 14px; border-radius:8px; font-weight:800; font-size:0.78rem; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
-                    <i class="fa-solid fa-plus"></i> Tambah Resto Coverage SPV
+                    <i class="fa-solid fa-plus"></i> Tambah Resto Coverage
                   </button>
                 </div>
                 <div id="spv_resto_timings_container_${key}"></div>
