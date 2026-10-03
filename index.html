@@ -15,6 +15,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   
+  <!-- SheetJS Library untuk Parsing & Export File Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
   <style>
     :root {
       --lazatto-red: #dc2626;
@@ -1210,128 +1213,162 @@
         
         <!-- PAGE 1: MONITORING SUPERVISOR -->
         <div id="page-spv-monitoring" class="role-page-content">
-          <div class="supervisor-banner">
-            <div class="banner-header">
-              <div>
-                <h2 id="spv-welcome-title">Dashboard Supervisor</h2>
-                <p>Monitoring kinerja resto coverage, evaluasi COGS pekanan, base omset, laporan omset area, serta form pengawasan operasional lainnya.</p>
+          
+          <div id="spv-main-rekap-view">
+            <div class="supervisor-banner">
+              <div class="banner-header">
+                <div>
+                  <h2 id="spv-welcome-title">Dashboard Supervisor</h2>
+                  <p>Monitoring kinerja resto coverage, evaluasi COGS pekanan, base omset, laporan omset area, serta form pengawasan operasional lainnya.</p>
+                </div>
+                <div class="status-pill">
+                  <span class="status-dot"></span>
+                  <span>Hak Akses Supervisor</span>
+                </div>
               </div>
-              <div class="status-pill">
-                <span class="status-dot"></span>
-                <span>Hak Akses Supervisor</span>
+            </div>
+
+            <div class="grid-container">
+              <!-- KARTU INDUK ADM RESTO KHUSUS SUPERVISOR -->
+              <div class="card" style="border: 2px solid var(--lazatto-red); background: #fef2f2;">
+                <div class="card-top">
+                  <div class="card-icon icon-rose"><i class="fa-solid fa-building-user"></i></div>
+                  <div class="card-title" style="color: var(--lazatto-red);">ADM RESTO</div>
+                  <div class="card-desc">Portal laporan operasional, KPH, ganti minyak, expense, dan setor uang cabang.</div>
+                </div>
+                <button onclick="showSpvAdmRestoSubPage()" class="card-link-btn" style="background: var(--lazatto-red); color: white;">
+                  <span>Buka ADM RESTO</span>
+                  <i class="fa-solid fa-folder-open"></i>
+                </button>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-indigo"><i class="fa-solid fa-store"></i></div>
+                  <div class="card-title">Coverage Resto</div>
+                  <div class="card-desc">Total outlet resto yang dipegang dan diawasi oleh supervisor.</div>
+                </div>
+                <div class="coverage-display-box">
+                  <div id="spv-total-resto-display" class="coverage-num">0</div>
+                  <div class="coverage-text">Resto Dipegang</div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-rose"><i class="fa-solid fa-calculator"></i></div>
+                  <div class="card-title">Check COGS Pekanan</div>
+                  <div class="card-desc">Pemeriksaan dan kontrol HPP / Cost of Goods Sold mingguan cabang area.</div>
+                </div>
+                <a id="btn_spv_cogs" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Sheet COGS Pekanan</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-amber"><i class="fa-solid fa-database"></i></div>
+                  <div class="card-title">Base Laporan Omset</div>
+                  <div class="card-desc">Master data dan basis pencatatan omset operasional supervisor.</div>
+                </div>
+                <a id="btn_spv_base_omset" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Base Omset</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-emerald"><i class="fa-solid fa-chart-pie"></i></div>
+                  <div class="card-title">Omset Area</div>
+                  <div class="card-desc">Rekapitulasi performa penjualan dan total omset keseluruhan wilayah area.</div>
+                </div>
+                <a id="btn_spv_omset_area" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Omset Area</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
             </div>
           </div>
 
-          <div class="grid-container">
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-indigo"><i class="fa-solid fa-store"></i></div>
-                <div class="card-title">Coverage Resto</div>
-                <div class="card-desc">Total outlet resto yang dipegang dan diawasi oleh supervisor.</div>
-              </div>
-              <div class="coverage-display-box">
-                <div id="spv-total-resto-display" class="coverage-num">0</div>
-                <div class="coverage-text">Resto Dipegang</div>
+          <!-- SUB-VIEW ADM RESTO UNTUK SUPERVISOR -->
+          <div id="spv-adm-resto-sub-view" style="display: none;">
+            <div class="supervisor-banner" style="background: linear-gradient(135deg, #1e1b4b 0%, #dc2626 100%);">
+              <div class="banner-header">
+                <div>
+                  <h2>Portal Laporan ADM RESTO (Supervisor)</h2>
+                  <p>Halaman khusus laporan operasional resto yang terhubung secara otomatis dengan Master Link Supervisor.</p>
+                </div>
+                <button onclick="hideSpvAdmRestoSubPage()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
               </div>
             </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-rose"><i class="fa-solid fa-calculator"></i></div>
-                <div class="card-title">Check COGS Pekanan</div>
-                <div class="card-desc">Pemeriksaan dan kontrol HPP / Cost of Goods Sold mingguan cabang area.</div>
+            <div class="grid-container">
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
+                  <div class="card-title">Laporan Penjualan</div>
+                  <div class="card-desc">Laporan detail hasil penjualan harian resto area.</div>
+                </div>
+                <a id="btn_spv_penjualan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_spv_cogs" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Sheet COGS Pekanan</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-amber"><i class="fa-solid fa-database"></i></div>
-                <div class="card-title">Base Laporan Omset</div>
-                <div class="card-desc">Master data dan basis pencatatan omset operasional supervisor.</div>
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
+                  <div class="card-title">KPH</div>
+                  <div class="card-desc">Kartu Persiapan Harian untuk kontrol bahan baku area.</div>
+                </div>
+                <a id="btn_spv_kph" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_spv_base_omset" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Base Omset</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-emerald"><i class="fa-solid fa-chart-pie"></i></div>
-                <div class="card-title">Omset Area</div>
-                <div class="card-desc">Rekapitulasi performa penjualan dan total omset keseluruhan wilayah area.</div>
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
+                  <div class="card-title">Form Ganti Minyak</div>
+                  <div class="card-desc">Pencatatan & pengawasan penggunaan minyak goreng area.</div>
+                </div>
+                <a id="btn_spv_ganti_minyak" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_spv_omset_area" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Omset Area</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
-                <div class="card-title">Form Ganti Minyak</div>
-                <div class="card-desc">Pencatatan & pengawasan pemakaian minyak goreng area.</div>
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
+                  <div class="card-title">Tracking Expense</div>
+                  <div class="card-desc">Monitoring & pencatatan pengeluaran operasional resto area.</div>
+                </div>
+                <a id="btn_spv_expense" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_spv_ganti_minyak" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Sheet Ganti Minyak</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
-                <div class="card-title">Kartu Persiapan Harian (KPH)</div>
-                <div class="card-desc">Pencatatan & kontrol persiapan bahan baku harian area.</div>
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                  <div class="card-title">Form Setor Uang</div>
+                  <div class="card-desc">Validasi dan rekapitulasi setoran uang harian resto.</div>
+                </div>
+                <a id="btn_spv_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_spv_kph" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka KPH Area</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
-
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
-                <div class="card-title">Tracking Expense</div>
-                <div class="card-desc">Pencatatan & monitoring pengeluaran operasional cabang area.</div>
-              </div>
-              <a id="btn_spv_expense" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Tracking Expense</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
-
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
-                <div class="card-title">Form Setor Uang</div>
-                <div class="card-desc">Pencatatan & validasi setoran uang pendapatan harian.</div>
-              </div>
-              <a id="btn_spv_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Form Setor Uang</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
-
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
-                <div class="card-title">Laporan Penjualan</div>
-                <div class="card-desc">Laporan detail hasil penjualan harian resto area.</div>
-              </div>
-              <a id="btn_spv_penjualan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Laporan Penjualan</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
             </div>
           </div>
+
         </div>
 
       </div>
@@ -1341,140 +1378,174 @@
         
         <!-- PAGE 1: MONITORING PSD -->
         <div id="page-psd-monitoring" class="role-page-content">
-          <div class="psd-banner">
-            <div class="banner-header">
-              <div>
-                <h2 id="psd-welcome-title">Dashboard PSD</h2>
-                <p>Portal evaluasi operasional, kontrol transaksi kasir & leader, rekapitulasi promo, database karyawan, serta form pengawasan cabang.</p>
+          
+          <div id="psd-main-rekap-view">
+            <div class="psd-banner">
+              <div class="banner-header">
+                <div>
+                  <h2 id="psd-welcome-title">Dashboard PSD</h2>
+                  <p>Portal evaluasi operasional, kontrol transaksi kasir & leader, rekapitulasi promo, database karyawan, serta form pengawasan cabang.</p>
+                </div>
+                <div class="status-pill">
+                  <span class="status-dot"></span>
+                  <span>Hak Akses PSD</span>
+                </div>
               </div>
-              <div class="status-pill">
-                <span class="status-dot"></span>
-                <span>Hak Akses PSD</span>
+            </div>
+
+            <div class="grid-container">
+              <!-- KARTU INDUK ADM RESTO KHUSUS PSD -->
+              <div class="card" style="border: 2px solid var(--lazatto-red); background: #fef2f2;">
+                <div class="card-top">
+                  <div class="card-icon icon-rose"><i class="fa-solid fa-building-user"></i></div>
+                  <div class="card-title" style="color: var(--lazatto-red);">ADM RESTO</div>
+                  <div class="card-desc">Portal laporan operasional, KPH, ganti minyak, expense, dan setor uang cabang.</div>
+                </div>
+                <button onclick="showPsdAdmRestoSubPage()" class="card-link-btn" style="background: var(--lazatto-red); color: white;">
+                  <span>Buka ADM RESTO</span>
+                  <i class="fa-solid fa-folder-open"></i>
+                </button>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-emerald"><i class="fa-solid fa-utensils"></i></div>
+                  <div class="card-title">FCP RESTO</div>
+                  <div class="card-desc">Buku rekapitulasi & evaluasi Food Cost Percentage resto.</div>
+                </div>
+                <a id="btn_psd_fcp" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka FCP Resto</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-teal"><i class="fa-solid fa-cash-register"></i></div>
+                  <div class="card-title">Checking Kasir</div>
+                  <div class="card-desc">Monitoring & audit transaksi keuangan operasional kasir resto.</div>
+                </div>
+                <a id="btn_psd_checking_kasir" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Checking Kasir</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-cyan"><i class="fa-solid fa-user-check"></i></div>
+                  <div class="card-title">Checking Leader</div>
+                  <div class="card-desc">Form pengawasan dan kontrol performa leader/head shift outlet.</div>
+                </div>
+                <a id="btn_psd_checking_leader" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Checking Leader</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-purple"><i class="fa-solid fa-tags"></i></div>
+                  <div class="card-title">Rekap Promo</div>
+                  <div class="card-desc">Rekapitulasi pencapaian dan efektivitas campaign promo di cabang.</div>
+                </div>
+                <a id="btn_psd_rekap_promo" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Rekap Promo</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-indigo"><i class="fa-solid fa-address-book"></i></div>
+                  <div class="card-title">Data Karyawan</div>
+                  <div class="card-desc">Database master informasi & personalia karyawan resto.</div>
+                </div>
+                <a id="btn_psd_data_karyawan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Data Karyawan</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
             </div>
           </div>
 
-          <div class="grid-container">
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-emerald"><i class="fa-solid fa-utensils"></i></div>
-                <div class="card-title">FCP RESTO</div>
-                <div class="card-desc">Buku rekapitulasi & evaluasi Food Cost Percentage resto.</div>
+          <!-- SUB-VIEW ADM RESTO UNTUK PSD -->
+          <div id="psd-adm-resto-sub-view" style="display: none;">
+            <div class="psd-banner" style="background: linear-gradient(135deg, #064e3b 0%, #dc2626 100%);">
+              <div class="banner-header">
+                <div>
+                  <h2>Portal Laporan ADM RESTO (PSD)</h2>
+                  <p>Halaman khusus laporan operasional resto yang terhubung secara otomatis dengan Master Link PSD.</p>
+                </div>
+                <button onclick="hidePsdAdmRestoSubPage()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
               </div>
-              <a id="btn_psd_fcp" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka FCP Resto</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
             </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-teal"><i class="fa-solid fa-cash-register"></i></div>
-                <div class="card-title">Checking Kasir</div>
-                <div class="card-desc">Monitoring & audit transaksi keuangan operasional kasir resto.</div>
+            <div class="grid-container">
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
+                  <div class="card-title">Laporan Penjualan</div>
+                  <div class="card-desc">Laporan detail hasil penjualan harian resto area.</div>
+                </div>
+                <a id="btn_psd_penjualan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_psd_checking_kasir" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Checking Kasir</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-cyan"><i class="fa-solid fa-user-check"></i></div>
-                <div class="card-title">Checking Leader</div>
-                <div class="card-desc">Form pengawasan dan kontrol performa leader/head shift outlet.</div>
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
+                  <div class="card-title">KPH</div>
+                  <div class="card-desc">Kartu Persiapan Harian untuk kontrol bahan baku area.</div>
+                </div>
+                <a id="btn_psd_kph" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_psd_checking_leader" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Checking Leader</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-purple"><i class="fa-solid fa-tags"></i></div>
-                <div class="card-title">Rekap Promo</div>
-                <div class="card-desc">Rekapitulasi pencapaian dan efektivitas campaign promo di cabang.</div>
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
+                  <div class="card-title">Form Ganti Minyak</div>
+                  <div class="card-desc">Pencatatan & pengawasan penggunaan minyak goreng area.</div>
+                </div>
+                <a id="btn_psd_ganti_minyak" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_psd_rekap_promo" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Rekap Promo</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-indigo"><i class="fa-solid fa-address-book"></i></div>
-                <div class="card-title">Data Karyawan</div>
-                <div class="card-desc">Database master informasi & personalia karyawan resto.</div>
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
+                  <div class="card-title">Tracking Expense</div>
+                  <div class="card-desc">Monitoring & pencatatan pengeluaran operasional resto area.</div>
+                </div>
+                <a id="btn_psd_expense" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_psd_data_karyawan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Data Karyawan</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
 
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
-                <div class="card-title">Form Ganti Minyak</div>
-                <div class="card-desc">Pencatatan & pengawasan pemakaian minyak goreng area.</div>
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                  <div class="card-title">Form Setor Uang</div>
+                  <div class="card-desc">Validasi dan rekapitulasi setoran uang harian resto.</div>
+                </div>
+                <a id="btn_psd_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
               </div>
-              <a id="btn_psd_ganti_minyak" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Sheet Ganti Minyak</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
-
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
-                <div class="card-title">Kartu Persiapan Harian (KPH)</div>
-                <div class="card-desc">Pencatatan & kontrol persiapan bahan baku harian area.</div>
-              </div>
-              <a id="btn_psd_kph" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka KPH Area</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
-
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
-                <div class="card-title">Tracking Expense</div>
-                <div class="card-desc">Pencatatan & monitoring pengeluaran operasional cabang area.</div>
-              </div>
-              <a id="btn_psd_expense" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Tracking Expense</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
-
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
-                <div class="card-title">Form Setor Uang</div>
-                <div class="card-desc">Pencatatan & validasi setoran uang pendapatan harian.</div>
-              </div>
-              <a id="btn_psd_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Form Setor Uang</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
-            </div>
-
-            <div class="card">
-              <div class="card-top">
-                <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
-                <div class="card-title">Laporan Penjualan</div>
-                <div class="card-desc">Laporan detail hasil penjualan harian resto area.</div>
-              </div>
-              <a id="btn_psd_penjualan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                <span>Buka Laporan Penjualan</span>
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-              </a>
             </div>
           </div>
+
         </div>
 
       </div>
@@ -1567,6 +1638,74 @@
                 </tbody>
               </table>
             </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================= SHARED PAGE: DAFTAR KARYAWAN (ADMIN, PSD, SPV) ================= -->
+      <div id="page-daftar-karyawan" class="role-page-content" style="display: none;">
+        <div class="admin-card-item" style="border: 2px solid var(--lazatto-red); background: #ffffff;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--lazatto-red); display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-users"></i> DAFTAR KARYAWAN
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Master database list karyawan resto & fitur kelola data karyawan.</p>
+            </div>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button id="btn_download_template_karyawan" onclick="downloadKaryawanTemplate()" style="background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);">
+                <i class="fa-solid fa-download"></i> Download Template Excel
+              </button>
+
+              <input type="file" id="excel_import_file" accept=".xlsx, .xls, .csv" style="display: none;" onchange="handleExcelImport(event)">
+              <button id="btn_import_excel_karyawan" onclick="document.getElementById('excel_import_file').click()" style="background: #059669; color: white; border: none; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);">
+                <i class="fa-solid fa-file-excel"></i> Import Excel
+              </button>
+
+              <button id="btn_add_karyawan_manual" onclick="openAddKaryawanModal()" style="background: var(--lazatto-red); color: white; border: none; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);">
+                <i class="fa-solid fa-user-plus"></i> Tambah Karyawan Manual
+              </button>
+            </div>
+          </div>
+
+          <!-- BAR PENELUSURAN & STATISTIK DATABASES KARYAWAN -->
+          <div style="display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 14px; border-radius: 14px; border: 1px solid var(--border);">
+            <div style="flex: 1; min-width: 240px;">
+              <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">CARI KARYAWAN (NIK / NAMA / JABATAN / RESTO)</label>
+              <div style="position: relative;">
+                <input type="text" id="karyawan_search_input" onkeyup="renderKaryawanTable()" placeholder="Ketik pencarian..." style="width: 100%; padding: 10px 14px 10px 36px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.88rem; outline: none; background: #ffffff;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; color: var(--text-muted);"></i>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; background: #e0e7ff; padding: 10px 16px; border-radius: 12px; border: 1px solid #c7d2fe;">
+              <i class="fa-solid fa-id-card" style="font-size: 1.2rem; color: #4338ca; margin-right: 10px;"></i>
+              <div>
+                <span style="display: block; font-size: 0.7rem; font-weight: 800; color: #4338ca;">TOTAL KARYAWAN</span>
+                <b id="total_karyawan_badge" style="font-size: 1.1rem; color: #312e81;">0 Orang</b>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABEL MASTER LIST KARYAWAN (TANPA KOLOM TELEPON) -->
+          <div style="overflow-x: auto; border-radius: 12px; border: 1px solid var(--border);">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 600px;">
+              <thead>
+                <tr style="background: #f8fafc; border-bottom: 2px solid var(--border);">
+                  <th style="padding: 12px 14px; font-weight: 800;">No</th>
+                  <th style="padding: 12px 14px; font-weight: 800;">NIK</th>
+                  <th style="padding: 12px 14px; font-weight: 800;">Nama Lengkap</th>
+                  <th style="padding: 12px 14px; font-weight: 800;">Jabatan / Posisi</th>
+                  <th style="padding: 12px 14px; font-weight: 800;">Resto Cabang</th>
+                  <th style="padding: 12px 14px; font-weight: 800;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="karyawan-table-body">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
           </div>
 
         </div>
@@ -2083,6 +2222,46 @@
     </div>
   </div>
 
+  <!-- MODAL 6: INPUT KARYAWAN MANUAL -->
+  <div id="add-karyawan-modal" class="modal-overlay" onclick="if(event.target===this) closeAddKaryawanModal();">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:12px;">
+        <h3 style="font-size:1.1rem; font-weight:800; color:var(--lazatto-red); display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-user-plus"></i> Tambah Karyawan Baru
+        </h3>
+        <button onclick="closeAddKaryawanModal()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color:var(--text-muted);">✕</button>
+      </div>
+      <form onsubmit="submitAddKaryawanManual(event)">
+        <div class="input-group">
+          <label>NIK KARYAWAN</label>
+          <input type="text" id="manual_karyawan_nik" placeholder="Contoh: 3201998234" required>
+        </div>
+        <div class="input-group">
+          <label>NAMA LENGKAP</label>
+          <input type="text" id="manual_karyawan_nama" placeholder="Contoh: Ahmad Subagja" required>
+        </div>
+        <div class="input-group">
+          <label>JABATAN / POSISI</label>
+          <input type="text" id="manual_karyawan_jabatan" placeholder="Contoh: Crew Resto / Leader / Kasir" required>
+        </div>
+        <div class="input-group">
+          <label>RESTO CABANG</label>
+          <input type="text" id="manual_karyawan_resto" placeholder="Contoh: LAZATTO TASIKMALAYA" required>
+        </div>
+        <div class="input-group">
+          <label>STATUS KARYAWAN</label>
+          <select id="manual_karyawan_status">
+            <option value="Aktif">Aktif</option>
+            <option value="Non-Aktif">Non-Aktif</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-login-submit">
+          <i class="fa-solid fa-floppy-disk"></i> Simpan Data Karyawan
+        </button>
+      </form>
+    </div>
+  </div>
+
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwn94FPpsde6D5GxfD7MCth_FfGOz5piJqcm0WxJ3x0HkggzdWKZiCORqr6JMaeQrhLYQ/exec";
 
@@ -2166,7 +2345,7 @@
         const cached = localStorage.getItem('resto_cached_data');
         if (cached) return JSON.parse(cached);
       } catch(e) {}
-      return { usersList: [], areaLinks: {}, branchLinks: {}, spvLinksMaster: {}, spvLinksIndividual: {}, psdLinksMaster: {}, checkinEnabled: false, checkinsList: [] };
+      return { usersList: [], areaLinks: {}, branchLinks: {}, spvLinksMaster: {}, spvLinksIndividual: {}, psdLinksMaster: {}, checkinEnabled: false, checkinsList: [], karyawanList: [] };
     })();
 
     const loginForm = document.getElementById('login-form');
@@ -2186,7 +2365,7 @@
     let cameraStream = null;
     let capturedSnapDataUrl = null;
 
-    // FUNGSI MANAGEMENT SWITCH CHECKIN FEATURE
+    // MANAGEMENT SWITCH CHECKIN FEATURE
     function isCheckinFeatureEnabled() {
       return globalDashboardData.checkinEnabled === true || localStorage.getItem('resto_checkin_feature_enabled') === 'true';
     }
@@ -2380,8 +2559,6 @@
 
       btnSnap.style.display = 'none';
       btnRetake.style.display = 'inline-flex';
-
-      // KAMERA WEBCAM TETAP TETAP MELEKAT & DIBIARKAN TERBUKA AGAR USER DAPAT MENGAMBIL FOTO ULANG SECARA INTERAKTIF
     }
 
     function retakePhotoSnap() {
@@ -2390,6 +2567,10 @@
 
     function getStoredCheckinData() {
       return globalDashboardData.checkinsList || [];
+    }
+
+    function getStoredKaryawanData() {
+      return globalDashboardData.karyawanList || [];
     }
 
     function updateAutoDateTimeInput() {
@@ -2498,6 +2679,184 @@
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
       }
+    }
+
+    // ================= FITUR DAFTAR, TEMPLATE & MANUAL KARYAWAN =================
+    // KONTROL VISIBILITAS TOMBOL AKSI PADA DAFTAR KARYAWAN BERDASARKAN ROLE (KHUSUS SPV)
+    function updateKaryawanActionButtonsForRole() {
+      const userRole = localStorage.getItem('resto_user_role') || 'user';
+      const btnDownload = document.getElementById('btn_download_template_karyawan');
+      const btnImport = document.getElementById('btn_import_excel_karyawan');
+
+      if (userRole === 'supervisor') {
+        if (btnDownload) btnDownload.style.display = 'none';
+        if (btnImport) btnImport.style.display = 'none';
+      } else {
+        if (btnDownload) btnDownload.style.display = 'inline-flex';
+        if (btnImport) btnImport.style.display = 'inline-flex';
+      }
+    }
+
+    function renderKaryawanTable() {
+      updateKaryawanActionButtonsForRole();
+      
+      const tbody = document.getElementById('karyawan-table-body');
+      const totalBadge = document.getElementById('total_karyawan_badge');
+      if (!tbody) return;
+
+      const list = getStoredKaryawanData();
+      const query = (document.getElementById('karyawan_search_input')?.value || '').toLowerCase().trim();
+
+      let filtered = list;
+      if (query) {
+        filtered = filtered.filter(k => 
+          (k.nik || '').toLowerCase().includes(query) ||
+          (k.nama || '').toLowerCase().includes(query) ||
+          (k.jabatan || '').toLowerCase().includes(query) ||
+          (k.resto || '').toLowerCase().includes(query)
+        );
+      }
+
+      if (totalBadge) totalBadge.textContent = `${filtered.length} Orang`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">Belum ada data karyawan / tidak ditemukan.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach((k, idx) => {
+        html += `
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 10px 14px; font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+            <td style="padding: 10px 14px; font-weight: 700; color: var(--lazatto-red);">${k.nik || '-'}</td>
+            <td style="padding: 10px 14px; font-weight: 800; color: var(--text);">${k.nama || '-'}</td>
+            <td style="padding: 10px 14px; font-weight: 700; color: #4338ca;">${k.jabatan || '-'}</td>
+            <td style="padding: 10px 14px; font-weight: 700;">${formatRestoName(k.resto) || '-'}</td>
+            <td style="padding: 10px 14px;"><span class="badge-status shift" style="background:#dcfce7; color:#15803d;">${k.status || 'Aktif'}</span></td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    // FUNCTION DOWNLOAD TEMPLATE EXCEL KARYAWAN
+    function downloadKaryawanTemplate() {
+      const templateData = [
+        { "NIK": "320101920001", "Nama Lengkap": "Budi Santoso", "Jabatan": "Leader Resto", "Resto Cabang": "LAZATTO TASIKMALAYA", "Status": "Aktif" },
+        { "NIK": "320101920002", "Nama Lengkap": "Siti Aminah", "Jabatan": "Kasir", "Resto Cabang": "LAZATTO GARUT", "Status": "Aktif" }
+      ];
+
+      const worksheet = XLSX.utils.json_to_sheet(templateData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Karyawan");
+
+      XLSX.writeFile(workbook, "Template_Import_Data_Karyawan.xlsx");
+    }
+
+    function openAddKaryawanModal() { document.getElementById('add-karyawan-modal').style.display = 'flex'; }
+    function closeAddKaryawanModal() { document.getElementById('add-karyawan-modal').style.display = 'none'; }
+
+    async function submitAddKaryawanManual(event) {
+      event.preventDefault();
+      const nik = document.getElementById('manual_karyawan_nik').value.trim();
+      const nama = document.getElementById('manual_karyawan_nama').value.trim();
+      const jabatan = document.getElementById('manual_karyawan_jabatan').value.trim();
+      const resto = document.getElementById('manual_karyawan_resto').value.trim();
+      const status = document.getElementById('manual_karyawan_status').value;
+
+      if (!nik || !nama || !jabatan || !resto) {
+        alert("Mohon lengkapi semua field karyawan!");
+        return;
+      }
+
+      const newKaryawan = { nik, nama, jabatan, resto: formatRestoName(resto), status };
+      const currentUser = localStorage.getItem('resto_current_user');
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({
+            action: "importKaryawanData",
+            adminUser: currentUser,
+            karyawanList: [newKaryawan]
+          })
+        });
+
+        const result = await res.json();
+        alert(result.message || "Berhasil menambahkan karyawan!");
+        
+        document.getElementById('manual_karyawan_nik').value = '';
+        document.getElementById('manual_karyawan_nama').value = '';
+        document.getElementById('manual_karyawan_jabatan').value = '';
+        document.getElementById('manual_karyawan_resto').value = '';
+
+        closeAddKaryawanModal();
+        fetchInitialDataFromGAS(() => renderKaryawanTable());
+      } catch (err) {
+        alert("Gagal menambahkan karyawan secara manual!");
+      }
+    }
+
+    async function handleExcelImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+          if (jsonData.length === 0) {
+            alert("File Excel kosong atau tidak memiliki format yang sesuai!");
+            return;
+          }
+
+          // Pemetaan Field Excel
+          const parsedKaryawan = jsonData.map((row) => ({
+            nik: row.NIK || row.nik || row['No Induk'] || row['NIP'] || '',
+            nama: row.Nama || row.NAMA || row['Nama Lengkap'] || row['Nama Karyawan'] || '',
+            jabatan: row.Jabatan || row.JABATAN || row.Posisi || row.POSISI || 'Staf',
+            resto: row.Resto || row.RESTO || row.Cabang || row.CABANG || row['Resto Cabang'] || '',
+            status: row.Status || row.STATUS || 'Aktif'
+          })).filter(item => item.nik || item.nama);
+
+          if (parsedKaryawan.length === 0) {
+            alert("Gagal membaca baris data. Pastikan header kolom Excel berisi 'NIK', 'Nama Lengkap', 'Jabatan', 'Resto Cabang'.");
+            return;
+          }
+
+          if (confirm(`Ditemukan ${parsedKaryawan.length} data karyawan. Kirim dan simpan ke database system?`)) {
+            const currentUser = localStorage.getItem('resto_current_user');
+            const res = await fetch(GAS_API_URL, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              redirect: "follow",
+              body: JSON.stringify({
+                action: "importKaryawanData",
+                adminUser: currentUser,
+                karyawanList: parsedKaryawan
+              })
+            });
+
+            const result = await res.json();
+            alert(result.message || "Import Data Karyawan Berhasil!");
+            fetchInitialDataFromGAS(() => renderKaryawanTable());
+          }
+        } catch (err) {
+          alert("Gagal memproses file Excel: " + err.message);
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsArrayBuffer(file);
     }
 
     let currentOpFilter = 'ALL';
@@ -2700,6 +3059,7 @@
         html = `
           <div class="nav-item active" onclick="switchAdminNav('page-preview-user', this)"><i class="fa-solid fa-chart-line"></i><span>Rekapitulasi Area</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>Operasional Resto</span></div>
+          <div class="nav-item" onclick="switchAdminNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-spv-coverage-update', this)"><i class="fa-solid fa-store"></i><span>Update Coverage SPV</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-links', this)"><i class="fa-solid fa-link"></i><span>Kelola Link (Area & Cabang)</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-spv-links', this)"><i class="fa-solid fa-user-tie"></i><span>Kelola Link Supervisor</span></div>
@@ -2710,11 +3070,13 @@
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-spv-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
           <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
         `;
       } else if (role === 'psd') {
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-psd-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
           <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
         `;
       } else {
         html = `
@@ -2739,11 +3101,17 @@
         updateCheckinSwitchUI();
         updateAutoDateTimeInput();
         toggleKameraTimestamp();
+      } else if (pageId === 'page-spv-monitoring') {
+        hideSpvAdmRestoSubPage();
+      } else if (pageId === 'page-psd-monitoring') {
+        hidePsdAdmRestoSubPage();
       } else if (pageId === 'page-shared-operasional') {
         updateCheckinSwitchUI();
         const dateEl = document.getElementById('op_date_filter');
         if (dateEl && !dateEl.value) dateEl.value = getTodayYMD();
         filterOperasionalCategory('ALL');
+      } else if (pageId === 'page-daftar-karyawan') {
+        renderKaryawanTable();
       }
     }
 
@@ -2818,6 +3186,7 @@
         fetchInitialDataFromGAS(() => {
           updateCheckinSwitchUI();
           renderOperasionalTable();
+          renderKaryawanTable();
           if (localStorage.getItem('resto_user_role') === 'admin') {
             renderUserTable();
           }
@@ -3012,6 +3381,7 @@
           if (!globalDashboardData.spvLinksIndividual) globalDashboardData.spvLinksIndividual = {};
           if (!globalDashboardData.psdLinksMaster) globalDashboardData.psdLinksMaster = {};
           if (!globalDashboardData.checkinsList) globalDashboardData.checkinsList = [];
+          if (!globalDashboardData.karyawanList) globalDashboardData.karyawanList = [];
           
           localStorage.setItem('resto_checkin_feature_enabled', globalDashboardData.checkinEnabled ? 'true' : 'false');
 
@@ -3111,6 +3481,7 @@
       document.getElementById('psd-view').style.display = 'none';
       document.getElementById('admin-view').style.display = 'none';
       document.getElementById('page-shared-operasional').style.display = 'none';
+      document.getElementById('page-daftar-karyawan').style.display = 'none';
 
       if (userRole === 'admin') {
         document.getElementById('admin-view').style.display = 'block';
@@ -3144,6 +3515,7 @@
       });
     }
 
+    // FUNCTION NAVIGASI SUB-PAGE ADM RESTO ADMIN
     function showAdmRestoSubPage() {
       document.getElementById('adm-main-rekap-view').style.display = 'none';
       document.getElementById('adm-resto-sub-view').style.display = 'block';
@@ -3159,6 +3531,28 @@
     function hideAdmRestoSubPage() {
       document.getElementById('adm-resto-sub-view').style.display = 'none';
       document.getElementById('adm-main-rekap-view').style.display = 'block';
+    }
+
+    // FUNCTION NAVIGASI SUB-PAGE ADM RESTO SUPERVISOR
+    function showSpvAdmRestoSubPage() {
+      document.getElementById('spv-main-rekap-view').style.display = 'none';
+      document.getElementById('spv-adm-resto-sub-view').style.display = 'block';
+    }
+
+    function hideSpvAdmRestoSubPage() {
+      document.getElementById('spv-adm-resto-sub-view').style.display = 'none';
+      document.getElementById('spv-main-rekap-view').style.display = 'block';
+    }
+
+    // FUNCTION NAVIGASI SUB-PAGE ADM RESTO PSD
+    function showPsdAdmRestoSubPage() {
+      document.getElementById('psd-main-rekap-view').style.display = 'none';
+      document.getElementById('psd-adm-resto-sub-view').style.display = 'block';
+    }
+
+    function hidePsdAdmRestoSubPage() {
+      document.getElementById('psd-adm-resto-sub-view').style.display = 'none';
+      document.getElementById('psd-main-rekap-view').style.display = 'block';
     }
 
     function loadAreaLinks() {
@@ -3212,7 +3606,7 @@
       }
     }
 
-    // HELPER MENGAMBIL DAFTAR NAMA RESTO DARI DATABASE UTAMA (KHUSUS HANYA LAZATTO & NGEUMI, EKSKLUSI OT)
+    // HELPER MENGAMBIL DAFTAR NAMA RESTO DARI DATABASE UTAMA
     function getAvailableRestoListFromDatabase() {
       const branchObj = globalDashboardData.branchLinks || {};
       const usersList = globalDashboardData.usersList || [];
@@ -3220,7 +3614,6 @@
 
       for (let k in branchObj) {
         const formatted = formatRestoName(k);
-        // HANYA AMBIL LAZATTO ATAU NGEUMI DAN TANPA OT
         if ((formatted.includes('LAZATTO') || formatted.includes('NGEUMI')) && !formatted.includes('OT')) {
           restoSet.add(formatted);
         }
@@ -3613,14 +4006,21 @@
 
       if (pageId === 'page-shared-operasional') {
         document.getElementById('admin-view').style.display = 'none';
+        document.getElementById('page-daftar-karyawan').style.display = 'none';
         document.getElementById('page-shared-operasional').style.display = 'block';
         updateCheckinSwitchUI();
         
         const dateEl = document.getElementById('op_date_filter');
         if (dateEl && !dateEl.value) dateEl.value = getTodayYMD();
         filterOperasionalCategory('ALL');
+      } else if (pageId === 'page-daftar-karyawan') {
+        document.getElementById('admin-view').style.display = 'none';
+        document.getElementById('page-shared-operasional').style.display = 'none';
+        document.getElementById('page-daftar-karyawan').style.display = 'block';
+        renderKaryawanTable();
       } else {
         document.getElementById('page-shared-operasional').style.display = 'none';
+        document.getElementById('page-daftar-karyawan').style.display = 'none';
         document.getElementById('admin-view').style.display = 'block';
         document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
         document.getElementById(pageId).style.display = 'block';
@@ -3787,7 +4187,7 @@
     };
 
     function focusEditUserLink(username) {
-      switchAdminNav('page-links', document.querySelectorAll('#app-navbar-items .nav-item')[3]);
+      switchAdminNav('page-links', document.querySelectorAll('#app-navbar-items .nav-item')[4]);
       document.getElementById('search-branch').value = username;
       filterBranches();
       
@@ -3935,9 +4335,9 @@
             updateAdminStats();
 
             if (urole === 'supervisor') {
-              switchAdminNav('page-spv-coverage-update', document.querySelectorAll('#app-navbar-items .nav-item')[2]);
+              switchAdminNav('page-spv-coverage-update', document.querySelectorAll('#app-navbar-items .nav-item')[3]);
             } else if (urole === 'psd') {
-              switchAdminNav('page-psd-links', document.querySelectorAll('#app-navbar-items .nav-item')[5]);
+              switchAdminNav('page-psd-links', document.querySelectorAll('#app-navbar-items .nav-item')[6]);
             }
           });
         }
