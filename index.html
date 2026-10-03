@@ -1229,19 +1229,7 @@
             </div>
 
             <div class="grid-container">
-              <!-- KARTU INDUK ADM RESTO KHUSUS SUPERVISOR -->
-              <div class="card" style="border: 2px solid var(--lazatto-red); background: #fef2f2;">
-                <div class="card-top">
-                  <div class="card-icon icon-rose"><i class="fa-solid fa-building-user"></i></div>
-                  <div class="card-title" style="color: var(--lazatto-red);">ADM RESTO</div>
-                  <div class="card-desc">Portal laporan operasional, KPH, ganti minyak, expense, dan setor uang cabang.</div>
-                </div>
-                <button onclick="showSpvAdmRestoSubPage()" class="card-link-btn" style="background: var(--lazatto-red); color: white;">
-                  <span>Buka ADM RESTO</span>
-                  <i class="fa-solid fa-folder-open"></i>
-                </button>
-              </div>
-
+              <!-- 1. COVERAGE RESTO (DIPINDAHKAN KE PALING ATAS) -->
               <div class="card">
                 <div class="card-top">
                   <div class="card-icon icon-indigo"><i class="fa-solid fa-store"></i></div>
@@ -1254,6 +1242,33 @@
                 </div>
               </div>
 
+              <!-- 2. KARTU INDUK ADM RESTO KHUSUS SUPERVISOR -->
+              <div class="card" style="border: 2px solid var(--lazatto-red); background: #fef2f2;">
+                <div class="card-top">
+                  <div class="card-icon icon-rose"><i class="fa-solid fa-building-user"></i></div>
+                  <div class="card-title" style="color: var(--lazatto-red);">ADM RESTO</div>
+                  <div class="card-desc">Portal laporan operasional, KPH, ganti minyak, expense, dan setor uang cabang.</div>
+                </div>
+                <button onclick="showSpvAdmRestoSubPage()" class="card-link-btn" style="background: var(--lazatto-red); color: white;">
+                  <span>Buka ADM RESTO</span>
+                  <i class="fa-solid fa-folder-open"></i>
+                </button>
+              </div>
+
+              <!-- 3. KARTU INDUK STOK OPNAME KHUSUS SUPERVISOR -->
+              <div class="card" style="border: 2px solid var(--lazatto-orange); background: #fff7ed;">
+                <div class="card-top">
+                  <div class="card-icon icon-orange"><i class="fa-solid fa-boxes-stacked"></i></div>
+                  <div class="card-title" style="color: var(--lazatto-orange);">STOK OPNAME</div>
+                  <div class="card-desc">Portal input dan pemeriksaan data Stok Opname (SO) resto area.</div>
+                </div>
+                <button onclick="showSpvStokOpnameSubPage()" class="card-link-btn" style="background: var(--lazatto-orange); color: white;">
+                  <span>Buka STOK OPNAME</span>
+                  <i class="fa-solid fa-folder-open"></i>
+                </button>
+              </div>
+
+              <!-- 4. CHECK COGS PEKANAN -->
               <div class="card">
                 <div class="card-top">
                   <div class="card-icon icon-rose"><i class="fa-solid fa-calculator"></i></div>
@@ -1266,6 +1281,7 @@
                 </a>
               </div>
 
+              <!-- 5. BASE LAPORAN OMSET -->
               <div class="card">
                 <div class="card-top">
                   <div class="card-icon icon-amber"><i class="fa-solid fa-database"></i></div>
@@ -1278,6 +1294,7 @@
                 </a>
               </div>
 
+              <!-- 6. OMSET AREA -->
               <div class="card">
                 <div class="card-top">
                   <div class="card-icon icon-emerald"><i class="fa-solid fa-chart-pie"></i></div>
@@ -1363,6 +1380,49 @@
                 </div>
                 <a id="btn_spv_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
                   <span>Buka Sheet</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW STOK OPNAME UNTUK SUPERVISOR -->
+          <div id="spv-stok-opname-sub-view" style="display: none;">
+            <div class="supervisor-banner" style="background: linear-gradient(135deg, #1e1b4b 0%, var(--lazatto-orange) 100%);">
+              <div class="banner-header">
+                <div>
+                  <h2>Portal Stok Opname (Supervisor)</h2>
+                  <p>Fitur input dan pemeriksaan data Stok Opname resto cabang area secara terintegrasi.</p>
+                </div>
+                <button onclick="hideSpvStokOpnameSubPage()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
+              </div>
+            </div>
+
+            <div class="grid-container">
+              <!-- 1. BUTTON INPUT SO -->
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-rose"><i class="fa-solid fa-file-circle-plus"></i></div>
+                  <div class="card-title">INPUT SO</div>
+                  <div class="card-desc">Form / Sheet untuk melakukan penginputan Stok Opname.</div>
+                </div>
+                <a id="btn_spv_input_so" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Input SO</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
+              <!-- 2. BUTTON CEK STOK OPNAME -->
+              <div class="card">
+                <div class="card-top">
+                  <div class="card-icon icon-teal"><i class="fa-solid fa-file-circle-check"></i></div>
+                  <div class="card-title">CEK STOK OPNAME</div>
+                  <div class="card-desc">Pemeriksaan dan rekapitulasi data Stok Opname cabang.</div>
+                </div>
+                <a id="btn_spv_cek_so" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                  <span>Buka Cek Stok Opname</span>
                   <i class="fa-solid fa-arrow-up-right-from-square"></i>
                 </a>
               </div>
@@ -1940,6 +2000,7 @@
           <div id="admin-links-list"></div>
         </div>
 
+        <!-- PAGE KELOLA LINK SUPERVISOR (TERMASUK INPUT SO & CEK SO) -->
         <div id="page-spv-links" class="admin-page-content" style="display: none;">
           <div class="admin-card-item" style="border: 2px solid #c7d2fe; background: #f5f3ff; margin-bottom: 24px;">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
@@ -1960,11 +2021,15 @@
               <div class="admin-input-group"><label>5. Tracking Expense (Master)</label><input type="text" id="master_spv_expense" placeholder="https://docs.google.com/..."></div>
               <div class="admin-input-group"><label>6. Form Setor Uang (Master)</label><input type="text" id="master_spv_setor" placeholder="https://docs.google.com/..."></div>
               <div class="admin-input-group"><label>7. Laporan Penjualan (Master)</label><input type="text" id="master_spv_penjualan" placeholder="https://docs.google.com/..."></div>
+              
+              <!-- TAMBAHAN FIELD INPUT SO & CEK SO PADA MASTER LINK SPV -->
+              <div class="admin-input-group"><label>8. Input SO (Master)</label><input type="text" id="master_spv_input_so" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>9. Cek Stok Opname (Master)</label><input type="text" id="master_spv_cek_so" placeholder="https://docs.google.com/..."></div>
             </div>
           </div>
         </div>
 
-        <!-- PAGE BARU KHUSUS UPDATE COVERAGE SPV -->
+        <!-- PAGE KHUSUS UPDATE COVERAGE SPV -->
         <div id="page-spv-coverage-update" class="admin-page-content" style="display: none;">
           <div style="margin-bottom: 16px;">
             <h4 style="font-size: 1.1rem; font-weight: 800; color:#4338ca;"><i class="fa-solid fa-sliders"></i> Update Coverage SPV & Penambahan Resto</h4>
@@ -2709,7 +2774,6 @@
     }
 
     // ================= FITUR DAFTAR, TEMPLATE & MANUAL KARYAWAN =================
-    // KONTROL VISIBILITAS TOMBOL AKSI PADA DAFTAR KARYAWAN BERDASARKAN ROLE (KHUSUS SPV)
     function updateKaryawanActionButtonsForRole() {
       const userRole = localStorage.getItem('resto_user_role') || 'user';
       const btnDownload = document.getElementById('btn_download_template_karyawan');
@@ -2733,8 +2797,17 @@
 
       const list = getStoredKaryawanData();
       const query = (document.getElementById('karyawan_search_input')?.value || '').toLowerCase().trim();
+      const currentUser = localStorage.getItem('resto_current_user');
+      const userRole = localStorage.getItem('resto_user_role') || 'user';
 
       let filtered = list;
+
+      if (userRole === 'supervisor') {
+        const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
+        const coverageNames = (spvIndiv.resto_names || '').split(',').map(s => formatRestoName(s)).filter(s => s.length > 0);
+        filtered = filtered.filter(k => coverageNames.includes(formatRestoName(k.resto)));
+      }
+
       if (query) {
         filtered = filtered.filter(k => 
           (k.nik || '').toLowerCase().includes(query) ||
@@ -2768,7 +2841,6 @@
       tbody.innerHTML = html;
     }
 
-    // FUNCTION DOWNLOAD TEMPLATE EXCEL KARYAWAN
     function downloadKaryawanTemplate() {
       const templateData = [
         { "NIK": "320101920001", "Nama Lengkap": "Budi Santoso", "Jabatan": "Leader Resto", "Resto Cabang": "LAZATTO TASIKMALAYA", "Status": "Aktif" },
@@ -2846,7 +2918,6 @@
             return;
           }
 
-          // Pemetaan Field Excel
           const parsedKaryawan = jsonData.map((row) => ({
             nik: row.NIK || row.nik || row['No Induk'] || row['NIP'] || '',
             nama: row.Nama || row.NAMA || row['Nama Lengkap'] || row['Nama Karyawan'] || '',
@@ -3130,6 +3201,7 @@
         toggleKameraTimestamp();
       } else if (pageId === 'page-spv-monitoring') {
         hideSpvAdmRestoSubPage();
+        hideSpvStokOpnameSubPage();
       } else if (pageId === 'page-psd-monitoring') {
         hidePsdAdmRestoSubPage();
       } else if (pageId === 'page-shared-operasional') {
@@ -3142,7 +3214,6 @@
       }
     }
 
-    // MEMPERBARUI LAST ONLINE USER SECARA REALTIME KE SERVER GAS & LOCAL STORAGE
     async function recordUserActivity(username) {
       if (!username) return;
       const nowMs = Date.now();
@@ -3165,7 +3236,6 @@
       }
     }
 
-    // PARSING INDIKATOR STATUS ONLINE / LAST ONLINE BERDASARKAN WIB & TIMESTAMP GAS
     function getUserLastOnlineText(userObj) {
       if (!userObj) return `<span class="online-indicator online-time"><i class="fa-regular fa-clock"></i> Belum ada aktivitas</span>`;
       
@@ -3200,13 +3270,11 @@
       }
     }
 
-    // HEARTBEAT BERKALA TIAP 30 DETIK
     setInterval(() => {
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) recordUserActivity(loggedUser);
     }, 30000);
 
-    // AUTO-POLLING REALTIME TIAP 10 DETIK
     setInterval(() => {
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) {
@@ -3446,6 +3514,8 @@
         document.getElementById('btn_spv_expense').href = spvMaster.expense || '#';
         document.getElementById('btn_spv_setor').href = spvMaster.setor || '#';
         document.getElementById('btn_spv_penjualan').href = spvMaster.penjualan || '#';
+        document.getElementById('btn_spv_input_so').href = spvMaster.input_so || '#';
+        document.getElementById('btn_spv_cek_so').href = spvMaster.cek_so || '#';
 
         const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[username] || {};
         document.getElementById('btn_spv_base_omset').href = spvIndiv.base_omset || '#';
@@ -3542,7 +3612,6 @@
       });
     }
 
-    // FUNCTION NAVIGASI SUB-PAGE ADM RESTO ADMIN
     function showAdmRestoSubPage() {
       document.getElementById('adm-main-rekap-view').style.display = 'none';
       document.getElementById('adm-resto-sub-view').style.display = 'block';
@@ -3560,7 +3629,6 @@
       document.getElementById('adm-main-rekap-view').style.display = 'block';
     }
 
-    // FUNCTION NAVIGASI SUB-PAGE ADM RESTO SUPERVISOR
     function showSpvAdmRestoSubPage() {
       document.getElementById('spv-main-rekap-view').style.display = 'none';
       document.getElementById('spv-adm-resto-sub-view').style.display = 'block';
@@ -3571,7 +3639,20 @@
       document.getElementById('spv-main-rekap-view').style.display = 'block';
     }
 
-    // FUNCTION NAVIGASI SUB-PAGE ADM RESTO PSD
+    function showSpvStokOpnameSubPage() {
+      document.getElementById('spv-main-rekap-view').style.display = 'none';
+      document.getElementById('spv-stok-opname-sub-view').style.display = 'block';
+
+      const spvMaster = globalDashboardData.spvLinksMaster || {};
+      document.getElementById('btn_spv_input_so').href = spvMaster.input_so || '#';
+      document.getElementById('btn_spv_cek_so').href = spvMaster.cek_so || '#';
+    }
+
+    function hideSpvStokOpnameSubPage() {
+      document.getElementById('spv-stok-opname-sub-view').style.display = 'none';
+      document.getElementById('spv-main-rekap-view').style.display = 'block';
+    }
+
     function showPsdAdmRestoSubPage() {
       document.getElementById('psd-main-rekap-view').style.display = 'none';
       document.getElementById('psd-adm-resto-sub-view').style.display = 'block';
@@ -3607,9 +3688,10 @@
       document.getElementById('master_spv_expense').value = m.expense || '';
       document.getElementById('master_spv_setor').value = m.setor || '';
       document.getElementById('master_spv_penjualan').value = m.penjualan || '';
+      document.getElementById('master_spv_input_so').value = m.input_so || '';
+      document.getElementById('master_spv_cek_so').value = m.cek_so || '';
     }
 
-    // HELPER MEMPERTANGGUNGJAWABKAN PILIHAN KATEGORI OPERASIONAL (24 JAM vs REGULER)
     function onRestoTypeChange(key, index) {
       const typeSelect = document.getElementById(`spv_resto_type_${key}_${index}`);
       if (!typeSelect) return;
@@ -3633,7 +3715,6 @@
       }
     }
 
-    // HELPER MENGAMBIL DAFTAR NAMA RESTO DARI DATABASE UTAMA
     function getAvailableRestoListFromDatabase() {
       const branchObj = globalDashboardData.branchLinks || {};
       const usersList = globalDashboardData.usersList || [];
@@ -3904,7 +3985,9 @@
           kph: document.getElementById('master_spv_kph').value.trim(),
           expense: document.getElementById('master_spv_expense').value.trim(),
           setor: document.getElementById('master_spv_setor').value.trim(),
-          penjualan: document.getElementById('master_spv_penjualan').value.trim()
+          penjualan: document.getElementById('master_spv_penjualan').value.trim(),
+          input_so: document.getElementById('master_spv_input_so').value.trim(),
+          cek_so: document.getElementById('master_spv_cek_so').value.trim()
         }
       };
 
@@ -4068,7 +4151,7 @@
       document.getElementById('stat-total-branches').textContent = count;
       document.getElementById('stat-total-spv').textContent = spvCount;
       document.getElementById('stat-total-psd').textContent = psdCount;
-      document.getElementById('stat-total-links').textContent = (count * 6) + spvCount + 18;
+      document.getElementById('stat-total-links').textContent = (count * 6) + spvCount + 20;
     }
 
     function renderAdminLinksList() {
@@ -4099,7 +4182,6 @@
       container.innerHTML = html;
     }
 
-    // RENDER TABEL USER DENGAN INDIKATOR STATUS ONLINE REALTIME
     function renderUserTable() {
       const users = globalDashboardData.usersList || [];
       const wrapper = document.getElementById('user-table-wrapper');
