@@ -1672,6 +1672,13 @@
                   <i class="fa-solid fa-rotate-right"></i> Reset Hari Ini
                 </button>
               </div>
+
+              <!-- TOMBOL MUTASI KARYAWAN (TAMPIL KHUSUS SUPERVISOR) -->
+              <div style="align-self: flex-end; display: none;" id="spv-mutasi-btn-container">
+                <button type="button" onclick="openModalMutasiKaryawan()" style="padding: 8px 16px; border: none; border-radius: 10px; background: #4338ca; color: white; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);">
+                  <i class="fa-solid fa-right-left"></i> Mutasi Karyawan
+                </button>
+              </div>
             </div>
 
             <!-- TAB KATEGORI SHIFTING & ABSEN -->
@@ -2327,6 +2334,60 @@
     </div>
   </div>
 
+  <!-- MODAL 7: POPUP MUTASI KARYAWAN (KHUSUS SPV) -->
+  <div id="mutasi-karyawan-modal" class="modal-overlay" onclick="if(event.target===this) closeModalMutasiKaryawan();">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:16px;">
+        <h3 style="font-size:1.15rem; font-weight:800; color:#4338ca; display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-right-left"></i> Form Mutasi Karyawan
+        </h3>
+        <button onclick="closeModalMutasiKaryawan()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color:var(--text-muted);">✕</button>
+      </div>
+
+      <form onsubmit="submitMutasiKaryawan(event)">
+        <!-- RESTO ASAL (Dropdown dari Coverage SPV) -->
+        <div class="input-group">
+          <label>RESTO ASAL</label>
+          <select id="mutasi_resto_asal" onchange="onRestoAsalChange()" required>
+            <option value="">-- Pilih Resto Asal --</option>
+          </select>
+        </div>
+
+        <!-- NAMA KARYAWAN (Dropdown dari Resto Asal yang dipilih) -->
+        <div class="input-group">
+          <label>NAMA KARYAWAN</label>
+          <select id="mutasi_nama_karyawan" onchange="onKaryawanSelectChange()" required disabled>
+            <option value="">-- Pilih Resto Asal Terlebih Dahulu --</option>
+          </select>
+        </div>
+
+        <!-- NIK (Otomatis) -->
+        <div class="input-group">
+          <label>NIK (OTOMATIS)</label>
+          <input type="text" id="mutasi_nik" placeholder="Terisi Otomatis..." readonly style="background:#f1f5f9; font-weight:700; cursor:not-allowed;" required>
+        </div>
+
+        <!-- JABATAN (Otomatis) -->
+        <div class="input-group">
+          <label>JABATAN (OTOMATIS)</label>
+          <input type="text" id="mutasi_jabatan" placeholder="Terisi Otomatis..." readonly style="background:#f1f5f9; font-weight:700; cursor:not-allowed;" required>
+        </div>
+
+        <!-- RESTO BARU (Dropdown dari Database All Resto) -->
+        <div class="input-group">
+          <label>RESTO BARU</label>
+          <select id="mutasi_resto_baru" required>
+            <option value="">-- Pilih Resto Baru --</option>
+          </select>
+        </div>
+
+        <button type="submit" id="btn-submit-mutasi" class="btn-login-submit" style="background: linear-gradient(135deg, #4338ca 0%, #312e81 100%); margin-top: 10px;">
+          <i class="fa-solid fa-paper-plane"></i> Proses Mutasi Karyawan
+        </button>
+      </form>
+    </div>
+  </div>
+
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwn94FPpsde6D5GxfD7MCth_FfGOz5piJqcm0WxJ3x0HkggzdWKZiCORqr6JMaeQrhLYQ/exec";
 
@@ -2527,6 +2588,12 @@
           opContentView.style.display = 'none';
           opComingSoonView.style.display = 'block';
         }
+      }
+
+      // Visiabilitas Tombol Mutasi khusus SPV
+      const mutasiBtnContainer = document.getElementById('spv-mutasi-btn-container');
+      if (mutasiBtnContainer) {
+        mutasiBtnContainer.style.display = (userRole === 'supervisor') ? 'block' : 'none';
       }
     }
 
@@ -2955,6 +3022,162 @@
         }
       };
       reader.readAsArrayBuffer(file);
+    }
+
+    // ================= LOGIKA POPUP FORM MUTASI KARYAWAN =================
+
+    function openModalMutasiKaryawan() {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const userRole = localStorage.getItem('resto_user_role') || 'user';
+      
+      // 1. Ambil resto coverage milik SPV aktif
+      const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
+      const coverageNames = (spvIndiv.resto_names || '').split(',').map(s => formatRestoName(s)).filter(s => s.length > 0);
+
+      const selectRestoAsal = document.getElementById('mutasi_resto_asal');
+      selectRestoAsal.innerHTML = '<option value="">-- Pilih Resto Asal --</option>';
+
+      coverageNames.forEach(r => {
+        selectRestoAsal.innerHTML += `<option value="${r}">${r}</option>`;
+      });
+
+      // Reset Input
+      document.getElementById('mutasi_nama_karyawan').innerHTML = '<option value="">-- Pilih Resto Asal Terlebih Dahulu --</option>';
+      document.getElementById('mutasi_nama_karyawan').disabled = true;
+      document.getElementById('mutasi_nik').value = '';
+      document.getElementById('mutasi_jabatan').value = '';
+
+      // 2. Populate Dropdown Resto Baru dari Database All Resto
+      const selectRestoBaru = document.getElementById('mutasi_resto_baru');
+      selectRestoBaru.innerHTML = '<option value="">-- Pilih Resto Baru --</option>';
+
+      const allRestos = getAvailableRestoListFromDatabase();
+      allRestos.forEach(r => {
+        selectRestoBaru.innerHTML += `<option value="${r}">${r}</option>`;
+      });
+
+      document.getElementById('mutasi-karyawan-modal').style.display = 'flex';
+    }
+
+    function closeModalMutasiKaryawan() {
+      document.getElementById('mutasi-karyawan-modal').style.display = 'none';
+    }
+
+    // Event handler ketika RESTO ASAL dipilih
+    function onRestoAsalChange() {
+      const selectedResto = document.getElementById('mutasi_resto_asal').value;
+      const selectNama = document.getElementById('mutasi_nama_karyawan');
+      
+      document.getElementById('mutasi_nik').value = '';
+      document.getElementById('mutasi_jabatan').value = '';
+
+      if (!selectedResto) {
+        selectNama.innerHTML = '<option value="">-- Pilih Resto Asal Terlebih Dahulu --</option>';
+        selectNama.disabled = true;
+        return;
+      }
+
+      // Filter karyawan yang ada di resto asal tersebut
+      const allKaryawan = getStoredKaryawanData();
+      const filteredKaryawan = allKaryawan.filter(k => formatRestoName(k.resto) === selectedResto && (k.status || 'Aktif') === 'Aktif');
+
+      selectNama.innerHTML = '<option value="">-- Pilih Karyawan --</option>';
+      if (filteredKaryawan.length === 0) {
+        selectNama.innerHTML = '<option value="">-- Tidak ada karyawan terdaftar --</option>';
+        selectNama.disabled = true;
+        return;
+      }
+
+      filteredKaryawan.forEach(k => {
+        selectNama.innerHTML += `<option value="${k.nik}">${k.nama}</option>`;
+      });
+
+      selectNama.disabled = false;
+    }
+
+    // Event handler ketika NAMA KARYAWAN dipilih -> Auto-fill NIK dan Jabatan
+    function onKaryawanSelectChange() {
+      const selectedNik = document.getElementById('mutasi_nama_karyawan').value;
+      if (!selectedNik) {
+        document.getElementById('mutasi_nik').value = '';
+        document.getElementById('mutasi_jabatan').value = '';
+        return;
+      }
+
+      const allKaryawan = getStoredKaryawanData();
+      const karyawan = allKaryawan.find(k => (k.nik || '').toString() === selectedNik);
+
+      if (karyawan) {
+        document.getElementById('mutasi_nik').value = karyawan.nik || '';
+        document.getElementById('mutasi_jabatan').value = karyawan.jabatan || '-';
+      }
+    }
+
+    // Submit data mutasi ke Google Apps Script / Spreadsheet
+    async function submitMutasiKaryawan(event) {
+      event.preventDefault();
+
+      const restoAsal = document.getElementById('mutasi_resto_asal').value;
+      const nik = document.getElementById('mutasi_nik').value;
+      const jabatan = document.getElementById('mutasi_jabatan').value;
+      const selectNama = document.getElementById('mutasi_nama_karyawan');
+      const namaKaryawan = selectNama.options[selectNama.selectedIndex].text;
+      const restoBaru = document.getElementById('mutasi_resto_baru').value;
+
+      if (!restoAsal || !nik || !restoBaru) {
+        alert("Mohon lengkapi semua data mutasi!");
+        return;
+      }
+
+      if (restoAsal === restoBaru) {
+        alert("Resto Baru harus berbeda dari Resto Asal!");
+        return;
+      }
+
+      const submitBtn = document.getElementById('btn-submit-mutasi');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> Memproses Mutasi...';
+
+      const currentUser = localStorage.getItem('resto_current_user');
+
+      try {
+        const response = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({
+            action: "mutasiKaryawan",
+            adminUser: currentUser,
+            mutasiData: {
+              nik: nik,
+              nama: namaKaryawan,
+              jabatan: jabatan,
+              restoAsal: restoAsal,
+              restoBaru: restoBaru
+            }
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+          alert(`Mutasi Karyawan Berhasil!\n${namaKaryawan} (NIK: ${nik}) telah dipindahkan dari ${restoAsal} ke ${restoBaru}.`);
+          closeModalMutasiKaryawan();
+          
+          // Refresh Data Master
+          fetchInitialDataFromGAS(() => {
+            renderKaryawanTable();
+          });
+        } else {
+          alert("Gagal melakukan mutasi: " + result.message);
+        }
+      } catch (err) {
+        alert("Gagal terhubung ke server saat memproses mutasi!");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
     }
 
     let currentOpFilter = 'ALL';
