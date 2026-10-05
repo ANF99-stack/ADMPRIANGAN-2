@@ -3207,7 +3207,9 @@
       const endEl = document.getElementById('op_end_date_filter');
       const searchEl = document.getElementById('op_search_input');
       
-      setupOperasionalDateFilterLimits();
+      const todayStr = getTodayYMD();
+      if (startEl) startEl.value = todayStr;
+      if (endEl) endEl.value = todayStr;
       if (searchEl) searchEl.value = '';
       currentOpFilter = 'ALL';
       renderOperasionalTable();
