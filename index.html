@@ -1681,13 +1681,6 @@
                   <i class="fa-solid fa-rotate-right"></i> Reset Hari Ini
                 </button>
               </div>
-
-              <!-- TOMBOL MUTASI KARYAWAN (TAMPIL KHUSUS SUPERVISOR) -->
-              <div style="align-self: flex-end; display: none;" id="spv-mutasi-btn-container">
-                <button type="button" onclick="openModalMutasiKaryawan()" style="padding: 8px 16px; border: none; border-radius: 10px; background: #4338ca; color: white; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);">
-                  <i class="fa-solid fa-right-left"></i> Mutasi Karyawan
-                </button>
-              </div>
             </div>
 
             <!-- TAB KATEGORI SHIFTING & ABSEN -->
@@ -1732,6 +1725,13 @@
             </div>
             
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <!-- TOMBOL MUTASI KARYAWAN (DIPINDAHKAN KESINI UNTUK USER SPV) -->
+              <div id="spv-mutasi-btn-container" style="display: none;">
+                <button type="button" onclick="openModalMutasiKaryawan()" style="background: #4338ca; color: white; border: none; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);">
+                  <i class="fa-solid fa-right-left"></i> Mutasi Karyawan
+                </button>
+              </div>
+
               <button id="btn_download_template_karyawan" onclick="downloadKaryawanTemplate()" style="background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);">
                 <i class="fa-solid fa-download"></i> Download Template Excel
               </button>
