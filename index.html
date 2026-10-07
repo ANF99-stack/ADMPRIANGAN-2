@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   
   <!-- SheetJS Library untuk Parsing & Export File Excel -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 
   <style>
     :root {
@@ -870,6 +870,33 @@
     .btn-camera-snap { background: var(--lazatto-red); color: white; }
     .btn-camera-reset { background: #64748b; color: white; }
 
+    /* UPDATE: Operasional dashboard + internal table scrolling */
+    .operasional-dashboard{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
+    .op-kpi-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow-sm);min-width:0}
+    .op-kpi-label{font-size:.72rem;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px}
+    .op-kpi-value{font-size:1.45rem;line-height:1.1;font-weight:800;color:var(--text)}
+    .op-kpi-sub{margin-top:5px;font-size:.75rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .op-dashboard-panels{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-bottom:18px}
+    .op-panel{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow-sm);min-width:0}
+    .op-panel-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+    .op-panel-title h4{font-size:.92rem;font-weight:800;color:var(--text)}
+    .op-month-select{border:1px solid var(--border);border-radius:9px;padding:7px 10px;background:#f8fafc;font-size:.78rem;font-weight:700;outline:none}
+    .op-dashboard-list{max-height:230px;overflow-y:auto;padding-right:4px}
+    .op-dashboard-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #eef2f7}
+    .op-dashboard-row:last-child{border-bottom:0}
+    .op-dashboard-name{font-size:.8rem;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .op-dashboard-meta{font-size:.7rem;color:var(--text-muted);margin-top:2px}
+    .op-dashboard-badge{min-width:58px;text-align:center;padding:5px 8px;border-radius:9px;background:#fee2e2;color:#b91c1c;font-size:.72rem;font-weight:800}
+    .op-dashboard-empty{padding:22px 10px;text-align:center;color:var(--text-muted);font-size:.8rem}
+    .op-table-scroll{max-height:460px;overflow-y:auto;overflow-x:auto;border-radius:12px;border:1px solid var(--border);overscroll-behavior:contain;scrollbar-width:thin}
+    .op-table-scroll table{min-width:650px}
+    .op-table-scroll thead th{position:sticky;top:0;z-index:2;background:#f8fafc}
+    .op-scroll-controls{display:flex;justify-content:flex-end;gap:6px;margin:0 0 7px}
+    .op-scroll-btn{border:1px solid var(--border);background:#fff;color:var(--text-muted);border-radius:8px;padding:5px 9px;font-size:.72rem;font-weight:800;cursor:pointer}
+    .op-scroll-btn:hover{color:var(--lazatto-red);border-color:#fecaca}
+    .checkin-lock-msg{display:none;margin:-6px 0 14px;padding:10px 12px;border-radius:10px;border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;font-size:.78rem;font-weight:800}
+    .checkin-lock-msg.active{display:block}
+    @media(max-width:980px){.operasional-dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}.op-dashboard-panels{grid-template-columns:1fr}}
     @media (max-width: 768px) {
       .login-split-card {
         flex-direction: column;
@@ -927,6 +954,11 @@
 
       .admin-card-item { padding: 18px; border-radius: 16px; margin-bottom: 14px; }
       .admin-input-grid { grid-template-columns: 1fr; gap: 10px; }
+      .operasional-dashboard { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+      .op-kpi-card { padding: 13px; }
+      .op-kpi-value { font-size: 1.2rem; }
+      .op-dashboard-panels { grid-template-columns: 1fr; }
+      .op-table-scroll { max-height: 400px; }
 
       .action-header-mobile {
         flex-direction: column;
@@ -1166,6 +1198,10 @@
                 <label>NAMA LENGKAP (TERISI OTOMATIS BERDASARKAN NIK)</label>
                 <input type="text" id="checkin_nama" placeholder="Terisi Otomatis..." readonly style="background:#f1f5f9; font-weight:700; cursor:not-allowed;" required>
               </div>
+              <div id="checkin_duplicate_msg" class="checkin-lock-msg">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                Karyawan ini sudah melakukan check-in hari ini di resto ini. Check-in ulang tidak diperbolehkan kecuali data check-in tersebut dihapus.
+              </div>
               <div class="input-group">
                 <label>SHIFTING / KETERANGAN ABSEN</label>
                 <select id="checkin_shifting" onchange="toggleKameraTimestamp()" required>
@@ -1199,7 +1235,7 @@
                 </div>
               </div>
 
-              <button type="submit" class="btn-login-submit" style="width: auto; padding: 12px 28px; margin-top: 15px;">
+              <button type="submit" id="btn-submit-checkin" class="btn-login-submit" style="width: auto; padding: 12px 28px; margin-top: 15px;">
                 <i class="fa-solid fa-paper-plane"></i> Kirim Checkin Sekarang
               </button>
             </form>
@@ -1622,6 +1658,47 @@
             </div>
           </div>
 
+          <!-- DASHBOARD OPERASIONAL RESTO -->
+          <div class="operasional-dashboard">
+            <div class="op-kpi-card">
+              <div class="op-kpi-label">Terlambat Bulan Ini</div>
+              <div id="op_kpi_late_total" class="op-kpi-value">0</div>
+              <div class="op-kpi-sub">Check-in terlambat</div>
+            </div>
+            <div class="op-kpi-card">
+              <div class="op-kpi-label">Karyawan &gt; 3x Terlambat</div>
+              <div id="op_kpi_repeat_late" class="op-kpi-value">0</div>
+              <div class="op-kpi-sub">Perlu perhatian</div>
+            </div>
+            <div class="op-kpi-card">
+              <div class="op-kpi-label">Resto Tertinggi</div>
+              <div id="op_kpi_top_resto_pct" class="op-kpi-value">0%</div>
+              <div id="op_kpi_top_resto_name" class="op-kpi-sub">Belum ada data</div>
+            </div>
+            <div class="op-kpi-card">
+              <div class="op-kpi-label">Check-in Valid</div>
+              <div id="op_kpi_valid_checkin" class="op-kpi-value">0</div>
+              <div class="op-kpi-sub">Dasar perhitungan</div>
+            </div>
+          </div>
+
+          <div class="op-dashboard-panels">
+            <div class="op-panel">
+              <div class="op-panel-title">
+                <h4><i class="fa-solid fa-user-clock" style="color:#dc2626;"></i> Karyawan Sering Terlambat &gt; 3x / Bulan</h4>
+                <select id="op_dashboard_month" class="op-month-select" onchange="renderOperasionalDashboard()"></select>
+              </div>
+              <div id="op_repeat_late_list" class="op-dashboard-list"></div>
+            </div>
+            <div class="op-panel">
+              <div class="op-panel-title">
+                <h4><i class="fa-solid fa-store" style="color:#4338ca;"></i> Resto dengan Persentase Terlambat Terbesar</h4>
+                <span style="font-size:.7rem;color:var(--text-muted);font-weight:700;">Terlambat ÷ Check-in valid</span>
+              </div>
+              <div id="op_top_resto_list" class="op-dashboard-list"></div>
+            </div>
+          </div>
+
           <!-- SWITCH KONTROL HANYA MUNCUL DI USER ADMIN -->
           <div id="admin-checkin-switch-wrapper" class="switch-toggle-wrapper" style="display: none; border-color: #c7d2fe; background: #f5f3ff;">
             <div>
@@ -1690,8 +1767,12 @@
               <button id="tab_op_terlambat" onclick="filterOperasionalCategory('LATE')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Karyawan Terlambat</button>
             </div>
 
-            <!-- TABEL DATA OPERASIONAL -->
-            <div style="overflow-x: auto; border-radius: 12px; border: 1px solid var(--border);">
+            <!-- TABEL DATA OPERASIONAL DENGAN SCROLL INTERNAL -->
+            <div class="op-scroll-controls">
+              <button type="button" class="op-scroll-btn" onclick="scrollOperasionalList('top')"><i class="fa-solid fa-arrow-up"></i> Atas</button>
+              <button type="button" class="op-scroll-btn" onclick="scrollOperasionalList('bottom')"><i class="fa-solid fa-arrow-down"></i> Bawah</button>
+            </div>
+            <div id="operasional-table-scroll" class="op-table-scroll">
               <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 650px;">
                 <thead>
                   <tr style="background: #f8fafc; border-bottom: 2px solid var(--border);">
@@ -2525,25 +2606,48 @@
     let cameraStream = null;
     let capturedSnapDataUrl = null;
 
-    function autoFillNamaByNIK() {
-      const nikInput = document.getElementById('checkin_nik');
-      const namaInput = document.getElementById('checkin_nama');
-      if (!nikInput || !namaInput) return;
+    function getTodayYMDFromMs(ms = Date.now()) {
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone:'Asia/Jakarta', year:'numeric', month:'2-digit', day:'2-digit'
+      }).formatToParts(new Date(ms));
+      return `${parts.find(p=>p.type==='year').value}-${parts.find(p=>p.type==='month').value}-${parts.find(p=>p.type==='day').value}`;
+    }
 
-      const inputVal = nikInput.value.trim().toLowerCase();
-      if (!inputVal) {
-        namaInput.value = '';
+    function hasCheckinForToday(nik, restoName) {
+      const normalizedNik=String(nik||'').trim().toLowerCase();
+      const normalizedResto=formatRestoName(restoName);
+      if(!normalizedNik||!normalizedResto)return false;
+      return getStoredCheckinData().some(record=>{
+        if(String(record.nik||'').trim().toLowerCase()!==normalizedNik)return false;
+        if(formatRestoName(record.restoName)!==normalizedResto)return false;
+        return getRecordWIBInfo(record).ymd===getTodayYMDFromMs();
+      });
+    }
+
+    function updateCheckinDuplicateLock() {
+      const nik=document.getElementById('checkin_nik')?.value.trim()||'';
+      const rawName=localStorage.getItem('resto_user_name')||localStorage.getItem('resto_current_user')||'';
+      const locked=hasCheckinForToday(nik,formatRestoName(rawName));
+      const msg=document.getElementById('checkin_duplicate_msg');
+      const btn=document.getElementById('btn-submit-checkin');
+      if(msg)msg.classList.toggle('active',locked);
+      if(btn)btn.disabled=locked;
+      return locked;
+    }
+
+    function autoFillNamaByNIK() {
+      const nikInput=document.getElementById('checkin_nik');
+      const namaInput=document.getElementById('checkin_nama');
+      if(!nikInput||!namaInput)return;
+      const inputVal=nikInput.value.trim().toLowerCase();
+      if(!inputVal){
+        namaInput.value='';
+        updateCheckinDuplicateLock();
         return;
       }
-
-      const karyawanList = getStoredKaryawanData();
-      const match = karyawanList.find(k => (k.nik || '').toString().trim().toLowerCase() === inputVal);
-
-      if (match && match.nama) {
-        namaInput.value = match.nama;
-      } else {
-        namaInput.value = '';
-      }
+      const match=getStoredKaryawanData().find(k=>(k.nik||'').toString().trim().toLowerCase()===inputVal);
+      namaInput.value=match&&match.nama?match.nama:'';
+      updateCheckinDuplicateLock();
     }
 
     function isCheckinFeatureEnabled() {
@@ -2796,6 +2900,12 @@
         return;
       }
 
+      if (hasCheckinForToday(nik, formattedRestoName)) {
+        updateCheckinDuplicateLock();
+        alert('Karyawan tersebut sudah melakukan check-in hari ini. Check-in ulang tidak diperbolehkan.');
+        return;
+      }
+
       let fotoUrl = '-';
       if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shifting)) {
         fotoUrl = 'Tertutup (Sesuai Keterangan)';
@@ -2842,6 +2952,9 @@
           alert('Checkin Karyawan Berhasil Tersimpan dan Terkirim!');
           document.getElementById('checkin_nik').value = '';
           document.getElementById('checkin_nama').value = '';
+          document.getElementById('checkin_duplicate_msg')?.classList.remove('active');
+          const checkinBtn=document.getElementById('btn-submit-checkin');
+          if(checkinBtn)checkinBtn.disabled=false;
           capturedSnapDataUrl = null;
           updateAutoDateTimeInput();
           toggleKameraTimestamp();
@@ -3281,6 +3394,137 @@
       document.getElementById('photo-preview-modal').style.display = 'none';
     }
 
+    // ================= UPDATE: OPERASIONAL DASHBOARD =================
+    const operasionalDerivedCache = new WeakMap();
+
+    function getRecordWIBInfo(record) {
+      if (!record || typeof record !== 'object') return { ymd: '', time: '' };
+      const cached = operasionalDerivedCache.get(record);
+      if (cached) return cached;
+      const ms = Number(record.timestampMs);
+      if (!Number.isFinite(ms)) return { ymd: '', time: '' };
+
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone:'Asia/Jakarta', year:'numeric', month:'2-digit', day:'2-digit',
+        hour:'2-digit', minute:'2-digit', hour12:false
+      }).formatToParts(new Date(ms));
+      const get = type => parts.find(p=>p.type===type)?.value || '';
+      const info = { ymd:`${get('year')}-${get('month')}-${get('day')}`, time:`${get('hour')}:${get('minute')}` };
+      operasionalDerivedCache.set(record, info);
+      return info;
+    }
+
+    function isAbsenceShift(shift) {
+      return ['OFF','SAKIT','IZIN','CUTI','MIDDLE'].includes(shift);
+    }
+
+    function isLateCheckin(record, restoTimeMap) {
+      if (!record || isAbsenceShift(record.shifting)) return false;
+      const maxAllowed = getMaxTimeForShift(restoTimeMap[formatRestoName(record.restoName)], record.shifting);
+      return !!(maxAllowed && getRecordWIBInfo(record).time > maxAllowed);
+    }
+
+    function getDashboardVisibleCheckins() {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const userRole = localStorage.getItem('resto_user_role') || 'user';
+      let list = getStoredCheckinData();
+      if (userRole === 'supervisor') {
+        const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
+        const coverageNames = (spvIndiv.resto_names || '').split(',').map(s=>formatRestoName(s)).filter(Boolean);
+        list = list.filter(item => coverageNames.includes(formatRestoName(item.restoName)));
+      }
+      return list;
+    }
+
+    function getCurrentDashboardMonth() {
+      const selected = document.getElementById('op_dashboard_month')?.value;
+      if (selected) return selected;
+      const parts = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jakarta',year:'numeric',month:'2-digit'}).formatToParts(new Date());
+      return `${parts.find(p=>p.type==='year').value}-${parts.find(p=>p.type==='month').value}`;
+    }
+
+    function populateOperasionalDashboardMonths() {
+      const select = document.getElementById('op_dashboard_month');
+      if (!select) return;
+      const list = getDashboardVisibleCheckins();
+      const months = new Set();
+      list.forEach(r => {
+        const ymd = getRecordWIBInfo(r).ymd;
+        if (ymd) months.add(ymd.slice(0,7));
+      });
+      const current = getCurrentDashboardMonth();
+      months.add(current);
+      const sorted = [...months].sort().reverse().slice(0,24);
+      select.innerHTML = sorted.map(m => {
+        const [y,mo] = m.split('-');
+        const label = new Date(Number(y),Number(mo)-1,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+        return `<option value="${m}">${label}</option>`;
+      }).join('');
+      if (sorted.includes(current)) select.value=current;
+    }
+
+    function renderOperasionalDashboard() {
+      const month = getCurrentDashboardMonth();
+      const list = getDashboardVisibleCheckins();
+      const restoTimeMap = getRestoMaxCheckinMap();
+      const monthly = list.filter(r=>getRecordWIBInfo(r).ymd.startsWith(month));
+      const valid = monthly.filter(r=>!isAbsenceShift(r.shifting));
+      const late = valid.filter(r=>isLateCheckin(r,restoTimeMap));
+
+      const employeeMap = {};
+      late.forEach(r=>{
+        const key=String(r.nik||r.nama||'').trim().toLowerCase();
+        if(!key)return;
+        if(!employeeMap[key])employeeMap[key]={nik:r.nik||'-',nama:r.nama||'-',count:0,resto:new Set()};
+        employeeMap[key].count++;
+        employeeMap[key].resto.add(formatRestoName(r.restoName));
+      });
+      const repeat=Object.values(employeeMap).filter(x=>x.count>3).sort((a,b)=>b.count-a.count||a.nama.localeCompare(b.nama));
+
+      const restoMap={};
+      valid.forEach(r=>{
+        const key=formatRestoName(r.restoName)||'TANPA NAMA RESTO';
+        if(!restoMap[key])restoMap[key]={total:0,late:0};
+        restoMap[key].total++;
+        if(isLateCheckin(r,restoTimeMap))restoMap[key].late++;
+      });
+      const restoRanking=Object.entries(restoMap).map(([name,v])=>({name,total:v.total,late:v.late,pct:v.total?(v.late/v.total)*100:0}))
+        .sort((a,b)=>b.pct-a.pct||b.late-a.late);
+
+      const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+      set('op_kpi_late_total',late.length);
+      set('op_kpi_repeat_late',repeat.length);
+      set('op_kpi_valid_checkin',valid.length);
+      const top=restoRanking[0];
+      set('op_kpi_top_resto_pct',top?`${top.pct.toFixed(1)}%`:'0%');
+      set('op_kpi_top_resto_name',top?`${top.name} (${top.late}/${top.total})`:'Belum ada data');
+
+      const repeatEl=document.getElementById('op_repeat_late_list');
+      if(repeatEl) repeatEl.innerHTML=repeat.length?repeat.map(x=>`
+        <div class="op-dashboard-row"><div>
+          <div class="op-dashboard-name">${escapeHtml(x.nama)}</div>
+          <div class="op-dashboard-meta">NIK ${escapeHtml(x.nik)} · ${[...x.resto].slice(0,2).map(escapeHtml).join(', ')}</div>
+        </div><div class="op-dashboard-badge">${x.count}x</div></div>
+      `).join(''):'<div class="op-dashboard-empty">Tidak ada karyawan dengan keterlambatan lebih dari 3 kali pada bulan ini.</div>';
+
+      const restoEl=document.getElementById('op_top_resto_list');
+      if(restoEl) restoEl.innerHTML=restoRanking.length?restoRanking.slice(0,8).map(x=>`
+        <div class="op-dashboard-row"><div>
+          <div class="op-dashboard-name">${escapeHtml(x.name)}</div>
+          <div class="op-dashboard-meta">${x.late} terlambat dari ${x.total} check-in valid</div>
+        </div><div class="op-dashboard-badge">${x.pct.toFixed(1)}%</div></div>
+      `).join(''):'<div class="op-dashboard-empty">Belum ada data check-in valid pada bulan yang dipilih.</div>';
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function scrollOperasionalList(direction) {
+      const el=document.getElementById('operasional-table-scroll');
+      if(el)el.scrollTo({top:direction==='top'?0:el.scrollHeight,behavior:'smooth'});
+    }
+
     // FUNGSI RENDER TABEL OPERASIONAL DENGAN RENTANG TANGGAL (LEBIH DARI 1 TANGGAL)
     function renderOperasionalTable() {
       const currentUser = localStorage.getItem('resto_current_user');
@@ -3289,6 +3533,8 @@
       const restoTimeMap = getRestoMaxCheckinMap();
 
       const tbody = document.getElementById('operasional-table-body');
+      populateOperasionalDashboardMonths();
+      renderOperasionalDashboard();
       if (!tbody) return;
 
       let filtered = list;
@@ -3305,15 +3551,8 @@
 
       // Filter berdasarkan rentang tanggal (dari startDate s.d. endDate)
       filtered = filtered.filter(item => {
-        if (!item.timestampMs) return true;
-        const d = new Date(item.timestampMs);
-        const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(d);
-        const yyyy = parts.find(p => p.type === 'year').value;
-        const mm = parts.find(p => p.type === 'month').value;
-        const dd = parts.find(p => p.type === 'day').value;
-        const itemYMD = `${yyyy}-${mm}-${dd}`;
-        
-        return itemYMD >= startDate && itemYMD <= endDate;
+        const itemYMD = getRecordWIBInfo(item).ymd;
+        return !itemYMD || (itemYMD >= startDate && itemYMD <= endDate);
       });
 
       const searchQuery = (document.getElementById('op_search_input')?.value || '').toLowerCase().trim();
@@ -3329,22 +3568,8 @@
       if (currentOpFilter === 'ABSENT') {
         filtered = filtered.filter(item => ['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(item.shifting));
       } else if (currentOpFilter === 'LATE') {
-        filtered = filtered.filter(item => {
-          if (['OFF', 'SAKIT', 'IZIN', 'CUTI', 'MIDDLE'].includes(item.shifting)) return false;
-          const d = new Date(item.timestampMs);
-          const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Jakarta', hour12: false, hour: '2-digit', minute: '2-digit' }).formatToParts(d);
-          const hours = parts.find(p => p.type === 'hour').value;
-          const mins = parts.find(p => p.type === 'minute').value;
-          const timeStr = `${hours}:${mins}`;
-
-          const rKey = formatRestoName(item.restoName);
-          const restoTimingObj = restoTimeMap[rKey];
-          const maxAllowed = getMaxTimeForShift(restoTimingObj, item.shifting);
-
-          return maxAllowed && timeStr > maxAllowed;
-        });
+        filtered = filtered.filter(item => isLateCheckin(item, restoTimeMap));
       }
-
       if (filtered.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Tidak ada data checkin karyawan dalam rentang tanggal tersebut.</td></tr>`;
         return;
@@ -3357,11 +3582,7 @@
           statusBadge = `<span class="badge-status absent">${item.shifting}</span>`;
         }
 
-        const d = new Date(item.timestampMs);
-        const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Jakarta', hour12: false, hour: '2-digit', minute: '2-digit' }).formatToParts(d);
-        const hours = parts.find(p => p.type === 'hour').value;
-        const mins = parts.find(p => p.type === 'minute').value;
-        const timeStr = `${hours}:${mins}`;
+        const timeStr = getRecordWIBInfo(item).time;
 
         const rKey = formatRestoName(item.restoName);
         const restoTimingObj = restoTimeMap[rKey];
@@ -3455,6 +3676,7 @@
       } else if (pageId === 'page-shared-operasional') {
         updateCheckinSwitchUI();
         setupOperasionalDateFilterLimits();
+        populateOperasionalDashboardMonths();
         filterOperasionalCategory('ALL');
       } else if (pageId === 'page-daftar-karyawan') {
         renderKaryawanTable();
@@ -3662,7 +3884,7 @@
     }
 
     window.onload = function() {
-      initGeolocation();
+      setTimeout(initGeolocation, 1200);
       setupOperasionalDateFilterLimits();
 
       const loggedUser = localStorage.getItem('resto_current_user');
@@ -3694,7 +3916,7 @@
           localStorage.setItem('resto_user_role', result.data.role);
           localStorage.setItem('resto_user_name', result.data.name);
           
-          await recordUserActivity(result.data.username);
+          recordUserActivity(result.data.username);
           showDashboard(result.data.username);
         } else {
           errorMsg.textContent = result.message;
@@ -3707,34 +3929,42 @@
       }
     });
 
+    let initialDataFetchPromise = null;
+
     async function fetchInitialDataFromGAS(onSuccess) {
-      try {
-        const response = await fetch(GAS_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          redirect: "follow",
-          body: JSON.stringify({ action: "getInitialData" })
-        });
-        const result = await response.json();
-        if (result.status === "success") {
-          globalDashboardData = result.data;
-          if (!globalDashboardData.spvLinksMaster) globalDashboardData.spvLinksMaster = {};
-          if (!globalDashboardData.spvLinksIndividual) globalDashboardData.spvLinksIndividual = {};
-          if (!globalDashboardData.psdLinksMaster) globalDashboardData.psdLinksMaster = {};
-          if (!globalDashboardData.checkinsList) globalDashboardData.checkinsList = [];
-          if (!globalDashboardData.karyawanList) globalDashboardData.karyawanList = [];
-          
-          localStorage.setItem('resto_checkin_feature_enabled', globalDashboardData.checkinEnabled ? 'true' : 'false');
-
-          try {
-            localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
-          } catch(e) {}
-
-          if (onSuccess) onSuccess();
-        }
-      } catch (e) {
-        console.error("Gagal memuat data dari GAS", e);
+      if (initialDataFetchPromise) {
+        try { await initialDataFetchPromise; } catch(e) {}
+        if (onSuccess) onSuccess();
+        return;
       }
+
+      initialDataFetchPromise=(async()=>{
+        try {
+          const response=await fetch(GAS_API_URL,{
+            method:"POST",
+            headers:{"Content-Type":"text/plain;charset=utf-8"},
+            redirect:"follow",
+            body:JSON.stringify({action:"getInitialData"})
+          });
+          const result=await response.json();
+          if(result.status==="success"){
+            globalDashboardData=result.data||{};
+            if(!globalDashboardData.spvLinksMaster)globalDashboardData.spvLinksMaster={};
+            if(!globalDashboardData.spvLinksIndividual)globalDashboardData.spvLinksIndividual={};
+            if(!globalDashboardData.psdLinksMaster)globalDashboardData.psdLinksMaster={};
+            if(!globalDashboardData.checkinsList)globalDashboardData.checkinsList=[];
+            if(!globalDashboardData.karyawanList)globalDashboardData.karyawanList=[];
+            localStorage.setItem('resto_checkin_feature_enabled',globalDashboardData.checkinEnabled?'true':'false');
+            try{localStorage.setItem('resto_cached_data',JSON.stringify(globalDashboardData));}catch(e){}
+            return true;
+          }
+        }catch(e){console.error("Gagal memuat data dari GAS",e);}
+        return false;
+      })();
+
+      const success=await initialDataFetchPromise;
+      initialDataFetchPromise=null;
+      if(success&&onSuccess)onSuccess();
     }
 
     function toggleSpvCoverageInput() {
@@ -4366,6 +4596,7 @@
         document.getElementById('page-shared-operasional').style.display = 'block';
         updateCheckinSwitchUI();
         setupOperasionalDateFilterLimits();
+        populateOperasionalDashboardMonths();
         filterOperasionalCategory('ALL');
       } else if (pageId === 'page-daftar-karyawan') {
         document.getElementById('admin-view').style.display = 'none';
