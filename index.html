@@ -379,10 +379,64 @@
       border-radius: 16px;
       width: fit-content;
       max-width: 100%;
-      overflow-x: auto;
+      overflow: visible;
       scrollbar-width: none;
     }
     .app-navbar::-webkit-scrollbar { display: none; }
+
+    /* ADMIN NAVIGATION: lebih ringkas dengan grouping */
+    .admin-nav-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .admin-nav-group > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 10px 14px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+    .admin-nav-group > summary::-webkit-details-marker { display:none; }
+    .admin-nav-group > summary:hover,
+    .admin-nav-group[open] > summary {
+      color: var(--lazatto-red);
+      background: #ffffff;
+      box-shadow: 0 3px 10px rgba(0,0,0,.05);
+    }
+    .admin-nav-group-menu {
+      position: absolute;
+      top: calc(100% + 7px);
+      left: 0;
+      min-width: 245px;
+      max-width: 300px;
+      padding: 7px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+    }
+    .admin-nav-group-menu .nav-item {
+      width: 100%;
+      padding: 9px 11px;
+      font-size: 0.76rem;
+      border-radius: 9px;
+    }
+    .admin-nav-group-menu .nav-item span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    @media(max-width:768px){
+      .admin-nav-group > summary { padding: 8px 10px; font-size: .72rem; }
+      .admin-nav-group-menu { position: fixed; top: 110px; left: 14px; right: 14px; max-width:none; }
+    }
 
     .nav-item {
       padding: 10px 20px;
@@ -1235,6 +1289,10 @@
                   <option value="CUTI">CUTI</option>
                 </select>
               </div>
+              <div class="input-group">
+                <label>CATATAN</label>
+                <textarea id="checkin_catatan" rows="3" placeholder="Tambahkan catatan jika diperlukan (opsional)" style="resize:vertical;"></textarea>
+              </div>
 
               <!-- LIVE STREAM KAMERA WEBCAM TIMESTAMP -->
               <div id="group_kamera_timestamp" class="input-group">
@@ -1832,6 +1890,12 @@
             <div class="check-karyawan-field" style="max-width:190px;">
               <label for="check_karyawan_date">TANGGAL CHECK-IN</label>
               <input type="date" id="check_karyawan_date" onchange="renderCheckKaryawanPage()">
+            </div>
+            <div class="check-karyawan-field" style="max-width:220px;">
+              <label for="check_karyawan_jabatan">FILTER JABATAN</label>
+              <select id="check_karyawan_jabatan" onchange="renderCheckKaryawanPage()">
+                <option value="ALL">SEMUA JABATAN</option>
+              </select>
             </div>
             <div class="check-karyawan-field" style="max-width:280px;">
               <label for="check_karyawan_resto">FILTER RESTO</label>
@@ -2965,6 +3029,7 @@
       const nik = document.getElementById('checkin_nik').value.trim();
       const nama = document.getElementById('checkin_nama').value.trim();
       const shifting = document.getElementById('checkin_shifting').value;
+      const catatan = document.getElementById('checkin_catatan')?.value.trim() || '';
 
       if (!nama) {
         alert('NIK Karyawan tidak ditemukan di database. Pastikan NIK terdaftar!');
@@ -2997,6 +3062,7 @@
         nik: nik,
         nama: nama,
         shifting: shifting,
+        catatan: catatan,
         foto: fotoUrl,
         photoUrl: fotoUrl
       };
@@ -3023,6 +3089,8 @@
           alert('Checkin Karyawan Berhasil Tersimpan dan Terkirim!');
           document.getElementById('checkin_nik').value = '';
           document.getElementById('checkin_nama').value = '';
+          const catatanEl = document.getElementById('checkin_catatan');
+          if (catatanEl) catatanEl.value = '';
           document.getElementById('checkin_duplicate_msg')?.classList.remove('active');
           const checkinBtn=document.getElementById('btn-submit-checkin');
           if(checkinBtn)checkinBtn.disabled=false;
@@ -3071,6 +3139,7 @@
       const userRole = localStorage.getItem('resto_user_role') || 'user';
 
       let filtered = list;
+      populateOperasionalJabatanFilter(list);
 
       if (userRole === 'supervisor') {
         const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
@@ -3597,6 +3666,15 @@
     }
 
     // FUNGSI RENDER TABEL OPERASIONAL DENGAN RENTANG TANGGAL (LEBIH DARI 1 TANGGAL)
+    function populateOperasionalJabatanFilter(sourceList) {
+      const select = document.getElementById('op_jabatan_filter');
+      if (!select) return;
+      const current = select.value || 'ALL';
+      const jabatanList = [...new Set((sourceList || []).map(item => String(item.jabatan || '').trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'id'));
+      select.innerHTML = '<option value="ALL">SEMUA JABATAN</option>' + jabatanList.map(j => `<option value="${escapeHtml(j)}">${escapeHtml(j)}</option>`).join('');
+      select.value = jabatanList.includes(current) ? current : 'ALL';
+    }
+
     function renderOperasionalTable() {
       const currentUser = localStorage.getItem('resto_current_user');
       const userRole = localStorage.getItem('resto_user_role') || 'user';
@@ -3695,15 +3773,33 @@
 
       if (role === 'admin') {
         html = `
-          <div class="nav-item active" onclick="switchAdminNav('page-preview-user', this)"><i class="fa-solid fa-chart-line"></i><span>Rekapitulasi Area</span></div>
-          <div class="nav-item" onclick="switchAdminNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>Operasional Resto</span></div>
-          <div class="nav-item" onclick="switchAdminNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
-          <div class="nav-item" onclick="switchAdminNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
-          <div class="nav-item" onclick="switchAdminNav('page-spv-coverage-update', this)"><i class="fa-solid fa-store"></i><span>Update Coverage SPV</span></div>
-          <div class="nav-item" onclick="switchAdminNav('page-links', this)"><i class="fa-solid fa-link"></i><span>Kelola Link (Area & Cabang)</span></div>
-          <div class="nav-item" onclick="switchAdminNav('page-spv-links', this)"><i class="fa-solid fa-user-tie"></i><span>Kelola Link Supervisor</span></div>
-          <div class="nav-item" onclick="switchAdminNav('page-psd-links', this)"><i class="fa-solid fa-id-card-clip"></i><span>Kelola Link PSD</span></div>
-          <div class="nav-item" onclick="switchAdminNav('page-users', this)"><i class="fa-solid fa-users-cog"></i><span>Manajemen User & Password</span></div>
+          <div class="nav-item active" onclick="switchAdminNav('page-preview-user', this)"><i class="fa-solid fa-chart-line"></i><span>REKAPITULASI AREA</span></div>
+
+          <details class="admin-nav-group">
+            <summary><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
+            <div class="admin-nav-group-menu">
+              <div class="nav-item" onclick="switchAdminNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
+              <div class="nav-item" onclick="switchAdminNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
+              <div class="nav-item" onclick="switchAdminNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
+            </div>
+          </details>
+
+          <details class="admin-nav-group">
+            <summary><i class="fa-solid fa-store"></i><span>MANAGEMENT RESTO</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
+            <div class="admin-nav-group-menu">
+              <div class="nav-item" onclick="switchAdminNav('page-spv-coverage-update', this)"><i class="fa-solid fa-store"></i><span>UPDATE COVERAGE SPV</span></div>
+              <div class="nav-item" onclick="switchAdminNav('page-links', this)"><i class="fa-solid fa-link"></i><span>KELOLA LINK AREA & CABANG</span></div>
+              <div class="nav-item" onclick="switchAdminNav('page-spv-links', this)"><i class="fa-solid fa-user-tie"></i><span>KELOLA LINK SUPERVISOR</span></div>
+              <div class="nav-item" onclick="switchAdminNav('page-psd-links', this)"><i class="fa-solid fa-id-card-clip"></i><span>KELOLA LINK PSD</span></div>
+            </div>
+          </details>
+
+          <details class="admin-nav-group">
+            <summary><i class="fa-solid fa-users-gear"></i><span>ADMINISTRASI</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
+            <div class="admin-nav-group-menu">
+              <div class="nav-item" onclick="switchAdminNav('page-users', this)"><i class="fa-solid fa-users-cog"></i><span>MANAJEMEN USER & PASSWORD</span></div>
+            </div>
+          </details>
         `;
       } else if (role === 'supervisor') {
         html = `
@@ -3727,6 +3823,31 @@
       }
 
       appNavbarItems.innerHTML = html;
+    }
+
+    // ADMIN NAV DROPDOWN: tutup saat klik di luar menu, dan hanya satu grup yang terbuka.
+    function closeAdminNavGroups(exceptGroup = null) {
+      document.querySelectorAll('#app-navbar-items .admin-nav-group[open]').forEach(group => {
+        if (group !== exceptGroup) group.removeAttribute('open');
+      });
+    }
+
+    // Delegasi klik agar saat membuka satu dropdown, dropdown Admin lainnya otomatis tertutup.
+    if (!window.__adminNavDropdownBound) {
+      document.addEventListener('click', function(event) {
+        const group = event.target.closest('#app-navbar-items .admin-nav-group');
+        if (!group) {
+          closeAdminNavGroups();
+          return;
+        }
+
+        // Klik item menu akan ditangani oleh switchAdminNav();
+        // klik summary dibiarkan ditangani native <details>.
+        if (event.target.closest('summary')) {
+          setTimeout(() => closeAdminNavGroups(group), 0);
+        }
+      });
+      window.__adminNavDropdownBound = true;
     }
 
     function switchRoleNav(pageId, element) {
@@ -4680,6 +4801,15 @@
       return list.filter(k => coverageNames.includes(formatRestoName(k.resto || k.restoName || k.cabang)));
     }
 
+    function populateCheckKaryawanJabatanFilter(employees) {
+      const select = document.getElementById('check_karyawan_jabatan');
+      if (!select) return;
+      const current = select.value || 'ALL';
+      const jabatanList = [...new Set((employees || []).map(k => String(k.jabatan || '').trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'id'));
+      select.innerHTML = '<option value="ALL">SEMUA JABATAN</option>' + jabatanList.map(j => `<option value="${escapeHtml(j)}">${escapeHtml(j)}</option>`).join('');
+      select.value = jabatanList.includes(current) ? current : 'ALL';
+    }
+
     function populateCheckKaryawanRestoFilter(employees) {
       const select = document.getElementById('check_karyawan_resto');
       if (!select) return;
@@ -4700,7 +4830,9 @@
       const selectedDate = dateEl.value;
       const query = (document.getElementById('check_karyawan_search')?.value || '').toLowerCase().trim();
       const employees = getCheckKaryawanVisibleEmployees();
+      populateCheckKaryawanJabatanFilter(employees);
       populateCheckKaryawanRestoFilter(employees);
+      const selectedJabatan = (document.getElementById('check_karyawan_jabatan')?.value || 'ALL').trim();
       const selectedResto = formatRestoName(document.getElementById('check_karyawan_resto')?.value || 'ALL');
       const checkins = getStoredCheckinData();
 
@@ -4716,6 +4848,8 @@
 
       let filtered = employees.filter(k => {
         const restoName = formatRestoName(k.resto || k.restoName || k.cabang);
+        const jabatan = String(k.jabatan || '').trim();
+        if (selectedJabatan && selectedJabatan !== 'ALL' && jabatan !== selectedJabatan) return false;
         if (selectedResto && selectedResto !== 'ALL' && restoName !== selectedResto) return false;
         if (!query) return true;
         return [k.nik, k.nama, k.jabatan].some(v => String(v || '').toLowerCase().includes(query));
@@ -4752,6 +4886,7 @@
 
     function switchAdminNav(pageId, element) {
       stopCameraStream();
+      closeAdminNavGroups();
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
       element.classList.add('active');
 
