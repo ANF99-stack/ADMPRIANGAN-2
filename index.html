@@ -971,7 +971,27 @@
         justify-content: center;
       }
     }
-  </style>
+  
+    /* ================= CHECK KARYAWAN ================= */
+    .check-karyawan-toolbar{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:16px}
+    .check-karyawan-field{min-width:180px;flex:1}
+    .check-karyawan-field label{display:block;font-size:.75rem;font-weight:800;color:var(--text-muted);margin-bottom:5px}
+    .check-karyawan-field input{width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:.85rem;font-weight:700;outline:none}
+    .check-karyawan-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+    .check-karyawan-stat{border:1px solid var(--border);border-radius:14px;padding:14px 16px;background:#fff}
+    .check-karyawan-stat-label{font-size:.75rem;color:var(--text-muted);font-weight:800}
+    .check-karyawan-stat-value{font-size:1.45rem;font-weight:900;margin-top:3px}
+    .check-karyawan-table-wrap{max-height:560px;overflow:auto;border:1px solid var(--border);border-radius:14px;background:#fff}
+    .check-karyawan-table-wrap table{width:100%;min-width:980px;border-collapse:collapse;font-size:.82rem;text-align:left}
+    .check-karyawan-table-wrap th{position:sticky;top:0;z-index:2;background:#f8fafc;border-bottom:2px solid var(--border);padding:11px 12px;font-weight:800;white-space:nowrap}
+    .check-karyawan-table-wrap td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .check-karyawan-table-wrap tr:last-child td{border-bottom:0}
+    .check-status{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:.7rem;font-weight:900;white-space:nowrap}
+    .check-status.done{background:#dcfce7;color:#166534}.check-status.pending{background:#fee2e2;color:#991b1b}
+    .check-time{font-weight:900;color:#4338ca;white-space:nowrap}.check-karyawan-note{font-size:.78rem;color:var(--text-muted);margin-top:8px}
+    @media(max-width:768px){.check-karyawan-stats{grid-template-columns:1fr}.check-karyawan-field{min-width:100%}}
+
+</style>
 </head>
 <body>
 
@@ -1790,6 +1810,57 @@
             </div>
           </div>
 
+        </div>
+      </div>
+
+      <!-- ================= SHARED PAGE: CHECK KARYAWAN (ADMIN, PSD, SPV) ================= -->
+      <div id="page-check-karyawan" class="role-page-content" style="display:none;">
+        <div class="admin-card-item" style="border:2px solid #4338ca;background:#ffffff;">
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:18px;gap:12px;flex-wrap:wrap;">
+            <div>
+              <h3 style="font-size:1.3rem;font-weight:800;color:#4338ca;display:flex;align-items:center;gap:10px;">
+                <i class="fa-solid fa-user-check"></i> CHECK KARYAWAN
+              </h3>
+              <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Monitoring karyawan yang sudah atau belum melakukan check-in berdasarkan tanggal.</p>
+            </div>
+            <button type="button" onclick="renderCheckKaryawanPage()" style="padding:9px 14px;border:1px solid #c7d2fe;border-radius:10px;background:#eef2ff;color:#4338ca;font-size:.8rem;font-weight:800;cursor:pointer;">
+              <i class="fa-solid fa-rotate"></i> Refresh
+            </button>
+          </div>
+
+          <div class="check-karyawan-toolbar">
+            <div class="check-karyawan-field" style="max-width:190px;">
+              <label for="check_karyawan_date">TANGGAL CHECK-IN</label>
+              <input type="date" id="check_karyawan_date" onchange="renderCheckKaryawanPage()">
+            </div>
+            <div class="check-karyawan-field" style="max-width:280px;">
+              <label for="check_karyawan_resto">FILTER RESTO</label>
+              <select id="check_karyawan_resto" onchange="renderCheckKaryawanPage()">
+                <option value="ALL">SEMUA RESTO</option>
+              </select>
+            </div>
+            <div class="check-karyawan-field">
+              <label for="check_karyawan_search">CARI KARYAWAN</label>
+              <input type="text" id="check_karyawan_search" oninput="renderCheckKaryawanPage()" placeholder="NIK, nama, atau jabatan...">
+            </div>
+          </div>
+
+          <div class="check-karyawan-stats">
+            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">TOTAL KARYAWAN</div><div id="check_karyawan_total" class="check-karyawan-stat-value">0</div></div>
+            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">SUDAH CHECK-IN</div><div id="check_karyawan_done" class="check-karyawan-stat-value" style="color:#15803d;">0</div></div>
+            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">BELUM CHECK-IN</div><div id="check_karyawan_pending" class="check-karyawan-stat-value" style="color:#dc2626;">0</div></div>
+          </div>
+
+          <div class="check-karyawan-table-wrap">
+            <table>
+              <thead><tr>
+                <th>No</th><th>NIK</th><th>Nama Karyawan</th><th>Jabatan</th><th>Resto</th>
+                <th>Status</th><th>Tanggal</th><th>Jam</th><th>Shift</th>
+              </tr></thead>
+              <tbody id="check-karyawan-table-body"></tbody>
+            </table>
+          </div>
+          <div class="check-karyawan-note"><i class="fa-solid fa-circle-info"></i> Untuk user SPV, daftar otomatis dibatasi hanya pada resto yang termasuk coverage SPV tersebut.</div>
         </div>
       </div>
 
@@ -3409,7 +3480,7 @@
         hour:'2-digit', minute:'2-digit', hour12:false
       }).formatToParts(new Date(ms));
       const get = type => parts.find(p=>p.type===type)?.value || '';
-      const info = { ymd:`${get('year')}-${get('month')}-${get('day')}`, time:`${get('hour')}:${get('minute')}` };
+      const info = { ymd:`${get('year')}-${get('month')}-${get('day')}`, date:`${get('year')}-${get('month')}-${get('day')}`, time:`${get('hour')}:${get('minute')}` };
       operasionalDerivedCache.set(record, info);
       return info;
     }
@@ -3626,6 +3697,7 @@
         html = `
           <div class="nav-item active" onclick="switchAdminNav('page-preview-user', this)"><i class="fa-solid fa-chart-line"></i><span>Rekapitulasi Area</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>Operasional Resto</span></div>
+          <div class="nav-item" onclick="switchAdminNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-spv-coverage-update', this)"><i class="fa-solid fa-store"></i><span>Update Coverage SPV</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-links', this)"><i class="fa-solid fa-link"></i><span>Kelola Link (Area & Cabang)</span></div>
@@ -3637,12 +3709,14 @@
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-spv-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
           <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
           <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
         `;
       } else if (role === 'psd') {
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-psd-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
           <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
           <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
         `;
       } else {
@@ -3664,7 +3738,9 @@
       const targetPage = document.getElementById(pageId);
       if (targetPage) targetPage.style.display = 'block';
 
-      if (pageId === 'page-user-checkin') {
+      if (pageId === 'page-check-karyawan') {
+        renderCheckKaryawanPage();
+      } else if (pageId === 'page-user-checkin') {
         updateCheckinSwitchUI();
         updateAutoDateTimeInput();
         toggleKameraTimestamp();
@@ -4054,7 +4130,9 @@
       document.getElementById('psd-view').style.display = 'none';
       document.getElementById('admin-view').style.display = 'none';
       document.getElementById('page-shared-operasional').style.display = 'none';
+      document.getElementById('page-check-karyawan').style.display = 'none';
       document.getElementById('page-daftar-karyawan').style.display = 'none';
+      document.getElementById('page-check-karyawan').style.display = 'none';
 
       if (userRole === 'admin') {
         document.getElementById('admin-view').style.display = 'block';
@@ -4585,6 +4663,93 @@
       }
     };
 
+    function getCheckKaryawanSelectedDate() {
+      const el = document.getElementById('check_karyawan_date');
+      if (el && el.value) return el.value;
+      return getTodayYMD();
+    }
+
+    function getCheckKaryawanVisibleEmployees() {
+      const list = getStoredKaryawanData();
+      const role = localStorage.getItem('resto_user_role') || 'user';
+      const currentUser = localStorage.getItem('resto_current_user') || '';
+      if (role !== 'supervisor') return list.slice();
+
+      const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
+      const coverageNames = (spvIndiv.resto_names || '').split(',').map(s => formatRestoName(s)).filter(Boolean);
+      return list.filter(k => coverageNames.includes(formatRestoName(k.resto || k.restoName || k.cabang)));
+    }
+
+    function populateCheckKaryawanRestoFilter(employees) {
+      const select = document.getElementById('check_karyawan_resto');
+      if (!select) return;
+      const current = select.value || 'ALL';
+      const restos = [...new Set((employees || []).map(k => formatRestoName(k.resto || k.restoName || k.cabang)).filter(Boolean))].sort();
+      select.innerHTML = '<option value="ALL">SEMUA RESTO</option>' + restos.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
+      if (restos.includes(current)) select.value = current;
+      else select.value = 'ALL';
+    }
+
+    function renderCheckKaryawanPage() {
+      const dateEl = document.getElementById('check_karyawan_date');
+      if (!dateEl) return;
+      if (!dateEl.value) dateEl.value = getTodayYMD();
+
+      const tbody = document.getElementById('check-karyawan-table-body');
+      if (!tbody) return;
+      const selectedDate = dateEl.value;
+      const query = (document.getElementById('check_karyawan_search')?.value || '').toLowerCase().trim();
+      const employees = getCheckKaryawanVisibleEmployees();
+      populateCheckKaryawanRestoFilter(employees);
+      const selectedResto = formatRestoName(document.getElementById('check_karyawan_resto')?.value || 'ALL');
+      const checkins = getStoredCheckinData();
+
+      const byNikDate = {};
+      checkins.forEach(c => {
+        const nik = String(c.nik || '').trim();
+        if (!nik) return;
+        const info = getRecordWIBInfo(c);
+        if (info.date !== selectedDate) return;
+        const key = nik + '|' + formatRestoName(c.restoName);
+        if (!byNikDate[key] || (Number(c.timestampMs) || 0) > (Number(byNikDate[key].timestampMs) || 0)) byNikDate[key] = c;
+      });
+
+      let filtered = employees.filter(k => {
+        const restoName = formatRestoName(k.resto || k.restoName || k.cabang);
+        if (selectedResto && selectedResto !== 'ALL' && restoName !== selectedResto) return false;
+        if (!query) return true;
+        return [k.nik, k.nama, k.jabatan].some(v => String(v || '').toLowerCase().includes(query));
+      });
+
+      const total = filtered.length;
+      let done = 0;
+      const rows = filtered.map((k, idx) => {
+        const key = String(k.nik || '').trim() + '|' + formatRestoName(k.resto || k.restoName || k.cabang);
+        const c = byNikDate[key];
+        if (c) done++;
+        const info = c ? getRecordWIBInfo(c) : { date: '-', time: '-' };
+        const status = c
+          ? '<span class="check-status done"><i class="fa-solid fa-circle-check"></i> SUDAH CHECK-IN</span>'
+          : '<span class="check-status pending"><i class="fa-solid fa-circle-xmark"></i> BELUM CHECK-IN</span>';
+        return `<tr>
+          <td>${idx + 1}</td>
+          <td style="font-weight:800; color:var(--lazatto-red);">${escapeHtml(k.nik || '-')}</td>
+          <td style="font-weight:800;">${escapeHtml(k.nama || '-')}</td>
+          <td>${escapeHtml(k.jabatan || '-')}</td>
+          <td style="font-weight:800;">${escapeHtml(formatRestoName(k.resto || k.restoName || k.cabang) || '-')}</td>
+          <td>${status}</td>
+          <td>${c ? info.date : '-'}</td>
+          <td class="check-time">${c ? info.time + ' WIB' : '-'}</td>
+          <td>${escapeHtml(c?.shifting || '-')}</td>
+        </tr>`;
+      });
+
+      document.getElementById('check_karyawan_total').textContent = total;
+      document.getElementById('check_karyawan_done').textContent = done;
+      document.getElementById('check_karyawan_pending').textContent = Math.max(0, total - done);
+      tbody.innerHTML = rows.length ? rows.join('') : `<tr><td colspan="9" style="text-align:center; padding:28px; color:var(--text-muted);">Belum ada data karyawan yang sesuai filter.</td></tr>`;
+    }
+
     function switchAdminNav(pageId, element) {
       stopCameraStream();
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
@@ -4593,11 +4758,18 @@
       if (pageId === 'page-shared-operasional') {
         document.getElementById('admin-view').style.display = 'none';
         document.getElementById('page-daftar-karyawan').style.display = 'none';
+        document.getElementById('page-check-karyawan').style.display = 'none';
         document.getElementById('page-shared-operasional').style.display = 'block';
         updateCheckinSwitchUI();
         setupOperasionalDateFilterLimits();
         populateOperasionalDashboardMonths();
         filterOperasionalCategory('ALL');
+      } else if (pageId === 'page-check-karyawan') {
+        document.getElementById('admin-view').style.display = 'none';
+        document.getElementById('page-shared-operasional').style.display = 'none';
+        document.getElementById('page-daftar-karyawan').style.display = 'none';
+        document.getElementById('page-check-karyawan').style.display = 'block';
+        renderCheckKaryawanPage();
       } else if (pageId === 'page-daftar-karyawan') {
         document.getElementById('admin-view').style.display = 'none';
         document.getElementById('page-shared-operasional').style.display = 'none';
@@ -4606,6 +4778,7 @@
       } else {
         document.getElementById('page-shared-operasional').style.display = 'none';
         document.getElementById('page-daftar-karyawan').style.display = 'none';
+        document.getElementById('page-check-karyawan').style.display = 'none';
         document.getElementById('admin-view').style.display = 'block';
         document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
         document.getElementById(pageId).style.display = 'block';
