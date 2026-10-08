@@ -15,8 +15,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   
-  <!-- SheetJS Library untuk Parsing & Export File Excel -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 
   <style>
     :root {
@@ -434,8 +432,92 @@
       text-overflow: ellipsis;
     }
     @media(max-width:768px){
-      .admin-nav-group > summary { padding: 8px 10px; font-size: .72rem; }
-      .admin-nav-group-menu { position: fixed; top: 110px; left: 14px; right: 14px; max-width:none; }
+      .app-nav-container {
+        top: 61px;
+        padding: 7px 10px;
+        z-index: 40;
+      }
+
+      /* Admin: gunakan seluruh lebar layar, bukan menu yang terpotong ke samping. */
+      #app-navbar-items {
+        width: 100%;
+        max-width: none;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        padding: 6px;
+        border-radius: 14px;
+      }
+
+      #app-navbar-items > .nav-item {
+        min-width: 0;
+        justify-content: center;
+        text-align: center;
+        padding: 10px 7px;
+        font-size: .72rem;
+        line-height: 1.15;
+      }
+
+      #app-navbar-items > .nav-item span,
+      #app-navbar-items > .admin-nav-group > summary span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      #app-navbar-items > .admin-nav-group {
+        min-width: 0;
+        display: block;
+      }
+
+      .admin-nav-group > summary {
+        width: 100%;
+        min-height: 40px;
+        justify-content: center;
+        padding: 9px 6px;
+        font-size: .70rem;
+        line-height: 1.15;
+        gap: 5px;
+      }
+
+      .admin-nav-group-menu {
+        position: fixed;
+        top: 112px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+        max-height: calc(100dvh - 126px);
+        overflow-y: auto;
+        padding: 8px;
+        border-radius: 16px;
+        box-shadow: 0 18px 45px rgba(15,23,42,.22);
+        overscroll-behavior: contain;
+      }
+
+      .admin-nav-group-menu .nav-item {
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: .78rem;
+      }
+
+      .admin-nav-group-menu .nav-item i {
+        width: 20px;
+        text-align: center;
+        flex: 0 0 20px;
+      }
+
+      /* Non-admin mobile nav tetap horizontal dan bisa digeser. */
+      #app-navbar-items:not(:has(.admin-nav-group)) {
+        display: flex;
+        width: 100%;
+        overflow-x: auto;
+        justify-content: flex-start;
+      }
+
+      #app-navbar-items:not(:has(.admin-nav-group)) .nav-item {
+        flex: 0 0 auto;
+      }
     }
 
     .nav-item {
@@ -3003,8 +3085,12 @@
       const rawWidth = videoEl.videoWidth || 640;
       const rawHeight = videoEl.videoHeight || 480;
 
-      canvasEl.width = rawWidth;
-      canvasEl.height = rawHeight;
+      // Batasi resolusi foto upload agar payload GAS tidak terlalu besar.
+      // Rasio kamera tetap dipertahankan.
+      const maxUploadWidth = 1280;
+      const scale = Math.min(1, maxUploadWidth / rawWidth);
+      canvasEl.width = Math.round(rawWidth * scale);
+      canvasEl.height = Math.round(rawHeight * scale);
 
       const ctx = canvasEl.getContext('2d');
       ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
@@ -3054,7 +3140,7 @@
       ctx.fillText(line4, marginX, currentY); currentY += lineHeight;
       ctx.fillText(line5, marginX, currentY);
 
-      capturedSnapDataUrl = canvasEl.toDataURL('image/jpeg', 0.85);
+      capturedSnapDataUrl = canvasEl.toDataURL('image/jpeg', 0.72);
 
       previewEl.src = capturedSnapDataUrl;
       previewEl.style.display = 'block';
@@ -3170,19 +3256,19 @@
       submitBtn.innerHTML = '<span class="spinner"></span> Menyimpan ke Server...';
 
       try {
-        const response = await fetch(GAS_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          redirect: "follow",
-          body: JSON.stringify({
-            action: "saveCheckinData",
-            checkinRecord: newRecord
-          })
+        // Request idempotent memakai ID yang sama untuk seluruh retry.
+        // Jika jaringan putus setelah server menerima data, retry tetap mengirim record yang sama.
+        const result = await gasRequestJson({
+          action: "saveCheckinData",
+          checkinRecord: newRecord
+        }, {
+          timeoutMs: 25000,
+          retries: 2,
+          retryDelayMs: 1200
         });
 
-        const result = await response.json();
-
         if (result.status === "success") {
+          removePendingCheckin(newRecord.id);
           alert('Checkin Karyawan Berhasil Tersimpan dan Terkirim!');
           document.getElementById('checkin_nik').value = '';
           document.getElementById('checkin_nama').value = '';
@@ -3202,7 +3288,10 @@
           alert("Gagal menyimpan checkin: " + result.message);
         }
       } catch (err) {
-        alert("Gagal terhubung ke server saat mengirim data checkin!");
+        // Jangan buang foto/data jika GAS sedang timeout/offline.
+        savePendingCheckin(newRecord);
+        alert("Koneksi ke server sedang bermasalah. Data check-in disimpan sementara di perangkat dan akan dicoba lagi saat koneksi kembali.");
+        setTimeout(flushPendingCheckins, 5000);
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
@@ -3277,7 +3366,22 @@
       tbody.innerHTML = html;
     }
 
-    function downloadKaryawanTemplate() {
+    let xlsxLoaderPromise = null;
+    function ensureXLSXLoaded() {
+      if (window.XLSX) return Promise.resolve(window.XLSX);
+      if (xlsxLoaderPromise) return xlsxLoaderPromise;
+      xlsxLoaderPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+        script.onload = () => resolve(window.XLSX);
+        script.onerror = () => { xlsxLoaderPromise = null; reject(new Error('Gagal memuat modul Excel.')); };
+        document.head.appendChild(script);
+      });
+      return xlsxLoaderPromise;
+    }
+
+    async function downloadKaryawanTemplate() {
+      try { await ensureXLSXLoaded(); } catch (e) { alert(e.message); return; }
       const templateData = [
         { "NIK": "320101920001", "Nama Lengkap": "Budi Santoso", "Jabatan": "Leader Resto", "Resto Cabang": "LAZATTO TASIKMALAYA", "Status": "Aktif" },
         { "NIK": "320101920002", "Nama Lengkap": "Siti Aminah", "Jabatan": "Kasir", "Resto Cabang": "LAZATTO GARUT", "Status": "Aktif" }
@@ -3337,6 +3441,7 @@
     }
 
     async function handleExcelImport(event) {
+      try { await ensureXLSXLoaded(); } catch (e) { alert(e.message); return; }
       const file = event.target.files[0];
       if (!file) return;
 
@@ -3600,12 +3705,35 @@
       }
     }
 
-    function openPhotoModal(checkinId) {
+    async function openPhotoModal(checkinId) {
       const list = getStoredCheckinData();
       const record = list.find(r => r.id === checkinId);
       if (!record) return;
 
-      const photoSrc = record.photoUrl || record.foto;
+      let photoSrc = record.photoUrl || record.foto || '';
+
+      // Loading awal tidak lagi membawa Base64 foto. Ambil hanya saat preview dibuka.
+      if (!photoSrc && record.hasPhoto) {
+        try {
+          const result = await gasRequestJson(
+            { action: "getCheckinPhoto", checkinId: checkinId },
+            { timeoutMs: 12000, retries: 1, retryDelayMs: 500 }
+          );
+          if (result?.status === "success") {
+            photoSrc = result.data?.foto || '';
+            if (photoSrc) {
+              record.foto = photoSrc;
+              record.photoUrl = photoSrc;
+              try {
+                localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
+              } catch (e) {}
+            }
+          }
+        } catch (e) {
+          console.warn("Gagal mengambil foto checkin:", e);
+        }
+      }
+
       if (!photoSrc || (!photoSrc.startsWith('data:image') && !photoSrc.startsWith('http') && !photoSrc.startsWith('blob:'))) {
         alert("Foto tidak tersedia atau karyawan tidak mengambil foto.");
         return;
@@ -3908,7 +4036,7 @@
         const photoData = item.photoUrl || item.foto;
         let fotoRender = '-';
 
-        if (photoData && (photoData.startsWith('data:image') || photoData.startsWith('http') || photoData.startsWith('blob:') || photoData.includes('Foto Live Kamera Ada'))) {
+        if (item.hasPhoto || (photoData && (photoData.startsWith('data:image') || photoData.startsWith('http') || photoData.startsWith('blob:') || photoData.includes('Foto Live Kamera Ada')))) {
           fotoRender = `
             <button type="button" onclick="openPhotoModal('${item.id}')" class="btn-camera btn-camera-snap" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 8px; cursor: pointer; white-space: nowrap;">
               <i class="fa-solid fa-eye"></i> Lihat Foto
@@ -4052,16 +4180,11 @@
       localStorage.setItem(`resto_user_last_online_${username}`, nowMs.toString());
 
       try {
-        await fetch(GAS_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          redirect: "follow",
-          body: JSON.stringify({
-            action: "updateLastOnline",
-            username: username,
-            timestampMs: nowMs
-          })
-        });
+        await gasRequestJson({
+          action: "updateLastOnline",
+          username: username,
+          timestampMs: nowMs
+        }, { timeoutMs: 5000, retries: 0 });
       } catch (err) {
         console.warn("Gagal update last online ke GAS:", err);
       }
@@ -4246,15 +4369,133 @@
     }
 
     window.onload = function() {
-      setTimeout(initGeolocation, 1200);
       setupOperasionalDateFilterLimits();
 
       const loggedUser = localStorage.getItem('resto_current_user');
-      if (loggedUser) { 
+      if (loggedUser) {
+        // Tampilkan data lokal seketika; GAS menyegarkan data di background.
+        restoreCachedDashboardData();
         recordUserActivity(loggedUser);
-        showDashboard(loggedUser); 
+        showDashboard(loggedUser);
       }
+
+      // Pekerjaan non-kritis dipindahkan setelah first paint.
+      const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 800));
+      idle(() => {
+        initGeolocation();
+        flushPendingCheckins();
+      });
     };
+
+    // ================= GAS NETWORK LAYER =================
+    // Satu jalur request untuk login, load data, dan upload check-in.
+    // Timeout mencegah tombol menggantung; retry membantu saat GAS cold-start/jaringan mobile fluktuatif.
+    async function gasRequestJson(payload, options = {}) {
+      const timeoutMs = Number(options.timeoutMs || 20000);
+      const retries = Number(options.retries ?? 2);
+      const retryDelayMs = Number(options.retryDelayMs || 900);
+
+      let lastError = null;
+
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+        try {
+          const response = await fetch(GAS_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            redirect: "follow",
+            cache: "no-store",
+            signal: controller.signal,
+            body: JSON.stringify(payload)
+          });
+
+          const raw = await response.text();
+          let result;
+          try {
+            result = JSON.parse(raw);
+          } catch (parseError) {
+            throw new Error(`Respons GAS tidak valid (HTTP ${response.status}).`);
+          }
+
+          if (!response.ok) {
+            throw new Error(result?.message || `HTTP ${response.status}`);
+          }
+
+          return result;
+        } catch (err) {
+          lastError = err;
+          const isLastAttempt = attempt >= retries;
+
+          if (isLastAttempt) break;
+
+          // Backoff ringan: 0.9s -> 1.8s -> ...
+          await new Promise(resolve => setTimeout(resolve, retryDelayMs * (attempt + 1)));
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
+      throw lastError || new Error("Gagal terhubung ke GAS.");
+    }
+
+    // Simpan check-in yang gagal dikirim agar user tidak kehilangan data.
+    function savePendingCheckin(record) {
+      try {
+        const key = 'resto_pending_checkins';
+        const pending = JSON.parse(localStorage.getItem(key) || '[]');
+        const exists = pending.some(x => x && x.id === record.id);
+        if (!exists) {
+          pending.push(record);
+          localStorage.setItem(key, JSON.stringify(pending.slice(-3)));
+        }
+      } catch (e) {
+        console.warn('Tidak dapat menyimpan antrean check-in lokal:', e);
+      }
+    }
+
+    function removePendingCheckin(recordId) {
+      try {
+        const key = 'resto_pending_checkins';
+        const pending = JSON.parse(localStorage.getItem(key) || '[]');
+        localStorage.setItem(key, JSON.stringify(pending.filter(x => x?.id !== recordId)));
+      } catch (e) {}
+    }
+
+    async function flushPendingCheckins() {
+      if (!navigator.onLine) return;
+      let pending = [];
+      try {
+        pending = JSON.parse(localStorage.getItem('resto_pending_checkins') || '[]');
+      } catch (e) {
+        pending = [];
+      }
+      if (!Array.isArray(pending) || !pending.length) return;
+
+      for (const record of pending.slice()) {
+        try {
+          const result = await gasRequestJson({
+            action: "saveCheckinData",
+            checkinRecord: record
+          }, { timeoutMs: 25000, retries: 1, retryDelayMs: 1200 });
+
+          if (result?.status === "success") {
+            removePendingCheckin(record.id);
+          } else {
+            break;
+          }
+        } catch (e) {
+          break;
+        }
+      }
+    }
+
+    window.addEventListener('online', () => {
+      flushPendingCheckins();
+    });
+
+    // ========================================================
 
     loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -4265,13 +4506,10 @@
       setLoginLoadingState(true);
 
       try {
-        const response = await fetch(GAS_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          redirect: "follow",
-          body: JSON.stringify({ action: "login", username: user, password: pass })
-        });
-        const result = await response.json();
+        const result = await gasRequestJson(
+          { action: "login", username: user, password: pass },
+          { timeoutMs: 15000, retries: 2, retryDelayMs: 700 }
+        );
 
         if (result.status === "success") {
           localStorage.setItem('resto_current_user', result.data.username);
@@ -4293,6 +4531,25 @@
 
     let initialDataFetchPromise = null;
 
+    function restoreCachedDashboardData() {
+      try {
+        const raw = localStorage.getItem('resto_cached_data');
+        if (!raw) return false;
+        const cached = JSON.parse(raw);
+        if (!cached || typeof cached !== 'object') return false;
+        globalDashboardData = cached;
+        if (!globalDashboardData.spvLinksMaster) globalDashboardData.spvLinksMaster = {};
+        if (!globalDashboardData.spvLinksIndividual) globalDashboardData.spvLinksIndividual = {};
+        if (!globalDashboardData.psdLinksMaster) globalDashboardData.psdLinksMaster = {};
+        if (!globalDashboardData.checkinsList) globalDashboardData.checkinsList = [];
+        if (!globalDashboardData.karyawanList) globalDashboardData.karyawanList = [];
+        return true;
+      } catch (e) {
+        localStorage.removeItem('resto_cached_data');
+        return false;
+      }
+    }
+
     async function fetchInitialDataFromGAS(onSuccess) {
       if (initialDataFetchPromise) {
         try { await initialDataFetchPromise; } catch(e) {}
@@ -4302,13 +4559,10 @@
 
       initialDataFetchPromise=(async()=>{
         try {
-          const response=await fetch(GAS_API_URL,{
-            method:"POST",
-            headers:{"Content-Type":"text/plain;charset=utf-8"},
-            redirect:"follow",
-            body:JSON.stringify({action:"getInitialData"})
-          });
-          const result=await response.json();
+          const result=await gasRequestJson(
+            {action:"getInitialData", includeCheckinPhotos:false},
+            {timeoutMs:18000,retries:2,retryDelayMs:700}
+          );
           if(result.status==="success"){
             globalDashboardData=result.data||{};
             if(!globalDashboardData.spvLinksMaster)globalDashboardData.spvLinksMaster={};
@@ -4317,7 +4571,10 @@
             if(!globalDashboardData.checkinsList)globalDashboardData.checkinsList=[];
             if(!globalDashboardData.karyawanList)globalDashboardData.karyawanList=[];
             localStorage.setItem('resto_checkin_feature_enabled',globalDashboardData.checkinEnabled?'true':'false');
-            try{localStorage.setItem('resto_cached_data',JSON.stringify(globalDashboardData));}catch(e){}
+            try {
+              localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
+              localStorage.setItem('resto_cached_data_at', String(Date.now()));
+            } catch(e) {}
             return true;
           }
         }catch(e){console.error("Gagal memuat data dari GAS",e);}
@@ -4412,7 +4669,6 @@
       const userName = localStorage.getItem('resto_user_name') || username;
 
       userNameText.textContent = formatRestoName(userName);
-      recordUserActivity(username);
       updateInboxBadgeCount();
 
       setupNavbarForRole(userRole);
