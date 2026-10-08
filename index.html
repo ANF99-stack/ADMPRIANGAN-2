@@ -1395,8 +1395,15 @@
                 </div>
               </div>
 
-              <button type="submit" id="btn-submit-checkin" class="btn-login-submit" style="width: auto; padding: 12px 28px; margin-top: 15px;">
-                <i class="fa-solid fa-paper-plane"></i> Kirim Checkin Sekarang
+              <div id="checkin_photo_required_notice"
+                   style="margin-top:12px; padding:10px 13px; border:1px solid #fed7aa; background:#fff7ed; color:#9a3412; border-radius:10px; font-size:.78rem; font-weight:700;">
+                <i class="fa-solid fa-camera"></i>
+                Untuk SHIFT/MIDDLE, foto timestamp wajib diambil terlebih dahulu sebelum check-in dapat dikirim.
+              </div>
+
+              <button type="submit" id="btn-submit-checkin" class="btn-login-submit" disabled
+                      style="width: auto; padding: 12px 28px; margin-top: 15px; opacity:.65; cursor:not-allowed;">
+                <i class="fa-solid fa-camera"></i> Ambil Foto Terlebih Dahulu
               </button>
             </form>
           </div>
@@ -2930,14 +2937,52 @@
       });
     }
 
+    function isPhotoRequiredForCurrentCheckin() {
+      const shift = document.getElementById('checkin_shifting')?.value || 'SHIFT 1';
+      // OFF/SAKIT/IZIN/CUTI adalah keterangan absen dan tidak menggunakan kamera.
+      return !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(String(shift).toUpperCase());
+    }
+
+    function hasValidCapturedCheckinPhoto() {
+      const photo = String(capturedSnapDataUrl || '').trim();
+      return photo.startsWith('data:image/');
+    }
+
+    function updateCheckinSubmitButtonState() {
+      const btn = document.getElementById('btn-submit-checkin');
+      if (!btn) return;
+
+      const nik = document.getElementById('checkin_nik')?.value.trim() || '';
+      const rawName = localStorage.getItem('resto_user_name') ||
+                      localStorage.getItem('resto_current_user') || '';
+      const duplicate = hasCheckinForToday(nik, formatRestoName(rawName));
+      const photoRequired = isPhotoRequiredForCurrentCheckin();
+      const photoReady = hasValidCapturedCheckinPhoto();
+
+      btn.disabled = duplicate || (photoRequired && !photoReady);
+
+      // Teks tombol dibuat jelas agar user cabang tahu bahwa foto wajib.
+      if (!duplicate && photoRequired && !photoReady) {
+        btn.innerHTML = '<i class="fa-solid fa-camera"></i> Ambil Foto Terlebih Dahulu';
+        btn.title = 'Foto timestamp wajib diambil sebelum check-in dapat dikirim.';
+      } else if (!duplicate && photoRequired && photoReady) {
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Kirim Checkin Sekarang';
+        btn.title = 'Foto sudah siap. Check-in dapat dikirim.';
+      } else if (!duplicate && !photoRequired) {
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Kirim Keterangan Sekarang';
+        btn.title = '';
+      }
+
+      return { duplicate, photoRequired, photoReady };
+    }
+
     function updateCheckinDuplicateLock() {
       const nik=document.getElementById('checkin_nik')?.value.trim()||'';
       const rawName=localStorage.getItem('resto_user_name')||localStorage.getItem('resto_current_user')||'';
       const locked=hasCheckinForToday(nik,formatRestoName(rawName));
       const msg=document.getElementById('checkin_duplicate_msg');
-      const btn=document.getElementById('btn-submit-checkin');
       if(msg)msg.classList.toggle('active',locked);
-      if(btn)btn.disabled=locked;
+      updateCheckinSubmitButtonState();
       return locked;
     }
 
@@ -3053,6 +3098,7 @@
       videoEl.style.display = 'block';
       btnSnap.style.display = 'inline-flex';
       btnRetake.style.display = 'none';
+      updateCheckinSubmitButtonState();
 
       try {
         if (cameraStream) stopCameraStream();
@@ -3142,6 +3188,9 @@
 
       capturedSnapDataUrl = canvasEl.toDataURL('image/jpeg', 0.72);
 
+      // Foto valid -> tombol Kirim baru boleh aktif.
+      updateCheckinSubmitButtonState();
+
       previewEl.src = capturedSnapDataUrl;
       previewEl.style.display = 'block';
       videoEl.style.display = 'none';
@@ -3151,7 +3200,20 @@
     }
 
     function retakePhotoSnap() {
+      // Menghapus foto sebelumnya langsung mengunci kembali tombol Kirim.
+      capturedSnapDataUrl = null;
+      updateCheckinSubmitButtonState();
       startCameraStream();
+    }
+
+    // Foto check-in sengaja di-load secara lazy dari GAS.
+    // Karena itu record tanpa hasPhoto/photoUrl di payload awal tetap dianggap
+    // memiliki kemungkinan foto selama shifting-nya bukan OFF/SAKIT/IZIN/CUTI.
+    function canHaveCheckinPhoto(record) {
+      if (!record) return false;
+      return !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(
+        String(record.shifting || '').trim().toUpperCase()
+      );
     }
 
     function getStoredCheckinData() {
@@ -3190,8 +3252,11 @@
       if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) {
         groupFoto.style.display = 'none';
         stopCameraStream();
+        capturedSnapDataUrl = null;
+        updateCheckinSubmitButtonState();
       } else {
         groupFoto.style.display = 'block';
+        // Setiap perpindahan ke SHIFT/MIDDLE mewajibkan foto baru.
         startCameraStream();
       }
     }
@@ -3225,13 +3290,23 @@
       }
 
       let fotoUrl = '-';
-      if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shifting)) {
+      const isAbsentStatus = ['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(String(shifting).toUpperCase());
+
+      if (isAbsentStatus) {
         fotoUrl = 'Tertutup (Sesuai Keterangan)';
-      } else if (capturedSnapDataUrl) {
-        fotoUrl = capturedSnapDataUrl;
       } else {
-        alert('Mohon ambil foto timestamp karyawan menggunakan kamera!');
-        return;
+        // Pengaman kedua: meskipun tombol dipanggil lewat script/browser,
+        // check-in tetap tidak boleh dikirim tanpa foto kamera yang valid.
+        if (!hasValidCapturedCheckinPhoto()) {
+          updateCheckinSubmitButtonState();
+          alert('WAJIB FOTO TERLEBIH DAHULU. Silakan ambil foto timestamp karyawan sebelum mengirim check-in.');
+          document.getElementById('group_kamera_timestamp')?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+          return;
+        }
+        fotoUrl = capturedSnapDataUrl;
       }
 
       const nowMs = Date.now();
@@ -3293,8 +3368,12 @@
         alert("Koneksi ke server sedang bermasalah. Data check-in disimpan sementara di perangkat dan akan dicoba lagi saat koneksi kembali.");
         setTimeout(flushPendingCheckins, 5000);
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
+        // Jangan selalu mengaktifkan tombol. Untuk SHIFT/MIDDLE tombol tetap
+        // terkunci sampai foto kamera benar-benar tersedia.
+        updateCheckinSubmitButtonState();
+        if (isPhotoRequiredForCurrentCheckin() && !hasValidCapturedCheckinPhoto()) {
+          submitBtn.innerHTML = '<i class="fa-solid fa-camera"></i> Ambil Foto Terlebih Dahulu';
+        }
       }
     }
 
@@ -3707,23 +3786,47 @@
 
     async function openPhotoModal(checkinId) {
       const list = getStoredCheckinData();
-      const record = list.find(r => r.id === checkinId);
+      const record = list.find(r => String(r.id) === String(checkinId));
       if (!record) return;
 
-      let photoSrc = record.photoUrl || record.foto || '';
+      let photoSrc = '';
+      const rawPhoto = String(record.photoUrl || record.foto || '').trim();
 
-      // Loading awal tidak lagi membawa Base64 foto. Ambil hanya saat preview dibuka.
-      if (!photoSrc && record.hasPhoto) {
+      // Jangan percaya field hasPhoto pada data ringkas.
+      // getInitialData memang sengaja tidak membawa Base64 foto untuk mempercepat loading,
+      // sehingga hasPhoto bisa kosong/false walaupun foto sebenarnya tersimpan di server.
+      if (
+        rawPhoto.startsWith('data:image') ||
+        rawPhoto.startsWith('http') ||
+        rawPhoto.startsWith('blob:')
+      ) {
+        photoSrc = rawPhoto;
+      }
+
+      // Ambil foto langsung dari GAS berdasarkan ID check-in.
+      // Ini berlaku untuk SEMUA check-in non-absen, bukan hanya record.hasPhoto === true.
+      if (!photoSrc && !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(String(record.shifting || '').toUpperCase())) {
         try {
           const result = await gasRequestJson(
             { action: "getCheckinPhoto", checkinId: checkinId },
-            { timeoutMs: 12000, retries: 1, retryDelayMs: 500 }
+            { timeoutMs: 15000, retries: 2, retryDelayMs: 700 }
           );
+
           if (result?.status === "success") {
-            photoSrc = result.data?.foto || '';
-            if (photoSrc) {
-              record.foto = photoSrc;
-              record.photoUrl = photoSrc;
+            const serverPhoto = String(result.data?.foto || result.data?.photoUrl || '').trim();
+
+            if (
+              serverPhoto.startsWith('data:image') ||
+              serverPhoto.startsWith('http') ||
+              serverPhoto.startsWith('blob:')
+            ) {
+              photoSrc = serverPhoto;
+
+              // Cache hanya foto yang sudah berhasil diambil, bukan string status/error.
+              record.foto = serverPhoto;
+              record.photoUrl = serverPhoto;
+              record.hasPhoto = true;
+
               try {
                 localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
               } catch (e) {}
@@ -3734,8 +3837,13 @@
         }
       }
 
-      if (!photoSrc || (!photoSrc.startsWith('data:image') && !photoSrc.startsWith('http') && !photoSrc.startsWith('blob:'))) {
-        alert("Foto tidak tersedia atau karyawan tidak mengambil foto.");
+      if (!photoSrc) {
+        const shift = String(record.shifting || '').toUpperCase();
+        if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) {
+          alert("Check-in ini berstatus " + shift + ", sehingga memang tidak menggunakan foto kamera.");
+        } else {
+          alert("Foto check-in belum dapat diambil dari server. Silakan coba lagi.");
+        }
         return;
       }
 
@@ -4033,13 +4141,27 @@
           statusBadge += ` <span class="badge-status terlambat">Terlambat (> ${maxAllowed})</span>`;
         }
 
-        const photoData = item.photoUrl || item.foto;
+        const photoData = String(item.photoUrl || item.foto || '').trim();
+        const shiftUpper = String(item.shifting || '').toUpperCase();
+        const isCameraCheckin = !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shiftUpper);
         let fotoRender = '-';
 
-        if (item.hasPhoto || (photoData && (photoData.startsWith('data:image') || photoData.startsWith('http') || photoData.startsWith('blob:') || photoData.includes('Foto Live Kamera Ada')))) {
+        // Untuk SHIFT/MIDDLE, selalu tampilkan tombol Lihat Foto.
+        // Foto diambil lazy dari GAS saat tombol diklik, sehingga tidak membebani
+        // getInitialData dengan Base64 dan tidak bergantung pada hasPhoto.
+        const hasDirectPhoto =
+          photoData.startsWith('data:image') ||
+          photoData.startsWith('http') ||
+          photoData.startsWith('blob:') ||
+          photoData.includes('Foto Live Kamera Ada');
+
+        if (isCameraCheckin && item.id) {
           fotoRender = `
-            <button type="button" onclick="openPhotoModal('${item.id}')" class="btn-camera btn-camera-snap" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 8px; cursor: pointer; white-space: nowrap;">
-              <i class="fa-solid fa-eye"></i> Lihat Foto
+            <button type="button"
+                    onclick="openPhotoModal('${item.id}')"
+                    class="btn-camera btn-camera-snap"
+                    style="padding: 6px 14px; font-size: 0.8rem; border-radius: 8px; cursor: pointer; white-space: nowrap;">
+              <i class="fa-solid fa-eye"></i> ${hasDirectPhoto ? 'Lihat Foto' : 'Cek Foto'}
             </button>
           `;
         } else {
