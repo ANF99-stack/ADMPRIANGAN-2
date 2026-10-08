@@ -2448,10 +2448,10 @@
             <div class="action-header-mobile" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
               <div>
                 <h4 style="font-size:1.05rem; font-weight:800; color:#92400e;">
-                  <i class="fa-solid fa-clock"></i> Pengaturan Jam Check-in KASIR
+                  <i class="fa-solid fa-clock"></i> Pengaturan Jam Check-in KASIR — LAZATTO
                 </h4>
                 <p style="font-size:.8rem; color:var(--text-muted); margin-top:3px;">
-                  Pengaturan dibuat <b>GLOBAL</b>, tidak perlu input satu per satu resto. Sistem memakai data resto yang sudah ada untuk menentukan resto <b>REGULER</b> atau <b>24 JAM</b>.
+                  Pengaturan dibuat <b>GLOBAL KHUSUS LAZATTO</b>, tidak perlu input satu per satu resto. Sistem memakai data resto Lazatto yang sudah ada untuk menentukan tipe <b>REGULER</b> atau <b>24 JAM</b>.
                 </p>
               </div>
               <button onclick="saveCheckinKasirSchedules()" style="background:#92400e; color:white; border:none; padding:10px 18px; border-radius:10px; cursor:pointer; font-weight:800;">
@@ -2463,8 +2463,9 @@
               <b><i class="fa-solid fa-circle-info"></i> Aturan:</b><br>
               • <b>REGULER:</b> Shift 1 default <b>06:00</b>, Shift 2 default <b>14:00</b>. Admin tetap dapat mengubah kedua jam tersebut secara global.<br>
               • <b>24 JAM:</b> Admin mengatur <b>Shift 1, Shift 2, Shift 3</b> secara manual. Ketiga jam wajib diisi.<br>
-              • Pengaturan berlaku untuk <b>semua resto</b> sesuai tipe resto yang sudah ada. Tidak ada lagi input per resto.<br>
-              • Pengaturan ini khusus <b>JOB KASIR</b> dan dipakai sebagai batas waktu/indikator keterlambatan check-in.
+              • Pengaturan hanya berlaku untuk <b>RESTO LAZATTO</b> sesuai tipe resto yang sudah ada. Tidak ada lagi input per resto.<br>
+              • Resto/brand selain Lazatto <b>tidak menggunakan</b> batas check-in kasir ini dan tetap mengikuti aturan check-in yang sudah ada.<br>
+              • Pengaturan ini khusus <b>JOB KASIR</b> dan dipakai sebagai batas waktu/indikator keterlambatan check-in Lazatto.
             </div>
 
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:14px;">
@@ -3983,12 +3984,17 @@
     function getKasirMaxTimeForShift(record) {
       if (!record || !String(record.jabatan || '').toUpperCase().includes('KASIR')) return null;
 
+      // BATAS CHECK-IN KASIR KHUSUS LAZATTO.
+      // Resto/brand lain tidak boleh memakai pengaturan global ini.
+      const restoName = formatRestoName(record.restoName);
+      if (!String(restoName || '').toUpperCase().includes('LAZATTO')) return null;
+
       const schedules = globalDashboardData.checkinKasirSchedules || {};
       const shift = String(record.shifting || '').toUpperCase();
 
       // Tipe resto diambil dari data master/timing yang sudah ada.
       const restoMap = getRestoMaxCheckinMap();
-      const restoObj = restoMap[formatRestoName(record.restoName)] || {};
+      const restoObj = restoMap[restoName] || {};
       const type = String(restoObj.type || restoObj.tipe || '').toLowerCase();
       const is24Jam = type === '24jam' || type === '24 jam' || type === '24_jam';
       const cfg = schedules[is24Jam ? '24jam' : 'reguler'] || {};
