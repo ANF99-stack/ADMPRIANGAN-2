@@ -2442,6 +2442,82 @@
           <div id="admin-spv-coverage-list"></div>
         </div>
 
+        <!-- PAGE PENGATURAN BATAS CHECK-IN KASIR -->
+        <div id="page-checkin-kasir-limit" class="admin-page-content" style="display: none;">
+          <div class="admin-card-item" style="border:2px solid #f59e0b; background:#fffbeb;">
+            <div class="action-header-mobile" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+              <div>
+                <h4 style="font-size:1.05rem; font-weight:800; color:#92400e;">
+                  <i class="fa-solid fa-user-clock"></i> Batas Check-in Karyawan — JOB KASIR
+                </h4>
+                <p style="font-size:.8rem; color:var(--text-muted); margin-top:3px;">
+                  Atur maksimal jumlah karyawan <b>KASIR</b> yang boleh melakukan check-in di setiap resto dalam 1 hari.
+                  Nilai <b>0 = tanpa batas</b>.
+                </p>
+              </div>
+              <button onclick="saveCheckinKasirLimits()" style="background:#d97706; color:white; border:none; padding:10px 18px; border-radius:10px; cursor:pointer; font-weight:800;">
+                <i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan
+              </button>
+            </div>
+
+            <div style="padding:12px 14px; background:#fff; border:1px solid #fde68a; border-radius:12px; margin-bottom:14px; color:#78350f; font-size:.78rem; line-height:1.5;">
+              <b><i class="fa-solid fa-circle-info"></i> Cara kerja:</b>
+              batas dihitung berdasarkan <b>Resto + Jabatan KASIR + tanggal hari ini (WIB)</b>.
+              Karyawan dengan jabatan selain KASIR tidak terkena batas ini.
+              Validasi utama dilakukan di server GAS.
+            </div>
+
+            <div style="overflow-x:auto; border:1px solid var(--border); border-radius:12px; background:#fff;">
+              <table style="width:100%; border-collapse:collapse; min-width:620px; font-size:.82rem;">
+                <thead>
+                  <tr style="background:#f8fafc; border-bottom:2px solid var(--border);">
+                    <th style="padding:12px 14px; text-align:left;">No</th>
+                    <th style="padding:12px 14px; text-align:left;">Resto Cabang</th>
+                    <th style="padding:12px 14px; text-align:center;">Jumlah Kasir Aktif</th>
+                    <th style="padding:12px 14px; text-align:center;">Batas Check-in / Hari</th>
+                    <th style="padding:12px 14px; text-align:center;">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="checkin-kasir-limit-body"></tbody>
+              </table>
+            </div>
+
+            <div style="margin-top:20px; padding-top:18px; border-top:2px dashed #fde68a;">
+              <div class="action-header-mobile" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+                <div>
+                  <h4 style="font-size:1rem; font-weight:800; color:#92400e; margin:0;">
+                    <i class="fa-solid fa-clock"></i> Batas Waktu Check-in KASIR
+                  </h4>
+                  <p style="font-size:.78rem; color:var(--text-muted); margin-top:4px;">
+                    Khusus jabatan <b>KASIR</b>. Resto <b>REGULER</b> otomatis menggunakan Shift 1 <b>06:00</b> dan Shift 2 <b>14:00</b>. Untuk resto <b>24 JAM</b>, Admin mengatur manual 3 shift.
+                    Batas ini dipakai sebagai patokan <b>TERLAMBAT</b>, bukan menghapus data check-in.
+                  </p>
+                </div>
+                <button onclick="saveCheckinKasirSchedules()" style="background:#92400e; color:white; border:none; padding:10px 18px; border-radius:10px; cursor:pointer; font-weight:800;">
+                  <i class="fa-solid fa-clock-rotate-left"></i> Simpan Jam Check-in
+                </button>
+              </div>
+
+              <div style="overflow-x:auto; border:1px solid var(--border); border-radius:12px; background:#fff;">
+                <table style="width:100%; border-collapse:collapse; min-width:860px; font-size:.8rem;">
+                  <thead>
+                    <tr style="background:#f8fafc; border-bottom:2px solid var(--border);">
+                      <th style="padding:11px 12px; text-align:left;">No</th>
+                      <th style="padding:11px 12px; text-align:left;">Resto</th>
+                      <th style="padding:11px 12px; text-align:center;">Tipe Resto</th>
+                      <th style="padding:11px 12px; text-align:center;">Shift 1</th>
+                      <th style="padding:11px 12px; text-align:center;">Shift 2</th>
+                      <th style="padding:11px 12px; text-align:center;">Shift 3</th>
+                      <th style="padding:11px 12px; text-align:center;">Keterangan</th>
+                    </tr>
+                  </thead>
+                  <tbody id="checkin-kasir-schedule-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div id="page-psd-links" class="admin-page-content" style="display: none;">
           <div class="admin-card-item" style="border: 2px solid #a7f3d0; background: #f0fdf4;">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
@@ -2899,7 +2975,7 @@
         const cached = localStorage.getItem('resto_cached_data');
         if (cached) return JSON.parse(cached);
       } catch(e) {}
-      return { usersList: [], areaLinks: {}, branchLinks: {}, spvLinksMaster: {}, spvLinksIndividual: {}, psdLinksMaster: {}, checkinEnabled: false, checkinsList: [], karyawanList: [] };
+      return { usersList: [], areaLinks: {}, branchLinks: {}, spvLinksMaster: {}, spvLinksIndividual: {}, psdLinksMaster: {}, checkinEnabled: false, checkinKasirLimits: {}, checkinsList: [], karyawanList: [] };
     })();
 
     const loginForm = document.getElementById('login-form');
@@ -3892,9 +3968,33 @@
       return ['OFF','SAKIT','IZIN','CUTI','MIDDLE'].includes(shift);
     }
 
+    function getKasirMaxTimeForShift(record) {
+      if (!record || !String(record.jabatan || '').toUpperCase().includes('KASIR')) return null;
+      const schedules = globalDashboardData.checkinKasirSchedules || {};
+      const key = Object.keys(schedules).find(k => formatRestoName(k) === formatRestoName(record.restoName));
+      const cfg = key ? schedules[key] : null;
+      // Default bisnis KASIR untuk resto REGULER:
+      // Shift 1 = 06:00, Shift 2 = 14:00.
+      // Jika resto 24 JAM, Admin wajib menyimpan konfigurasi 3 shift manual.
+      if (!cfg) {
+        switch (String(record.shifting || '').toUpperCase()) {
+          case 'SHIFT 1': return '06:00';
+          case 'SHIFT 2': return '14:00';
+          default: return null;
+        }
+      }
+      switch (String(record.shifting || '').toUpperCase()) {
+        case 'SHIFT 1': return cfg.s1 || null;
+        case 'SHIFT 2': return cfg.s2 || null;
+        case 'SHIFT 3': return cfg.type === '24jam' ? (cfg.s3 || null) : null;
+        default: return null;
+      }
+    }
+
     function isLateCheckin(record, restoTimeMap) {
       if (!record || isAbsenceShift(record.shifting)) return false;
-      const maxAllowed = getMaxTimeForShift(restoTimeMap[formatRestoName(record.restoName)], record.shifting);
+      const kasirMax = getKasirMaxTimeForShift(record);
+      const maxAllowed = kasirMax || getMaxTimeForShift(restoTimeMap[formatRestoName(record.restoName)], record.shifting);
       return !!(maxAllowed && getRecordWIBInfo(record).time > maxAllowed);
     }
 
@@ -4135,7 +4235,8 @@
 
         const rKey = formatRestoName(item.restoName);
         const restoTimingObj = restoTimeMap[rKey];
-        const maxAllowed = getMaxTimeForShift(restoTimingObj, item.shifting);
+        const kasirMaxAllowed = getKasirMaxTimeForShift(item);
+        const maxAllowed = kasirMaxAllowed || getMaxTimeForShift(restoTimingObj, item.shifting);
 
         if (!['OFF', 'SAKIT', 'IZIN', 'CUTI', 'MIDDLE'].includes(item.shifting) && maxAllowed && timeStr > maxAllowed) {
           statusBadge += ` <span class="badge-status terlambat">Terlambat (> ${maxAllowed})</span>`;
@@ -4202,6 +4303,7 @@
             <summary><i class="fa-solid fa-store"></i><span>MANAGEMENT RESTO</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
             <div class="admin-nav-group-menu">
               <div class="nav-item" onclick="switchAdminNav('page-spv-coverage-update', this)"><i class="fa-solid fa-store"></i><span>UPDATE COVERAGE SPV</span></div>
+              <div class="nav-item" onclick="switchAdminNav('page-checkin-kasir-limit', this)"><i class="fa-solid fa-user-clock"></i><span>BATAS CHECKIN KASIR</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-links', this)"><i class="fa-solid fa-link"></i><span>KELOLA LINK AREA & CABANG</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-spv-links', this)"><i class="fa-solid fa-user-tie"></i><span>KELOLA LINK SUPERVISOR</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-admin-stok-opname', this)"><i class="fa-solid fa-boxes-stacked"></i><span>STOK OPNAME</span></div>
@@ -4690,6 +4792,7 @@
             if(!globalDashboardData.spvLinksMaster)globalDashboardData.spvLinksMaster={};
             if(!globalDashboardData.spvLinksIndividual)globalDashboardData.spvLinksIndividual={};
             if(!globalDashboardData.psdLinksMaster)globalDashboardData.psdLinksMaster={};
+            if(!globalDashboardData.checkinKasirLimits)globalDashboardData.checkinKasirLimits={};
             if(!globalDashboardData.checkinsList)globalDashboardData.checkinsList=[];
             if(!globalDashboardData.karyawanList)globalDashboardData.karyawanList=[];
             localStorage.setItem('resto_checkin_feature_enabled',globalDashboardData.checkinEnabled?'true':'false');
@@ -4721,6 +4824,7 @@
         loadPsdMasterLinksForm();
         renderAdminLinksList();
         renderUserTable();
+        renderCheckinKasirLimitPage();
         updateAdminStats();
       } else if (userRole === 'supervisor') {
         const spvMaster = globalDashboardData.spvLinksMaster || {};
@@ -5219,6 +5323,213 @@
       spvUsers.forEach(spv => generateRestoTimingsInputs(spv.username));
     }
 
+
+    function getAdminCheckinLimitRestoList() {
+      const set = new Set();
+
+      (globalDashboardData.karyawanList || []).forEach(k => {
+        const resto = formatRestoName(k.resto || k.restoName || k.cabang || '');
+        if (resto) set.add(resto);
+      });
+
+      Object.keys(globalDashboardData.branchLinks || {}).forEach(k => {
+        const resto = formatRestoName(k);
+        if (resto) set.add(resto);
+      });
+
+      return [...set].sort((a,b) => a.localeCompare(b, 'id'));
+    }
+
+    function renderCheckinKasirLimitPage() {
+      const tbody = document.getElementById('checkin-kasir-limit-body');
+      if (!tbody) return;
+
+      const limits = globalDashboardData.checkinKasirLimits || {};
+      const restoList = getAdminCheckinLimitRestoList();
+
+      if (!restoList.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="padding:28px; text-align:center; color:var(--text-muted);">Belum ada data resto/karyawan.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = restoList.map((resto, index) => {
+        const key = Object.keys(limits).find(k => formatRestoName(k) === resto);
+        const cfg = key ? limits[key] : {};
+        const kasirAktif = (globalDashboardData.karyawanList || []).filter(k =>
+          formatRestoName(k.resto || '') === resto &&
+          String(k.status || 'Aktif').trim().toLowerCase() === 'aktif' &&
+          String(k.jabatan || '').toUpperCase().includes('KASIR')
+        ).length;
+        const max = Number(cfg.maxPerHari) || 0;
+        const status = max > 0
+          ? `<span style="display:inline-flex; align-items:center; gap:5px; padding:5px 9px; border-radius:999px; background:#dcfce7; color:#166534; font-weight:800;"><i class="fa-solid fa-circle-check"></i> Dibatasi</span>`
+          : `<span style="display:inline-flex; align-items:center; gap:5px; padding:5px 9px; border-radius:999px; background:#f1f5f9; color:#475569; font-weight:800;"><i class="fa-solid fa-infinity"></i> Tanpa Batas</span>`;
+
+        return `
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:11px 14px;">${index + 1}</td>
+            <td style="padding:11px 14px; font-weight:800;">${escapeHtml(resto)}</td>
+            <td style="padding:11px 14px; text-align:center; font-weight:800;">${kasirAktif}</td>
+            <td style="padding:11px 14px; text-align:center;">
+              <input class="checkin-kasir-limit-input" data-resto="${encodeURIComponent(resto)}"
+                     type="number" min="0" step="1" value="${max}"
+                     style="width:110px; max-width:100%; padding:9px 10px; border:1px solid #cbd5e1; border-radius:9px; text-align:center; font-weight:800;"
+                     title="0 = tanpa batas">
+            </td>
+            <td style="padding:11px 14px; text-align:center;">${status}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderCheckinKasirSchedulePage() {
+      const tbody = document.getElementById('checkin-kasir-schedule-body');
+      if (!tbody) return;
+
+      const schedules = globalDashboardData.checkinKasirSchedules || {};
+      const restoList = getAdminCheckinLimitRestoList();
+      if (!restoList.length) {
+        tbody.innerHTML = `<tr><td colspan="7" style="padding:24px; text-align:center; color:var(--text-muted);">Belum ada data resto/karyawan.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = restoList.map((resto, index) => {
+        const key = Object.keys(schedules).find(k => formatRestoName(k) === resto);
+        const cfg = key ? schedules[key] : {};
+        const type = cfg.type === '24jam' ? '24jam' : 'reguler';
+        const s1 = cfg.s1 || (type === 'reguler' ? '06:00' : '');
+        const s2 = cfg.s2 || (type === 'reguler' ? '14:00' : '');
+        const s3 = type === '24jam' ? (cfg.s3 || '') : '';
+        const s3Disabled = type !== '24jam';
+
+        return `
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px 12px;">${index + 1}</td>
+            <td style="padding:10px 12px; font-weight:800;">${escapeHtml(resto)}</td>
+            <td style="padding:10px 12px; text-align:center;">
+              <select class="checkin-kasir-type-input" data-resto="${encodeURIComponent(resto)}" onchange="toggleKasirScheduleRow(this)" style="padding:8px 9px; border:1px solid #cbd5e1; border-radius:8px; font-weight:800;">
+                <option value="reguler" ${type === 'reguler' ? 'selected' : ''}>REGULER</option>
+                <option value="24jam" ${type === '24jam' ? 'selected' : ''}>24 JAM</option>
+              </select>
+            </td>
+            <td style="padding:10px 12px; text-align:center;"><input type="time" class="checkin-kasir-s1-input" data-resto="${encodeURIComponent(resto)}" value="${s1}" style="padding:8px; border:1px solid #cbd5e1; border-radius:8px; font-weight:800;"></td>
+            <td style="padding:10px 12px; text-align:center;"><input type="time" class="checkin-kasir-s2-input" data-resto="${encodeURIComponent(resto)}" value="${s2}" style="padding:8px; border:1px solid #cbd5e1; border-radius:8px; font-weight:800;"></td>
+            <td style="padding:10px 12px; text-align:center;"><input type="time" class="checkin-kasir-s3-input" data-resto="${encodeURIComponent(resto)}" value="${s3}" ${s3Disabled ? 'disabled' : ''} style="padding:8px; border:1px solid #cbd5e1; border-radius:8px; font-weight:800; background:${s3Disabled ? '#f1f5f9' : '#fff'};"></td>
+            <td class="checkin-kasir-schedule-note" style="padding:10px 12px; text-align:center; font-size:.75rem; font-weight:700; color:${type === '24jam' ? '#92400e' : '#475569'};">${type === '24jam' ? '3 shift manual' : 'S1 06:00 • S2 14:00'}</td>
+          </tr>`;
+      }).join('');
+    }
+
+    function toggleKasirScheduleRow(select) {
+      const row = select.closest('tr');
+      if (!row) return;
+      const type = select.value === '24jam' ? '24jam' : 'reguler';
+      const s1 = row.querySelector('.checkin-kasir-s1-input');
+      const s2 = row.querySelector('.checkin-kasir-s2-input');
+      const s3 = row.querySelector('.checkin-kasir-s3-input');
+      const note = row.querySelector('.checkin-kasir-schedule-note');
+      if (type === 'reguler') {
+        if (s1) s1.value = '06:00';
+        if (s2) s2.value = '14:00';
+        if (s3) { s3.value = ''; s3.disabled = true; s3.style.background = '#f1f5f9'; }
+        if (note) { note.textContent = 'S1 06:00 • S2 14:00'; note.style.color = '#475569'; }
+      } else {
+        if (s1 && !s1.value) s1.value = '06:00';
+        if (s2 && !s2.value) s2.value = '14:00';
+        if (s3 && !s3.value) s3.value = '22:00';
+        if (s3) { s3.disabled = false; s3.style.background = '#fff'; }
+        if (note) { note.textContent = '3 shift manual'; note.style.color = '#92400e'; }
+      }
+    }
+
+    async function saveCheckinKasirSchedules() {
+      const currentUser = localStorage.getItem('resto_current_user') || '';
+      const types = [...document.querySelectorAll('.checkin-kasir-type-input')];
+      if (!types.length) { alert('Belum ada resto yang dapat diatur.'); return; }
+
+      const schedules = {};
+      for (const typeEl of types) {
+        const resto = decodeURIComponent(typeEl.dataset.resto || '');
+        const row = typeEl.closest('tr');
+        const type = typeEl.value === '24jam' ? '24jam' : 'reguler';
+        const s1 = row.querySelector('.checkin-kasir-s1-input')?.value || '';
+        const s2 = row.querySelector('.checkin-kasir-s2-input')?.value || '';
+        const s3 = row.querySelector('.checkin-kasir-s3-input')?.value || '';
+        if (type === '24jam' && (!s1 || !s2 || !s3)) {
+          alert(`Resto ${resto}: untuk 24 JAM, Shift 1, Shift 2, dan Shift 3 wajib diisi.`);
+          return;
+        }
+        schedules[resto] = { type, s1: type === 'reguler' ? '06:00' : s1, s2: type === 'reguler' ? '14:00' : s2, s3: type === '24jam' ? s3 : '' };
+      }
+
+      const btn = document.querySelector('#page-checkin-kasir-limit button[onclick="saveCheckinKasirSchedules()"]');
+      const original = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Menyimpan...'; }
+      try {
+        const result = await gasRequestJson({ action:'saveCheckinKasirSchedules', adminUser:currentUser, schedules }, {timeoutMs:15000, retries:2, retryDelayMs:700});
+        if (result.status === 'success') {
+          globalDashboardData.checkinKasirSchedules = result.data?.checkinKasirSchedules || {};
+          try { localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData)); } catch(e) {}
+          renderCheckinKasirSchedulePage();
+          populateOperasionalDashboardMonths();
+          alert(result.message || 'Batas waktu check-in KASIR berhasil disimpan.');
+        } else alert(result.message || 'Gagal menyimpan batas waktu check-in KASIR.');
+      } catch (err) {
+        alert('Gagal terhubung ke server GAS. Pengaturan jam belum tersimpan.');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = original || '<i class="fa-solid fa-clock-rotate-left"></i> Simpan Jam Check-in'; }
+      }
+    }
+
+    async function saveCheckinKasirLimits() {
+      const currentUser = localStorage.getItem('resto_current_user') || '';
+      const inputs = [...document.querySelectorAll('.checkin-kasir-limit-input')];
+
+      if (!inputs.length) {
+        alert('Belum ada resto yang dapat diatur.');
+        return;
+      }
+
+      const limits = {};
+      inputs.forEach(input => {
+        const resto = decodeURIComponent(input.dataset.resto || '');
+        let max = parseInt(input.value, 10);
+        if (!Number.isFinite(max) || max < 0) max = 0;
+        limits[resto] = max;
+      });
+
+      const btn = document.querySelector('#page-checkin-kasir-limit button[onclick="saveCheckinKasirLimits()"]');
+      const original = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Menyimpan...';
+      }
+
+      try {
+        const result = await gasRequestJson({
+          action: 'saveCheckinKasirLimits',
+          adminUser: currentUser,
+          limits: limits
+        }, { timeoutMs: 15000, retries: 2, retryDelayMs: 700 });
+
+        if (result.status === 'success') {
+          globalDashboardData.checkinKasirLimits = result.data?.checkinKasirLimits || {};
+          try { localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData)); } catch(e) {}
+          renderCheckinKasirLimitPage();
+          alert(result.message || 'Pengaturan batas check-in kasir berhasil disimpan.');
+        } else {
+          alert(result.message || 'Gagal menyimpan pengaturan batas check-in kasir.');
+        }
+      } catch (err) {
+        alert('Gagal terhubung ke server GAS. Pengaturan belum tersimpan.');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = original || '<i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan';
+        }
+      }
+    }
+
     function loadPsdMasterLinksForm() {
       const m = globalDashboardData.psdLinksMaster || {};
       document.getElementById('master_psd_fcp').value = m.fcp || '';
@@ -5541,6 +5852,9 @@
           hideAdminStokOpnameSubPage();
         } else if (pageId === 'page-admin-stok-opname') {
           loadAdminStokOpnameLinks();
+        } else if (pageId === 'page-checkin-kasir-limit') {
+          renderCheckinKasirLimitPage();
+          renderCheckinKasirSchedulePage();
         }
       }
     }
