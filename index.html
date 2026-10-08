@@ -1395,6 +1395,18 @@
                 </a>
               </div>
 
+              <!-- TRACK COGS NGEUMI KHUSUS SPV AZIS HAMZAH -->
+              <div class="card" id="spv-cogs-ngeumi-card" style="display:none; border:2px solid #6366f1; background:#eef2ff;">
+                <div class="card-top">
+                  <div class="card-icon icon-indigo"><i class="fa-solid fa-bowl-rice"></i></div>
+                  <div class="card-title" style="color:#4338ca;">TRACK COGS NGEUMI</div>
+                  <div class="card-desc">Pencatatan & analisis HPP / Cost of Goods Sold produk Ngeumi.</div>
+                </div>
+                <a id="btn_spv_cogs_ngeumi" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn" style="background:#6366f1;color:white;">
+                  <span>Buka Track COGS Ngeumi</span><i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+
               <!-- 5. BASE LAPORAN OMSET -->
               <div class="card">
                 <div class="card-top">
@@ -1770,10 +1782,12 @@
             </div>
             <div class="op-panel">
               <div class="op-panel-title">
-                <h4><i class="fa-solid fa-store" style="color:#4338ca;"></i> Resto dengan Persentase Terlambat Terbesar</h4>
-                <span style="font-size:.7rem;color:var(--text-muted);font-weight:700;">Terlambat ÷ Check-in valid</span>
+                <h4><i class="fa-solid fa-user-clock" style="color:#dc2626;"></i> Karyawan Terlambat Check-in Hari Ini</h4>
+                <select id="op_dashboard_shift" class="op-month-select" onchange="renderOperasionalDashboard()">
+                  <option value="ALL">SEMUA SHIFT</option>
+                </select>
               </div>
-              <div id="op_top_resto_list" class="op-dashboard-list"></div>
+              <div id="op_today_late_list" class="op-dashboard-list"></div>
             </div>
           </div>
 
@@ -2120,6 +2134,26 @@
                   <i class="fa-solid fa-arrow-up-right-from-square"></i>
                 </a>
               </div>
+
+              <div class="card" style="border:2px solid #f59e0b; background:#fffbeb;">
+                <div class="card-top">
+                  <div class="card-icon icon-amber"><i class="fa-solid fa-boxes-stacked"></i></div>
+                  <div class="card-title" style="color:#b45309;">STOK OPNAME</div>
+                  <div class="card-desc">Portal input dan pemeriksaan data Stok Opname area.</div>
+                </div>
+                <button type="button" onclick="showAdminStokOpnameSubPage()" class="card-link-btn" style="background:#f59e0b;color:white;">
+                  <span>Buka STOK OPNAME</span><i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="admin-stok-opname-sub-view" style="display:none;">
+            <div class="user-banner" style="background:linear-gradient(135deg,#78350f 0%,#f59e0b 100%);"><div class="banner-header"><div><h2>Portal Stok Opname (Admin)</h2><p>Akses input dan pemeriksaan Stok Opname menggunakan link master.</p></div><button onclick="hideAdminStokOpnameSubPage()" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:white;padding:8px 16px;border-radius:12px;font-weight:700;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i> Kembali</button></div></div>
+            <div class="grid-container">
+              <div class="card"><div class="card-top"><div class="card-icon icon-orange"><i class="fa-solid fa-pen-to-square"></i></div><div class="card-title">INPUT STOK OPNAME</div><div class="card-desc">Form untuk melakukan input Stok Opname resto area.</div></div><a id="btn_admin_rekap_input_so" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn"><span>Buka Input Stok Opname</span><i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
+              <div class="card"><div class="card-top"><div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-check"></i></div><div class="card-title">CEK STOK OPNAME</div><div class="card-desc">Pemeriksaan dan rekapitulasi data Stok Opname.</div></div><a id="btn_admin_rekap_cek_so" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn"><span>Buka Cek Stok Opname</span><i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
             </div>
           </div>
 
@@ -2255,6 +2289,57 @@
               <div class="admin-input-group"><label>7. Laporan Penjualan (Master)</label><input type="text" id="master_spv_penjualan" placeholder="https://docs.google.com/..."></div>
               <div class="admin-input-group"><label>8. Input SO (Master)</label><input type="text" id="master_spv_input_so" placeholder="https://docs.google.com/..."></div>
               <div class="admin-input-group"><label>9. Cek Stok Opname (Master)</label><input type="text" id="master_spv_cek_so" placeholder="https://docs.google.com/..."></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAGE STOK OPNAME UNTUK ADMIN -->
+        <div id="page-admin-stok-opname" class="admin-page-content" style="display: none;">
+          <div class="admin-card-item" style="border: 2px solid #f59e0b; background: #fffbeb; margin-bottom: 20px;">
+            <div class="action-header-mobile" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:12px;">
+              <div>
+                <h4 style="font-size:1.05rem;font-weight:800;color:#b45309;"><i class="fa-solid fa-boxes-stacked"></i> MASTER LINK STOK OPNAME (GLOBAL)</h4>
+                <p style="font-size:.8rem;color:var(--text-muted);margin-top:3px;">Kelola link global yang digunakan pada menu Stok Opname Supervisor dan Admin.</p>
+              </div>
+              <button onclick="saveAdminStokOpnameLinks()" style="background:#b45309;color:white;border:none;padding:10px 18px;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:700;">
+                <i class="fa-solid fa-floppy-disk"></i> Simpan Master Link
+              </button>
+            </div>
+            <div class="admin-input-grid">
+              <div class="admin-input-group">
+                <label>1. INPUT SO (MASTER)</label>
+                <input type="text" id="admin_stok_input_so" placeholder="https://docs.google.com/...">
+              </div>
+              <div class="admin-input-group">
+                <label>2. CEK STOK OPNAME (MASTER)</label>
+                <input type="text" id="admin_stok_cek_so" placeholder="https://docs.google.com/...">
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-container">
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-amber"><i class="fa-solid fa-file-circle-plus"></i></div>
+                <div class="card-title">INPUT SO</div>
+                <div class="card-desc">Form / Sheet untuk melakukan penginputan Stok Opname.</div>
+              </div>
+              <a id="btn_admin_input_so" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Input SO</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+
+            <div class="card">
+              <div class="card-top">
+                <div class="card-icon icon-teal"><i class="fa-solid fa-file-circle-check"></i></div>
+                <div class="card-title">CEK STOK OPNAME</div>
+                <div class="card-desc">Pemeriksaan dan rekapitulasi data Stok Opname cabang.</div>
+              </div>
+              <a id="btn_admin_cek_so" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
+                <span>Buka Cek Stok Opname</span>
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
             </div>
           </div>
         </div>
@@ -2497,6 +2582,10 @@
           <div>
             <span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.75rem;">SHIFTING / STATUS</span>
             <span id="photo_modal_shifting">-</span>
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.75rem;">KETERANGAN / CATATAN</span>
+            <span id="photo_modal_catatan" style="font-weight:700; color:#334155; white-space:pre-line;">-</span>
           </div>
           <div style="grid-column: 1 / -1;">
             <span style="color:var(--text-muted); font-weight:700; display:block; font-size:0.75rem;">TANGGAL & WAKTU ABSEN (WIB)</span>
@@ -2980,7 +3069,14 @@
     }
 
     function getStoredCheckinData() {
-      return globalDashboardData.checkinsList || [];
+      const list = globalDashboardData.checkinsList || [];
+      return list.map(record => {
+        if (!record || typeof record !== 'object') return record;
+        const note = String(record.catatan ?? record.keterangan ?? record.notes ?? record.note ?? record.checkin_catatan ?? '').trim();
+        if (note && !record.catatan) record.catatan = note;
+        if (note && !record.keterangan) record.keterangan = note;
+        return record;
+      });
     }
 
     function getStoredKaryawanData() {
@@ -3063,6 +3159,7 @@
         nama: nama,
         shifting: shifting,
         catatan: catatan,
+        keterangan: catatan,
         foto: fotoUrl,
         photoUrl: fotoUrl
       };
@@ -3519,6 +3616,7 @@
       document.getElementById('photo_modal_nik').textContent = record.nik || '-';
       document.getElementById('photo_modal_resto').textContent = formatRestoName(record.restoName) || '-';
       document.getElementById('photo_modal_time').textContent = record.dateTime || '-';
+      document.getElementById('photo_modal_catatan').textContent = (record.catatan || record.keterangan || record.notes || record.note || record.checkin_catatan || '-').toString();
       document.getElementById('photo_modal_download_btn').href = photoSrc;
 
       let badgeHtml = `<span class="badge-status shift">${record.shifting}</span>`;
@@ -3604,56 +3702,122 @@
     }
 
     function renderOperasionalDashboard() {
-      const month = getCurrentDashboardMonth();
+      const today = getTodayYMD();
       const list = getDashboardVisibleCheckins();
       const restoTimeMap = getRestoMaxCheckinMap();
-      const monthly = list.filter(r=>getRecordWIBInfo(r).ymd.startsWith(month));
-      const valid = monthly.filter(r=>!isAbsenceShift(r.shifting));
-      const late = valid.filter(r=>isLateCheckin(r,restoTimeMap));
+
+      // Reset otomatis filter shift ketika hari berganti.
+      if (window.__opLateDashboardDate !== today) {
+        window.__opLateDashboardDate = today;
+        const shiftSelect = document.getElementById('op_dashboard_shift');
+        if (shiftSelect) shiftSelect.value = 'ALL';
+      }
+
+      const month = getCurrentDashboardMonth();
+      const monthly = list.filter(r => getRecordWIBInfo(r).ymd.startsWith(month));
+      const validMonthly = monthly.filter(r => !isAbsenceShift(r.shifting));
+      const lateMonthly = validMonthly.filter(r => isLateCheckin(r, restoTimeMap));
 
       const employeeMap = {};
-      late.forEach(r=>{
-        const key=String(r.nik||r.nama||'').trim().toLowerCase();
-        if(!key)return;
-        if(!employeeMap[key])employeeMap[key]={nik:r.nik||'-',nama:r.nama||'-',count:0,resto:new Set()};
+      lateMonthly.forEach(r => {
+        const key = String(r.nik || r.nama || '').trim().toLowerCase();
+        if (!key) return;
+        if (!employeeMap[key]) employeeMap[key] = { nik:r.nik||'-', nama:r.nama||'-', count:0, resto:new Set() };
         employeeMap[key].count++;
         employeeMap[key].resto.add(formatRestoName(r.restoName));
       });
-      const repeat=Object.values(employeeMap).filter(x=>x.count>3).sort((a,b)=>b.count-a.count||a.nama.localeCompare(b.nama));
+      const repeat = Object.values(employeeMap)
+        .filter(x => x.count > 3)
+        .sort((a,b) => b.count-a.count || a.nama.localeCompare(b.nama));
 
-      const restoMap={};
-      valid.forEach(r=>{
-        const key=formatRestoName(r.restoName)||'TANPA NAMA RESTO';
-        if(!restoMap[key])restoMap[key]={total:0,late:0};
-        restoMap[key].total++;
-        if(isLateCheckin(r,restoTimeMap))restoMap[key].late++;
+      const todayLateBase = list.filter(r => {
+        const info = getRecordWIBInfo(r);
+        return info.ymd === today && !isAbsenceShift(r.shifting) && isLateCheckin(r, restoTimeMap);
       });
-      const restoRanking=Object.entries(restoMap).map(([name,v])=>({name,total:v.total,late:v.late,pct:v.total?(v.late/v.total)*100:0}))
-        .sort((a,b)=>b.pct-a.pct||b.late-a.late);
 
-      const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
-      set('op_kpi_late_total',late.length);
-      set('op_kpi_repeat_late',repeat.length);
-      set('op_kpi_valid_checkin',valid.length);
-      const top=restoRanking[0];
-      set('op_kpi_top_resto_pct',top?`${top.pct.toFixed(1)}%`:'0%');
-      set('op_kpi_top_resto_name',top?`${top.name} (${top.late}/${top.total})`:'Belum ada data');
+      const shiftSelect = document.getElementById('op_dashboard_shift');
+      if (shiftSelect) {
+        const currentShift = shiftSelect.value || 'ALL';
+        const shiftList = [...new Set(todayLateBase.map(r => String(r.shifting || '').trim()).filter(Boolean))]
+          .sort((a,b) => a.localeCompare(b, 'id'));
+        shiftSelect.innerHTML = '<option value="ALL">SEMUA SHIFT</option>' +
+          shiftList.map(x => `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');
+        shiftSelect.value = shiftList.includes(currentShift) ? currentShift : 'ALL';
+      }
 
-      const repeatEl=document.getElementById('op_repeat_late_list');
-      if(repeatEl) repeatEl.innerHTML=repeat.length?repeat.map(x=>`
-        <div class="op-dashboard-row"><div>
-          <div class="op-dashboard-name">${escapeHtml(x.nama)}</div>
-          <div class="op-dashboard-meta">NIK ${escapeHtml(x.nik)} · ${[...x.resto].slice(0,2).map(escapeHtml).join(', ')}</div>
-        </div><div class="op-dashboard-badge">${x.count}x</div></div>
-      `).join(''):'<div class="op-dashboard-empty">Tidak ada karyawan dengan keterlambatan lebih dari 3 kali pada bulan ini.</div>';
+      const selectedShift = document.getElementById('op_dashboard_shift')?.value || 'ALL';
+      const todayLate = selectedShift === 'ALL'
+        ? todayLateBase
+        : todayLateBase.filter(r => String(r.shifting || '').trim() === selectedShift);
 
-      const restoEl=document.getElementById('op_top_resto_list');
-      if(restoEl) restoEl.innerHTML=restoRanking.length?restoRanking.slice(0,8).map(x=>`
-        <div class="op-dashboard-row"><div>
-          <div class="op-dashboard-name">${escapeHtml(x.name)}</div>
-          <div class="op-dashboard-meta">${x.late} terlambat dari ${x.total} check-in valid</div>
-        </div><div class="op-dashboard-badge">${x.pct.toFixed(1)}%</div></div>
-      `).join(''):'<div class="op-dashboard-empty">Belum ada data check-in valid pada bulan yang dipilih.</div>';
+      const set = (id,val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+      set('op_kpi_late_total', lateMonthly.length);
+      set('op_kpi_repeat_late', repeat.length);
+      set('op_kpi_valid_checkin', validMonthly.length);
+
+      // KPI tetap mempertahankan informasi resto tertinggi dari dashboard lama.
+      const restoMap = {};
+      validMonthly.forEach(r => {
+        const key = formatRestoName(r.restoName) || 'TANPA NAMA RESTO';
+        if (!restoMap[key]) restoMap[key] = {total:0,late:0};
+        restoMap[key].total++;
+        if (isLateCheckin(r, restoTimeMap)) restoMap[key].late++;
+      });
+      const restoRanking = Object.entries(restoMap)
+        .map(([name,v]) => ({name,total:v.total,late:v.late,pct:v.total?(v.late/v.total)*100:0}))
+        .sort((a,b) => b.pct-a.pct || b.late-a.late);
+      const top = restoRanking[0];
+      set('op_kpi_top_resto_pct', top ? `${top.pct.toFixed(1)}%` : '0%');
+      set('op_kpi_top_resto_name', top ? `${top.name} (${top.late}/${top.total})` : 'Belum ada data');
+
+      const repeatEl = document.getElementById('op_repeat_late_list');
+      if (repeatEl) repeatEl.innerHTML = repeat.length
+        ? repeat.map(x => `
+          <div class="op-dashboard-row"><div>
+            <div class="op-dashboard-name">${escapeHtml(x.nama)}</div>
+            <div class="op-dashboard-meta">NIK ${escapeHtml(x.nik)} · ${[...x.resto].slice(0,2).map(escapeHtml).join(', ')}</div>
+          </div><div class="op-dashboard-badge">${x.count}x</div></div>
+        `).join('')
+        : '<div class="op-dashboard-empty">Tidak ada karyawan dengan keterlambatan lebih dari 3 kali pada bulan ini.</div>';
+
+      const todayLateEl = document.getElementById('op_today_late_list');
+      if (todayLateEl) {
+        const sorted = todayLate.slice().sort((a,b) => {
+          const ta = getRecordWIBInfo(a).time || '99:99';
+          const tb = getRecordWIBInfo(b).time || '99:99';
+          return ta.localeCompare(tb);
+        });
+        todayLateEl.innerHTML = sorted.length
+          ? sorted.map(x => {
+              const info = getRecordWIBInfo(x);
+              const resto = formatRestoName(x.restoName);
+              const maxAllowed = getMaxTimeForShift(restoTimeMap[resto], x.shifting);
+              return `
+                <div class="op-dashboard-row">
+                  <div>
+                    <div class="op-dashboard-name">${escapeHtml(x.nama || '-')}</div>
+                    <div class="op-dashboard-meta">${escapeHtml(resto)} · ${escapeHtml(x.shifting || '-')} · ${escapeHtml(x.nik || '-')}</div>
+                  </div>
+                  <div class="op-dashboard-badge">${escapeHtml(info.time || '-')}</div>
+                </div>
+              `;
+            }).join('')
+          : '<div class="op-dashboard-empty">Tidak ada karyawan yang terlambat check-in hari ini untuk shift yang dipilih.</div>';
+      }
+    }
+
+    if (!window.__opLateDashboardTimer) {
+      window.__opLateDashboardTimer = setInterval(() => {
+        const today = getTodayYMD();
+        if (window.__opLateDashboardDate && window.__opLateDashboardDate !== today) {
+          window.__opLateDashboardDate = today;
+          const shiftSelect = document.getElementById('op_dashboard_shift');
+          if (shiftSelect) shiftSelect.value = 'ALL';
+          if (document.getElementById('page-shared-operasional')?.style.display !== 'none') {
+            renderOperasionalDashboard();
+          }
+        }
+      }, 60000);
     }
 
     function escapeHtml(value) {
@@ -3790,6 +3954,7 @@
               <div class="nav-item" onclick="switchAdminNav('page-spv-coverage-update', this)"><i class="fa-solid fa-store"></i><span>UPDATE COVERAGE SPV</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-links', this)"><i class="fa-solid fa-link"></i><span>KELOLA LINK AREA & CABANG</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-spv-links', this)"><i class="fa-solid fa-user-tie"></i><span>KELOLA LINK SUPERVISOR</span></div>
+              <div class="nav-item" onclick="switchAdminNav('page-admin-stok-opname', this)"><i class="fa-solid fa-boxes-stacked"></i><span>STOK OPNAME</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-psd-links', this)"><i class="fa-solid fa-id-card-clip"></i><span>KELOLA LINK PSD</span></div>
             </div>
           </details>
@@ -4192,6 +4357,12 @@
 
         const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[username] || {};
         document.getElementById('btn_spv_base_omset').href = spvIndiv.base_omset || '#';
+        const cogsNgeumiCard = document.getElementById('spv-cogs-ngeumi-card');
+        const cogsNgeumiBtn = document.getElementById('btn_spv_cogs_ngeumi');
+        const userInfo = (globalDashboardData.usersList || []).find(u => u.username === username) || {};
+        const isAzisHamzah = String(username || '').toLowerCase().replace(/[._-]+/g,' ').includes('azis hamzah') || String(userInfo.name || '').toLowerCase().includes('azis hamzah');
+        if (cogsNgeumiCard) cogsNgeumiCard.style.display = isAzisHamzah && spvIndiv.cogs_ngeumi ? 'block' : 'none';
+        if (cogsNgeumiBtn) cogsNgeumiBtn.href = spvIndiv.cogs_ngeumi || '#';
 
         const currentUserData = (globalDashboardData.usersList || []).find(u => u.username === username) || {};
         const totalResto = spvIndiv.total_resto || currentUserData.total_resto || 5;
@@ -4327,6 +4498,70 @@
       document.getElementById('spv-stok-opname-sub-view').style.display = 'none';
       document.getElementById('spv-main-rekap-view').style.display = 'block';
     }
+
+    function showAdminStokOpnameSubPage() {
+      document.getElementById('adm-main-rekap-view')?.style && (document.getElementById('adm-main-rekap-view').style.display='none');
+      const sub=document.getElementById('admin-stok-opname-sub-view'); if(sub) sub.style.display='block';
+      loadAdminStokOpnameLinks();
+    }
+    function hideAdminStokOpnameSubPage() {
+      const sub=document.getElementById('admin-stok-opname-sub-view'); if(sub) sub.style.display='none';
+      const main=document.getElementById('adm-main-rekap-view'); if(main) main.style.display='block';
+    }
+
+    function loadAdminStokOpnameLinks() {
+      const m = globalDashboardData.spvLinksMaster || {};
+      const input = document.getElementById('admin_stok_input_so');
+      const cek = document.getElementById('admin_stok_cek_so');
+      const btnInput = document.getElementById('btn_admin_input_so');
+      const btnCek = document.getElementById('btn_admin_cek_so');
+      if (input) input.value = m.input_so || '';
+      if (cek) cek.value = m.cek_so || '';
+      if (btnInput) btnInput.href = m.input_so || '#';
+      if (btnCek) btnCek.href = m.cek_so || '#';
+      const btnRekapInput=document.getElementById('btn_admin_rekap_input_so');
+      const btnRekapCek=document.getElementById('btn_admin_rekap_cek_so');
+      if(btnRekapInput) btnRekapInput.href=m.input_so||'#';
+      if(btnRekapCek) btnRekapCek.href=m.cek_so||'#';
+    }
+
+    window.saveAdminStokOpnameLinks = async function() {
+      const currentUser = localStorage.getItem('resto_current_user');
+      const m = globalDashboardData.spvLinksMaster || {};
+      const payload = {
+        action: "saveSpvLinksMaster",
+        adminUser: currentUser,
+        links: {
+          cogs_pekanan: m.cogs_pekanan || '',
+          omset_area: m.omset_area || '',
+          ganti_minyak: m.ganti_minyak || '',
+          kph: m.kph || '',
+          expense: m.expense || '',
+          setor: m.setor || '',
+          penjualan: m.penjualan || '',
+          input_so: document.getElementById('admin_stok_input_so')?.value.trim() || '',
+          cek_so: document.getElementById('admin_stok_cek_so')?.value.trim() || ''
+        }
+      };
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: {"Content-Type":"text/plain;charset=utf-8"},
+          redirect: "follow",
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        alert(result.message);
+        if (result.status === "success") {
+          fetchInitialDataFromGAS(() => {
+            loadAdminStokOpnameLinks();
+            loadSpvMasterLinksForm();
+          });
+        }
+      } catch (err) {
+        alert("Gagal menyimpan master link Stok Opname!");
+      }
+    };
 
     function showPsdAdmRestoSubPage() {
       document.getElementById('psd-main-rekap-view').style.display = 'none';
@@ -4592,6 +4827,10 @@
                 <label>Base Laporan Omset (Individual)</label>
                 <input type="text" id="spv_indiv_base_omset_${key}" value="${data.base_omset || ''}" placeholder="https://docs.google.com/...">
               </div>
+              <div class="admin-input-group" style="grid-column: 1 / -1;">
+                <label style="color:#4338ca;">Track COGS Ngeumi (Individual SPV)</label>
+                <input type="text" id="spv_indiv_cogs_ngeumi_${key}" value="${data.cogs_ngeumi || ''}" placeholder="https://docs.google.com/...">
+              </div>
             </div>
           </div>
         `;
@@ -4727,7 +4966,8 @@
           total_resto: totalRestoVal,
           resto_names: formattedRestoNames,
           resto_timings: restoTimingsObj,
-          base_omset: document.getElementById(`spv_indiv_base_omset_${targetUsername}`).value.trim()
+          base_omset: document.getElementById(`spv_indiv_base_omset_${targetUsername}`).value.trim(),
+          cogs_ngeumi: document.getElementById(`spv_indiv_cogs_ngeumi_${targetUsername}`)?.value.trim() || ''
         }
       };
 
@@ -4920,6 +5160,9 @@
 
         if (pageId === 'page-preview-user') {
           hideAdmRestoSubPage();
+          hideAdminStokOpnameSubPage();
+        } else if (pageId === 'page-admin-stok-opname') {
+          loadAdminStokOpnameLinks();
         }
       }
     }
