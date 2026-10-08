@@ -4073,22 +4073,33 @@
       return ['OFF','SAKIT','IZIN','CUTI','MIDDLE'].includes(shift);
     }
 
-    function getKasirMaxTimeForShift(record) {
-      if (!record || !String(record.jabatan || '').toUpperCase().includes('KASIR')) return null;
+    // Check-in record dari GAS tidak selalu menyertakan jabatan. Ambil jabatan
+    // dari master karyawan berdasarkan NIK agar aturan kasir tetap berlaku di
+    // page Operasional Resto tanpa mengubah payload atau proses penyimpanan.
+    function getCheckinRecordJabatan(record) {
+      const direct = String(record?.jabatan || record?.posisi || '').trim();
+      if (direct) return direct;
+      const nik = String(record?.nik || record?.NIK || '').trim().toLowerCase();
+      if (!nik) return '';
+      const employee = getStoredKaryawanData().find(k =>
+        String(k?.nik || k?.NIK || '').trim().toLowerCase() === nik
+      );
+      return String(employee?.jabatan || employee?.posisi || '').trim();
+    }
 
-      // BATAS CHECK-IN KASIR KHUSUS LAZATTO.
-      // Resto/brand lain tidak boleh memakai pengaturan global ini.
-      const restoName = formatRestoName(record.restoName);
+    function getKasirMaxTimeForShift(record) {
+      if (!record || !getCheckinRecordJabatan(record).toUpperCase().includes('KASIR')) return null;
+
+      // Batas khusus ini hanya untuk kasir di resto Lazatto.
+      const restoName = formatRestoName(record.restoName || record.resto || '');
       if (!String(restoName || '').toUpperCase().includes('LAZATTO')) return null;
 
       const schedules = globalDashboardData.checkinKasirSchedules || {};
-      const shift = String(record.shifting || '').toUpperCase();
-
-      // Tipe resto diambil dari data master/timing yang sudah ada.
+      const shift = String(record.shifting || '').trim().toUpperCase().replace(/\s+/g, ' ');
       const restoMap = getRestoMaxCheckinMap();
-      const restoObj = restoMap[restoName] || {};
-      const type = String(restoObj.type || restoObj.tipe || '').toLowerCase();
-      const is24Jam = type === '24jam' || type === '24 jam' || type === '24_jam';
+      const restoObj = restoMap[restoName] || restoMap[String(restoName).toUpperCase()] || {};
+      const type = String(restoObj.type || restoObj.tipe || restoObj.jenis || '').toLowerCase().replace(/[ _-]/g, '');
+      const is24Jam = type.includes('24jam') || type.includes('24hour') || type.includes('24hours');
       const cfg = schedules[is24Jam ? '24jam' : 'reguler'] || {};
 
       if (is24Jam) {
@@ -4097,17 +4108,19 @@
         if (shift === 'SHIFT 3') return cfg.s3 || null;
         return null;
       }
-
       if (shift === 'SHIFT 1') return cfg.s1 || '06:00';
       if (shift === 'SHIFT 2') return cfg.s2 || '14:00';
       return null;
     }
 
     function isLateCheckin(record, restoTimeMap) {
-      if (!record || isAbsenceShift(record.shifting)) return false;
+      if (!record || isAbsenceShift(String(record.shifting || '').trim().toUpperCase())) return false;
       const kasirMax = getKasirMaxTimeForShift(record);
-      const maxAllowed = kasirMax || getMaxTimeForShift(restoTimeMap[formatRestoName(record.restoName)], record.shifting);
-      return !!(maxAllowed && getRecordWIBInfo(record).time > maxAllowed);
+      const restoName = formatRestoName(record.restoName || record.resto || '');
+      const maxAllowed = kasirMax || getMaxTimeForShift((restoTimeMap || {})[restoName], record.shifting);
+      // Format HH:mm dibandingkan sebagai waktu 24 jam; sama dengan batas = tepat waktu.
+      const actualTime = getRecordWIBInfo(record).time;
+      return !!(maxAllowed && actualTime && actualTime > maxAllowed);
     }
 
     function getDashboardVisibleCheckins() {
