@@ -1119,23 +1119,39 @@
     .groming-kasir-table{width:max-content;min-width:100%;border-collapse:separate;border-spacing:0;font-size:.78rem;text-align:center}
     .groming-kasir-table th,.groming-kasir-table td{border-right:1px solid #dbe2ea;border-bottom:1px solid #dbe2ea;padding:8px 10px;white-space:nowrap;height:38px}
     .groming-kasir-table thead th{position:sticky;top:0;z-index:8;background:#16f000;color:#000;font-weight:900}
-    .groming-kasir-table .gk-no{width:54px;min-width:54px}
-    .groming-kasir-table .gk-resto{width:150px;min-width:150px;max-width:150px;overflow:hidden;text-overflow:ellipsis}
-    .groming-kasir-table .gk-nama{width:155px;min-width:155px;max-width:155px;overflow:hidden;text-overflow:ellipsis}
-    .groming-kasir-table .gk-date{min-width:82px}
+    .groming-kasir-table .gk-no{width:52px;min-width:52px}
+    .groming-kasir-table .gk-resto{width:220px;min-width:220px;max-width:220px;overflow:visible;text-overflow:clip;white-space:normal;text-align:left;line-height:1.25}
+    .groming-kasir-table .gk-nama{width:180px;min-width:180px;max-width:180px;overflow:hidden;text-overflow:ellipsis;text-align:left}
+    .groming-kasir-table .gk-date{min-width:78px}
     .groming-kasir-table .gk-sticky-1,.groming-kasir-table .gk-sticky-2,.groming-kasir-table .gk-sticky-3{position:sticky;z-index:6;background:#fff}
     .groming-kasir-table thead .gk-sticky-1,.groming-kasir-table thead .gk-sticky-2,.groming-kasir-table thead .gk-sticky-3{z-index:10;background:#16f000}
     .groming-kasir-table .gk-sticky-1{left:0}
-    .groming-kasir-table .gk-sticky-2{left:54px}
-    .groming-kasir-table .gk-sticky-3{left:204px}
-    .gk-time{font-weight:900;color:#0f172a}
-    .gk-off{font-weight:900;color:#64748b;background:#f1f5f9}
-    .gk-absence{font-weight:900;color:#9333ea;background:#fce7f3}
-    .gk-late{font-weight:900;color:#fff;background:#ef4444}
-    .gk-missing{font-weight:900;color:#b91c1c;background:#fee2e2}
+    .groming-kasir-table .gk-sticky-2{left:52px}
+    .groming-kasir-table .gk-sticky-3{left:272px}
+    .gk-time{font-weight:900;color:#111827;background:transparent}
+    .gk-absence{font-weight:900;color:#2563eb;background:transparent;text-transform:lowercase}
+    .gk-late{font-weight:900;color:#dc2626;background:transparent}
+    .gk-missing{font-weight:800;color:#64748b;background:transparent}
     .gk-resto-cell{font-weight:900;vertical-align:middle;background:#fff}
+    .gk-resto-name{font-weight:900;color:#111827;white-space:normal;line-height:1.25}
+    .groming-kasir-legend{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 12px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:.76rem;font-weight:800}
+    .groming-kasir-legend span{display:inline-flex;align-items:center;gap:5px}
+    .gk-legend-black{color:#111827}.gk-legend-red{color:#dc2626}.gk-legend-blue{color:#2563eb}
     .gk-empty{padding:30px!important;text-align:center;color:var(--text-muted);font-weight:700}
-    @media(max-width:768px){.groming-kasir-field{min-width:100%}.groming-kasir-table-wrap{max-height:70vh}.groming-kasir-table{font-size:.72rem}.groming-kasir-table th,.groming-kasir-table td{padding:7px 8px}}
+    @media(max-width:768px){
+      .groming-kasir-field{min-width:100%;max-width:none!important}
+      .groming-kasir-toolbar{padding:10px;gap:9px}
+      .groming-kasir-table-wrap{max-height:68vh;border-radius:10px;-webkit-overflow-scrolling:touch}
+      .groming-kasir-table{font-size:.72rem}
+      .groming-kasir-table th,.groming-kasir-table td{padding:7px 8px;height:36px}
+      .groming-kasir-table .gk-no{width:44px;min-width:44px}
+      .groming-kasir-table .gk-resto{width:175px;min-width:175px;max-width:175px}
+      .groming-kasir-table .gk-nama{width:145px;min-width:145px;max-width:145px}
+      .groming-kasir-table .gk-sticky-2{left:44px}
+      .groming-kasir-table .gk-sticky-3{left:219px}
+      .groming-kasir-table .gk-date{min-width:72px}
+      .groming-kasir-legend{gap:8px 12px;font-size:.7rem}
+    }
     /* ================= CHECK KARYAWAN ================= */
     .check-karyawan-toolbar{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:16px}
     .check-karyawan-field{min-width:180px;flex:1}
@@ -2089,6 +2105,12 @@
             </div>
           </div>
           <div id="groming_kasir_summary" class="groming-kasir-summary"></div>
+          <div class="groming-kasir-legend" aria-label="Keterangan warna">
+            <span class="gk-legend-black"><i class="fa-solid fa-circle"></i> Hitam = tepat waktu</span>
+            <span class="gk-legend-red"><i class="fa-solid fa-circle"></i> Merah = terlambat</span>
+            <span class="gk-legend-blue"><i class="fa-solid fa-circle"></i> Biru = sakit / izin / cuti / off</span>
+            <span style="color:#64748b;"><i class="fa-solid fa-minus"></i> - = tidak checkin</span>
+          </div>
           <div class="groming-kasir-table-wrap">
             <table class="groming-kasir-table">
               <thead id="groming-kasir-thead"></thead>
@@ -2096,7 +2118,7 @@
             </table>
           </div>
           <div style="margin-top:10px;font-size:.76rem;color:var(--text-muted);line-height:1.5;">
-            <i class="fa-solid fa-circle-info"></i> Jam ditampilkan dari data check-in yang tersimpan. Jika tidak ada check-in pada tanggal tersebut akan ditulis <b>tidak checkin</b>. Keterangan seperti OFF/SAKIT/IZIN/CUTI tetap ditampilkan sesuai data check-in.
+            <i class="fa-solid fa-circle-info"></i> Jam ditampilkan dari data check-in yang tersimpan. Jika tidak ada check-in pada tanggal tersebut ditampilkan <b>-</b>. Warna waktu: <b style="color:#111827;">hitam = tepat waktu</b>, <b style="color:#dc2626;">merah = terlambat</b>, dan <b style="color:#2563eb;">biru = sakit/izin/cuti/off</b>.
           </div>
         </div>
       </div>
@@ -5754,13 +5776,14 @@
     }
 
     function getGromingKasirCell(record) {
-      if (!record) return '<span class="gk-missing">tidak checkin</span>';
-      const shift = String(record.shifting || '').trim().toUpperCase();
-      if (['OFF','SAKIT','IZIN','CUTI'].includes(shift)) {
-        return `<span class="gk-absence">${escapeHtml(shift.toLowerCase())}</span>`;
+      if (!record) return '<span class="gk-missing">-</span>';
+      const shift = String(record.shifting || record.keterangan || record.catatan || '').trim().toUpperCase();
+      const absenceMatch = ['OFF','SAKIT','IZIN','CUTI'].find(v => shift === v || shift.includes(v));
+      if (absenceMatch) {
+        return `<span class="gk-absence">${escapeHtml(absenceMatch.toLowerCase())}</span>`;
       }
       const time = getRecordWIBInfo(record).time || '';
-      if (!time) return '<span class="gk-missing">tidak checkin</span>';
+      if (!time) return '<span class="gk-missing">-</span>';
 
       let late = false;
       try {
@@ -5842,7 +5865,7 @@
           }).join('');
           rows.push(`<tr>
             ${rowIndex === 0 ? `<td class="gk-resto-cell gk-sticky-1" rowspan="${group.employees.length}">${no}</td>
-            <td class="gk-resto-cell gk-sticky-2" rowspan="${group.employees.length}">${escapeHtml(resto)}</td>` : ''}
+            <td class="gk-resto-cell gk-sticky-2" rowspan="${group.employees.length}"><span class="gk-resto-name">${escapeHtml(resto)}</span></td>` : ''}
             <td class="gk-resto-cell gk-sticky-3" style="font-weight:800;">${escapeHtml(k.nama || '-')}</td>
             ${cells}
           </tr>`);
@@ -5914,11 +5937,11 @@
           const values = days.map(ymd => {
             const key = `${nik.toLowerCase()}|${resto.toLowerCase()}|${ymd}`;
             const record = checkinMap[key];
-            if (!record) return 'tidak checkin';
+            if (!record) return '-';
             const shift = String(record.shifting || '').trim().toUpperCase();
             if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) return shift.toLowerCase();
             const time = getRecordWIBInfo(record).time || '';
-            return time ? time.replace(':', '.') : 'tidak checkin';
+            return time ? time.replace(':', '.') : '-';
           });
           aoa.push([rowIndex === 0 ? no : '', rowIndex === 0 ? resto : '', k.nama || '-', ...values]);
         });
