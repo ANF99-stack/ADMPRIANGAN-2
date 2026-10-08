@@ -2022,12 +2022,12 @@
             <table>
               <thead><tr>
                 <th>No</th><th>NIK</th><th>Nama Karyawan</th><th>Jabatan</th><th>Resto</th>
-                <th>Status</th><th>Tanggal</th><th>Jam</th><th>Shift</th>
+                <th>Status</th><th>Tanggal</th><th>Jam</th><th>Shift</th><th>Foto Check-in</th>
               </tr></thead>
               <tbody id="check-karyawan-table-body"></tbody>
             </table>
           </div>
-          <div class="check-karyawan-note"><i class="fa-solid fa-circle-info"></i> Untuk user SPV, daftar otomatis dibatasi hanya pada resto yang termasuk coverage SPV tersebut.</div>
+          <div class="check-karyawan-note"><i class="fa-solid fa-circle-info"></i> Untuk user SPV, daftar dan foto check-in otomatis dibatasi hanya pada resto yang termasuk coverage SPV tersebut. Admin dan PSD dapat melihat seluruh foto check-in.</div>
         </div>
       </div>
 
@@ -3254,7 +3254,7 @@
       ctx.fillText(line4, marginX, currentY); currentY += lineHeight;
       ctx.fillText(line5, marginX, currentY);
 
-      capturedSnapDataUrl = canvasEl.toDataURL('image/jpeg', 0.72);
+      capturedSnapDataUrl = canvasEl.toDataURL('image/jpeg', 0.60);
 
       // Foto valid -> tombol Kirim baru boleh aktif.
       updateCheckinSubmitButtonState();
@@ -3413,6 +3413,25 @@
         if (result.status === "success") {
           removePendingCheckin(newRecord.id);
           alert('Checkin Karyawan Berhasil Tersimpan dan Terkirim!');
+          // Segera verifikasi bahwa foto benar-benar sudah dapat diambil kembali
+          // dari server. Ini mendeteksi backend yang menyimpan record tetapi gagal
+          // menyimpan file foto.
+          if (!isAbsentStatus && newRecord.id) {
+            try {
+              const verify = await gasRequestJson({
+                action: "getCheckinPhoto",
+                checkinId: newRecord.id,
+                viewerUsername: currentUser,
+                viewerRole: localStorage.getItem('resto_user_role') || 'user',
+                viewerCoverage: getCurrentCheckinViewerContext().coverageNames
+              }, { timeoutMs: 12000, retries: 1, retryDelayMs: 600 });
+              if (verify?.status !== 'success' || !String(verify?.data?.foto || verify?.data?.photoUrl || '').trim()) {
+                console.warn('Check-in tersimpan, tetapi foto belum dapat diverifikasi dari server.', verify);
+              }
+            } catch (verifyErr) {
+              console.warn('Verifikasi foto check-in gagal:', verifyErr);
+            }
+          }
           document.getElementById('checkin_nik').value = '';
           document.getElementById('checkin_nama').value = '';
           const catatanEl = document.getElementById('checkin_catatan');
@@ -3855,14 +3874,20 @@
     async function openPhotoModal(checkinId) {
       const list = getStoredCheckinData();
       const record = list.find(r => String(r.id) === String(checkinId));
-      if (!record) return;
+      if (!record) {
+        alert('Data check-in tidak ditemukan.');
+        return;
+      }
+
+      // Client-side guard: SPV hanya boleh membuka foto dari coverage-nya.
+      if (!canViewerAccessCheckin(record)) {
+        alert('Anda tidak memiliki akses ke foto check-in dari resto ini.');
+        return;
+      }
 
       let photoSrc = '';
       const rawPhoto = String(record.photoUrl || record.foto || '').trim();
 
-      // Jangan percaya field hasPhoto pada data ringkas.
-      // getInitialData memang sengaja tidak membawa Base64 foto untuk mempercepat loading,
-      // sehingga hasPhoto bisa kosong/false walaupun foto sebenarnya tersimpan di server.
       if (
         rawPhoto.startsWith('data:image') ||
         rawPhoto.startsWith('http') ||
@@ -3871,26 +3896,30 @@
         photoSrc = rawPhoto;
       }
 
-      // Ambil foto langsung dari GAS berdasarkan ID check-in.
-      // Ini berlaku untuk SEMUA check-in non-absen, bukan hanya record.hasPhoto === true.
+      // Foto disimpan di backend (idealnya Google Drive) dan hanya diambil
+      // saat dibutuhkan agar getInitialData tetap cepat.
       if (!photoSrc && !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(String(record.shifting || '').toUpperCase())) {
         try {
+          const viewer = getCurrentCheckinViewerContext();
           const result = await gasRequestJson(
-            { action: "getCheckinPhoto", checkinId: checkinId },
+            {
+              action: "getCheckinPhoto",
+              checkinId: checkinId,
+              viewerUsername: viewer.username,
+              viewerRole: viewer.role,
+              viewerCoverage: viewer.coverageNames
+            },
             { timeoutMs: 15000, retries: 2, retryDelayMs: 700 }
           );
 
           if (result?.status === "success") {
             const serverPhoto = String(result.data?.foto || result.data?.photoUrl || '').trim();
-
             if (
               serverPhoto.startsWith('data:image') ||
               serverPhoto.startsWith('http') ||
               serverPhoto.startsWith('blob:')
             ) {
               photoSrc = serverPhoto;
-
-              // Cache hanya foto yang sudah berhasil diambil, bukan string status/error.
               record.foto = serverPhoto;
               record.photoUrl = serverPhoto;
               record.hasPhoto = true;
@@ -3899,6 +3928,9 @@
                 localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
               } catch (e) {}
             }
+          } else if (result?.status === 'forbidden') {
+            alert('Akses foto ditolak. SPV hanya dapat melihat foto dari resto coverage-nya.');
+            return;
           }
         } catch (e) {
           console.warn("Gagal mengambil foto checkin:", e);
@@ -3910,7 +3942,7 @@
         if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) {
           alert("Check-in ini berstatus " + shift + ", sehingga memang tidak menggunakan foto kamera.");
         } else {
-          alert("Foto check-in belum dapat diambil dari server. Silakan coba lagi.");
+          alert("Foto check-in belum tersedia di server. Pastikan action GAS 'saveCheckinData' menyimpan foto ke Google Drive dan 'getCheckinPhoto' mengembalikan URL/thumbnail-nya.");
         }
         return;
       }
@@ -4778,7 +4810,7 @@
       initialDataFetchPromise=(async()=>{
         try {
           const result=await gasRequestJson(
-            {action:"getInitialData", includeCheckinPhotos:false},
+            {action:"getInitialData", includeCheckinPhotos:false, viewerUsername:localStorage.getItem("resto_current_user") || "", viewerRole:localStorage.getItem("resto_user_role") || "user"},
             {timeoutMs:18000,retries:2,retryDelayMs:700}
           );
           if(result.status==="success"){
@@ -5571,15 +5603,60 @@
       return getTodayYMD();
     }
 
+    function getCurrentCheckinViewerContext() {
+      const role = String(localStorage.getItem('resto_user_role') || 'user').toLowerCase();
+      const username = String(localStorage.getItem('resto_current_user') || '').trim();
+      const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[username] || {};
+      const coverageNames = String(spvIndiv.resto_names || '')
+        .split(',')
+        .map(s => formatRestoName(s))
+        .filter(Boolean);
+
+      return { role, username, coverageNames };
+    }
+
+    // Filter hak akses di frontend. Backend GAS tetap WAJIB melakukan filter
+    // yang sama sebelum mengembalikan foto.
+    function canViewerAccessCheckin(record) {
+      if (!record) return false;
+      const viewer = getCurrentCheckinViewerContext();
+      const resto = formatRestoName(record.restoName || record.resto || record.cabang);
+
+      if (viewer.role === 'admin' || viewer.role === 'psd') return true;
+      if (viewer.role === 'supervisor') {
+        return viewer.coverageNames.includes(resto);
+      }
+
+      // User outlet hanya boleh melihat data restonya sendiri.
+      const ownResto = formatRestoName(
+        localStorage.getItem('resto_user_name') ||
+        localStorage.getItem('resto_current_user') || ''
+      );
+      return resto === ownResto;
+    }
+
     function getCheckKaryawanVisibleEmployees() {
       const list = getStoredKaryawanData();
-      const role = localStorage.getItem('resto_user_role') || 'user';
-      const currentUser = localStorage.getItem('resto_current_user') || '';
-      if (role !== 'supervisor') return list.slice();
+      const viewer = getCurrentCheckinViewerContext();
 
-      const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
-      const coverageNames = (spvIndiv.resto_names || '').split(',').map(s => formatRestoName(s)).filter(Boolean);
-      return list.filter(k => coverageNames.includes(formatRestoName(k.resto || k.restoName || k.cabang)));
+      if (viewer.role !== 'supervisor') {
+        if (viewer.role === 'admin' || viewer.role === 'psd') return list.slice();
+
+        const ownResto = formatRestoName(
+          localStorage.getItem('resto_user_name') ||
+          localStorage.getItem('resto_current_user') || ''
+        );
+        return list.filter(k =>
+          formatRestoName(k.resto || k.restoName || k.cabang) === ownResto
+        );
+      }
+
+      // SPV: mutlak hanya coverage resto miliknya.
+      return list.filter(k =>
+        viewer.coverageNames.includes(
+          formatRestoName(k.resto || k.restoName || k.cabang)
+        )
+      );
     }
 
     function populateCheckKaryawanJabatanFilter(employees) {
@@ -5619,6 +5696,7 @@
 
       const byNikDate = {};
       checkins.forEach(c => {
+        if (!canViewerAccessCheckin(c)) return;
         const nik = String(c.nik || '').trim();
         if (!nik) return;
         const info = getRecordWIBInfo(c);
@@ -5646,6 +5724,16 @@
         const status = c
           ? '<span class="check-status done"><i class="fa-solid fa-circle-check"></i> SUDAH CHECK-IN</span>'
           : '<span class="check-status pending"><i class="fa-solid fa-circle-xmark"></i> BELUM CHECK-IN</span>';
+
+        const photoCell = c && canHaveCheckinPhoto(c)
+          ? `<button type="button"
+                onclick="openPhotoModal('${String(c.id || '').replace(/'/g, "\\'")}')"
+                class="btn-camera btn-camera-snap"
+                style="padding:6px 12px;font-size:.75rem;border-radius:8px;white-space:nowrap;">
+                <i class="fa-solid fa-camera"></i> Lihat Foto
+             </button>`
+          : '<span style="color:var(--text-muted);font-size:.75rem;">-</span>';
+
         return `<tr>
           <td>${idx + 1}</td>
           <td style="font-weight:800; color:var(--lazatto-red);">${escapeHtml(k.nik || '-')}</td>
@@ -5656,13 +5744,14 @@
           <td>${c ? info.date : '-'}</td>
           <td class="check-time">${c ? info.time + ' WIB' : '-'}</td>
           <td>${escapeHtml(c?.shifting || '-')}</td>
+          <td>${photoCell}</td>
         </tr>`;
       });
 
       document.getElementById('check_karyawan_total').textContent = total;
       document.getElementById('check_karyawan_done').textContent = done;
       document.getElementById('check_karyawan_pending').textContent = Math.max(0, total - done);
-      tbody.innerHTML = rows.length ? rows.join('') : `<tr><td colspan="9" style="text-align:center; padding:28px; color:var(--text-muted);">Belum ada data karyawan yang sesuai filter.</td></tr>`;
+      tbody.innerHTML = rows.length ? rows.join('') : `<tr><td colspan="10" style="text-align:center; padding:28px; color:var(--text-muted);">Belum ada data karyawan yang sesuai filter.</td></tr>`;
     }
 
     function switchAdminNav(pageId, element) {
