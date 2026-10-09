@@ -1130,7 +1130,7 @@
     .groming-kasir-table .gk-sticky-3{left:272px}
     .gk-time{font-weight:900;color:#111827;background:transparent}
     .gk-absence{font-weight:900;color:#2563eb;background:transparent;text-transform:lowercase}
-    .gk-late{font-weight:900;color:#dc2626;background:transparent}
+    .gk-late{font-weight:900;color:#b91c1c !important;background:#fee2e2 !important;border:1px solid #fca5a5;border-radius:6px;padding:2px 5px;display:inline-block}
     .gk-missing{font-weight:800;color:#64748b;background:transparent}
     .gk-resto-cell{font-weight:900;vertical-align:middle;background:#fff}
     .gk-resto-name{font-weight:900;color:#111827;white-space:normal;line-height:1.25}
@@ -6334,7 +6334,9 @@
             const timingMap = globalDashboardData.restoTimingMap || globalDashboardData.restoTimeMap || getRestoMaxCheckinMap();
             const timingObj = timingMap[restoName] || timingMap[restoName.toUpperCase()];
             const maxAllowed = getKasirMaxTimeForShift(rec) || getMaxTimeForShift(timingObj, rec.shifting);
-            if (isKasirNearMaxCheckin(rec, info.time, maxAllowed)) {
+            if (maxAllowed && info.time && info.time > maxAllowed) {
+              timeHtml = `<span class="gk-late" title="Check-in melewati batas maksimal">${escapeHtml(info.time)} WIB</span>`;
+            } else if (isKasirNearMaxCheckin(rec, info.time, maxAllowed)) {
               timeHtml = `<span class="gk-near-max" title="Check-in kurang dari 5 menit sebelum batas maksimal">${escapeHtml(info.time)} WIB</span>`;
             }
           } catch (e) {}
