@@ -2152,6 +2152,54 @@
         </div>
       </div>
 
+      <!-- ================= PAGE: GROMING KARESTO (ADMIN, PSD) ================= -->
+      <div id="page-groming-karesto" class="role-page-content" style="display:none;">
+        <div class="admin-card-item" style="border:2px solid #16a34a;background:#ffffff;">
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:18px;gap:12px;flex-wrap:wrap;">
+            <div>
+              <h3 style="font-size:1.3rem;font-weight:800;color:#15803d;display:flex;align-items:center;gap:10px;">
+                <i class="fa-solid fa-user-clock"></i> GROMING KARESTO
+              </h3>
+              <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Rekap jam check-in KARESTO per resto berdasarkan tanggal dalam bulan yang dipilih.</p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <button type="button" onclick="renderGromingKaRestoPage()" style="padding:9px 14px;border:1px solid #bbf7d0;border-radius:10px;background:#f0fdf4;color:#15803d;font-size:.8rem;font-weight:800;cursor:pointer;">
+                <i class="fa-solid fa-rotate"></i> Refresh
+              </button>
+              <button type="button" onclick="downloadGromingKaRestoExcel()" style="padding:9px 14px;border:1px solid #16a34a;border-radius:10px;background:#16a34a;color:#fff;font-size:.8rem;font-weight:800;cursor:pointer;">
+                <i class="fa-solid fa-file-excel"></i> Download Excel
+              </button>
+            </div>
+          </div>
+          <div class="groming-kasir-toolbar">
+            <div class="groming-kasir-field" style="max-width:220px;">
+              <label for="groming_karesto_month">FILTER BULAN</label>
+              <input type="month" id="groming_karesto_month" onchange="renderGromingKaRestoPage()">
+            </div>
+            <div class="groming-kasir-field" style="max-width:300px;">
+              <label for="groming_karesto_resto">FILTER NAMA RESTO</label>
+              <select id="groming_karesto_resto" onchange="renderGromingKaRestoPage()"><option value="ALL">SEMUA RESTO</option></select>
+            </div>
+          </div>
+          <div id="groming_karesto_summary" class="groming-kasir-summary"></div>
+          <div class="groming-kasir-legend" aria-label="Keterangan warna">
+            <span class="gk-legend-black"><i class="fa-solid fa-circle"></i> Hitam = tepat waktu</span>
+            <span class="gk-legend-red"><i class="fa-solid fa-circle"></i> Merah = terlambat</span>
+            <span class="gk-legend-blue"><i class="fa-solid fa-circle"></i> Biru = sakit / izin / cuti / off</span>
+            <span style="color:#64748b;"><i class="fa-solid fa-minus"></i> - = tidak checkin</span>
+          </div>
+          <div class="groming-kasir-table-wrap">
+            <table class="groming-kasir-table">
+              <thead id="groming-karesto-thead"></thead>
+              <tbody id="groming-karesto-tbody"></tbody>
+            </table>
+          </div>
+          <div style="margin-top:10px;font-size:.76rem;color:var(--text-muted);line-height:1.5;">
+            <i class="fa-solid fa-circle-info"></i> Jam check-in menggunakan format yang sama dengan GROMING KASIR (titik sebagai pemisah jam, contoh <b>08.30</b>). Jika tidak ada check-in ditampilkan <b>-</b>. Aturan warna mengikuti GROMING KASIR: <b style="color:#111827;">hitam = tepat waktu</b>, <b style="color:#b91c1c;">merah = terlambat</b>, <b style="color:#a16207;background:#fef08a;padding:1px 4px;border-radius:4px;">kuning = mendekati batas maksimal</b>, dan <b style="color:#2563eb;">biru = sakit/izin/cuti/off</b>.
+          </div>
+        </div>
+      </div>
+
       <!-- ================= SHARED PAGE: DAFTAR KARYAWAN (ADMIN, PSD, SPV) ================= -->
       <div id="page-daftar-karyawan" class="role-page-content" style="display: none;">
         <div class="admin-card-item" style="border: 2px solid var(--lazatto-red); background: #ffffff;">
@@ -4656,6 +4704,7 @@
               <div class="nav-item" onclick="switchAdminNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-groming-kasir', this)"><i class="fa-solid fa-user-clock"></i><span>GROMING KASIR</span></div>
+              <div class="nav-item" onclick="switchAdminNav('page-groming-karesto', this)"><i class="fa-solid fa-user-tie"></i><span>GROMING KARESTO</span></div>
             </div>
           </details>
 
@@ -4692,6 +4741,7 @@
           <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
           <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
           <div class="nav-item" onclick="switchRoleNav('page-groming-kasir', this)"><i class="fa-solid fa-user-clock"></i><span>GROMING KASIR</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-groming-karesto', this)"><i class="fa-solid fa-user-tie"></i><span>GROMING KARESTO</span></div>
         `;
       } else {
         html = `
@@ -4757,6 +4807,8 @@
         renderKaryawanTable();
       } else if (pageId === 'page-groming-kasir') {
         renderGromingKasirPage();
+      } else if (pageId === 'page-groming-karesto') {
+        renderGromingKaRestoPage();
       }
     }
 
@@ -5270,6 +5322,7 @@
       document.getElementById('page-check-karyawan').style.display = 'none';
       document.getElementById('page-daftar-karyawan').style.display = 'none';
       document.getElementById('page-groming-kasir').style.display = 'none';
+      document.getElementById('page-groming-karesto').style.display = 'none';
 
       if (userRole === 'admin') {
         document.getElementById('admin-view').style.display = 'block';
@@ -6028,6 +6081,29 @@
       });
     }
 
+    function getGromingKaRestoResto(k) {
+      // Gunakan nama resto dari record karyawan yang sudah tersimpan di database aplikasi.
+      return formatRestoName(k?.resto || k?.restoName || k?.namaResto || k?.cabang || k?.branch || '');
+    }
+
+    function populateGromingKaRestoRestoFilter(employees) {
+      const select = document.getElementById('groming_karesto_resto');
+      if (!select) return;
+      const current = select.value || 'ALL';
+      const restos = [...new Set((employees || []).map(k => getGromingKaRestoResto(k)).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'id'));
+      select.innerHTML = '<option value="ALL">SEMUA RESTO</option>' + restos.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
+      select.value = restos.includes(current) ? current : 'ALL';
+    }
+
+    function getGromingKaRestoEmployees() {
+      // Sumber data tunggal: database karyawan yang sama dengan halaman operasional lainnya.
+      const list = getStoredKaryawanData();
+      return (Array.isArray(list) ? list : []).filter(k => {
+        const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
+        return /\bKARESTO\b/.test(jabatan) || /\bKA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTAURANT\b/.test(jabatan);
+      });
+    }
+
     function getGromingKasirResto(k) {
       return formatRestoName(k?.resto || k?.restoName || k?.cabang || '');
     }
@@ -6117,7 +6193,7 @@
         .filter(k => selectedResto === 'ALL' || getGromingKasirResto(k) === selectedResto)
         .sort((a,b) => {
           const ra = getGromingKasirResto(a), rb = getGromingKasirResto(b);
-          return ra.localeCompare(rb, 'id') || String(a.nama || '').localeCompare(String(b.nama || ''), 'id');
+          return ra.localeCompare(rb, 'id') || String(a.nama || a.namaKaryawan || a.name || '').localeCompare(String(b.nama || b.namaKaryawan || b.name || ''), 'id');
         });
 
       const days = getGromingKasirDays(year, month);
@@ -6196,7 +6272,7 @@
         .filter(k => selectedResto === 'ALL' || getGromingKasirResto(k) === selectedResto)
         .sort((a,b) => {
           const ra = getGromingKasirResto(a), rb = getGromingKasirResto(b);
-          return ra.localeCompare(rb, 'id') || String(a.nama || '').localeCompare(String(b.nama || ''), 'id');
+          return ra.localeCompare(rb, 'id') || String(a.nama || a.namaKaryawan || a.name || '').localeCompare(String(b.nama || b.namaKaryawan || b.name || ''), 'id');
         });
 
       const days = getGromingKasirDays(year, month);
@@ -6273,6 +6349,185 @@
         .replace(/[\\/:*?"<>|]/g, '_')
         .replace(/\s+/g, '_');
       const filename = `Groming_Kasir_${year}-${String(month).padStart(2, '0')}_${safeResto}.xlsx`;
+      XLSX.writeFile(workbook, filename);
+    }
+
+    function renderGromingKaRestoPage() {
+      const monthEl = document.getElementById('groming_karesto_month');
+      const restoEl = document.getElementById('groming_karesto_resto');
+      const thead = document.getElementById('groming-karesto-thead');
+      const tbody = document.getElementById('groming-karesto-tbody');
+      const summary = document.getElementById('groming_karesto_summary');
+      if (!monthEl || !thead || !tbody || !summary) return;
+
+      if (!monthEl.value) monthEl.value = getTodayYMD().slice(0, 7);
+      const monthValue = monthEl.value;
+      const [year, month] = monthValue.split('-').map(Number);
+      if (!year || !month) return;
+
+      const allEmployees = getGromingKaRestoEmployees();
+      populateGromingKaRestoRestoFilter(allEmployees);
+      const selectedResto = formatRestoName(restoEl?.value || 'ALL');
+      const employees = allEmployees
+        .filter(k => selectedResto === 'ALL' || getGromingKaRestoResto(k) === selectedResto)
+        .sort((a,b) => {
+          const ra = getGromingKaRestoResto(a), rb = getGromingKaRestoResto(b);
+          return ra.localeCompare(rb, 'id') || String(a.nama || a.namaKaryawan || a.name || '').localeCompare(String(b.nama || b.namaKaryawan || b.name || ''), 'id');
+        });
+
+      const days = getGromingKasirDays(year, month);
+      const checkinMap = getGromingKasirCheckinMap();
+      const monthName = new Intl.DateTimeFormat('id-ID', {month:'long', year:'numeric'}).format(new Date(year, month - 1, 1));
+      summary.innerHTML =
+        `<span class="groming-kasir-badge"><i class="fa-solid fa-calendar-days"></i> ${escapeHtml(monthName)}</span>` +
+        `<span class="groming-kasir-badge"><i class="fa-solid fa-user-tie"></i> ${employees.length} KARESTO</span>` +
+        `<span class="groming-kasir-badge"><i class="fa-solid fa-store"></i> ${selectedResto === 'ALL' ? 'Semua resto' : escapeHtml(selectedResto)}</span>`;
+
+      thead.innerHTML = `<tr>
+        <th class="gk-no gk-sticky-1">NO</th>
+        <th class="gk-resto gk-sticky-2">Nama Resto</th>
+        <th class="gk-nama gk-sticky-3">Nama KARESTO</th>
+        ${days.map(ymd => {
+          const [yy,mm,dd] = ymd.split('-');
+          return `<th class="gk-date">${dd}/${mm}/${yy}</th>`;
+        }).join('')}
+      </tr>`;
+
+      if (!employees.length) {
+        tbody.innerHTML = `<tr><td colspan="${days.length + 3}" class="gk-empty">Tidak ada data KARESTO untuk filter yang dipilih.</td></tr>`;
+        return;
+      }
+
+      const groups = [];
+      employees.forEach(k => {
+        const resto = getGromingKaRestoResto(k) || '-';
+        let group = groups.find(g => g.resto === resto);
+        if (!group) { group = {resto, employees:[]}; groups.push(group); }
+        group.employees.push(k);
+      });
+
+      let no = 0;
+      const rows = [];
+      groups.forEach(group => {
+        no++;
+        group.employees.forEach((k, rowIndex) => {
+          const resto = group.resto;
+          const nik = String(k?.nik || '').trim();
+          const cells = days.map(ymd => {
+            const key = `${nik.toLowerCase()}|${resto.toLowerCase()}|${ymd}`;
+            return `<td>${getGromingKasirCell(checkinMap[key])}</td>`;
+          }).join('');
+          rows.push(`<tr>
+            ${rowIndex === 0 ? `<td class="gk-resto-cell gk-sticky-1" rowspan="${group.employees.length}">${no}</td>
+            <td class="gk-resto-cell gk-sticky-2" rowspan="${group.employees.length}"><span class="gk-resto-name">${escapeHtml(resto)}</span></td>` : ''}
+            <td class="gk-resto-cell gk-sticky-3" style="font-weight:800;">${escapeHtml(k.nama || '-')}</td>
+            ${cells}
+          </tr>`);
+        });
+      });
+      tbody.innerHTML = rows.join('');
+    }
+
+    async function downloadGromingKaRestoExcel() {
+      const monthEl = document.getElementById('groming_karesto_month');
+      const restoEl = document.getElementById('groming_karesto_resto');
+      const monthValue = monthEl?.value || getTodayYMD().slice(0, 7);
+      const [year, month] = monthValue.split('-').map(Number);
+      if (!year || !month) {
+        alert('Bulan belum valid.');
+        return;
+      }
+
+      try {
+        await ensureXLSXLoaded();
+      } catch (e) {
+        alert(e.message || 'Gagal memuat modul Excel.');
+        return;
+      }
+
+      const allEmployees = getGromingKaRestoEmployees();
+      const selectedResto = formatRestoName(restoEl?.value || 'ALL');
+      const employees = allEmployees
+        .filter(k => selectedResto === 'ALL' || getGromingKaRestoResto(k) === selectedResto)
+        .sort((a,b) => {
+          const ra = getGromingKaRestoResto(a), rb = getGromingKaRestoResto(b);
+          return ra.localeCompare(rb, 'id') || String(a.nama || a.namaKaryawan || a.name || '').localeCompare(String(b.nama || b.namaKaryawan || b.name || ''), 'id');
+        });
+
+      const days = getGromingKasirDays(year, month);
+      const checkinMap = getGromingKasirCheckinMap();
+      const monthName = new Intl.DateTimeFormat('id-ID', {month:'long', year:'numeric'}).format(new Date(year, month - 1, 1));
+      const aoa = [];
+
+      // Judul dan filter aktif.
+      aoa.push(['GROMING KASIR']);
+      aoa.push([`Periode: ${monthName}`]);
+      aoa.push([`Filter Resto: ${selectedResto === 'ALL' ? 'Semua Resto' : selectedResto}`]);
+      aoa.push([]);
+
+      const header = ['NO', 'Nama Resto', 'Nama KARESTO', ...days.map(ymd => {
+        const [yy, mm, dd] = ymd.split('-');
+        return `${dd}/${mm}/${yy}`;
+      })];
+      aoa.push(header);
+
+      const groups = [];
+      employees.forEach(k => {
+        const resto = getGromingKaRestoResto(k) || '-';
+        let group = groups.find(g => g.resto === resto);
+        if (!group) {
+          group = {resto, employees: []};
+          groups.push(group);
+        }
+        group.employees.push(k);
+      });
+
+      let no = 0;
+      groups.forEach(group => {
+        no++;
+        group.employees.forEach((k, rowIndex) => {
+          const resto = group.resto;
+          const nik = String(k?.nik || '').trim();
+          const values = days.map(ymd => {
+            const key = `${nik.toLowerCase()}|${resto.toLowerCase()}|${ymd}`;
+            const record = checkinMap[key];
+            if (!record) return '-';
+            const shift = String(record.shifting || '').trim().toUpperCase();
+            if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) return shift.toLowerCase();
+            const time = getRecordWIBInfo(record).time || '';
+            return time ? time.replace(':', '.') : '-';
+          });
+          aoa.push([rowIndex === 0 ? no : '', rowIndex === 0 ? resto : '', k.nama || '-', ...values]);
+        });
+      });
+
+      if (!employees.length) {
+        aoa.push(['', '', 'Tidak ada data KARESTO untuk filter yang dipilih.']);
+      }
+
+      const worksheet = XLSX.utils.aoa_to_sheet(aoa);
+      worksheet['!freeze'] = {xSplit: 3, ySplit: 5};
+      worksheet['!cols'] = [
+        {wch: 7},
+        {wch: 25},
+        {wch: 25},
+        ...days.map(() => ({wch: 13}))
+      ];
+
+      // Styling jika versi SheetJS yang tersedia mendukung cell styles.
+      const titleCell = worksheet['A1'];
+      if (titleCell) titleCell.s = {font: {bold: true, sz: 16}};
+      for (let c = 0; c < header.length; c++) {
+        const cell = worksheet[XLSX.utils.encode_cell({r: 4, c})];
+        if (cell) cell.s = {font: {bold: true}, alignment: {horizontal: 'center', vertical: 'center'}};
+      }
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Groming KARESTO');
+      const safeResto = (selectedResto === 'ALL' ? 'Semua_Resto' : selectedResto)
+        .replace(/[\\/:*?"<>|]/g, '_')
+        .replace(/\s+/g, '_');
+      const filename = `Groming_KA_Resto_${year}-${String(month).padStart(2, '0')}_${safeResto}.xlsx`;
       XLSX.writeFile(workbook, filename);
     }
 
@@ -6389,13 +6644,23 @@
         document.getElementById('page-shared-operasional').style.display = 'none';
         document.getElementById('page-check-karyawan').style.display = 'none';
         document.getElementById('page-groming-kasir').style.display = 'none';
+        document.getElementById('page-groming-karesto').style.display = 'none';
         document.getElementById('page-daftar-karyawan').style.display = 'block';
         renderKaryawanTable();
+      } else if (pageId === 'page-groming-karesto') {
+        document.getElementById('admin-view').style.display = 'none';
+        document.getElementById('page-shared-operasional').style.display = 'none';
+        document.getElementById('page-check-karyawan').style.display = 'none';
+        document.getElementById('page-daftar-karyawan').style.display = 'none';
+        document.getElementById('page-groming-kasir').style.display = 'none';
+        document.getElementById('page-groming-karesto').style.display = 'block';
+        renderGromingKaRestoPage();
       } else if (pageId === 'page-groming-kasir') {
         document.getElementById('admin-view').style.display = 'none';
         document.getElementById('page-shared-operasional').style.display = 'none';
         document.getElementById('page-check-karyawan').style.display = 'none';
         document.getElementById('page-daftar-karyawan').style.display = 'none';
+        document.getElementById('page-groming-karesto').style.display = 'none';
         document.getElementById('page-groming-kasir').style.display = 'block';
         renderGromingKasirPage();
       } else {
@@ -6403,6 +6668,7 @@
         document.getElementById('page-daftar-karyawan').style.display = 'none';
         document.getElementById('page-check-karyawan').style.display = 'none';
         document.getElementById('page-groming-kasir').style.display = 'none';
+        document.getElementById('page-groming-karesto').style.display = 'none';
         document.getElementById('admin-view').style.display = 'block';
         document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
         document.getElementById(pageId).style.display = 'block';
