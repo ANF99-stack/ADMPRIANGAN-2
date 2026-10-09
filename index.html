@@ -1122,12 +1122,14 @@
     .groming-kasir-table .gk-no{width:52px;min-width:52px}
     .groming-kasir-table .gk-resto{width:220px;min-width:220px;max-width:220px;overflow:visible;text-overflow:clip;white-space:normal;text-align:left;line-height:1.25}
     .groming-kasir-table .gk-nama{width:180px;min-width:180px;max-width:180px;overflow:hidden;text-overflow:ellipsis;text-align:left}
+    .groming-kasir-table .gk-jabatan{width:120px;min-width:120px;max-width:120px;text-align:left;font-weight:800}
     .groming-kasir-table .gk-date{min-width:78px}
-    .groming-kasir-table .gk-sticky-1,.groming-kasir-table .gk-sticky-2,.groming-kasir-table .gk-sticky-3{position:sticky;z-index:6;background:#fff}
-    .groming-kasir-table thead .gk-sticky-1,.groming-kasir-table thead .gk-sticky-2,.groming-kasir-table thead .gk-sticky-3{z-index:10;background:#16f000}
+    .groming-kasir-table .gk-sticky-1,.groming-kasir-table .gk-sticky-2,.groming-kasir-table .gk-sticky-3,.groming-kasir-table .gk-sticky-4{position:sticky;z-index:6;background:#fff}
+    .groming-kasir-table thead .gk-sticky-1,.groming-kasir-table thead .gk-sticky-2,.groming-kasir-table thead .gk-sticky-3,.groming-kasir-table thead .gk-sticky-4{z-index:10;background:#16f000}
     .groming-kasir-table .gk-sticky-1{left:0}
     .groming-kasir-table .gk-sticky-2{left:52px}
     .groming-kasir-table .gk-sticky-3{left:272px}
+    .groming-kasir-table .gk-sticky-4{left:452px;box-shadow:3px 0 4px rgba(15,23,42,.08)}
     .gk-time{font-weight:900;color:#111827;background:transparent}
     .gk-absence{font-weight:900;color:#2563eb;background:transparent;text-transform:lowercase}
     .gk-late{font-weight:900;color:#b91c1c !important;background:#fee2e2 !important;border:1px solid #fca5a5;border-radius:6px;padding:2px 5px;display:inline-block}
@@ -1147,8 +1149,10 @@
       .groming-kasir-table .gk-no{width:44px;min-width:44px}
       .groming-kasir-table .gk-resto{width:175px;min-width:175px;max-width:175px}
       .groming-kasir-table .gk-nama{width:145px;min-width:145px;max-width:145px}
+      .groming-kasir-table .gk-jabatan{width:105px;min-width:105px;max-width:105px;white-space:normal}
       .groming-kasir-table .gk-sticky-2{left:44px}
       .groming-kasir-table .gk-sticky-3{left:219px}
+      .groming-kasir-table .gk-sticky-4{left:364px}
       .groming-kasir-table .gk-date{min-width:72px}
       .groming-kasir-legend{gap:8px 12px;font-size:.7rem}
     }
@@ -1925,7 +1929,7 @@
             </div>
             <div class="op-panel">
               <div class="op-panel-title">
-                <h4><i class="fa-solid fa-user-clock" style="color:#dc2626;"></i> SUMMARY DATA CHECK-IN KARYAWAN</h4>
+                <h4><i class="fa-solid fa-user-clock" style="color:#dc2626;"></i> Karyawan Terlambat Check-in Hari Ini</h4>
                 <div style="display:flex;gap:7px;flex-wrap:wrap;">
                   <select id="op_dashboard_resto_type" class="op-month-select" onchange="handleOperasionalDashboardFilterChange()" aria-label="Filter jenis resto">
                     <option value="ALL">SEMUA RESTO</option>
@@ -2158,9 +2162,9 @@
           <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:18px;gap:12px;flex-wrap:wrap;">
             <div>
               <h3 style="font-size:1.3rem;font-weight:800;color:#15803d;display:flex;align-items:center;gap:10px;">
-                <i class="fa-solid fa-user-clock"></i> GROMING KARESTO
+                <i class="fa-solid fa-user-clock"></i> GROMING KARESTO &amp; KSHIFT
               </h3>
-              <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Rekap jam check-in KARESTO per resto berdasarkan tanggal dalam bulan yang dipilih.</p>
+              <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Rekap jam check-in KARESTO, ACT KARESTO, KSHIFT, dan ACT KSHIFT per resto berdasarkan tanggal dalam bulan yang dipilih.</p>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
               <button type="button" onclick="refreshGromingKaRestoPage()" style="padding:9px 14px;border:1px solid #bbf7d0;border-radius:10px;background:#f0fdf4;color:#15803d;font-size:.8rem;font-weight:800;cursor:pointer;">
@@ -2638,7 +2642,7 @@
               • <b>24 JAM:</b> Admin mengatur <b>Shift 1, Shift 2, Shift 3</b> secara manual. Ketiga jam wajib diisi.<br>
               • Pengaturan hanya berlaku untuk <b>RESTO LAZATTO</b> sesuai tipe resto yang sudah ada. Tidak ada lagi input per resto.<br>
               • Resto/brand selain Lazatto <b>tidak menggunakan</b> batas check-in kasir ini dan tetap mengikuti aturan check-in yang sudah ada.<br>
-              • Pengaturan ini khusus <b>JOB KASIR</b> dan dipakai sebagai batas waktu/indikator keterlambatan check-in Lazatto.
+              • Pengaturan ini berlaku untuk jabatan <b>KASIR dan ACT KASIR</b>. Keduanya menggunakan batas maksimal check-in yang sama sesuai shift dan tipe resto Lazatto.
             </div>
 
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:14px;">
@@ -4349,10 +4353,10 @@
     }
 
     function getKasirMaxTimeForShift(record) {
-      if (!record || !getCheckinRecordJabatan(record).toUpperCase().includes('KASIR')) return null;
+      if (!record || !/\b(?:ACT\s+)?KASIR\b/.test(String(getCheckinRecordJabatan(record) || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim())) return null;
 
       // Batas khusus ini hanya untuk kasir di resto Lazatto.
-      const restoName = formatRestoName(record.restoName || record.resto || '');
+      const restoName = formatRestoName(record.restoName || record.resto || record.cabang || '');
       if (!String(restoName || '').toUpperCase().includes('LAZATTO')) return null;
 
       const schedules = globalDashboardData.checkinKasirSchedules || {};
@@ -4377,7 +4381,7 @@
     // Kuning jika jabatan KASIR check-in 0 sampai kurang dari 5 menit sebelum batas.
     // Waktu tepat pada batas (selisih 0) tidak dianggap "sebelum batas".
     function isKasirNearMaxCheckin(record, actualTime, maxAllowed) {
-      if (!record || !String(getCheckinRecordJabatan(record) || '').toUpperCase().includes('KASIR')) return false;
+      if (!record || !/\b(?:ACT\s+)?KASIR\b/.test(String(getCheckinRecordJabatan(record) || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim())) return false;
       if (!actualTime || !maxAllowed || !/^\d{2}:\d{2}$/.test(actualTime) || !/^\d{2}:\d{2}$/.test(String(maxAllowed))) return false;
       const toMinutes = value => {
         const [h, m] = value.split(':').map(Number);
@@ -6103,8 +6107,8 @@
     function getGromingKasirEmployees() {
       const list = getStoredKaryawanData();
       return (Array.isArray(list) ? list : []).filter(k => {
-        const jabatan = String(k?.jabatan || k?.posisi || '').toUpperCase();
-        return jabatan.includes('KASIR');
+        const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
+        return /\bKASIR\b/.test(jabatan) || /\bACT\s+KASIR\b/.test(jabatan);
       });
     }
 
@@ -6127,7 +6131,7 @@
       const list = getStoredKaryawanData();
       return (Array.isArray(list) ? list : []).filter(k => {
         const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
-        return /\bKARESTO\b/.test(jabatan) || /\bKA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTAURANT\b/.test(jabatan);
+        return /\bKARESTO\b/.test(jabatan) || /\bKA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTAURANT\b/.test(jabatan) || /\bACT\s+KARESTO\b/.test(jabatan) || /\bKASHIFT\b/.test(jabatan) || /\bKA\s+SHIFT\b/.test(jabatan) || /\bACT\s+KASHIFT\b/.test(jabatan) || /\bACT\s+KA\s+SHIFT\b/.test(jabatan);
       });
     }
 
@@ -6298,7 +6302,8 @@
       thead.innerHTML = `<tr>
         <th class="gk-no gk-sticky-1">NO</th>
         <th class="gk-resto gk-sticky-2">Nama Resto</th>
-        <th class="gk-nama gk-sticky-3">Nama Kasir</th>
+        <th class="gk-nama gk-sticky-3">Nama Karyawan</th>
+        <th class="gk-jabatan gk-sticky-4">Jabatan</th>
         ${days.map(ymd => {
           const [yy,mm,dd] = ymd.split('-');
           return `<th class="gk-date">${dd}/${mm}/${yy}</th>`;
@@ -6306,7 +6311,7 @@
       </tr>`;
 
       if (!employees.length) {
-        tbody.innerHTML = `<tr><td colspan="${days.length + 3}" class="gk-empty">Tidak ada data kasir untuk filter yang dipilih.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${days.length + 4}" class="gk-empty">Tidak ada data kasir untuk filter yang dipilih.</td></tr>`;
         return;
       }
 
@@ -6329,10 +6334,13 @@
             const key = `${nik.toLowerCase()}|${resto.toLowerCase()}|${ymd}`;
             return `<td>${getGromingKasirCell(checkinMap[key])}</td>`;
           }).join('');
+          const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
+          const jabatanLabel = /\bACT\s+KASIR\b/.test(jabatan) ? 'ACT KASIR' : /\bKASIR\b/.test(jabatan) ? 'KASIR' : (jabatan || '-');
           rows.push(`<tr>
             ${rowIndex === 0 ? `<td class="gk-resto-cell gk-sticky-1" rowspan="${group.employees.length}">${no}</td>
             <td class="gk-resto-cell gk-sticky-2" rowspan="${group.employees.length}"><span class="gk-resto-name">${escapeHtml(resto)}</span></td>` : ''}
-            <td class="gk-resto-cell gk-sticky-3" style="font-weight:800;">${escapeHtml(k.nama || '-')}</td>
+            <td class="gk-resto-cell gk-sticky-3" style="font-weight:800;">${escapeHtml(k.nama || k.namaKaryawan || k.name || '-')}</td>
+            <td class="gk-resto-cell gk-jabatan gk-sticky-4">${escapeHtml(jabatanLabel)}</td>
             ${cells}
           </tr>`);
         });
@@ -6377,7 +6385,7 @@
       aoa.push([`Filter Resto: ${selectedResto === 'ALL' ? 'Semua Resto' : selectedResto}`]);
       aoa.push([]);
 
-      const header = ['NO', 'Nama Resto', 'Nama Kasir', ...days.map(ymd => {
+      const header = ['NO', 'Nama Resto', 'Nama Karyawan', 'Jabatan', ...days.map(ymd => {
         const [yy, mm, dd] = ymd.split('-');
         return `${dd}/${mm}/${yy}`;
       })];
@@ -6409,7 +6417,9 @@
             const time = getRecordWIBInfo(record).time || '';
             return time ? time.replace(':', '.') : '-';
           });
-          aoa.push([rowIndex === 0 ? no : '', rowIndex === 0 ? resto : '', k.nama || '-', ...values]);
+          const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
+          const jabatanLabel = /\bACT\s+KASIR\b/.test(jabatan) ? 'ACT KASIR' : /\bKASIR\b/.test(jabatan) ? 'KASIR' : (jabatan || '-');
+          aoa.push([rowIndex === 0 ? no : '', rowIndex === 0 ? resto : '', k.nama || k.namaKaryawan || k.name || '-', jabatanLabel, ...values]);
         });
       });
 
@@ -6418,11 +6428,12 @@
       }
 
       const worksheet = XLSX.utils.aoa_to_sheet(aoa);
-      worksheet['!freeze'] = {xSplit: 3, ySplit: 5};
+      worksheet['!freeze'] = {xSplit: 4, ySplit: 5};
       worksheet['!cols'] = [
         {wch: 7},
         {wch: 25},
         {wch: 25},
+        {wch: 16},
         ...days.map(() => ({wch: 13}))
       ];
 
@@ -6471,13 +6482,14 @@
       const monthName = new Intl.DateTimeFormat('id-ID', {month:'long', year:'numeric'}).format(new Date(year, month - 1, 1));
       summary.innerHTML =
         `<span class="groming-kasir-badge"><i class="fa-solid fa-calendar-days"></i> ${escapeHtml(monthName)}</span>` +
-        `<span class="groming-kasir-badge"><i class="fa-solid fa-user-tie"></i> ${employees.length} KARESTO</span>` +
+        `<span class="groming-kasir-badge"><i class="fa-solid fa-user-tie"></i> ${employees.length} KARESTO &amp; KSHIFT</span>` +
         `<span class="groming-kasir-badge"><i class="fa-solid fa-store"></i> ${selectedResto === 'ALL' ? 'Semua resto' : escapeHtml(selectedResto)}</span>`;
 
       thead.innerHTML = `<tr>
         <th class="gk-no gk-sticky-1">NO</th>
         <th class="gk-resto gk-sticky-2">Nama Resto</th>
-        <th class="gk-nama gk-sticky-3">Nama KARESTO</th>
+        <th class="gk-nama gk-sticky-3">Nama Karyawan</th>
+        <th class="gk-jabatan gk-sticky-4">Jabatan</th>
         ${days.map(ymd => {
           const [yy,mm,dd] = ymd.split('-');
           return `<th class="gk-date">${dd}/${mm}/${yy}</th>`;
@@ -6485,7 +6497,7 @@
       </tr>`;
 
       if (!employees.length) {
-        tbody.innerHTML = `<tr><td colspan="${days.length + 3}" class="gk-empty">Tidak ada data KARESTO untuk filter yang dipilih.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${days.length + 4}" class="gk-empty">Tidak ada data KARESTO & KSHIFT untuk filter yang dipilih.</td></tr>`;
         return;
       }
 
@@ -6508,10 +6520,19 @@
             const key = `${nik.toLowerCase()}|${resto.toLowerCase()}|${ymd}`;
             return `<td>${getGromingKasirCell(checkinMap[key])}</td>`;
           }).join('');
+          const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
+          const isActKaResto = /\bACT\s+KARESTO\b/.test(jabatan) || /\bACT\s+KA\s+RESTO\b/.test(jabatan);
+          const isKaResto = /\bKARESTO\b/.test(jabatan) || /\bKA\s+RESTO\b/.test(jabatan);
+          const isActKaShift = /\bACT\s+KASHIFT\b/.test(jabatan) || /\bACT\s+KA\s+SHIFT\b/.test(jabatan);
+          const isKaShift = /\bKASHIFT\b/.test(jabatan) || /\bKA\s+SHIFT\b/.test(jabatan);
+          const nameCellStyle = 'font-weight:800;';
+          const jabatanLabel = isActKaResto ? 'ACT KARESTO' : isKaResto ? 'KARESTO' : isActKaShift ? 'ACT KSHIFT' : isKaShift ? 'KSHIFT' : (jabatan || '-');
+          const namaTampil = escapeHtml(k.nama || '-');
           rows.push(`<tr>
             ${rowIndex === 0 ? `<td class="gk-resto-cell gk-sticky-1" rowspan="${group.employees.length}">${no}</td>
             <td class="gk-resto-cell gk-sticky-2" rowspan="${group.employees.length}"><span class="gk-resto-name">${escapeHtml(resto)}</span></td>` : ''}
-            <td class="gk-resto-cell gk-sticky-3" style="font-weight:800;">${escapeHtml(k.nama || '-')}</td>
+            <td class="gk-resto-cell gk-sticky-3" style="${nameCellStyle}">${namaTampil}</td>
+            <td class="gk-resto-cell gk-jabatan gk-sticky-4">${escapeHtml(jabatanLabel || '-')}</td>
             ${cells}
           </tr>`);
         });
@@ -6551,12 +6572,12 @@
       const aoa = [];
 
       // Judul dan filter aktif.
-      aoa.push(['GROMING KASIR']);
+      aoa.push(['GROMING KARESTO & KSHIFT']);
       aoa.push([`Periode: ${monthName}`]);
       aoa.push([`Filter Resto: ${selectedResto === 'ALL' ? 'Semua Resto' : selectedResto}`]);
       aoa.push([]);
 
-      const header = ['NO', 'Nama Resto', 'Nama KARESTO', ...days.map(ymd => {
+      const header = ['NO', 'Nama Resto', 'Nama Karyawan', 'Jabatan', ...days.map(ymd => {
         const [yy, mm, dd] = ymd.split('-');
         return `${dd}/${mm}/${yy}`;
       })];
@@ -6588,7 +6609,13 @@
             const time = getRecordWIBInfo(record).time || '';
             return time ? time.replace(':', '.') : '-';
           });
-          aoa.push([rowIndex === 0 ? no : '', rowIndex === 0 ? resto : '', k.nama || '-', ...values]);
+          const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
+          const isActKaResto = /\bACT\s+KARESTO\b/.test(jabatan) || /\bACT\s+KA\s+RESTO\b/.test(jabatan);
+          const isKaResto = /\bKARESTO\b/.test(jabatan) || /\bKA\s+RESTO\b/.test(jabatan);
+          const isActKaShift = /\bACT\s+KASHIFT\b/.test(jabatan) || /\bACT\s+KA\s+SHIFT\b/.test(jabatan);
+          const isKaShift = /\bKASHIFT\b/.test(jabatan) || /\bKA\s+SHIFT\b/.test(jabatan);
+          const jabatanLabel = isActKaResto ? 'ACT KARESTO' : isKaResto ? 'KARESTO' : isActKaShift ? 'ACT KSHIFT' : isKaShift ? 'KSHIFT' : (jabatan || '-');
+          aoa.push([rowIndex === 0 ? no : '', rowIndex === 0 ? resto : '', k.nama || '-', jabatanLabel, ...values]);
         });
       });
 
@@ -6597,11 +6624,12 @@
       }
 
       const worksheet = XLSX.utils.aoa_to_sheet(aoa);
-      worksheet['!freeze'] = {xSplit: 3, ySplit: 5};
+      worksheet['!freeze'] = {xSplit: 4, ySplit: 5};
       worksheet['!cols'] = [
         {wch: 7},
         {wch: 25},
         {wch: 25},
+        {wch: 16},
         ...days.map(() => ({wch: 13}))
       ];
 
@@ -6614,11 +6642,11 @@
       }
 
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Groming KARESTO');
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Groming KARESTO & KSHIFT');
       const safeResto = (selectedResto === 'ALL' ? 'Semua_Resto' : selectedResto)
         .replace(/[\\/:*?"<>|]/g, '_')
         .replace(/\s+/g, '_');
-      const filename = `Groming_KA_Resto_${year}-${String(month).padStart(2, '0')}_${safeResto}.xlsx`;
+      const filename = `Groming_KARESTO_KSHIFT_${year}-${String(month).padStart(2, '0')}_${safeResto}.xlsx`;
       XLSX.writeFile(workbook, filename);
     }
 
