@@ -1916,9 +1916,24 @@
             <div class="op-panel">
               <div class="op-panel-title">
                 <h4><i class="fa-solid fa-user-clock" style="color:#dc2626;"></i> Karyawan Terlambat Check-in Hari Ini</h4>
-                <select id="op_dashboard_shift" class="op-month-select" onchange="renderOperasionalDashboard()">
-                  <option value="ALL">SEMUA SHIFT</option>
-                </select>
+                <div style="display:flex;gap:7px;flex-wrap:wrap;">
+                  <select id="op_dashboard_resto_type" class="op-month-select" onchange="renderOperasionalDashboard()" aria-label="Filter jenis resto">
+                    <option value="ALL">SEMUA RESTO</option>
+                    <option value="reguler">REGULER</option>
+                    <option value="24jam">24 JAM</option>
+                  </select>
+                  <select id="op_dashboard_shift" class="op-month-select" onchange="renderOperasionalDashboard()" aria-label="Filter shift/status">
+                    <option value="ALL">SEMUA SHIFT</option>
+                    <option value="SHIFT 1">SHIFT 1</option>
+                    <option value="SHIFT 2">SHIFT 2</option>
+                    <option value="SHIFT 3">SHIFT 3</option>
+                    <option value="MIDDLE">MIDDLE</option>
+                    <option value="OFF">OFF</option>
+                    <option value="SAKIT">SAKIT</option>
+                    <option value="IZIN">IZIN</option>
+                    <option value="CUTI">CUTI</option>
+                  </select>
+                </div>
               </div>
               <div id="op_today_late_list" class="op-dashboard-list"></div>
             </div>
@@ -2028,15 +2043,19 @@
               </h3>
               <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Monitoring karyawan yang sudah atau belum melakukan check-in berdasarkan tanggal.</p>
             </div>
-            <button type="button" onclick="renderCheckKaryawanPage()" style="padding:9px 14px;border:1px solid #c7d2fe;border-radius:10px;background:#eef2ff;color:#4338ca;font-size:.8rem;font-weight:800;cursor:pointer;">
+            <button type="button" onclick="refreshCheckKaryawanToday()" style="padding:9px 14px;border:1px solid #c7d2fe;border-radius:10px;background:#eef2ff;color:#4338ca;font-size:.8rem;font-weight:800;cursor:pointer;">
               <i class="fa-solid fa-rotate"></i> Refresh
             </button>
           </div>
 
           <div class="check-karyawan-toolbar">
             <div class="check-karyawan-field" style="max-width:190px;">
-              <label for="check_karyawan_date">TANGGAL CHECK-IN</label>
-              <input type="date" id="check_karyawan_date" onchange="renderCheckKaryawanPage()">
+              <label for="check_karyawan_date_start">TANGGAL MULAI</label>
+              <input type="date" id="check_karyawan_date_start" onchange="handleCheckKaryawanDateChange('start')">
+            </div>
+            <div class="check-karyawan-field" style="max-width:190px;">
+              <label for="check_karyawan_date_end">TANGGAL AKHIR</label>
+              <input type="date" id="check_karyawan_date_end" onchange="handleCheckKaryawanDateChange('end')">
             </div>
             <div class="check-karyawan-field" style="max-width:220px;">
               <label for="check_karyawan_jabatan">FILTER JABATAN</label>
@@ -2142,6 +2161,10 @@
                   <i class="fa-solid fa-right-left"></i> Mutasi Karyawan
                 </button>
               </div>
+
+              <button id="btn_global_update_karyawan" onclick="openGlobalUpdateKaryawan()" style="background:#4338ca;color:white;border:none;padding:10px 16px;border-radius:12px;font-size:.85rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(67,56,202,.2);">
+                <i class="fa-solid fa-users-gear"></i> Update Karyawan Global
+              </button>
 
               <button id="btn_download_template_karyawan" onclick="downloadKaryawanTemplate()" style="background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);">
                 <i class="fa-solid fa-download"></i> Download Template Excel
@@ -3562,14 +3585,12 @@
       const userRole = localStorage.getItem('resto_user_role') || 'user';
       const btnDownload = document.getElementById('btn_download_template_karyawan');
       const btnImport = document.getElementById('btn_import_excel_karyawan');
+      const btnGlobalUpdate = document.getElementById('btn_global_update_karyawan');
 
-      if (userRole === 'supervisor') {
-        if (btnDownload) btnDownload.style.display = 'none';
-        if (btnImport) btnImport.style.display = 'none';
-      } else {
-        if (btnDownload) btnDownload.style.display = 'inline-flex';
-        if (btnImport) btnImport.style.display = 'inline-flex';
-      }
+      // SPV dapat update massal hanya untuk resto coverage-nya; PSD/Admin untuk semua resto.
+      if (btnDownload) btnDownload.style.display = userRole === 'supervisor' ? 'none' : 'inline-flex';
+      if (btnImport) btnImport.style.display = userRole === 'supervisor' ? 'none' : 'inline-flex';
+      if (btnGlobalUpdate) btnGlobalUpdate.style.display = ['supervisor', 'psd', 'admin'].includes(String(userRole).toLowerCase()) ? 'inline-flex' : 'none';
     }
 
     function renderKaryawanTable() {
@@ -3652,6 +3673,158 @@
       XLSX.utils.book_append_sheet(workbook, worksheet, "Data_Karyawan");
 
       XLSX.writeFile(workbook, "Template_Import_Data_Karyawan.xlsx");
+    }
+
+    const KARYAWAN_JOB_OPTIONS = ['KARESTO', 'ACT KARESTO', 'KASHIFT', 'ACT KASHIFT', 'ACT KASIR', 'KASIR', 'CREW'];
+
+    function getKaryawanForCurrentRole() {
+      const list = getStoredKaryawanData();
+      const role = String(localStorage.getItem('resto_user_role') || 'user').toLowerCase();
+      if (role !== 'supervisor') return list;
+      const currentUser = localStorage.getItem('resto_current_user');
+      const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
+      const coverageNames = (spvIndiv.resto_names || '').split(',').map(s => formatRestoName(s)).filter(Boolean);
+      return list.filter(k => coverageNames.includes(formatRestoName(k.resto || k.restoName || '')));
+    }
+
+    function openGlobalUpdateKaryawan() {
+      const role = String(localStorage.getItem('resto_user_role') || 'user').toLowerCase();
+      if (!['supervisor', 'psd', 'admin'].includes(role)) { alert('Akses update karyawan tidak diizinkan.'); return; }
+      const employees = getKaryawanForCurrentRole();
+      if (!employees.length) { alert('Tidak ada data karyawan pada cakupan akses Anda.'); return; }
+      let modal = document.getElementById('global-update-karyawan-modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'global-update-karyawan-modal';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `<div class="modal-card" style="max-width:1000px;width:96%;max-height:88vh;overflow:auto;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;">
+            <div><h3 style="font-size:1.1rem;font-weight:900;color:var(--lazatto-red);">Update Karyawan Global</h3><p id="global_update_scope_info" style="font-size:.82rem;color:var(--text-muted);margin-top:4px;"></p></div>
+            <button type="button" onclick="closeGlobalUpdateKaryawan()" style="border:0;background:transparent;font-size:1.3rem;cursor:pointer;">✕</button>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+            <input id="global_update_search" placeholder="Cari NIK, nama, atau resto..." oninput="filterGlobalUpdateRows()" style="flex:1;min-width:220px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;">
+            <label style="display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:700;"><input type="checkbox" id="global_update_only_changed" onchange="filterGlobalUpdateRows()"> Tampilkan yang job-nya berubah</label>
+          </div>
+          <div style="overflow:auto;border:1px solid var(--border);border-radius:10px;max-height:52vh;">
+            <table style="width:100%;border-collapse:collapse;min-width:680px;"><thead style="position:sticky;top:0;background:#f8fafc;z-index:1;"><tr><th style="padding:10px;text-align:left;">NIK</th><th style="padding:10px;text-align:left;">Nama</th><th style="padding:10px;text-align:left;">Resto</th><th style="padding:10px;text-align:left;">Job Saat Ini</th><th style="padding:10px;text-align:left;">Job Baru</th></tr></thead><tbody id="global_update_karyawan_body"></tbody></table>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;"><span id="global_update_count" style="font-size:.85rem;font-weight:800;">0 perubahan</span><div style="display:flex;gap:10px;"><button type="button" onclick="closeGlobalUpdateKaryawan()" style="padding:11px 16px;border:1px solid var(--border);border-radius:10px;background:#f8fafc;font-weight:800;cursor:pointer;">Batal</button><button id="btn-save-global-update-karyawan" type="button" onclick="submitGlobalUpdateKaryawan()" style="padding:11px 16px;border:0;border-radius:10px;background:#4338ca;color:#fff;font-weight:800;cursor:pointer;"><i class="fa-solid fa-floppy-disk"></i> Simpan Semua Perubahan</button></div></div>
+        </div>`;
+        document.body.appendChild(modal);
+      }
+      window.__globalKaryawanEdit = employees.map((e, index) => ({...e, __sourceIndex:index, __oldJob:String(e.jabatan || e.posisi || '').trim().toUpperCase()}));
+      document.getElementById('global_update_scope_info').textContent = role === 'supervisor' ? `Cakupan SPV: ${employees.length} karyawan dari resto coverage Anda.` : `Semua resto: ${employees.length} karyawan.`;
+      document.getElementById('global_update_search').value = '';
+      document.getElementById('global_update_only_changed').checked = false;
+      const body = document.getElementById('global_update_karyawan_body');
+      body.innerHTML = window.__globalKaryawanEdit.map((e,i) => {
+        const job = KARYAWAN_JOB_OPTIONS.includes(e.__oldJob) ? e.__oldJob : 'CREW';
+        return `<tr data-employee-index="${i}" data-search="${String([e.nik||e.NIK||'',e.nama||e.namaKaryawan||'',e.resto||e.restoName||''].join(' ')).replace(/"/g,'&quot;').toLowerCase()}" style="border-top:1px solid var(--border);">
+          <td style="padding:8px 10px;white-space:nowrap;">${e.nik || e.NIK || '-'}</td><td style="padding:8px 10px;font-weight:700;">${e.nama || e.namaKaryawan || '-'}</td><td style="padding:8px 10px;">${formatRestoName(e.resto || e.restoName || '')}</td><td style="padding:8px 10px;">${e.__oldJob || '-'}</td>
+          <td style="padding:8px 10px;"><select class="global-update-job-select" data-index="${i}" onchange="updateGlobalUpdateCount()" style="padding:8px;border:1px solid var(--border);border-radius:8px;min-width:145px;">${KARYAWAN_JOB_OPTIONS.map(j=>`<option value="${j}" ${j===job?'selected':''}>${j}</option>`).join('')}</select></td></tr>`;
+      }).join('');
+      updateGlobalUpdateCount();
+      modal.style.display = 'flex';
+    }
+
+    function filterGlobalUpdateRows() {
+      const q = (document.getElementById('global_update_search')?.value || '').toLowerCase().trim();
+      const onlyChanged = !!document.getElementById('global_update_only_changed')?.checked;
+      document.querySelectorAll('#global_update_karyawan_body tr').forEach(row => {
+        const idx = Number(row.dataset.employeeIndex);
+        const e = (window.__globalKaryawanEdit || [])[idx];
+        const select = row.querySelector('select');
+        const changed = e && select && select.value !== (KARYAWAN_JOB_OPTIONS.includes(e.__oldJob) ? e.__oldJob : 'CREW');
+        row.style.display = ((!q || (row.dataset.search || '').includes(q)) && (!onlyChanged || changed)) ? '' : 'none';
+      });
+      updateGlobalUpdateCount();
+    }
+
+    function updateGlobalUpdateCount() {
+      const employees = window.__globalKaryawanEdit || [];
+      let count = 0;
+      document.querySelectorAll('#global_update_karyawan_body select').forEach(sel => {
+        const e = employees[Number(sel.dataset.index)];
+        if (e && sel.value !== (KARYAWAN_JOB_OPTIONS.includes(e.__oldJob) ? e.__oldJob : 'CREW')) count++;
+      });
+      const el = document.getElementById('global_update_count');
+      if (el) el.textContent = `${count} perubahan job akan disimpan`;
+    }
+
+    function closeGlobalUpdateKaryawan() {
+      const modal = document.getElementById('global-update-karyawan-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    async function submitGlobalUpdateKaryawan() {
+      const employees = window.__globalKaryawanEdit || [];
+      const currentRole = String(localStorage.getItem('resto_user_role') || 'user').toLowerCase();
+      if (!['supervisor', 'psd', 'admin'].includes(currentRole)) { alert('Akses update karyawan tidak diizinkan.'); return; }
+      const allowed = new Set(getKaryawanForCurrentRole().map(e => String(e.nik || e.NIK || '')));
+      const changed = [];
+      document.querySelectorAll('#global_update_karyawan_body select').forEach(sel => {
+        const e = employees[Number(sel.dataset.index)];
+        if (!e) return;
+        const nik = String(e.nik || e.NIK || '');
+        if (currentRole === 'supervisor' && !allowed.has(nik)) return;
+        const newJob = sel.value;
+        const oldJob = KARYAWAN_JOB_OPTIONS.includes(e.__oldJob) ? e.__oldJob : 'CREW';
+        if (newJob !== oldJob) changed.push({...e, nik, nama:e.nama || e.namaKaryawan || '', jabatan:newJob, resto:formatRestoName(e.resto || e.restoName || ''), status:e.status || 'Aktif'});
+      });
+      if (!changed.length) { alert('Tidak ada perubahan job yang perlu disimpan.'); return; }
+      if (!confirm(`Simpan perubahan job untuk ${changed.length} karyawan sekaligus?`)) return;
+      const btn = document.getElementById('btn-save-global-update-karyawan');
+      const original = btn?.innerHTML || '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Menyimpan...'; }
+      try {
+        const result = await gasRequestJson({action:'importKaryawanData', adminUser:localStorage.getItem('resto_current_user') || '', karyawanList:changed}, {timeoutMs:30000,retries:1,retryDelayMs:700});
+        if (result?.status === 'success') {
+          closeGlobalUpdateKaryawan();
+          fetchInitialDataFromGAS(() => renderKaryawanTable());
+          alert(result.message || `Berhasil mengirim ${changed.length} perubahan job karyawan.`);
+        } else alert(result?.message || 'Gagal memperbarui job karyawan.');
+      } catch (err) { alert('Gagal terhubung ke server GAS. Periksa kembali data sebelum mengulang penyimpanan.'); }
+      finally { if (btn) { btn.disabled = false; btn.innerHTML = original || '<i class="fa-solid fa-floppy-disk"></i> Simpan Semua Perubahan'; } }
+    }
+
+    function closeUpdateKaryawanJob() {
+      const modal = document.getElementById('update-karyawan-job-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    async function submitUpdateKaryawanJob() {
+      const employee = window.__employeeJobEdit;
+      if (!employee) { alert('Data karyawan tidak ditemukan.'); return; }
+      const newJob = document.getElementById('update_job_jabatan')?.value || '';
+      if (!KARYAWAN_JOB_OPTIONS.includes(newJob)) { alert('Pilih job yang valid.'); return; }
+      const btn = document.getElementById('btn-save-update-karyawan-job');
+      const original = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Menyimpan...'; }
+      try {
+        const updatedEmployee = {
+          ...employee,
+          nik: employee.nik || employee.NIK || '',
+          nama: employee.nama || employee.namaKaryawan || '',
+          jabatan: newJob,
+          resto: formatRestoName(employee.resto || employee.restoName || ''),
+          status: employee.status || 'Aktif'
+        };
+        const result = await gasRequestJson({
+          action: 'importKaryawanData',
+          adminUser: localStorage.getItem('resto_current_user') || '',
+          karyawanList: [updatedEmployee]
+        }, { timeoutMs: 15000, retries: 2, retryDelayMs: 700 });
+        if (result?.status === 'success') {
+          closeUpdateKaryawanJob();
+          fetchInitialDataFromGAS(() => renderKaryawanTable());
+          alert(result.message || `Jabatan ${updatedEmployee.nama} berhasil diperbarui menjadi ${newJob}.`);
+        } else alert(result?.message || 'Gagal memperbarui job karyawan.');
+      } catch (err) {
+        alert('Gagal terhubung ke server GAS. Job karyawan belum dipastikan tersimpan.');
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = original || '<i class="fa-solid fa-floppy-disk"></i> Simpan Update'; }
+      }
     }
 
     function openAddKaryawanModal() { document.getElementById('add-karyawan-modal').style.display = 'flex'; }
@@ -4167,11 +4340,13 @@
       const list = getDashboardVisibleCheckins();
       const restoTimeMap = getRestoMaxCheckinMap();
 
-      // Reset otomatis filter shift ketika hari berganti.
+      // Reset filter otomatis ketika tanggal berganti.
       if (window.__opLateDashboardDate !== today) {
         window.__opLateDashboardDate = today;
         const shiftSelect = document.getElementById('op_dashboard_shift');
+        const typeSelect = document.getElementById('op_dashboard_resto_type');
         if (shiftSelect) shiftSelect.value = 'ALL';
+        if (typeSelect) typeSelect.value = 'ALL';
       }
 
       const month = getCurrentDashboardMonth();
@@ -4191,25 +4366,29 @@
         .filter(x => x.count > 3)
         .sort((a,b) => b.count-a.count || a.nama.localeCompare(b.nama));
 
+      // Untuk filter OFF/SAKIT/IZIN/CUTI, sertakan juga record absensi hari ini.
+      // Shift aktif hanya masuk bila check-in terlambat.
       const todayLateBase = list.filter(r => {
         const info = getRecordWIBInfo(r);
-        return info.ymd === today && !isAbsenceShift(r.shifting) && isLateCheckin(r, restoTimeMap);
+        const shift = String(r.shifting || '').trim().toUpperCase();
+        return info.ymd === today && (isAbsenceShift(shift) || isLateCheckin(r, restoTimeMap));
       });
 
-      const shiftSelect = document.getElementById('op_dashboard_shift');
-      if (shiftSelect) {
-        const currentShift = shiftSelect.value || 'ALL';
-        const shiftList = [...new Set(todayLateBase.map(r => String(r.shifting || '').trim()).filter(Boolean))]
-          .sort((a,b) => a.localeCompare(b, 'id'));
-        shiftSelect.innerHTML = '<option value="ALL">SEMUA SHIFT</option>' +
-          shiftList.map(x => `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('');
-        shiftSelect.value = shiftList.includes(currentShift) ? currentShift : 'ALL';
-      }
-
-      const selectedShift = document.getElementById('op_dashboard_shift')?.value || 'ALL';
-      const todayLate = selectedShift === 'ALL'
-        ? todayLateBase
-        : todayLateBase.filter(r => String(r.shifting || '').trim() === selectedShift);
+      const selectedShift = String(document.getElementById('op_dashboard_shift')?.value || 'ALL').trim().toUpperCase();
+      const selectedRestoType = String(document.getElementById('op_dashboard_resto_type')?.value || 'ALL').trim().toLowerCase();
+      const todayLate = todayLateBase.filter(r => {
+        const shift = String(r.shifting || '').trim().toUpperCase();
+        if (selectedShift !== 'ALL' && shift !== selectedShift) return false;
+        if (selectedRestoType !== 'ALL') {
+          const resto = formatRestoName(r.restoName || r.resto || '');
+          const restoCfg = restoTimeMap[resto] || {};
+          const type = String(restoCfg.type || restoCfg.tipe || restoCfg.jenis || '').toLowerCase().replace(/[ _-]/g, '');
+          const is24Jam = type.includes('24jam') || type.includes('24hour') || type.includes('24hours');
+          if (selectedRestoType === '24jam' && !is24Jam) return false;
+          if (selectedRestoType === 'reguler' && is24Jam) return false;
+        }
+        return true;
+      });
 
       const set = (id,val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
       set('op_kpi_late_total', lateMonthly.length);
@@ -4252,14 +4431,16 @@
           ? sorted.map(x => {
               const info = getRecordWIBInfo(x);
               const resto = formatRestoName(x.restoName);
-              const maxAllowed = getMaxTimeForShift(restoTimeMap[resto], x.shifting);
+              const shift = String(x.shifting || '').trim().toUpperCase();
+              const absence = ['OFF','SAKIT','IZIN','CUTI','MIDDLE'].includes(shift);
+              const displayValue = absence ? shift : (info.time || '-');
               return `
                 <div class="op-dashboard-row">
                   <div>
                     <div class="op-dashboard-name">${escapeHtml(x.nama || '-')}</div>
                     <div class="op-dashboard-meta">${escapeHtml(resto)} · ${escapeHtml(x.shifting || '-')} · ${escapeHtml(x.nik || '-')}</div>
                   </div>
-                  <div class="op-dashboard-badge">${escapeHtml(info.time || '-')}</div>
+                  <div class="op-dashboard-badge" style="${absence ? 'background:#dbeafe;color:#1d4ed8;' : ''}">${escapeHtml(displayValue)}</div>
                 </div>
               `;
             }).join('')
@@ -5700,10 +5881,60 @@
       }
     };
 
-    function getCheckKaryawanSelectedDate() {
-      const el = document.getElementById('check_karyawan_date');
-      if (el && el.value) return el.value;
-      return getTodayYMD();
+    function refreshCheckKaryawanToday() {
+      const today = getTodayYMD();
+      const startEl = document.getElementById('check_karyawan_date_start');
+      const endEl = document.getElementById('check_karyawan_date_end');
+      if (startEl) startEl.value = today;
+      if (endEl) endEl.value = today;
+      if (startEl) startEl.max = today;
+      if (endEl) {
+        endEl.min = today;
+        endEl.max = addOneCalendarMonthYMD(today);
+      }
+      renderCheckKaryawanPage();
+    }
+
+    function getCheckKaryawanDateRange() {
+      const startEl = document.getElementById('check_karyawan_date_start');
+      const endEl = document.getElementById('check_karyawan_date_end');
+      const today = getTodayYMD();
+      const start = (startEl && startEl.value) || today;
+      const end = (endEl && endEl.value) || start;
+      return { start, end };
+    }
+
+    function addOneCalendarMonthYMD(ymd) {
+      const parts = String(ymd || '').split('-').map(Number);
+      if (parts.length !== 3 || parts.some(n => !n)) return getTodayYMD();
+      const [year, month, day] = parts;
+      const targetFirst = new Date(year, month, 1);
+      const lastDay = new Date(targetFirst.getFullYear(), targetFirst.getMonth() + 1, 0).getDate();
+      targetFirst.setDate(Math.min(day, lastDay));
+      return `${targetFirst.getFullYear()}-${String(targetFirst.getMonth()+1).padStart(2,'0')}-${String(targetFirst.getDate()).padStart(2,'0')}`;
+    }
+
+    function handleCheckKaryawanDateChange(changed) {
+      const startEl = document.getElementById('check_karyawan_date_start');
+      const endEl = document.getElementById('check_karyawan_date_end');
+      if (!startEl || !endEl) return;
+      if (!startEl.value) startEl.value = getTodayYMD();
+      if (!endEl.value) endEl.value = startEl.value;
+      const maxEnd = addOneCalendarMonthYMD(startEl.value);
+      endEl.min = startEl.value;
+      endEl.max = maxEnd;
+      startEl.max = endEl.value || maxEnd;
+      if (changed === 'start') {
+        if (endEl.value < startEl.value) endEl.value = startEl.value;
+        if (endEl.value > maxEnd) endEl.value = maxEnd;
+        endEl.min = startEl.value;
+        endEl.max = maxEnd;
+      } else {
+        if (endEl.value < startEl.value) endEl.value = startEl.value;
+        if (endEl.value > maxEnd) endEl.value = maxEnd;
+      }
+      startEl.max = endEl.value;
+      renderCheckKaryawanPage();
     }
 
     function getCheckKaryawanVisibleEmployees() {
@@ -5991,13 +6222,21 @@
     }
 
     function renderCheckKaryawanPage() {
-      const dateEl = document.getElementById('check_karyawan_date');
-      if (!dateEl) return;
-      if (!dateEl.value) dateEl.value = getTodayYMD();
+      const startEl = document.getElementById('check_karyawan_date_start');
+      const endEl = document.getElementById('check_karyawan_date_end');
+      if (!startEl || !endEl) return;
+      if (!startEl.value) startEl.value = getTodayYMD();
+      if (!endEl.value) endEl.value = startEl.value;
+      const maxEndDate = addOneCalendarMonthYMD(startEl.value);
+      endEl.min = startEl.value;
+      endEl.max = maxEndDate;
+      if (endEl.value < startEl.value) endEl.value = startEl.value;
+      if (endEl.value > maxEndDate) endEl.value = maxEndDate;
+      startEl.max = endEl.value;
 
       const tbody = document.getElementById('check-karyawan-table-body');
       if (!tbody) return;
-      const selectedDate = dateEl.value;
+      const selectedRange = getCheckKaryawanDateRange();
       const query = (document.getElementById('check_karyawan_search')?.value || '').toLowerCase().trim();
       const employees = getCheckKaryawanVisibleEmployees();
       populateCheckKaryawanJabatanFilter(employees);
@@ -6011,7 +6250,7 @@
         const nik = String(c.nik || '').trim();
         if (!nik) return;
         const info = getRecordWIBInfo(c);
-        if (info.date !== selectedDate) return;
+        if (info.date < selectedRange.start || info.date > selectedRange.end) return;
         const key = nik + '|' + formatRestoName(c.restoName);
         if (!byNikDate[key] || (Number(c.timestampMs) || 0) > (Number(byNikDate[key].timestampMs) || 0)) byNikDate[key] = c;
       });
