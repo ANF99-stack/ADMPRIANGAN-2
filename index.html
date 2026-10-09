@@ -1927,12 +1927,12 @@
               <div class="op-panel-title">
                 <h4><i class="fa-solid fa-user-clock" style="color:#dc2626;"></i> Karyawan Terlambat Check-in Hari Ini</h4>
                 <div style="display:flex;gap:7px;flex-wrap:wrap;">
-                  <select id="op_dashboard_resto_type" class="op-month-select" onchange="renderOperasionalDashboard()" aria-label="Filter jenis resto">
+                  <select id="op_dashboard_resto_type" class="op-month-select" onchange="handleOperasionalDashboardFilterChange()" aria-label="Filter jenis resto">
                     <option value="ALL">SEMUA RESTO</option>
                     <option value="reguler">REGULER</option>
                     <option value="24jam">24 JAM</option>
                   </select>
-                  <select id="op_dashboard_shift" class="op-month-select" onchange="renderOperasionalDashboard()" aria-label="Filter shift/status">
+                  <select id="op_dashboard_shift" class="op-month-select" onchange="handleOperasionalDashboardFilterChange()" aria-label="Filter shift/status">
                     <option value="ALL">SEMUA SHIFT</option>
                     <option value="SHIFT 1">SHIFT 1</option>
                     <option value="SHIFT 2">SHIFT 2</option>
@@ -2115,7 +2115,7 @@
               <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Rekap jam check-in kasir per resto berdasarkan tanggal dalam bulan yang dipilih.</p>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-              <button type="button" onclick="renderGromingKasirPage()" style="padding:9px 14px;border:1px solid #bbf7d0;border-radius:10px;background:#f0fdf4;color:#15803d;font-size:.8rem;font-weight:800;cursor:pointer;">
+              <button type="button" onclick="refreshGromingKasirPage()" style="padding:9px 14px;border:1px solid #bbf7d0;border-radius:10px;background:#f0fdf4;color:#15803d;font-size:.8rem;font-weight:800;cursor:pointer;">
                 <i class="fa-solid fa-rotate"></i> Refresh
               </button>
               <button type="button" onclick="downloadGromingKasirExcel()" style="padding:9px 14px;border:1px solid #16a34a;border-radius:10px;background:#16a34a;color:#fff;font-size:.8rem;font-weight:800;cursor:pointer;">
@@ -2163,7 +2163,7 @@
               <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Rekap jam check-in KARESTO per resto berdasarkan tanggal dalam bulan yang dipilih.</p>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-              <button type="button" onclick="renderGromingKaRestoPage()" style="padding:9px 14px;border:1px solid #bbf7d0;border-radius:10px;background:#f0fdf4;color:#15803d;font-size:.8rem;font-weight:800;cursor:pointer;">
+              <button type="button" onclick="refreshGromingKaRestoPage()" style="padding:9px 14px;border:1px solid #bbf7d0;border-radius:10px;background:#f0fdf4;color:#15803d;font-size:.8rem;font-weight:800;cursor:pointer;">
                 <i class="fa-solid fa-rotate"></i> Refresh
               </button>
               <button type="button" onclick="downloadGromingKaRestoExcel()" style="padding:9px 14px;border:1px solid #16a34a;border-radius:10px;background:#16a34a;color:#fff;font-size:.8rem;font-weight:800;cursor:pointer;">
@@ -4436,7 +4436,34 @@
       if (sorted.includes(current)) select.value=current;
     }
 
+    function getOperasionalDashboardFilterUserKey() {
+      const username = String(localStorage.getItem('resto_current_user') || localStorage.getItem('resto_user_name') || 'default').trim().toLowerCase();
+      const role = String(localStorage.getItem('resto_user_role') || 'user').trim().toLowerCase();
+      return `${username || 'default'}_${role || 'user'}`;
+    }
+
+    function handleOperasionalDashboardFilterChange() {
+      const userKey = getOperasionalDashboardFilterUserKey();
+      const shiftSelect = document.getElementById('op_dashboard_shift');
+      const typeSelect = document.getElementById('op_dashboard_resto_type');
+      if (shiftSelect) localStorage.setItem(`op_dashboard_filter_${userKey}_shift`, shiftSelect.value || 'ALL');
+      if (typeSelect) localStorage.setItem(`op_dashboard_filter_${userKey}_resto_type`, typeSelect.value || 'ALL');
+      window.__opLateDashboardFilterUser = userKey;
+      renderOperasionalDashboard();
+    }
+
     function renderOperasionalDashboard() {
+      const filterUserKey = getOperasionalDashboardFilterUserKey();
+      if (window.__opLateDashboardFilterUser !== filterUserKey) {
+        const savedShift = localStorage.getItem(`op_dashboard_filter_${filterUserKey}_shift`) || 'ALL';
+        const savedRestoType = localStorage.getItem(`op_dashboard_filter_${filterUserKey}_resto_type`) || 'ALL';
+        const shiftSelect = document.getElementById('op_dashboard_shift');
+        const typeSelect = document.getElementById('op_dashboard_resto_type');
+        if (shiftSelect) shiftSelect.value = savedShift;
+        if (typeSelect) typeSelect.value = savedRestoType;
+        window.__opLateDashboardFilterUser = filterUserKey;
+      }
+
       const today = getTodayYMD();
       const list = getDashboardVisibleCheckins();
       const restoTimeMap = getRestoMaxCheckinMap();
@@ -6173,6 +6200,70 @@
       return `<span class="gk-time">${escapeHtml(time.replace(':','.'))}</span>`;
     }
 
+    async function refreshGromingDataAndRender(renderFn, buttonSelector, monthSelector) {
+      const button = buttonSelector ? document.querySelector(buttonSelector) : null;
+      const originalHtml = button ? button.innerHTML : '';
+      if (button) {
+        button.disabled = true;
+        button.style.opacity = '0.65';
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memuat...';
+      }
+      try {
+        const result = await gasRequestJson(
+          { action: "getInitialData", includeCheckinPhotos: false },
+          { timeoutMs: 18000, retries: 2, retryDelayMs: 700 }
+        );
+        if (!result || result.status !== "success") {
+          throw new Error(result?.message || 'Server tidak mengembalikan data terbaru.');
+        }
+
+        globalDashboardData = result.data || {};
+        if (!globalDashboardData.spvLinksMaster) globalDashboardData.spvLinksMaster = {};
+        if (!globalDashboardData.spvLinksIndividual) globalDashboardData.spvLinksIndividual = {};
+        if (!globalDashboardData.psdLinksMaster) globalDashboardData.psdLinksMaster = {};
+        if (!globalDashboardData.checkinKasirLimits) globalDashboardData.checkinKasirLimits = {};
+        if (!globalDashboardData.checkinsList) globalDashboardData.checkinsList = [];
+        if (!globalDashboardData.karyawanList) globalDashboardData.karyawanList = [];
+
+        localStorage.setItem('resto_checkin_feature_enabled', globalDashboardData.checkinEnabled ? 'true' : 'false');
+        try {
+          localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
+          localStorage.setItem('resto_cached_data_at', String(Date.now()));
+        } catch (e) {}
+
+        // Set the month filter back to the current month (WIB) on every refresh.
+        const monthFilter = monthSelector ? document.getElementById(monthSelector) : null;
+        if (monthFilter) monthFilter.value = getTodayYMD().slice(0, 7);
+        renderFn();
+      } catch (err) {
+        console.error('Gagal refresh data Groming:', err);
+        // Keep the current table visible if the server cannot be reached.
+        alert('Data belum berhasil diperbarui dari server. Periksa koneksi lalu coba Refresh kembali.');
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.style.opacity = '';
+          button.innerHTML = originalHtml;
+        }
+      }
+    }
+
+    function refreshGromingKasirPage() {
+      return refreshGromingDataAndRender(
+        renderGromingKasirPage,
+        '#page-groming-kasir button[onclick="refreshGromingKasirPage()"]',
+        'groming_kasir_month'
+      );
+    }
+
+    function refreshGromingKaRestoPage() {
+      return refreshGromingDataAndRender(
+        renderGromingKaRestoPage,
+        '#page-groming-karesto button[onclick="refreshGromingKaRestoPage()"]',
+        'groming_karesto_month'
+      );
+    }
+
     function renderGromingKasirPage() {
       const monthEl = document.getElementById('groming_kasir_month');
       const restoEl = document.getElementById('groming_kasir_resto');
@@ -7043,5 +7134,80 @@
       errorMsg.style.display = 'none';
     }
   </script>
+
+<script>
+/* Persist seluruh kontrol filter secara terpisah untuk setiap akun. */
+(function () {
+  const FILTER_ID_PATTERN = /(^|[-_])(filter|search|month|shift|resto|jabatan|status|category|kategori|periode|start_date|end_date|date_start|date_end|date_filter|resto_type)([-_]|$)/i;
+  const FILTER_ID_ALLOWLIST = new Set([
+    'check_karyawan_date_start','check_karyawan_date_end','check_karyawan_jabatan','check_karyawan_resto','check_karyawan_search',
+    'global_update_search','karyawan_search_input','groming_karesto_month','groming_karesto_resto','groming_kasir_month','groming_kasir_resto',
+    'op_dashboard_month','op_dashboard_resto_type','op_dashboard_shift','op_end_date_filter','op_search_input','op_start_date_filter','search-branch'
+  ]);
+  function userKey() {
+    const username = String(localStorage.getItem('resto_current_user') || 'guest').trim().toLowerCase();
+    const role = String(localStorage.getItem('resto_user_role') || 'user').trim().toLowerCase();
+    return (username + '_' + role).replace(/[^a-z0-9_-]/g, '_');
+  }
+  function isFilterControl(el) {
+    if (!el || !el.id || !el.matches('input, select, textarea')) return false;
+    if (['password','file','hidden'].includes(String(el.type || '').toLowerCase())) return false;
+    if (/pass|username|user_id|nama_karyawan|nik|checkin_nama|checkin_nik|datetime|mutasi_|manual_karyawan_|branch_user_|internal_user_|link_|area_link_|spv_indiv_|spv_s[123]_|kasir_global_|master_/.test(el.id)) return false;
+    return FILTER_ID_ALLOWLIST.has(el.id) || FILTER_ID_PATTERN.test(el.id) || /(^|[-_])(search|filter)([-_]|$)/i.test(el.id);
+  }
+  function storageKey(el, key) { return 'user_filter_state_v1_' + key + '_' + el.id; }
+  function readValue(el) {
+    if (el.type === 'checkbox' || el.type === 'radio') return { type: el.type, checked: !!el.checked, value: el.value };
+    return { type: el.tagName.toLowerCase(), value: el.value };
+  }
+  function applyValue(el, saved) {
+    if (!saved) return false;
+    if (saved.type === 'checkbox' || saved.type === 'radio') {
+      el.checked = !!saved.checked;
+    } else {
+      if (el.tagName === 'SELECT' && saved.value && !Array.from(el.options).some(o => o.value === saved.value)) return false;
+      el.value = saved.value == null ? '' : saved.value;
+    }
+    return true;
+  }
+  function saveFilter(el) {
+    if (!isFilterControl(el)) return;
+    try { localStorage.setItem(storageKey(el, userKey()), JSON.stringify(readValue(el))); } catch (_) {}
+  }
+  function restoreFilters(root) {
+    const key = userKey();
+    const list = [];
+    if (root && root.nodeType === 1 && isFilterControl(root)) list.push(root);
+    if (root && root.querySelectorAll) root.querySelectorAll('input[id], select[id], textarea[id]').forEach(el => { if (isFilterControl(el)) list.push(el); });
+    list.forEach(el => {
+      if (el.dataset.userFilterRestored === key) return;
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem(storageKey(el, key)) || 'null'); } catch (_) {}
+      if (saved && applyValue(el, saved)) {
+        el.dataset.userFilterRestored = key;
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        if (el.tagName !== 'SELECT') el.dispatchEvent(new Event('input', { bubbles: true }));
+      } else if (!saved) {
+        el.dataset.userFilterRestored = key;
+      }
+    });
+  }
+  document.addEventListener('change', e => saveFilter(e.target), true);
+  document.addEventListener('input', e => {
+    if (e.target && e.target.tagName !== 'SELECT') saveFilter(e.target);
+  }, true);
+  function start() {
+    restoreFilters(document);
+    const observer = new MutationObserver(() => restoreFilters(document));
+    observer.observe(document.body, { childList: true, subtree: true });
+    // Deteksi perpindahan akun pada aplikasi yang tetap terbuka di tab yang sama.
+    window.addEventListener('storage', () => restoreFilters(document));
+    document.addEventListener('click', () => { restoreFilters(document); }, true);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+  else start();
+})();
+</script>
+
 </body>
 </html>
