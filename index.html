@@ -4,17 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Portal Dashboard & Administrasi Resto - ADM Priangan 2</title>
+  <meta name="description" content="Portal Sistem Operasional Resto & Administrasi Cabang ADM Priangan 2">
+  <meta property="og:title" content="Portal Dashboard & Administrasi Resto - ADM Priangan 2">
+  <meta property="og:description" content="Portal Sistem Operasional Resto & Administrasi Cabang ADM Priangan 2">
 
-  <!-- Preconnect CDN untuk Mempercepat DNS Lookup & Handshake -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
-  <!-- Async / Non-blocking Font Loading -->
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     :root {
@@ -382,7 +381,6 @@
     }
     .app-navbar::-webkit-scrollbar { display: none; }
 
-    /* ADMIN NAVIGATION: lebih ringkas dengan grouping */
     .admin-nav-group {
       position: relative;
       display: flex;
@@ -430,94 +428,6 @@
     .admin-nav-group-menu .nav-item span {
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-    @media(max-width:768px){
-      .app-nav-container {
-        top: 61px;
-        padding: 7px 10px;
-        z-index: 40;
-      }
-
-      /* Admin: gunakan seluruh lebar layar, bukan menu yang terpotong ke samping. */
-      #app-navbar-items {
-        width: 100%;
-        max-width: none;
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 6px;
-        padding: 6px;
-        border-radius: 14px;
-      }
-
-      #app-navbar-items > .nav-item {
-        min-width: 0;
-        justify-content: center;
-        text-align: center;
-        padding: 10px 7px;
-        font-size: .72rem;
-        line-height: 1.15;
-      }
-
-      #app-navbar-items > .nav-item span,
-      #app-navbar-items > .admin-nav-group > summary span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      #app-navbar-items > .admin-nav-group {
-        min-width: 0;
-        display: block;
-      }
-
-      .admin-nav-group > summary {
-        width: 100%;
-        min-height: 40px;
-        justify-content: center;
-        padding: 9px 6px;
-        font-size: .70rem;
-        line-height: 1.15;
-        gap: 5px;
-      }
-
-      .admin-nav-group-menu {
-        position: fixed;
-        top: 112px;
-        left: 10px;
-        right: 10px;
-        width: auto;
-        min-width: 0;
-        max-width: none;
-        max-height: calc(100dvh - 126px);
-        overflow-y: auto;
-        padding: 8px;
-        border-radius: 16px;
-        box-shadow: 0 18px 45px rgba(15,23,42,.22);
-        overscroll-behavior: contain;
-      }
-
-      .admin-nav-group-menu .nav-item {
-        min-height: 44px;
-        padding: 10px 12px;
-        font-size: .78rem;
-      }
-
-      .admin-nav-group-menu .nav-item i {
-        width: 20px;
-        text-align: center;
-        flex: 0 0 20px;
-      }
-
-      /* Non-admin mobile nav tetap horizontal dan bisa digeser. */
-      #app-navbar-items:not(:has(.admin-nav-group)) {
-        display: flex;
-        width: 100%;
-        overflow-x: auto;
-        justify-content: flex-start;
-      }
-
-      #app-navbar-items:not(:has(.admin-nav-group)) .nav-item {
-        flex: 0 0 auto;
-      }
     }
 
     .nav-item {
@@ -1140,22 +1050,7 @@
     .groming-kasir-legend span{display:inline-flex;align-items:center;gap:5px}
     .gk-legend-black{color:#111827}.gk-legend-red{color:#dc2626}.gk-legend-blue{color:#2563eb}
     .gk-empty{padding:30px!important;text-align:center;color:var(--text-muted);font-weight:700}
-    @media(max-width:768px){
-      .groming-kasir-field{min-width:100%;max-width:none!important}
-      .groming-kasir-toolbar{padding:10px;gap:9px}
-      .groming-kasir-table-wrap{max-height:68vh;border-radius:10px;-webkit-overflow-scrolling:touch}
-      .groming-kasir-table{font-size:.72rem}
-      .groming-kasir-table th,.groming-kasir-table td{padding:7px 8px;height:36px}
-      .groming-kasir-table .gk-no{width:44px;min-width:44px}
-      .groming-kasir-table .gk-resto{width:175px;min-width:175px;max-width:175px}
-      .groming-kasir-table .gk-nama{width:145px;min-width:145px;max-width:145px}
-      .groming-kasir-table .gk-jabatan{width:105px;min-width:105px;max-width:105px;white-space:normal}
-      .groming-kasir-table .gk-sticky-2{left:44px}
-      .groming-kasir-table .gk-sticky-3{left:219px}
-      .groming-kasir-table .gk-sticky-4{left:364px}
-      .groming-kasir-table .gk-date{min-width:72px}
-      .groming-kasir-legend{gap:8px 12px;font-size:.7rem}
-    }
+
     /* ================= CHECK KARYAWAN ================= */
     .check-karyawan-toolbar{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:16px}
     .check-karyawan-field{min-width:180px;flex:1}
@@ -1173,8 +1068,6 @@
     .check-status{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:.7rem;font-weight:900;white-space:nowrap}
     .check-status.done{background:#dcfce7;color:#166534}.check-status.pending{background:#fee2e2;color:#991b1b}
     .check-time{font-weight:900;color:#4338ca;white-space:nowrap}.check-karyawan-note{font-size:.78rem;color:var(--text-muted);margin-top:8px}
-    @media(max-width:768px){.check-karyawan-stats{grid-template-columns:1fr}.check-karyawan-field{min-width:100%}}
-
 
     .gk-near-max {
       color: #a16207 !important;
@@ -1186,9 +1079,41 @@
       display: inline-block;
     }
 
-/* ===== ACCOUNT EXECUTIVE WORKSPACE ===== */
-.ae-shell{color:#172033}.ae-hero{background:linear-gradient(120deg,#111827,#7f1d1d 68%,#ea580c);color:#fff;border-radius:22px;padding:26px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.ae-hero h2{font-size:1.55rem;font-weight:900;margin-bottom:6px}.ae-hero p{opacity:.85;font-size:.88rem}.ae-live{border:1px solid #ffffff55;background:#ffffff18;padding:8px 12px;border-radius:999px;font-size:.75rem;font-weight:800}.ae-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}.ae-kpi,.ae-panel{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:17px;box-shadow:0 5px 20px #0f172a08;min-width:0}.ae-kpi small{display:block;color:#64748b;font-weight:800;font-size:.7rem;text-transform:uppercase}.ae-kpi strong{display:block;font-size:1.35rem;margin:8px 0 4px;overflow-wrap:anywhere}.ae-kpi span{color:#64748b;font-size:.73rem}.ae-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-bottom:16px}.ae-panel h3{font-size:1rem;font-weight:900;margin-bottom:14px}.ae-bars{display:grid;gap:15px}.ae-bar-head{display:flex;justify-content:space-between;gap:8px;font-size:.8rem;font-weight:800;margin-bottom:6px}.ae-track{height:10px;background:#f1f5f9;border-radius:99px;overflow:hidden}.ae-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#dc2626,#f97316)}.ae-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.ae-field label{display:block;font-size:.76rem;font-weight:800;color:#475569;margin-bottom:5px}.ae-field input,.ae-field select{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;font-size:.85rem;min-width:0}.ae-btn{border:0;border-radius:10px;padding:10px 14px;background:#b91c1c;color:#fff;font-weight:800;cursor:pointer;margin-top:12px}.ae-btn.secondary{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0}.ae-table-wrap{overflow:auto;border:1px solid #e2e8f0;border-radius:12px;margin-top:12px}.ae-table{width:100%;border-collapse:collapse;min-width:570px;font-size:.78rem}.ae-table th,.ae-table td{text-align:left;padding:10px 12px;border-bottom:1px solid #eef2f7;white-space:nowrap}.ae-table th{background:#f8fafc;color:#475569;font-size:.7rem;text-transform:uppercase}.ae-tag{display:inline-block;background:#fee2e2;color:#991b1b;border-radius:999px;padding:4px 8px;font-size:.68rem;font-weight:900}.ae-muted{font-size:.78rem;color:#64748b;line-height:1.5}.ae-notice{padding:10px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;color:#9a3412;font-size:.76rem;margin-top:10px}.ae-brand-tabs{display:flex;gap:8px;margin-bottom:12px}.ae-brand-tabs button{padding:8px 12px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;font-weight:800;cursor:pointer}.ae-brand-tabs button.active{background:#7f1d1d;color:#fff;border-color:#7f1d1d}@media(max-width:850px){.ae-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.ae-layout{grid-template-columns:1fr}}@media(max-width:600px){.ae-hero{padding:20px}.ae-hero h2{font-size:1.25rem}.ae-kpi{padding:13px}.ae-kpi strong{font-size:1.1rem}.ae-form-grid{grid-template-columns:1fr}.ae-kpi small{font-size:.64rem}}
+    /* ===== ACCOUNT EXECUTIVE WORKSPACE ===== */
+    .ae-shell{color:#172033;width:100%}
+    .ae-hero{background:linear-gradient(120deg,#111827,#7f1d1d 68%,#ea580c);color:#fff;border-radius:22px;padding:26px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+    .ae-hero h2{font-size:1.55rem;font-weight:900;margin-bottom:6px}
+    .ae-hero p{opacity:.85;font-size:.88rem}
+    .ae-live{border:1px solid #ffffff55;background:#ffffff18;padding:8px 12px;border-radius:999px;font-size:.75rem;font-weight:800}
+    .ae-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}
+    .ae-kpi,.ae-panel{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:17px;box-shadow:0 5px 20px #0f172a08;min-width:0}
+    .ae-kpi small{display:block;color:#64748b;font-weight:800;font-size:.7rem;text-transform:uppercase}
+    .ae-kpi strong{display:block;font-size:1.35rem;margin:8px 0 4px;overflow-wrap:anywhere}
+    .ae-kpi span{color:#64748b;font-size:.73rem}
+    .ae-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-bottom:16px}
+    .ae-panel h3{font-size:1rem;font-weight:900;margin-bottom:14px}
+    .ae-bars{display:grid;gap:15px}
+    .ae-bar-head{display:flex;justify-content:space-between;gap:8px;font-size:.8rem;font-weight:800;margin-bottom:6px}
+    .ae-track{height:10px;background:#f1f5f9;border-radius:99px;overflow:hidden}
+    .ae-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#dc2626,#f97316)}
+    .ae-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .ae-field label{display:block;font-size:.76rem;font-weight:800;color:#475569;margin-bottom:5px}
+    .ae-field input,.ae-field select{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;font-size:.85rem;min-width:0}
+    .ae-btn{border:0;border-radius:10px;padding:10px 14px;background:#b91c1c;color:#fff;font-weight:800;cursor:pointer;margin-top:12px}
+    .ae-btn.secondary{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0}
+    .ae-table-wrap{overflow:auto;border:1px solid #e2e8f0;border-radius:12px;margin-top:12px}
+    .ae-table{width:100%;border-collapse:collapse;min-width:570px;font-size:.78rem}
+    .ae-table th,.ae-table td{text-align:left;padding:10px 12px;border-bottom:1px solid #eef2f7;white-space:nowrap}
+    .ae-table th{background:#f8fafc;color:#475569;font-size:.7rem;text-transform:uppercase}
+    .ae-tag{display:inline-block;background:#fee2e2;color:#991b1b;border-radius:999px;padding:4px 8px;font-size:.68rem;font-weight:900}
+    .ae-muted{font-size:.78rem;color:#64748b;line-height:1.5}
+    .ae-notice{padding:10px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;color:#9a3412;font-size:.76rem;margin-top:10px}
+    .ae-brand-tabs{display:flex;gap:8px;margin-bottom:12px}
+    .ae-brand-tabs button{padding:8px 12px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;font-weight:800;cursor:pointer}
+    .ae-brand-tabs button.active{background:#7f1d1d;color:#fff;border-color:#7f1d1d}
 
+    @media(max-width:850px){.ae-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.ae-layout{grid-template-columns:1fr}}
+    @media(max-width:600px){.ae-hero{padding:20px}.ae-hero h2{font-size:1.25rem}.ae-kpi{padding:13px}.ae-kpi strong{font-size:1.1rem}.ae-form-grid{grid-template-columns:1fr}.ae-kpi small{font-size:.64rem}}
 </style>
 </head>
 <body>
@@ -1284,7 +1209,6 @@
           </div>
 
           <div class="grid-container">
-            <!-- 1. LAPORAN OMSET HARIAN -->
             <div class="card">
               <div class="card-top">
                 <div class="card-icon icon-rose"><i class="fa-solid fa-book"></i></div>
@@ -1297,7 +1221,6 @@
               </a>
             </div>
 
-            <!-- 2. INPUT PROMO PENJUALAN -->
             <div class="card" id="card_promo_penjualan_wrapper" style="display: none;">
               <div class="card-top">
                 <div class="card-icon icon-rose"><i class="fa-solid fa-tags"></i></div>
@@ -1310,7 +1233,6 @@
               </a>
             </div>
 
-            <!-- 3. LAPORAN PENJUALAN -->
             <div class="card">
               <div class="card-top">
                 <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
@@ -1323,7 +1245,6 @@
               </a>
             </div>
 
-            <!-- 4. TRACKING EXPENSE -->
             <div class="card">
               <div class="card-top">
                 <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
@@ -1336,7 +1257,6 @@
               </a>
             </div>
 
-            <!-- 5. FORM GANTI MINYAK -->
             <div class="card">
               <div class="card-top">
                 <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
@@ -1349,7 +1269,6 @@
               </a>
             </div>
 
-            <!-- 6. KARTU PERSIAPAN HARIAN (KPH) -->
             <div class="card">
               <div class="card-top">
                 <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
@@ -1362,7 +1281,6 @@
               </a>
             </div>
 
-            <!-- 7. FORM SETOR UANG -->
             <div class="card">
               <div class="card-top">
                 <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
@@ -1380,7 +1298,6 @@
         <!-- PAGE 2: SIDEBAR PAGE - CHECKIN KARYAWAN REALTIME KAMERA -->
         <div id="page-user-checkin" class="role-page-content" style="display: none;">
           
-          <!-- BANNER COMING SOON -->
           <div id="checkin_coming_soon_view" class="coming-soon-box" style="display: none;">
             <div class="coming-soon-icon"><i class="fa-solid fa-person-digging"></i></div>
             <span class="coming-soon-badge"><i class="fa-solid fa-clock"></i> COMING SOON</span>
@@ -1390,7 +1307,6 @@
             </p>
           </div>
 
-          <!-- FORM CHECKIN KARYAWAN -->
           <div id="checkin_active_view" class="admin-card-item" style="border: 2px solid var(--lazatto-red); background: #ffffff;">
             <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px;">
               <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--lazatto-red); display: flex; align-items: center; gap: 10px;">
@@ -1438,7 +1354,6 @@
                 <textarea id="checkin_catatan" rows="3" placeholder="Tambahkan catatan jika diperlukan (opsional)" style="resize:vertical;"></textarea>
               </div>
 
-              <!-- LIVE STREAM KAMERA WEBCAM TIMESTAMP -->
               <div id="group_kamera_timestamp" class="input-group">
                 <label>KAMERA TIMESTAMP (PENGAMBILAN FOTO LIVE)</label>
                 <div class="camera-box-wrapper">
@@ -1476,7 +1391,6 @@
       <!-- ================= SUPERVISOR VIEW ================= -->
       <div id="supervisor-view" style="display: none;">
         
-        <!-- PAGE 1: MONITORING SUPERVISOR -->
         <div id="page-spv-monitoring" class="role-page-content">
           
           <div id="spv-main-rekap-view">
@@ -1494,7 +1408,6 @@
             </div>
 
             <div class="grid-container">
-              <!-- 1. COVERAGE RESTO (DIPINDAHKAN KE PALING ATAS) -->
               <div class="card">
                 <div class="card-top">
                   <div class="card-icon icon-indigo"><i class="fa-solid fa-store"></i></div>
@@ -1507,7 +1420,6 @@
                 </div>
               </div>
 
-              <!-- 2. KARTU INDUK ADM RESTO KHUSUS SUPERVISOR -->
               <div class="card" style="border: 2px solid var(--lazatto-red); background: #fef2f2;">
                 <div class="card-top">
                   <div class="card-icon icon-rose"><i class="fa-solid fa-building-user"></i></div>
@@ -1520,7 +1432,6 @@
                 </button>
               </div>
 
-              <!-- 3. KARTU INDUK STOK OPNAME KHUSUS SUPERVISOR -->
               <div class="card" style="border: 2px solid var(--lazatto-orange); background: #fff7ed;">
                 <div class="card-top">
                   <div class="card-icon icon-orange"><i class="fa-solid fa-boxes-stacked"></i></div>
@@ -1533,7 +1444,6 @@
                 </button>
               </div>
 
-              <!-- 4. CHECK COGS PEKANAN -->
               <div class="card">
                 <div class="card-top">
                   <div class="card-icon icon-rose"><i class="fa-solid fa-calculator"></i></div>
@@ -1546,7 +1456,6 @@
                 </a>
               </div>
 
-              <!-- TRACK COGS NGEUMI KHUSUS SPV AZIS HAMZAH -->
               <div class="card" id="spv-cogs-ngeumi-card" style="display:none; border:2px solid #6366f1; background:#eef2ff;">
                 <div class="card-top">
                   <div class="card-icon icon-indigo"><i class="fa-solid fa-bowl-rice"></i></div>
@@ -1558,7 +1467,6 @@
                 </a>
               </div>
 
-              <!-- 5. BASE LAPORAN OMSET -->
               <div class="card">
                 <div class="card-top">
                   <div class="card-icon icon-amber"><i class="fa-solid fa-database"></i></div>
@@ -1571,7 +1479,6 @@
                 </a>
               </div>
 
-              <!-- 6. OMSET AREA -->
               <div class="card">
                 <div class="card-top">
                   <div class="card-icon icon-emerald"><i class="fa-solid fa-chart-pie"></i></div>
@@ -1586,7 +1493,6 @@
             </div>
           </div>
 
-          <!-- SUB-VIEW ADM RESTO UNTUK SUPERVISOR -->
           <div id="spv-adm-resto-sub-view" style="display: none;">
             <div class="supervisor-banner" style="background: linear-gradient(135deg, #1e1b4b 0%, #dc2626 100%);">
               <div class="banner-header">
@@ -1663,7 +1569,6 @@
             </div>
           </div>
 
-          <!-- SUB-VIEW STOK OPNAME UNTUK SUPERVISOR -->
           <div id="spv-stok-opname-sub-view" style="display: none;">
             <div class="supervisor-banner" style="background: linear-gradient(135deg, #1e1b4b 0%, var(--lazatto-orange) 100%);">
               <div class="banner-header">
@@ -1678,7 +1583,6 @@
             </div>
 
             <div class="grid-container">
-              <!-- 1. BUTTON INPUT SO -->
               <div class="card">
                 <div class="card-top">
                   <div class="card-icon icon-rose"><i class="fa-solid fa-file-circle-plus"></i></div>
@@ -1691,7 +1595,6 @@
                 </a>
               </div>
 
-              <!-- 2. BUTTON CEK STOK OPNAME -->
               <div class="card">
                 <div class="card-top">
                   <div class="card-icon icon-teal"><i class="fa-solid fa-file-circle-check"></i></div>
@@ -1713,7 +1616,6 @@
       <!-- ================= PSD VIEW ================= -->
       <div id="psd-view" style="display: none;">
         
-        <!-- PAGE 1: MONITORING PSD -->
         <div id="page-psd-monitoring" class="role-page-content">
           
           <div id="psd-main-rekap-view">
@@ -1731,7 +1633,6 @@
             </div>
 
             <div class="grid-container">
-              <!-- KARTU INDUK ADM RESTO KHUSUS PSD -->
               <div class="card" style="border: 2px solid var(--lazatto-red); background: #fef2f2;">
                 <div class="card-top">
                   <div class="card-icon icon-rose"><i class="fa-solid fa-building-user"></i></div>
@@ -1806,7 +1707,6 @@
             </div>
           </div>
 
-          <!-- SUB-VIEW ADM RESTO UNTUK PSD -->
           <div id="psd-adm-resto-sub-view" style="display: none;">
             <div class="psd-banner" style="background: linear-gradient(135deg, #064e3b 0%, #dc2626 100%);">
               <div class="banner-header">
@@ -1899,7 +1799,6 @@
             </div>
           </div>
 
-          <!-- DASHBOARD OPERASIONAL RESTO -->
           <div class="operasional-dashboard">
             <div class="op-kpi-card">
               <div class="op-kpi-label">Terlambat Bulan Ini</div>
@@ -1957,7 +1856,6 @@
             </div>
           </div>
 
-          <!-- SWITCH KONTROL HANYA MUNCUL DI USER ADMIN -->
           <div id="admin-checkin-switch-wrapper" class="switch-toggle-wrapper" style="display: none; border-color: #c7d2fe; background: #f5f3ff;">
             <div>
               <h4 style="font-size: 0.95rem; font-weight: 800; color: #4338ca; display: flex; align-items: center; gap: 8px;">
@@ -1976,7 +1874,6 @@
             </div>
           </div>
 
-          <!-- BANNER COMING SOON -->
           <div id="operasional_coming_soon_view" class="coming-soon-box" style="display: none;">
             <div class="coming-soon-icon"><i class="fa-solid fa-person-digging"></i></div>
             <span class="coming-soon-badge"><i class="fa-solid fa-clock"></i> COMING SOON</span>
@@ -1986,10 +1883,8 @@
             </p>
           </div>
 
-          <!-- KONTEN TABEL & MONITORING ABSENSI -->
           <div id="operasional_active_content_view">
 
-            <!-- AREA SEARCH DAN FILTER RENTANG TANGGAL (LEBIH DARI 1 TANGGAL) -->
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 12px; border-radius: 14px; border: 1px solid var(--border);">
               <div style="flex: 1; min-width: 200px;">
                 <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">CARI KARYAWAN / RESTO</label>
@@ -1999,13 +1894,11 @@
                 </div>
               </div>
               
-              <!-- FILTER TANGGAL MULAI (START DATE) -->
               <div style="min-width: 150px;">
                 <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">DARI TANGGAL</label>
                 <input type="date" id="op_start_date_filter" onchange="renderOperasionalTable()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff; font-weight: 700;">
               </div>
 
-              <!-- FILTER TANGGAL AKHIR (END DATE) -->
               <div style="min-width: 150px;">
                 <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">SAMPAI TANGGAL</label>
                 <input type="date" id="op_end_date_filter" onchange="renderOperasionalTable()" style="width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 0.85rem; outline: none; background: #ffffff; font-weight: 700;">
@@ -2018,14 +1911,12 @@
               </div>
             </div>
 
-            <!-- TAB KATEGORI SHIFTING & ABSEN -->
             <div style="display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:6px;">
               <button id="tab_op_all" onclick="filterOperasionalCategory('ALL')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Semua Data Checkin</button>
               <button id="tab_op_absent" onclick="filterOperasionalCategory('ABSENT')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Karyawan OFF / Sakit / Izin / Cuti</button>
               <button id="tab_op_terlambat" onclick="filterOperasionalCategory('LATE')" class="btn-outline-banner" style="color:var(--text); border-color:var(--border); background:#f1f5f9;">Karyawan Terlambat</button>
             </div>
 
-            <!-- TABEL DATA OPERASIONAL DENGAN SCROLL INTERNAL -->
             <div class="op-scroll-controls">
               <button type="button" class="op-scroll-btn" onclick="scrollOperasionalList('top')"><i class="fa-solid fa-arrow-up"></i> Atas</button>
               <button type="button" class="op-scroll-btn" onclick="scrollOperasionalList('bottom')"><i class="fa-solid fa-arrow-down"></i> Bawah</button>
@@ -2042,7 +1933,6 @@
                   </tr>
                 </thead>
                 <tbody id="operasional-table-body">
-                  <!-- Rendered by JS -->
                 </tbody>
               </table>
             </div>
@@ -2221,7 +2111,6 @@
             </div>
             
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <!-- TOMBOL MUTASI KARYAWAN (DIPINDAHKAN KESINI UNTUK USER SPV) -->
               <div id="spv-mutasi-btn-container" style="display: none;">
                 <button type="button" onclick="openModalMutasiKaryawan()" style="background: #4338ca; color: white; border: none; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);">
                   <i class="fa-solid fa-right-left"></i> Mutasi Karyawan
@@ -2247,7 +2136,6 @@
             </div>
           </div>
 
-          <!-- BAR PENELUSURAN & STATISTIK DATABASES KARYAWAN -->
           <div style="display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; background: #f8fafc; padding: 14px; border-radius: 14px; border: 1px solid var(--border);">
             <div style="flex: 1; min-width: 240px;">
               <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">CARI KARYAWAN (NIK / NAMA / JABATAN / RESTO)</label>
@@ -2265,7 +2153,6 @@
             </div>
           </div>
 
-          <!-- TABEL MASTER LIST KARYAWAN -->
           <div style="overflow-x: auto; border-radius: 12px; border: 1px solid var(--border);">
             <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; min-width: 600px;">
               <thead>
@@ -2279,7 +2166,6 @@
                 </tr>
               </thead>
               <tbody id="karyawan-table-body">
-                <!-- Rendered by JS -->
               </tbody>
             </table>
           </div>
@@ -2321,6 +2207,7 @@
           </div>
         </div>
 
+        <!-- PAGE 1: PREVIEW USER & REKAP AREA -->
         <div id="page-preview-user" class="admin-page-content">
           <div id="adm-main-rekap-view">
             <div class="user-banner">
@@ -2415,7 +2302,6 @@
                   <span>Buka STOK OPNAME</span><i class="fa-solid fa-arrow-right"></i>
                 </button>
               </div>
-              </div>
             </div>
           </div>
 
@@ -2504,6 +2390,7 @@
           </div>
         </div>
 
+        <!-- PAGE 2: KELOLA LINK AREA & CABANG -->
         <div id="page-links" class="admin-page-content" style="display: none;">
           <div class="admin-card-item" style="border: 2px solid #bfdbfe; background: #f8fafc; margin-bottom: 24px;">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
@@ -2536,7 +2423,7 @@
           <div id="admin-links-list"></div>
         </div>
 
-        <!-- PAGE KELOLA LINK SUPERVISOR -->
+        <!-- PAGE 3: KELOLA LINK SUPERVISOR -->
         <div id="page-spv-links" class="admin-page-content" style="display: none;">
           <div class="admin-card-item" style="border: 2px solid #c7d2fe; background: #f5f3ff; margin-bottom: 24px;">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
@@ -2563,7 +2450,7 @@
           </div>
         </div>
 
-        <!-- PAGE STOK OPNAME UNTUK ADMIN -->
+        <!-- PAGE 4: STOK OPNAME UNTUK ADMIN -->
         <div id="page-admin-stok-opname" class="admin-page-content" style="display: none;">
           <div class="admin-card-item" style="border: 2px solid #f59e0b; background: #fffbeb; margin-bottom: 20px;">
             <div class="action-header-mobile" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:12px;">
@@ -2614,7 +2501,7 @@
           </div>
         </div>
 
-        <!-- PAGE KHUSUS UPDATE COVERAGE SPV -->
+        <!-- PAGE 5: UPDATE COVERAGE SPV -->
         <div id="page-spv-coverage-update" class="admin-page-content" style="display: none;">
           <div style="margin-bottom: 16px;">
             <h4 style="font-size: 1.1rem; font-weight: 800; color:#4338ca;"><i class="fa-solid fa-sliders"></i> Update Coverage SPV & Penambahan Resto</h4>
@@ -2623,7 +2510,7 @@
           <div id="admin-spv-coverage-list"></div>
         </div>
 
-        <!-- PAGE PENGATURAN GLOBAL JAM CHECK-IN KASIR -->
+        <!-- PAGE 6: PENGATURAN GLOBAL JAM CHECK-IN KASIR -->
         <div id="page-checkin-kasir-limit" class="admin-page-content" style="display: none;">
           <div class="admin-card-item" style="border:2px solid #f59e0b; background:#fffbeb;">
             <div class="action-header-mobile" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
@@ -2692,6 +2579,7 @@
           </div>
         </div>
 
+        <!-- PAGE 7: KELOLA LINK PSD -->
         <div id="page-psd-links" class="admin-page-content" style="display: none;">
           <div class="admin-card-item" style="border: 2px solid #a7f3d0; background: #f0fdf4;">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
@@ -2719,6 +2607,7 @@
           </div>
         </div>
 
+        <!-- PAGE 8: MANAJEMEN USER & PASSWORD -->
         <div id="page-users" class="admin-page-content" style="display: none;">
           <div class="admin-card-item" style="border: 2px solid #38bdf8; background: #f0f9ff; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>
@@ -2794,9 +2683,9 @@
           </div>
         </div>
 
-      </div>
+      </div> <!-- CLOSES #admin-view cleanly -->
 
-      <!-- WORKSPACE KHUSUS ACCOUNT EXECUTIVE -->
+      <!-- WORKSPACE KHUSUS ACCOUNT EXECUTIVE (CLEANLY INSIDE <main>) -->
       <section id="ae-view" class="ae-shell" style="display:none">
         <div id="page-ae-dashboard" class="role-page-content">
           <div class="ae-hero"><div><h2>Dashboard Account Executive</h2><p>Ringkasan pencapaian big order, event, dan satelit dalam satu tampilan.</p></div><span class="ae-live"><i class="fa-solid fa-circle" style="font-size:.55rem;color:#4ade80"></i> MONITORING AE</span></div>
@@ -3050,7 +2939,6 @@
       </form>
     </div>
   </div>
-
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwn94FPpsde6D5GxfD7MCth_FfGOz5piJqcm0WxJ3x0HkggzdWKZiCORqr6JMaeQrhLYQ/exec";
 
@@ -3084,7 +2972,6 @@
             currentGeoLocation.city = "Kota Tasikmalaya";
           }
         }, (err) => {
-          console.warn("Izin lokasi ditolak/gagal:", err);
           currentGeoLocation.lat = "-7.303104";
           currentGeoLocation.lng = "108.209306";
           currentGeoLocation.accuracy = "9.08";
@@ -3121,7 +3008,6 @@
       return `${year}-${month}-${day}`;
     }
 
-    // SETUP BATAS FILTER RENTANG TANGGAL
     function setupOperasionalDateFilterLimits() {
       const startEl = document.getElementById('op_start_date_filter');
       const endEl = document.getElementById('op_end_date_filter');
@@ -3135,7 +3021,7 @@
         endEl.setAttribute('min', min30DaysStr);
 
         if (!startEl.value) {
-          startEl.value = getYMDWithOffset(-7); // Default rentang 7 hari terakhir
+          startEl.value = getYMDWithOffset(-7);
         }
         if (!endEl.value) {
           endEl.value = todayStr;
@@ -3202,7 +3088,6 @@
 
     function isPhotoRequiredForCurrentCheckin() {
       const shift = document.getElementById('checkin_shifting')?.value || 'SHIFT 1';
-      // OFF/SAKIT/IZIN/CUTI adalah keterangan absen dan tidak menggunakan kamera.
       return !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(String(shift).toUpperCase());
     }
 
@@ -3224,7 +3109,6 @@
 
       btn.disabled = duplicate || (photoRequired && !photoReady);
 
-      // Teks tombol dibuat jelas agar user cabang tahu bahwa foto wajib.
       if (!duplicate && photoRequired && !photoReady) {
         btn.innerHTML = '<i class="fa-solid fa-camera"></i> Ambil Foto Terlebih Dahulu';
         btn.title = 'Foto timestamp wajib diambil sebelum check-in dapat dikirim.';
@@ -3394,8 +3278,6 @@
       const rawWidth = videoEl.videoWidth || 640;
       const rawHeight = videoEl.videoHeight || 480;
 
-      // Batasi resolusi foto upload agar payload GAS tidak terlalu besar.
-      // Rasio kamera tetap dipertahankan.
       const maxUploadWidth = 1280;
       const scale = Math.min(1, maxUploadWidth / rawWidth);
       canvasEl.width = Math.round(rawWidth * scale);
@@ -3449,16 +3331,12 @@
       ctx.fillText(line4, marginX, currentY); currentY += lineHeight;
       ctx.fillText(line5, marginX, currentY);
 
-      // Kompresi adaptif dengan margin aman dari batas 50.000 karakter/sel.
-      // Target 38.000 karakter mengantisipasi awalan data URL dan variasi server.
       const maxBase64Chars = 38000;
       let exportScale = Math.min(1, 960 / canvasEl.width);
       let quality = 0.62;
       let dataUrl = '';
       let safePhoto = false;
 
-      // Turunkan resolusi dan kualitas sampai benar-benar di bawah batas aman.
-      // Tidak ada foto berukuran besar yang boleh diteruskan ke proses submit.
       for (let attempt = 0; attempt < 18; attempt++) {
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = Math.max(160, Math.round(canvasEl.width * exportScale));
@@ -3475,7 +3353,6 @@
           break;
         }
 
-        // Turunkan kualitas lebih dahulu, lalu resolusi jika masih terlalu besar.
         if (quality > 0.32) {
           quality = Math.max(0.32, quality - 0.08);
         } else {
@@ -3493,8 +3370,6 @@
       }
 
       capturedSnapDataUrl = dataUrl;
-
-      // Foto valid dan sudah diukur: tombol Kirim baru boleh aktif.
       updateCheckinSubmitButtonState();
 
       previewEl.src = capturedSnapDataUrl;
@@ -3506,20 +3381,9 @@
     }
 
     function retakePhotoSnap() {
-      // Menghapus foto sebelumnya langsung mengunci kembali tombol Kirim.
       capturedSnapDataUrl = null;
       updateCheckinSubmitButtonState();
       startCameraStream();
-    }
-
-    // Foto check-in sengaja di-load secara lazy dari GAS.
-    // Karena itu record tanpa hasPhoto/photoUrl di payload awal tetap dianggap
-    // memiliki kemungkinan foto selama shifting-nya bukan OFF/SAKIT/IZIN/CUTI.
-    function canHaveCheckinPhoto(record) {
-      if (!record) return false;
-      return !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(
-        String(record.shifting || '').trim().toUpperCase()
-      );
     }
 
     function getStoredCheckinData() {
@@ -3562,7 +3426,6 @@
         updateCheckinSubmitButtonState();
       } else {
         groupFoto.style.display = 'block';
-        // Setiap perpindahan ke SHIFT/MIDDLE mewajibkan foto baru.
         startCameraStream();
       }
     }
@@ -3601,8 +3464,6 @@
       if (isAbsentStatus) {
         fotoUrl = 'Tertutup (Sesuai Keterangan)';
       } else {
-        // Pengaman kedua: meskipun tombol dipanggil lewat script/browser,
-        // check-in tetap tidak boleh dikirim tanpa foto kamera yang valid.
         if (!hasValidCapturedCheckinPhoto()) {
           updateCheckinSubmitButtonState();
           alert('WAJIB FOTO TERLEBIH DAHULU. Silakan ambil foto timestamp karyawan sebelum mengirim check-in.');
@@ -3613,7 +3474,6 @@
           return;
         }
         fotoUrl = capturedSnapDataUrl;
-        // Pemeriksaan terakhir sebelum request GAS agar Base64 tidak melewati batas sel.
         if (fotoUrl.length > 38000) {
           capturedSnapDataUrl = null;
           updateCheckinSubmitButtonState();
@@ -3639,13 +3499,10 @@
       };
 
       const submitBtn = event.target.querySelector('button[type="submit"]');
-      const originalText = submitBtn.innerHTML;
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span class="spinner"></span> Menyimpan ke Server...';
 
       try {
-        // Request idempotent memakai ID yang sama untuk seluruh retry.
-        // Jika jaringan putus setelah server menerima data, retry tetap mengirim record yang sama.
         const result = await gasRequestJson({
           action: "saveCheckinData",
           checkinRecord: newRecord
@@ -3676,13 +3533,10 @@
           alert("Gagal menyimpan checkin: " + result.message);
         }
       } catch (err) {
-        // Jangan buang foto/data jika GAS sedang timeout/offline.
         savePendingCheckin(newRecord);
         alert("Koneksi ke server sedang bermasalah. Data check-in disimpan sementara di perangkat dan akan dicoba lagi saat koneksi kembali.");
         setTimeout(flushPendingCheckins, 5000);
       } finally {
-        // Jangan selalu mengaktifkan tombol. Untuk SHIFT/MIDDLE tombol tetap
-        // terkunci sampai foto kamera benar-benar tersedia.
         updateCheckinSubmitButtonState();
         if (isPhotoRequiredForCurrentCheckin() && !hasValidCapturedCheckinPhoto()) {
           submitBtn.innerHTML = '<i class="fa-solid fa-camera"></i> Ambil Foto Terlebih Dahulu';
@@ -3696,7 +3550,6 @@
       const btnImport = document.getElementById('btn_import_excel_karyawan');
       const btnGlobalUpdate = document.getElementById('btn_global_update_karyawan');
 
-      // SPV dapat update massal hanya untuk resto coverage-nya; PSD/Admin untuk semua resto.
       if (btnDownload) btnDownload.style.display = userRole === 'supervisor' ? 'none' : 'inline-flex';
       if (btnImport) btnImport.style.display = userRole === 'supervisor' ? 'none' : 'inline-flex';
       if (btnGlobalUpdate) btnGlobalUpdate.style.display = ['supervisor', 'psd', 'admin'].includes(String(userRole).toLowerCase()) ? 'inline-flex' : 'none';
@@ -3895,45 +3748,6 @@
         } else alert(result?.message || 'Gagal memperbarui job karyawan.');
       } catch (err) { alert('Gagal terhubung ke server GAS. Periksa kembali data sebelum mengulang penyimpanan.'); }
       finally { if (btn) { btn.disabled = false; btn.innerHTML = original || '<i class="fa-solid fa-floppy-disk"></i> Simpan Semua Perubahan'; } }
-    }
-
-    function closeUpdateKaryawanJob() {
-      const modal = document.getElementById('update-karyawan-job-modal');
-      if (modal) modal.style.display = 'none';
-    }
-
-    async function submitUpdateKaryawanJob() {
-      const employee = window.__employeeJobEdit;
-      if (!employee) { alert('Data karyawan tidak ditemukan.'); return; }
-      const newJob = document.getElementById('update_job_jabatan')?.value || '';
-      if (!KARYAWAN_JOB_OPTIONS.includes(newJob)) { alert('Pilih job yang valid.'); return; }
-      const btn = document.getElementById('btn-save-update-karyawan-job');
-      const original = btn ? btn.innerHTML : '';
-      if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Menyimpan...'; }
-      try {
-        const updatedEmployee = {
-          ...employee,
-          nik: employee.nik || employee.NIK || '',
-          nama: employee.nama || employee.namaKaryawan || '',
-          jabatan: newJob,
-          resto: formatRestoName(employee.resto || employee.restoName || ''),
-          status: employee.status || 'Aktif'
-        };
-        const result = await gasRequestJson({
-          action: 'importKaryawanData',
-          adminUser: localStorage.getItem('resto_current_user') || '',
-          karyawanList: [updatedEmployee]
-        }, { timeoutMs: 15000, retries: 2, retryDelayMs: 700 });
-        if (result?.status === 'success') {
-          closeUpdateKaryawanJob();
-          fetchInitialDataFromGAS(() => renderKaryawanTable());
-          alert(result.message || `Jabatan ${updatedEmployee.nama} berhasil diperbarui menjadi ${newJob}.`);
-        } else alert(result?.message || 'Gagal memperbarui job karyawan.');
-      } catch (err) {
-        alert('Gagal terhubung ke server GAS. Job karyawan belum dipastikan tersimpan.');
-      } finally {
-        if (btn) { btn.disabled = false; btn.innerHTML = original || '<i class="fa-solid fa-floppy-disk"></i> Simpan Update'; }
-      }
     }
 
     function openAddKaryawanModal() { document.getElementById('add-karyawan-modal').style.display = 'flex'; }
@@ -4255,9 +4069,6 @@
       let photoSrc = '';
       const rawPhoto = String(record.photoUrl || record.foto || '').trim();
 
-      // Jangan percaya field hasPhoto pada data ringkas.
-      // getInitialData memang sengaja tidak membawa Base64 foto untuk mempercepat loading,
-      // sehingga hasPhoto bisa kosong/false walaupun foto sebenarnya tersimpan di server.
       if (
         rawPhoto.startsWith('data:image') ||
         rawPhoto.startsWith('http') ||
@@ -4266,8 +4077,6 @@
         photoSrc = rawPhoto;
       }
 
-      // Ambil foto langsung dari GAS berdasarkan ID check-in.
-      // Ini berlaku untuk SEMUA check-in non-absen, bukan hanya record.hasPhoto === true.
       if (!photoSrc && !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(String(record.shifting || '').toUpperCase())) {
         try {
           const result = await gasRequestJson(
@@ -4284,8 +4093,6 @@
               serverPhoto.startsWith('blob:')
             ) {
               photoSrc = serverPhoto;
-
-              // Cache hanya foto yang sudah berhasil diambil, bukan string status/error.
               record.foto = serverPhoto;
               record.photoUrl = serverPhoto;
               record.hasPhoto = true;
@@ -4331,7 +4138,6 @@
       document.getElementById('photo-preview-modal').style.display = 'none';
     }
 
-    // ================= UPDATE: OPERASIONAL DASHBOARD =================
     const operasionalDerivedCache = new WeakMap();
 
     function getRecordWIBInfo(record) {
@@ -4355,9 +4161,6 @@
       return ['OFF','SAKIT','IZIN','CUTI','MIDDLE'].includes(shift);
     }
 
-    // Check-in record dari GAS tidak selalu menyertakan jabatan. Ambil jabatan
-    // dari master karyawan berdasarkan NIK agar aturan kasir tetap berlaku di
-    // page Operasional Resto tanpa mengubah payload atau proses penyimpanan.
     function getCheckinRecordJabatan(record) {
       const direct = String(record?.jabatan || record?.posisi || '').trim();
       if (direct) return direct;
@@ -4372,7 +4175,6 @@
     function getKasirMaxTimeForShift(record) {
       if (!record || !/\b(?:ACT\s+)?KASIR\b/.test(String(getCheckinRecordJabatan(record) || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim())) return null;
 
-      // Batas khusus ini hanya untuk kasir di resto Lazatto.
       const restoName = formatRestoName(record.restoName || record.resto || record.cabang || '');
       if (!String(restoName || '').toUpperCase().includes('LAZATTO')) return null;
 
@@ -4395,8 +4197,6 @@
       return null;
     }
 
-    // Kuning jika jabatan KASIR check-in 0 sampai kurang dari 5 menit sebelum batas.
-    // Waktu tepat pada batas (selisih 0) tidak dianggap "sebelum batas".
     function isKasirNearMaxCheckin(record, actualTime, maxAllowed) {
       if (!record || !/\b(?:ACT\s+)?KASIR\b/.test(String(getCheckinRecordJabatan(record) || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim())) return false;
       if (!actualTime || !maxAllowed || !/^\d{2}:\d{2}$/.test(actualTime) || !/^\d{2}:\d{2}$/.test(String(maxAllowed))) return false;
@@ -4413,16 +4213,9 @@
       const kasirMax = getKasirMaxTimeForShift(record);
       const restoName = formatRestoName(record.restoName || record.resto || '');
       const maxAllowed = kasirMax || getMaxTimeForShift((restoTimeMap || {})[restoName], record.shifting);
-      // Format HH:mm dibandingkan sebagai waktu 24 jam; sama dengan batas = tepat waktu.
       const info = getRecordWIBInfo(record);
       const actualTime = info.time;
 
-      // Aturan khusus SHIFT 1 di resto 24 jam:
-      // - Check-in sampai dengan 23:30 WIB: tidak terlambat berdasarkan aturan batas ini.
-      // - 23:31–23:59 WIB: terlambat karena melewati batas 23:30.
-      // - 00:00–07:00 WIB pada pergantian hari: terlambat untuk SHIFT 1 yang sedang dinilai.
-      // Data check-in yang tersedia tidak selalu menyimpan tanggal shift terjadwal,
-      // sehingga rentang dini hari diterapkan berdasarkan jam check-in untuk SHIFT 1 resto 24 jam.
       const shift = String(record.shifting || '').trim().toUpperCase();
       const restoNameKey = formatRestoName(record.restoName || record.resto || '');
       const timing = (restoTimeMap || {})[restoNameKey] || {};
@@ -4506,7 +4299,6 @@
       const list = getDashboardVisibleCheckins();
       const restoTimeMap = getRestoMaxCheckinMap();
 
-      // Reset filter otomatis ketika tanggal berganti.
       if (window.__opLateDashboardDate !== today) {
         window.__opLateDashboardDate = today;
         const shiftSelect = document.getElementById('op_dashboard_shift');
@@ -4532,8 +4324,6 @@
         .filter(x => x.count > 3)
         .sort((a,b) => b.count-a.count || a.nama.localeCompare(b.nama));
 
-      // Untuk filter OFF/SAKIT/IZIN/CUTI, sertakan juga record absensi hari ini.
-      // Shift aktif hanya masuk bila check-in terlambat.
       const todayLateBase = list.filter(r => {
         const info = getRecordWIBInfo(r);
         const shift = String(r.shifting || '').trim().toUpperCase();
@@ -4561,7 +4351,6 @@
       set('op_kpi_repeat_late', repeat.length);
       set('op_kpi_valid_checkin', validMonthly.length);
 
-      // KPI tetap mempertahankan informasi resto tertinggi dari dashboard lama.
       const restoMap = {};
       validMonthly.forEach(r => {
         const key = formatRestoName(r.restoName) || 'TANPA NAMA RESTO';
@@ -4637,7 +4426,6 @@
       if(el)el.scrollTo({top:direction==='top'?0:el.scrollHeight,behavior:'smooth'});
     }
 
-    // FUNGSI RENDER TABEL OPERASIONAL DENGAN RENTANG TANGGAL (LEBIH DARI 1 TANGGAL)
     function populateOperasionalJabatanFilter(sourceList) {
       const select = document.getElementById('op_jabatan_filter');
       if (!select) return;
@@ -4670,7 +4458,6 @@
       const startDate = document.getElementById('op_start_date_filter')?.value || getYMDWithOffset(-7);
       const endDate = document.getElementById('op_end_date_filter')?.value || getTodayYMD();
 
-      // Filter berdasarkan rentang tanggal (dari startDate s.d. endDate)
       filtered = filtered.filter(item => {
         const itemYMD = getRecordWIBInfo(item).ymd;
         return !itemYMD || (itemYMD >= startDate && itemYMD <= endDate);
@@ -4719,9 +4506,6 @@
         const isCameraCheckin = !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shiftUpper);
         let fotoRender = '-';
 
-        // Untuk SHIFT/MIDDLE, selalu tampilkan tombol Lihat Foto.
-        // Foto diambil lazy dari GAS saat tombol diklik, sehingga tidak membebani
-        // getInitialData dengan Base64 dan tidak bergantung pada hasPhoto.
         const hasDirectPhoto =
           photoData.startsWith('data:image') ||
           photoData.startsWith('http') ||
@@ -4825,14 +4609,12 @@
       appNavbarItems.innerHTML = html;
     }
 
-    // ADMIN NAV DROPDOWN: tutup saat klik di luar menu, dan hanya satu grup yang terbuka.
     function closeAdminNavGroups(exceptGroup = null) {
       document.querySelectorAll('#app-navbar-items .admin-nav-group[open]').forEach(group => {
         if (group !== exceptGroup) group.removeAttribute('open');
       });
     }
 
-    // Delegasi klik agar saat membuka satu dropdown, dropdown Admin lainnya otomatis tertutup.
     if (!window.__adminNavDropdownBound) {
       document.addEventListener('click', function(event) {
         const group = event.target.closest('#app-navbar-items .admin-nav-group');
@@ -4841,8 +4623,6 @@
           return;
         }
 
-        // Klik item menu akan ditangani oleh switchAdminNav();
-        // klik summary dibiarkan ditangani native <details>.
         if (event.target.closest('summary')) {
           setTimeout(() => closeAdminNavGroups(group), 0);
         }
@@ -5084,13 +4864,11 @@
 
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) {
-        // Tampilkan data lokal seketika; GAS menyegarkan data di background.
         restoreCachedDashboardData();
         recordUserActivity(loggedUser);
         showDashboard(loggedUser);
       }
 
-      // Pekerjaan non-kritis dipindahkan setelah first paint.
       const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 800));
       idle(() => {
         initGeolocation();
@@ -5098,9 +4876,6 @@
       });
     };
 
-    // ================= GAS NETWORK LAYER =================
-    // Satu jalur request untuk login, load data, dan upload check-in.
-    // Timeout mencegah tombol menggantung; retry membantu saat GAS cold-start/jaringan mobile fluktuatif.
     async function gasRequestJson(payload, options = {}) {
       const timeoutMs = Number(options.timeoutMs || 20000);
       const retries = Number(options.retries ?? 2);
@@ -5140,8 +4915,6 @@
           const isLastAttempt = attempt >= retries;
 
           if (isLastAttempt) break;
-
-          // Backoff ringan: 0.9s -> 1.8s -> ...
           await new Promise(resolve => setTimeout(resolve, retryDelayMs * (attempt + 1)));
         } finally {
           clearTimeout(timer);
@@ -5151,7 +4924,6 @@
       throw lastError || new Error("Gagal terhubung ke GAS.");
     }
 
-    // Simpan check-in yang gagal dikirim agar user tidak kehilangan data.
     function savePendingCheckin(record) {
       try {
         const key = 'resto_pending_checkins';
@@ -5205,8 +4977,6 @@
     window.addEventListener('online', () => {
       flushPendingCheckins();
     });
-
-    // ========================================================
 
     loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -5814,25 +5584,7 @@
       });
 
       container.innerHTML = html;
-
       spvUsers.forEach(spv => generateRestoTimingsInputs(spv.username));
-    }
-
-
-    function getAdminCheckinLimitRestoList() {
-      const set = new Set();
-
-      (globalDashboardData.karyawanList || []).forEach(k => {
-        const resto = formatRestoName(k.resto || k.restoName || k.cabang || '');
-        if (resto) set.add(resto);
-      });
-
-      Object.keys(globalDashboardData.branchLinks || {}).forEach(k => {
-        const resto = formatRestoName(k);
-        if (resto) set.add(resto);
-      });
-
-      return [...set].sort((a,b) => a.localeCompare(b, 'id'));
     }
 
     function renderCheckinKasirLimitPage() {
@@ -6161,7 +5913,6 @@
     }
 
     function getGromingKaRestoResto(k) {
-      // Gunakan nama resto dari record karyawan yang sudah tersimpan di database aplikasi.
       return formatRestoName(k?.resto || k?.restoName || k?.namaResto || k?.cabang || k?.branch || '');
     }
 
@@ -6175,7 +5926,6 @@
     }
 
     function getGromingKaRestoEmployees() {
-      // Sumber data tunggal: database karyawan yang sama dengan halaman operasional lainnya.
       const list = getStoredKaryawanData();
       return (Array.isArray(list) ? list : []).filter(k => {
         const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -6283,13 +6033,11 @@
           localStorage.setItem('resto_cached_data_at', String(Date.now()));
         } catch (e) {}
 
-        // Set the month filter back to the current month (WIB) on every refresh.
         const monthFilter = monthSelector ? document.getElementById(monthSelector) : null;
         if (monthFilter) monthFilter.value = getTodayYMD().slice(0, 7);
         renderFn();
       } catch (err) {
         console.error('Gagal refresh data Groming:', err);
-        // Keep the current table visible if the server cannot be reached.
         alert('Data belum berhasil diperbarui dari server. Periksa koneksi lalu coba Refresh kembali.');
       } finally {
         if (button) {
@@ -6427,7 +6175,6 @@
       const monthName = new Intl.DateTimeFormat('id-ID', {month:'long', year:'numeric'}).format(new Date(year, month - 1, 1));
       const aoa = [];
 
-      // Judul dan filter aktif.
       aoa.push(['GROMING KASIR']);
       aoa.push([`Periode: ${monthName}`]);
       aoa.push([`Filter Resto: ${selectedResto === 'ALL' ? 'Semua Resto' : selectedResto}`]);
@@ -6484,14 +6231,6 @@
         {wch: 16},
         ...days.map(() => ({wch: 13}))
       ];
-
-      // Styling jika versi SheetJS yang tersedia mendukung cell styles.
-      const titleCell = worksheet['A1'];
-      if (titleCell) titleCell.s = {font: {bold: true, sz: 16}};
-      for (let c = 0; c < header.length; c++) {
-        const cell = worksheet[XLSX.utils.encode_cell({r: 4, c})];
-        if (cell) cell.s = {font: {bold: true}, alignment: {horizontal: 'center', vertical: 'center'}};
-      }
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Groming Kasir');
@@ -6619,7 +6358,6 @@
       const monthName = new Intl.DateTimeFormat('id-ID', {month:'long', year:'numeric'}).format(new Date(year, month - 1, 1));
       const aoa = [];
 
-      // Judul dan filter aktif.
       aoa.push(['GROMING KARESTO & KSHIFT']);
       aoa.push([`Periode: ${monthName}`]);
       aoa.push([`Filter Resto: ${selectedResto === 'ALL' ? 'Semua Resto' : selectedResto}`]);
@@ -6680,14 +6418,6 @@
         {wch: 16},
         ...days.map(() => ({wch: 13}))
       ];
-
-      // Styling jika versi SheetJS yang tersedia mendukung cell styles.
-      const titleCell = worksheet['A1'];
-      if (titleCell) titleCell.s = {font: {bold: true, sz: 16}};
-      for (let c = 0; c < header.length; c++) {
-        const cell = worksheet[XLSX.utils.encode_cell({r: 4, c})];
-        if (cell) cell.s = {font: {bold: true}, alignment: {horizontal: 'center', vertical: 'center'}};
-      }
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Groming KARESTO & KSHIFT');
@@ -7212,16 +6942,26 @@
 
     // ===== ACCOUNT EXECUTIVE UI =====
     function isAERole(role){
-      // Toleransi variasi label role dari data user lama: AE, Account Executive,
-      // Account Eksekutif, termasuk label dengan tanda kurung/prefix/suffix.
       const raw=String(role||'').trim().toLowerCase();
       const compact=raw.replace(/[^a-z0-9]/g,'');
       if(['ae','account_executive','account_eksekutif','accounteksekutif','acounteksekutif'].includes(compact)) return true;
       return /account.?executive/.test(compact) || /account.?eksekutif/.test(compact) || /acount.?eksekutif/.test(compact) || /(^|[^a-z])ae([^a-z]|$)/.test(raw);
     }
-    function switchAENav(pageId,el){document.querySelectorAll('#app-navbar-items .nav-item').forEach(x=>x.classList.remove('active'));document.querySelectorAll('#ae-view .role-page-content').forEach(x=>x.style.display='none');if(el)el.classList.add('active');const page=document.getElementById(pageId);if(page)page.style.display='block';if(pageId==='page-ae-dashboard')renderAEDashboard();if(pageId==='page-ae-input')renderAEHistory();if(pageId==='page-ae-menu')renderAEMenus();if(pageId==='page-ae-accounts')renderAEPosAccounts()}
-    // Integrasi AE ke backend Web Apps POS (Google Apps Script yang sama dengan aplikasi kasir).
+
+    function switchAENav(pageId,el){
+      document.querySelectorAll('#app-navbar-items .nav-item').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('#ae-view .role-page-content').forEach(x=>x.style.display='none');
+      if(el)el.classList.add('active');
+      const page=document.getElementById(pageId);
+      if(page)page.style.display='block';
+      if(pageId==='page-ae-dashboard')renderAEDashboard();
+      if(pageId==='page-ae-input')renderAEHistory();
+      if(pageId==='page-ae-menu')renderAEMenus();
+      if(pageId==='page-ae-accounts')renderAEPosAccounts()
+    }
+
     const AE_POS_GAS_URL = "https://script.google.com/macros/s/AKfycbwso6ypbHe9fbHaab7E1dN9oDXvPCjgxuDhQ5fo3JXu2qq3X4f4Gyn41H1QyXuBFEILUQ/exec";
+    
     async function aeApi(payload) {
       const response = await fetch(AE_POS_GAS_URL, {
         method: "POST", headers: {"Content-Type":"text/plain;charset=utf-8"},
@@ -7236,6 +6976,7 @@
     function aeMoney(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0)}
     function aeDateToday(){return new Date().toLocaleDateString('en-CA')}
     function aeStatus(elId,text){const el=document.getElementById(elId);if(el)el.textContent=text}
+
     async function renderAEDashboard(){
       try {
         const [metrics,ordersRes]=await Promise.all([aeApi({action:'getAEMetrics'}),aeApi({action:'getBigOrders'})]);
@@ -7248,12 +6989,12 @@
         aeStatus('ae-event-status','Terhubung ke Web Apps POS · '+(metrics.transactions||[]).filter(x=>String(x.salesSource).toLowerCase()==='event').length+' transaksi');
         aeStatus('ae-sat-status','Terhubung ke Web Apps POS · '+(metrics.transactions||[]).filter(x=>String(x.salesSource).toLowerCase()==='satelit'&&String(x.shiftStatus).toUpperCase()==='CLOSED').length+' transaksi shift tertutup');
       } catch(e) {
-        // Workspace tetap terlihat walau backend POS sementara gagal diakses.
         [['ae-total',0],['ae-big-total',0],['ae-event-total',0],['ae-sat-total',0],['ae-big-label',0],['ae-event-label',0],['ae-sat-label',0]].forEach(([id,n])=>{const el=document.getElementById(id);if(el)el.textContent=aeMoney(n)});
         aeStatus('ae-event-status','Gagal memuat POS: '+e.message);
         aeStatus('ae-sat-status','Data belum dapat dimuat dari server POS');
       }
     }
+
     document.addEventListener('DOMContentLoaded',()=>{
       const d=document.getElementById('ae-big-date');if(d)d.value=aeDateToday();
       const f=document.getElementById('ae-big-form');
@@ -7277,8 +7018,8 @@
         try {await aeApi({action:'savePosAccount',account});pf.reset();await renderAEPosAccounts();alert('Akun POS tersimpan di server. Password disimpan sebagai hash.')}
         catch(err){alert('Akun POS gagal disimpan: '+err.message)}
       });
-      renderAEDashboard();renderAEHistory();renderAEMenus();renderAEPosAccounts();
     });
+
     async function renderAEHistory(){
       const wrap=document.getElementById('ae-history-table');if(!wrap)return;
       const date=document.getElementById('ae-history-date')?.value||'',source=document.getElementById('ae-history-source')?.value||'ALL';
@@ -7316,79 +7057,77 @@
 
   </script>
 
-<script>
-/* Persist seluruh kontrol filter secara terpisah untuk setiap akun. */
-(function () {
-  const FILTER_ID_PATTERN = /(^|[-_])(filter|search|month|shift|resto|jabatan|status|category|kategori|periode|start_date|end_date|date_start|date_end|date_filter|resto_type)([-_]|$)/i;
-  const FILTER_ID_ALLOWLIST = new Set([
-    'check_karyawan_date_start','check_karyawan_date_end','check_karyawan_jabatan','check_karyawan_resto','check_karyawan_search',
-    'global_update_search','karyawan_search_input','groming_karesto_month','groming_karesto_resto','groming_kasir_month','groming_kasir_resto',
-    'op_dashboard_month','op_dashboard_resto_type','op_dashboard_shift','op_end_date_filter','op_search_input','op_start_date_filter','search-branch'
-  ]);
-  function userKey() {
-    const username = String(localStorage.getItem('resto_current_user') || 'guest').trim().toLowerCase();
-    const role = String(localStorage.getItem('resto_user_role') || 'user').trim().toLowerCase();
-    return (username + '_' + role).replace(/[^a-z0-9_-]/g, '_');
-  }
-  function isFilterControl(el) {
-    if (!el || !el.id || !el.matches('input, select, textarea')) return false;
-    if (['password','file','hidden'].includes(String(el.type || '').toLowerCase())) return false;
-    if (/pass|username|user_id|nama_karyawan|nik|checkin_nama|checkin_nik|datetime|mutasi_|manual_karyawan_|branch_user_|internal_user_|link_|area_link_|spv_indiv_|spv_s[123]_|kasir_global_|master_/.test(el.id)) return false;
-    return FILTER_ID_ALLOWLIST.has(el.id) || FILTER_ID_PATTERN.test(el.id) || /(^|[-_])(search|filter)([-_]|$)/i.test(el.id);
-  }
-  function storageKey(el, key) { return 'user_filter_state_v1_' + key + '_' + el.id; }
-  function readValue(el) {
-    if (el.type === 'checkbox' || el.type === 'radio') return { type: el.type, checked: !!el.checked, value: el.value };
-    return { type: el.tagName.toLowerCase(), value: el.value };
-  }
-  function applyValue(el, saved) {
-    if (!saved) return false;
-    if (saved.type === 'checkbox' || saved.type === 'radio') {
-      el.checked = !!saved.checked;
-    } else {
-      if (el.tagName === 'SELECT' && saved.value && !Array.from(el.options).some(o => o.value === saved.value)) return false;
-      el.value = saved.value == null ? '' : saved.value;
+  <script>
+  (function () {
+    const FILTER_ID_PATTERN = /(^|[-_])(filter|search|month|shift|resto|jabatan|status|category|kategori|periode|start_date|end_date|date_start|date_end|date_filter|resto_type)([-_]|$)/i;
+    const FILTER_ID_ALLOWLIST = new Set([
+      'check_karyawan_date_start','check_karyawan_date_end','check_karyawan_jabatan','check_karyawan_resto','check_karyawan_search',
+      'global_update_search','karyawan_search_input','groming_karesto_month','groming_karesto_resto','groming_kasir_month','groming_kasir_resto',
+      'op_dashboard_month','op_dashboard_resto_type','op_dashboard_shift','op_end_date_filter','op_search_input','op_start_date_filter','search-branch'
+    ]);
+    function userKey() {
+      const username = String(localStorage.getItem('resto_current_user') || 'guest').trim().toLowerCase();
+      const role = String(localStorage.getItem('resto_user_role') || 'user').trim().toLowerCase();
+      return (username + '_' + role).replace(/[^a-z0-9_-]/g, '_');
     }
-    return true;
-  }
-  function saveFilter(el) {
-    if (!isFilterControl(el)) return;
-    try { localStorage.setItem(storageKey(el, userKey()), JSON.stringify(readValue(el))); } catch (_) {}
-  }
-  function restoreFilters(root) {
-    const key = userKey();
-    const list = [];
-    if (root && root.nodeType === 1 && isFilterControl(root)) list.push(root);
-    if (root && root.querySelectorAll) root.querySelectorAll('input[id], select[id], textarea[id]').forEach(el => { if (isFilterControl(el)) list.push(el); });
-    list.forEach(el => {
-      if (el.dataset.userFilterRestored === key) return;
-      let saved = null;
-      try { saved = JSON.parse(localStorage.getItem(storageKey(el, key)) || 'null'); } catch (_) {}
-      if (saved && applyValue(el, saved)) {
-        el.dataset.userFilterRestored = key;
-        el.dispatchEvent(new Event('change', { bubbles: true }));
-        if (el.tagName !== 'SELECT') el.dispatchEvent(new Event('input', { bubbles: true }));
-      } else if (!saved) {
-        el.dataset.userFilterRestored = key;
+    function isFilterControl(el) {
+      if (!el || !el.id || !el.matches('input, select, textarea')) return false;
+      if (['password','file','hidden'].includes(String(el.type || '').toLowerCase())) return false;
+      if (/pass|username|user_id|nama_karyawan|nik|checkin_nama|checkin_nik|datetime|mutasi_|manual_karyawan_|branch_user_|internal_user_|link_|area_link_|spv_indiv_|spv_s[123]_|kasir_global_|master_/.test(el.id)) return false;
+      return FILTER_ID_ALLOWLIST.has(el.id) || FILTER_ID_PATTERN.test(el.id) || /(^|[-_])(search|filter)([-_]|$)/i.test(el.id);
+    }
+    function storageKey(el, key) { return 'user_filter_state_v1_' + key + '_' + el.id; }
+    function readValue(el) {
+      if (el.type === 'checkbox' || el.type === 'radio') return { type: el.type, checked: !!el.checked, value: el.value };
+      return { type: el.tagName.toLowerCase(), value: el.value };
+    }
+    function applyValue(el, saved) {
+      if (!saved) return false;
+      if (saved.type === 'checkbox' || saved.type === 'radio') {
+        el.checked = !!saved.checked;
+      } else {
+        if (el.tagName === 'SELECT' && saved.value && !Array.from(el.options).some(o => o.value === saved.value)) return false;
+        el.value = saved.value == null ? '' : saved.value;
       }
-    });
-  }
-  document.addEventListener('change', e => saveFilter(e.target), true);
-  document.addEventListener('input', e => {
-    if (e.target && e.target.tagName !== 'SELECT') saveFilter(e.target);
-  }, true);
-  function start() {
-    restoreFilters(document);
-    const observer = new MutationObserver(() => restoreFilters(document));
-    observer.observe(document.body, { childList: true, subtree: true });
-    // Deteksi perpindahan akun pada aplikasi yang tetap terbuka di tab yang sama.
-    window.addEventListener('storage', () => restoreFilters(document));
-    document.addEventListener('click', () => { restoreFilters(document); }, true);
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
-  else start();
-})();
-</script>
+      return true;
+    }
+    function saveFilter(el) {
+      if (!isFilterControl(el)) return;
+      try { localStorage.setItem(storageKey(el, userKey()), JSON.stringify(readValue(el))); } catch (_) {}
+    }
+    function restoreFilters(root) {
+      const key = userKey();
+      const list = [];
+      if (root && root.nodeType === 1 && isFilterControl(root)) list.push(root);
+      if (root && root.querySelectorAll) root.querySelectorAll('input[id], select[id], textarea[id]').forEach(el => { if (isFilterControl(el)) list.push(el); });
+      list.forEach(el => {
+        if (el.dataset.userFilterRestored === key) return;
+        let saved = null;
+        try { saved = JSON.parse(localStorage.getItem(storageKey(el, key)) || 'null'); } catch (_) {}
+        if (saved && applyValue(el, saved)) {
+          el.dataset.userFilterRestored = key;
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+          if (el.tagName !== 'SELECT') el.dispatchEvent(new Event('input', { bubbles: true }));
+        } else if (!saved) {
+          el.dataset.userFilterRestored = key;
+        }
+      });
+    }
+    document.addEventListener('change', e => saveFilter(e.target), true);
+    document.addEventListener('input', e => {
+      if (e.target && e.target.tagName !== 'SELECT') saveFilter(e.target);
+    }, true);
+    function start() {
+      restoreFilters(document);
+      const observer = new MutationObserver(() => restoreFilters(document));
+      observer.observe(document.body, { childList: true, subtree: true });
+      window.addEventListener('storage', () => restoreFilters(document));
+      document.addEventListener('click', () => { restoreFilters(document); }, true);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+  })();
+  </script>
 
 </body>
 </html>
