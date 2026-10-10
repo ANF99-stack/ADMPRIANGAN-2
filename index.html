@@ -4397,7 +4397,24 @@
       const restoName = formatRestoName(record.restoName || record.resto || '');
       const maxAllowed = kasirMax || getMaxTimeForShift((restoTimeMap || {})[restoName], record.shifting);
       // Format HH:mm dibandingkan sebagai waktu 24 jam; sama dengan batas = tepat waktu.
-      const actualTime = getRecordWIBInfo(record).time;
+      const info = getRecordWIBInfo(record);
+      const actualTime = info.time;
+
+      // Aturan khusus SHIFT 1 di resto 24 jam:
+      // - Check-in sampai dengan 23:30 WIB: tidak terlambat berdasarkan aturan batas ini.
+      // - 23:31–23:59 WIB: terlambat karena melewati batas 23:30.
+      // - 00:00–07:00 WIB pada pergantian hari: terlambat untuk SHIFT 1 yang sedang dinilai.
+      // Data check-in yang tersedia tidak selalu menyimpan tanggal shift terjadwal,
+      // sehingga rentang dini hari diterapkan berdasarkan jam check-in untuk SHIFT 1 resto 24 jam.
+      const shift = String(record.shifting || '').trim().toUpperCase();
+      const restoNameKey = formatRestoName(record.restoName || record.resto || '');
+      const timing = (restoTimeMap || {})[restoNameKey] || {};
+      const restoType = String(timing.type || timing.tipe || '').toLowerCase().replace(/[ _-]/g, '');
+      const is24Jam = restoType.includes('24jam') || restoType.includes('24hour') || restoType.includes('24hours');
+      if (shift === 'SHIFT 1' && is24Jam && actualTime) {
+        if (actualTime > '23:30' || actualTime <= '07:00') return true;
+      }
+
       return !!(maxAllowed && actualTime && actualTime > maxAllowed);
     }
 
