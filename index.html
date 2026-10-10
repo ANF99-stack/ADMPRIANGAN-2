@@ -2690,11 +2690,12 @@
         <div id="page-ae-dashboard" class="role-page-content">
           <div class="ae-hero"><div><h2>Dashboard Account Executive</h2><p>Ringkasan pencapaian big order, event, dan satelit dalam satu tampilan.</p></div><span class="ae-live"><i class="fa-solid fa-circle" style="font-size:.55rem;color:#4ade80"></i> MONITORING AE</span></div>
           <div class="ae-kpis"><div class="ae-kpi"><small>Total Pencapaian AE</small><strong id="ae-total">Rp0</strong><span>Big order + event + satelit</span></div><div class="ae-kpi"><small>Big Order</small><strong id="ae-big-total">Rp0</strong><span>Input yang tercatat</span></div><div class="ae-kpi"><small>Omset Event</small><strong id="ae-event-total">Rp0</strong><span id="ae-event-status">Menunggu integrasi POS</span></div><div class="ae-kpi"><small>Omset Satelit</small><strong id="ae-sat-total">Rp0</strong><span id="ae-sat-status">Menunggu tutup shift POS</span></div></div>
+          <div class="ae-panel" style="margin-top:14px"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0"><i class="fa-solid fa-cash-register" style="color:#2563eb"></i> Realtime Omset Akun POS</h3><span class="ae-tag" id="ae-live-pos-status">Memuat data POS… · update otomatis 15 detik</span></div><div id="ae-live-pos-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px"><p class="ae-muted">Memuat semua akun POS…</p></div><div style="margin-top:18px"><h4 style="margin:0 0 10px">Transaksi Terbaru Semua Akun</h4><div id="ae-live-pos-transactions" class="ae-table-wrap"></div></div><p class="ae-muted" style="margin-top:8px">Semua akun terdaftar ditampilkan tanpa dropdown. Omset dihitung dari transaksi yang dikirim Web Apps POS dan dicocokkan menggunakan username atau ID akun.</p></div>
           <div class="ae-layout"><div class="ae-panel"><h3><i class="fa-solid fa-chart-column" style="color:#b91c1c"></i> Sumber Pencapaian</h3><div class="ae-bars"><div><div class="ae-bar-head"><span>Big Order</span><b id="ae-big-label">Rp0</b></div><div class="ae-track"><div class="ae-fill" id="ae-big-bar" style="width:0%"></div></div></div><div><div class="ae-bar-head"><span>Event</span><b id="ae-event-label">Rp0</b></div><div class="ae-track"><div class="ae-fill" id="ae-event-bar" style="width:0%;background:linear-gradient(90deg,#2563eb,#38bdf8)"></div></div></div><div><div class="ae-bar-head"><span>Satelit</span><b id="ae-sat-label">Rp0</b></div><div class="ae-track"><div class="ae-fill" id="ae-sat-bar" style="width:0%;background:linear-gradient(90deg,#059669,#34d399)"></div></div></div></div><p class="ae-muted" style="margin-top:16px">Grafik mengikuti data yang tersedia. Omset Event dan Satelit akan menjadi realtime setelah endpoint POS dihubungkan.</p></div><div class="ae-panel"><h3><i class="fa-solid fa-bolt" style="color:#d97706"></i> Status Integrasi</h3><div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #eef2f7"><span class="ae-muted">Input Big Order</span><span class="ae-tag">AKTIF</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #eef2f7"><span class="ae-muted">POS Event</span><span class="ae-tag" style="background:#fef3c7;color:#92400e">MENUNGGU API</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0"><span class="ae-muted">POS Satelit / tutup shift</span><span class="ae-tag" style="background:#fef3c7;color:#92400e">MENUNGGU API</span></div><div class="ae-notice">Angka POS belum ditampilkan sebagai realtime palsu. Diperlukan endpoint GAS/POS dan struktur data transaksi untuk sinkronisasi sebenarnya.</div></div></div>
         </div>
-        <div id="page-ae-input" class="role-page-content" style="display:none"><div class="ae-hero"><div><h2>Input Pencapaian</h2><p>Catat big order dan tinjau riwayat pencapaian per hari.</p></div></div><div class="ae-panel"><h3>Input Big Order</h3><form id="ae-big-form"><div class="ae-form-grid"><div class="ae-field"><label>Tanggal</label><input type="date" id="ae-big-date" required></div><div class="ae-field"><label>Resto (bisa pilih lebih dari satu)</label><select id="ae-big-restos" multiple size="4" required><option value="Lazatto">Lazatto</option><option value="Lazatto Ngeumi">Lazatto Ngeumi</option></select><small class="ae-muted">Daftar resto awal sementara; dapat diganti dengan dropdown database resto saat endpoint master resto tersedia. Gunakan Ctrl/⌘ untuk memilih beberapa resto.</small></div><div class="ae-field"><label>Nama / Keterangan Order</label><input id="ae-big-name" placeholder="Contoh: Order kantor / katering" required></div><div class="ae-field"><label>Omset (Rp)</label><input id="ae-big-amount" type="number" min="1" step="1" placeholder="0" required></div></div><button class="ae-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan Big Order</button></form></div><div class="ae-panel" style="margin-top:14px"><h3>Riwayat Omset Satelit & Big Order per Hari</h3><div class="ae-form-grid"><div class="ae-field"><label>Filter tanggal</label><input type="date" id="ae-history-date" onchange="renderAEHistory()"></div><div class="ae-field"><label>Sumber</label><select id="ae-history-source" onchange="renderAEHistory()"><option value="ALL">Semua sumber</option><option value="Big Order">Big Order</option><option value="Satelit">Satelit (POS)</option><option value="Event">Event (POS)</option></select></div></div><div id="ae-history-table" class="ae-table-wrap"></div><p class="ae-muted" style="margin-top:8px">Riwayat POS akan terisi otomatis setelah integrasi POS menyediakan data transaksi dan event tutup shift.</p></div></div>
-        <div id="page-ae-menu" class="role-page-content" style="display:none"><div class="ae-hero"><div><h2>Inventaris Menu POS</h2><p>Kelola menu manual per brand. Listing berubah sesuai brand terpilih.</p></div></div><div class="ae-panel"><div class="ae-brand-tabs"><button id="ae-tab-lazatto" class="active" onclick="setAEBrand('LAZATTO')">LAZATTO</button><button id="ae-tab-ngeumi" onclick="setAEBrand('NGEUMI')">LAZATTO NGEUMI</button></div><form id="ae-menu-form"><div class="ae-form-grid"><div class="ae-field"><label>Nama Menu</label><input id="ae-menu-name" required placeholder="Contoh: Paket Ayam 1"></div><div class="ae-field"><label>Harga Jual (Rp)</label><input id="ae-menu-price" type="number" min="0" required placeholder="0"></div><div class="ae-field"><label>Kategori</label><input id="ae-menu-category" placeholder="Makanan / Minuman"></div><div class="ae-field"><label>Kode / SKU (opsional)</label><input id="ae-menu-sku" placeholder="SKU-001"></div></div><button class="ae-btn" type="submit">Tambah Menu</button></form><div id="ae-menu-table" class="ae-table-wrap"></div></div></div>
-        <div id="page-ae-accounts" class="role-page-content" style="display:none"><div class="ae-hero"><div><h2>Management Account</h2><p>Kelola akun kasir POS dan lihat listing user sistem.</p></div></div><div class="ae-panel"><h3>Input Account Login Kasir POS</h3><form id="ae-pos-form"><div class="ae-form-grid"><div class="ae-field"><label>Username</label><input id="ae-pos-user" required autocomplete="off"></div><div class="ae-field"><label>Password</label><input id="ae-pos-pass" type="password" required autocomplete="new-password"></div><div class="ae-field"><label>Brand</label><select id="ae-pos-brand"><option value="NGEUMI">NGEUMI</option><option value="LAZATTO">LAZATTO</option></select></div></div><button class="ae-btn" type="submit">Simpan Akun POS</button></form><div class="ae-notice">Akun ini disimpan pada browser ini untuk rancangan awal. Agar bisa dipakai kasir di perangkat lain, autentikasi dan penyimpanan wajib dipindahkan ke backend GAS/POS yang aman.</div><div id="ae-pos-table" class="ae-table-wrap"></div></div><div class="ae-panel" style="margin-top:14px"><h3>Daftar Seluruh User Sistem</h3><button class="ae-btn secondary" onclick="loadAESystemUsers()">Muat / Perbarui Daftar User</button><div id="ae-system-users" class="ae-table-wrap"><p class="ae-muted" style="padding:12px">Klik tombol untuk meminta daftar user dari server, jika action GAS tersedia.</p></div></div></div>
+        <div id="page-ae-input" class="role-page-content" style="display:none"><div class="ae-hero"><div><h2>Input Pencapaian</h2><p>Catat big order dan tinjau riwayat pencapaian per hari.</p></div></div><div class="ae-panel"><h3>Input Big Order</h3><form id="ae-big-form"><div class="ae-form-grid"><div class="ae-field"><label>Tanggal</label><input type="date" id="ae-big-date" required></div><div class="ae-field"><label>Resto (bisa pilih lebih dari satu)</label><select id="ae-big-restos" multiple size="5" required></select><small class="ae-muted">Daftar resto diambil dari data aplikasi yang tersedia. Gunakan Ctrl/⌘ untuk memilih beberapa resto.</small></div><div class="ae-field"><label>Nama / Keterangan Order</label><input id="ae-big-name" placeholder="Contoh: Order kantor / katering" required></div><div class="ae-field"><label>Omset (Rp)</label><input id="ae-big-amount" type="number" min="1" step="1" placeholder="0" required></div></div><button class="ae-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan Big Order</button></form></div><div class="ae-panel" style="margin-top:14px"><h3>Riwayat Omset Satelit & Big Order per Hari</h3><div class="ae-form-grid"><div class="ae-field"><label>Filter tanggal</label><input type="date" id="ae-history-date" onchange="renderAEHistory()"></div><div class="ae-field"><label>Sumber</label><select id="ae-history-source" onchange="renderAEHistory()"><option value="ALL">Semua sumber</option><option value="Big Order">Big Order</option><option value="Satelit">Satelit (POS)</option><option value="Event">Event (POS)</option></select></div></div><div id="ae-history-table" class="ae-table-wrap"></div><p class="ae-muted" style="margin-top:8px">Riwayat POS akan terisi otomatis setelah integrasi POS menyediakan data transaksi dan event tutup shift.</p></div></div>
+        <div id="page-ae-menu" class="role-page-content" style="display:none"><div class="ae-hero"><div><h2>Inventaris Menu POS</h2><p>Kelola menu manual per brand. Listing berubah sesuai brand terpilih.</p></div></div><div class="ae-panel"><div class="ae-brand-tabs"><button id="ae-tab-lazatto" class="active" onclick="setAEBrand('LAZATTO')">LAZATTO</button><button id="ae-tab-ngeumi" onclick="setAEBrand('NGEUMI')">NGEUMI</button></div><form id="ae-menu-form"><div class="ae-form-grid"><div class="ae-field"><label>Nama Menu</label><input id="ae-menu-name" required placeholder="Contoh: Paket Ayam 1"></div><div class="ae-field"><label>Harga Jual (Rp)</label><input id="ae-menu-price" type="number" min="0" required placeholder="0"></div><div class="ae-field"><label>Kategori</label><input id="ae-menu-category" placeholder="Makanan / Minuman"></div><div class="ae-field"><label>Kode / SKU (otomatis)</label><input id="ae-menu-sku" placeholder="SKU otomatis" readonly></div></div><button class="ae-btn" type="submit">Tambah Menu</button></form><div id="ae-menu-table" class="ae-table-wrap"></div></div></div>
+        <div id="page-ae-accounts" class="role-page-content" style="display:none"><div class="ae-hero"><div><h2>Management Account</h2><p>Kelola akun login POS dan lihat daftar akun berdasarkan tipe POS.</p></div></div><div class="ae-panel"><h3>Input Account Login Kasir POS</h3><form id="ae-pos-form"><div class="ae-form-grid"><div class="ae-field"><label>Username</label><input id="ae-pos-user" required autocomplete="off"></div><div class="ae-field"><label>Password</label><input id="ae-pos-pass" type="password" required autocomplete="new-password"></div><div class="ae-field"><label>Tipe POS</label><select id="ae-pos-type"><option value="SATELIT">SATELIT</option><option value="EVENT">EVENT</option></select></div><div class="ae-field"><label>Brand</label><select id="ae-pos-brand" required><option value="LAZATTO">LAZATTO</option><option value="NGEUMI">NGEUMI</option></select></div><div class="ae-field"><label>Resto</label><select id="ae-pos-resto" required><option value="">Memuat daftar resto…</option></select><small class="ae-muted">Daftar resto diambil dari database aplikasi yang tersedia.</small></div></div><button class="ae-btn" type="submit">Simpan Akun POS</button></form><div class="ae-notice">Password ditampilkan pada daftar hanya jika server POS memang mengembalikan nilai password. Jika backend menyimpan hash, password asli tidak dapat dipulihkan dari hash; jangan menyimpan password asli secara terbuka demi keamanan.</div><div id="ae-pos-table" class="ae-table-wrap"></div></div></div>
       </section>
 
     </main>
@@ -5189,7 +5190,7 @@
         roleBadge.textContent = 'ACCOUNT EXECUTIVE';
         roleBadge.className = 'badge-role badge-user';
         switchAENav('page-ae-dashboard', document.querySelector('#app-navbar-items .nav-item'));
-        renderAEDashboard(); renderAEMenus(); renderAEPosAccounts();
+        renderAEDashboard(); renderAEMenus(); renderAEPosAccounts(); populateAEBigOrderRestos();
       } else {
         document.getElementById('user-view').style.display = 'block';
         roleBadge.textContent = 'OUTLET CABANG';
@@ -6954,10 +6955,11 @@
       if(el)el.classList.add('active');
       const page=document.getElementById(pageId);
       if(page)page.style.display='block';
-      if(pageId==='page-ae-dashboard')renderAEDashboard();
+      if(aeLiveRefreshTimer){clearInterval(aeLiveRefreshTimer);aeLiveRefreshTimer=null;}
+      if(pageId==='page-ae-dashboard'){renderAEDashboard();aeLiveRefreshTimer=setInterval(()=>{if(document.getElementById('page-ae-dashboard')?.style.display!=='none')renderAEDashboard()},15000);}
       if(pageId==='page-ae-input')renderAEHistory();
       if(pageId==='page-ae-menu')renderAEMenus();
-      if(pageId==='page-ae-accounts')renderAEPosAccounts()
+      if(pageId==='page-ae-accounts')renderAEPosAccounts();if(pageId==='page-ae-input')populateAEBigOrderRestos()
     }
 
     const AE_POS_GAS_URL = "https://script.google.com/macros/s/AKfycbwso6ypbHe9fbHaab7E1dN9oDXvPCjgxuDhQ5fo3JXu2qq3X4f4Gyn41H1QyXuBFEILUQ/exec";
@@ -6977,9 +6979,13 @@
     function aeDateToday(){return new Date().toLocaleDateString('en-CA')}
     function aeStatus(elId,text){const el=document.getElementById(elId);if(el)el.textContent=text}
 
+    let aeLiveMetricsCache=null, aeLiveAccountsCache=[], aeLiveRefreshTimer=null;
     async function renderAEDashboard(){
       try {
         const [metrics,ordersRes]=await Promise.all([aeApi({action:'getAEMetrics'}),aeApi({action:'getBigOrders'})]);
+        aeLiveMetricsCache=metrics;
+        await loadAEPosAccountsForDashboard();
+        renderAESelectedAccountTurnover();
         const orders=ordersRes.orders||metrics.bigOrders||[];
         const big=orders.reduce((a,x)=>a+(+x.amount||0),0), event=+metrics.eventOmset||0, sat=+metrics.satelitOmset||0;
         const total=big+event+sat;
@@ -6995,6 +7001,41 @@
       }
     }
 
+    function getAERestoNames(){
+      let values=[];try{
+        if(typeof getAvailableRestoListFromDatabase==='function') values=getAvailableRestoListFromDatabase()||[];
+        if(!Array.isArray(values)||!values.length){const d=(typeof globalDashboardData!=='undefined'&&globalDashboardData)||{};for(const list of [d.restoList,d.restosList,d.branchList,d.branchLinks,d.usersList,d.karyawanList])if(Array.isArray(list))values=values.concat(list);else if(list&&typeof list==='object')values=values.concat(Object.values(list));}
+      }catch(e){console.warn('Daftar resto AE:',e)}
+      return [...new Set(values.map(x=>String(typeof x==='string'?x:(x?.resto||x?.namaResto||x?.branch||x?.nama_cabang||x?.name||x?.nama||'')).trim()).filter(Boolean).filter(x=>!/\bOT\b/i.test(x)))].sort((a,b)=>a.localeCompare(b,'id'));
+    }
+    function populateAEPosRestos(){
+      const el=document.getElementById('ae-pos-resto');if(!el)return;const previous=el.value;const names=getAERestoNames();
+      el.innerHTML='<option value="">Pilih resto</option>'+names.map(n=>`<option value="${aeEsc(n)}">${aeEsc(n)}</option>`).join('');
+      if(previous&&names.includes(previous))el.value=previous;
+      if(!names.length)el.innerHTML='<option value="">Data resto belum tersedia</option>';
+    }
+    async function loadAEPosAccountsForDashboard(){
+      const wrap=document.getElementById('ae-live-pos-cards');if(!wrap)return;
+      try{const data=await aeApi({action:'listPosAccounts'});aeLiveAccountsCache=data.accounts||[];renderAESelectedAccountTurnover();}
+      catch(e){wrap.innerHTML='<p class="ae-muted">Gagal memuat akun POS: '+aeEsc(e.message)+'</p>';aeStatus('ae-live-pos-status','Gagal memuat akun POS');}
+    }
+    function renderAESelectedAccountTurnover(){
+      const cards=document.getElementById('ae-live-pos-cards'),wrap=document.getElementById('ae-live-pos-transactions');if(!cards||!wrap)return;
+      const all=(aeLiveMetricsCache?.transactions||[]);
+      const today=new Date().toLocaleDateString('en-CA');
+      const getWho=t=>String(t.username||t.cashierUsername||t.posUsername||t.accountUsername||t.cashier||t.user||t.createdBy||'').toLowerCase();
+      const getId=t=>String(t.accountId||t.posAccountId||t.cashierId||'');
+      const matches=(t,a)=>{const who=getWho(t),id=getId(t);return (!!a.username&&who===String(a.username).toLowerCase())||(!!a.id&&id===String(a.id));};
+      const amount=t=>Number(t.total||t.amount||t.omset||t.grandTotal||0)||0;
+      cards.innerHTML=aeLiveAccountsCache.length?aeLiveAccountsCache.map((a,i)=>{
+        const rows=all.filter(t=>matches(t,a));const dayRows=rows.filter(t=>String(t.date||t.createdAt||t.timestamp||'').slice(0,10)===today);
+        const sum=dayRows.reduce((n,t)=>n+amount(t),0);const brand=String(a.brand||'-').toUpperCase();const type=String(a.type||a.posType||'-').toUpperCase();
+        return `<div style="border:1px solid #e2e8f0;border-radius:13px;padding:15px;background:linear-gradient(145deg,#fff,#f8fafc);min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span class="ae-tag" style="background:${brand==='NGEUMI'?'#ffedd5':'#fee2e2'};color:${brand==='NGEUMI'?'#9a3412':'#b91c1c'}">${aeEsc(brand)}</span><span class="ae-tag">${aeEsc(type)}</span></div><h4 style="margin:12px 0 4px;overflow-wrap:anywhere">${aeEsc(a.username||'Akun POS')}</h4><div class="ae-muted" style="font-size:.82rem">${aeEsc(a.resto||'Resto belum ditentukan')}</div><div style="margin-top:15px;font-size:.78rem;color:#64748b">Omset Hari Ini</div><strong style="display:block;font-size:1.35rem;color:#0f766e;margin:3px 0 8px">${aeMoney(sum)}</strong><div class="ae-muted" style="font-size:.8rem">${dayRows.length} transaksi hari ini</div><div class="ae-muted" style="font-size:.75rem;margin-top:8px">${rows.length?'Data transaksi diterima':'Menunggu transaksi / identitas akun'}</div></div>`;
+      }).join(''):'<p class="ae-muted">Belum ada akun POS terdaftar. Tambahkan akun pada menu Management Account → Akun POS.</p>';
+      const allRows=all.slice().sort((a,b)=>String(b.date||b.createdAt||b.timestamp||'').localeCompare(String(a.date||a.createdAt||a.timestamp||''))).slice(0,30);
+      wrap.innerHTML='<table class="ae-table"><thead><tr><th>Waktu</th><th>Akun POS</th><th>Brand</th><th>Resto</th><th>Nominal</th></tr></thead><tbody>'+(allRows.length?allRows.map(t=>{const account=aeLiveAccountsCache.find(a=>matches(t,a));return `<tr><td>${aeEsc(String(t.date||t.createdAt||t.timestamp||'-').slice(0,19))}</td><td>${aeEsc(account?.username||t.username||t.cashierUsername||t.posUsername||t.accountUsername||t.cashier||'-')}</td><td>${aeEsc(account?.brand||t.brand||'-')}</td><td>${aeEsc(account?.resto||t.resto||t.branch||'-')}</td><td>${aeMoney(amount(t))}</td></tr>`}).join(''):'<tr><td colspan="5" style="text-align:center;color:#64748b">Belum ada transaksi yang dikirim endpoint getAEMetrics.</td></tr>')+'</tbody></table>';
+      aeStatus('ae-live-pos-status',''+aeLiveAccountsCache.length+' akun POS · diperbarui '+new Date().toLocaleTimeString('id-ID')+' · otomatis 15 detik');
+    }
     document.addEventListener('DOMContentLoaded',()=>{
       const d=document.getElementById('ae-big-date');if(d)d.value=aeDateToday();
       const f=document.getElementById('ae-big-form');
@@ -7006,18 +7047,20 @@
         catch(err){alert('Big Order gagal disimpan ke server POS: '+err.message)}
       });
       const mf=document.getElementById('ae-menu-form');
-      if(mf)mf.addEventListener('submit',async e=>{
+      if(mf){document.getElementById('ae-menu-name')?.addEventListener('input',updateAESku);updateAESku();mf.addEventListener('submit',async e=>{
         e.preventDefault();const brand=window.aeCurrentBrand||'LAZATTO';
-        const product={id:Date.now(),brand,name:document.getElementById('ae-menu-name').value.trim(),price:Number(document.getElementById('ae-menu-price').value),category:document.getElementById('ae-menu-category').value.trim(),sku:document.getElementById('ae-menu-sku').value.trim(),icon:'package'};
+        const name=document.getElementById('ae-menu-name').value.trim();const product={id:Date.now(),brand,name,price:Number(document.getElementById('ae-menu-price').value),category:document.getElementById('ae-menu-category').value.trim(),sku:makeAESku(brand,name),icon:'package'};
         try {await aeApi({action:'saveProduct',product});mf.reset();await renderAEMenus();alert('Menu disimpan ke daftar produk POS di Google Sheets.')}
         catch(err){alert('Menu gagal disimpan: '+err.message)}
-      });
+      });}
       const pf=document.getElementById('ae-pos-form');
-      if(pf)pf.addEventListener('submit',async e=>{
-        e.preventDefault();const account={username:document.getElementById('ae-pos-user').value.trim(),password:document.getElementById('ae-pos-pass').value,brand:document.getElementById('ae-pos-brand').value};
-        try {await aeApi({action:'savePosAccount',account});pf.reset();await renderAEPosAccounts();alert('Akun POS tersimpan di server. Password disimpan sebagai hash.')}
+      if(pf){populateAEPosRestos();pf.addEventListener('submit',async e=>{
+        e.preventDefault();const posType=document.getElementById('ae-pos-type').value;const brand=document.getElementById('ae-pos-brand').value;const resto=document.getElementById('ae-pos-resto').value;
+        const account={username:document.getElementById('ae-pos-user').value.trim(),password:document.getElementById('ae-pos-pass').value,type:posType,posType,brand,resto};
+        if(!resto){alert('Pilih resto terlebih dahulu.');return}
+        try {await aeApi({action:'savePosAccount',account});pf.reset();await populateAEPosRestos();await renderAEPosAccounts();await loadAEPosAccountsForDashboard();alert('Akun POS tersimpan di server.')}
         catch(err){alert('Akun POS gagal disimpan: '+err.message)}
-      });
+      });}
     });
 
     async function renderAEHistory(){
@@ -7031,8 +7074,32 @@
         wrap.innerHTML='<table class="ae-table"><thead><tr><th>Tanggal</th><th>Sumber</th><th>Resto</th><th>Keterangan</th><th>Omset</th></tr></thead><tbody>'+(rows.length?rows.map(x=>`<tr><td>${aeEsc(String(x.date||'').slice(0,10)||'-')}</td><td>${aeEsc(x.source)}</td><td>${aeEsc(x.resto||'-')}</td><td>${aeEsc(x.description||'-')}</td><td>${aeMoney(x.amount)}</td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#64748b">Belum ada riwayat untuk filter ini.</td></tr>')+'</tbody></table>';
       }catch(e){wrap.innerHTML=`<p class="ae-muted" style="padding:12px">Gagal memuat riwayat POS: ${aeEsc(e.message)}</p>`}
     }
+    function populateAEBigOrderRestos(){
+      const el=document.getElementById('ae-big-restos'); if(!el) return;
+      let names=[];
+      try {
+        if(typeof getAvailableRestoListFromDatabase==='function') names=getAvailableRestoListFromDatabase()||[];
+        if(!Array.isArray(names)||!names.length){
+          const d=(typeof globalDashboardData!=='undefined'&&globalDashboardData)||{};
+          const candidates=[d.branchLinks,d.usersList,d.restoList,d.restosList,d.karyawanList];
+          for(const list of candidates){
+            if(!Array.isArray(list)) continue;
+            names=names.concat(list.map(x=>typeof x==='string'?x:(x.resto||x.namaResto||x.branch||x.nama_cabang||x.name||'')));
+          }
+        }
+      } catch(e) { console.warn('Daftar resto AE:',e); }
+      names=[...new Set(names.map(x=>String(x||'').trim()).filter(x=>x && !/\bOT\b/i.test(x)))].sort((a,b)=>a.localeCompare(b,'id'));
+      if(!names.length) names=['Lazatto','Lazatto Ngeumi'];
+      const selected=new Set(Array.from(el.selectedOptions||[]).map(o=>o.value));
+      el.innerHTML=names.map(n=>`<option value="${aeEsc(n)}" ${selected.has(n)?'selected':''}>${aeEsc(n)}</option>`).join('');
+    }
     window.aeCurrentBrand='LAZATTO';
-    function setAEBrand(brand){window.aeCurrentBrand=brand;document.getElementById('ae-tab-lazatto')?.classList.toggle('active',brand==='LAZATTO');document.getElementById('ae-tab-ngeumi')?.classList.toggle('active',brand==='NGEUMI');renderAEMenus()}
+    function makeAESku(brand,name){
+      const slug=String(name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,24);
+      return (brand==='NGEUMI'?'NG-':'LZ-')+(slug||'MENU');
+    }
+    function updateAESku(){const name=document.getElementById('ae-menu-name')?.value||'';const sku=document.getElementById('ae-menu-sku');if(sku)sku.value=makeAESku(window.aeCurrentBrand||'LAZATTO',name)}
+    function setAEBrand(brand){window.aeCurrentBrand=brand;document.getElementById('ae-tab-lazatto')?.classList.toggle('active',brand==='LAZATTO');document.getElementById('ae-tab-ngeumi')?.classList.toggle('active',brand==='NGEUMI');updateAESku();renderAEMenus()}
     async function renderAEMenus(){
       const wrap=document.getElementById('ae-menu-table');if(!wrap)return;wrap.innerHTML='<p class="ae-muted" style="padding:12px">Memuat menu dari server POS…</p>';
       try {
@@ -7044,7 +7111,7 @@
     async function renderAEPosAccounts(){
       const wrap=document.getElementById('ae-pos-table');if(!wrap)return;wrap.innerHTML='<p class="ae-muted" style="padding:12px">Memuat akun dari server POS…</p>';
       try {const data=await aeApi({action:'listPosAccounts'}),rows=data.accounts||[];
-        wrap.innerHTML='<table class="ae-table"><thead><tr><th>Username</th><th>Brand</th><th>Resto</th><th>Status</th><th>Aksi</th></tr></thead><tbody>'+(rows.length?rows.map(x=>`<tr><td>${aeEsc(x.username)}</td><td>${aeEsc(x.brand)}</td><td>${aeEsc(x.resto||'-')}</td><td>${aeEsc(x.active||'AKTIF')}</td><td><button class="ae-btn secondary" style="margin:0;padding:5px 8px" onclick="deleteAEPosAccount('${aeEsc(x.id)}')">Hapus</button></td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#64748b">Belum ada akun POS.</td></tr>')+'</tbody></table>';
+        wrap.innerHTML='<table class="ae-table"><thead><tr><th>Username</th><th>Password</th><th>Brand</th><th>Tipe POS</th><th>Resto</th><th>Status</th><th>Aksi</th></tr></thead><tbody>'+(rows.length?rows.map(x=>{const pw=x.password||x.pass||x.plainPassword||x.plaintextPassword||'';return `<tr><td>${aeEsc(x.username)}</td><td>${pw?`<span>${aeEsc(pw)}</span>`:'<span title="Password asli tidak dikirim backend">Tidak tersedia (hash)</span>'}</td><td>${aeEsc(x.brand||'-')}</td><td>${aeEsc(x.type||x.posType||'-')}</td><td>${aeEsc(x.resto||'-')}</td><td>${aeEsc(x.active||'AKTIF')}</td><td><button class="ae-btn secondary" style="margin:0;padding:5px 8px" onclick="deleteAEPosAccount('${aeEsc(x.id)}')">Hapus</button></td></tr>`}).join(''):'<tr><td colspan="7" style="text-align:center;color:#64748b">Belum ada akun POS.</td></tr>')+'</tbody></table>';
       }catch(e){wrap.innerHTML=`<p class="ae-muted" style="padding:12px">Gagal memuat akun: ${aeEsc(e.message)}</p>`}
     }
     async function deleteAEPosAccount(id){if(!confirm('Hapus akun POS ini dari server?'))return;try{await aeApi({action:'deletePosAccount',accountId:id});await renderAEPosAccounts()}catch(e){alert('Gagal menghapus akun: '+e.message)}}
