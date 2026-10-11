@@ -4209,24 +4209,49 @@
       return remaining > 0 && remaining < 5;
     }
 
+    function isKaRestoNearMaxCheckin(record, actualTime, maxAllowed) {
+      const jabatan = String(getCheckinRecordJabatan(record) || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
+      if (!/\b(?:ACT\s+)?KA\s+RESTO\b|\b(?:ACT\s+)?KARESTO\b|\bKEPALA\s+RESTO\b|\bKEPALA\s+RESTAURANT\b/.test(jabatan)) return false;
+      if (!actualTime || !maxAllowed || !/^\d{2}:\d{2}$/.test(actualTime) || !/^\d{2}:\d{2}$/.test(String(maxAllowed))) return false;
+      const mins = v => { const [h,m] = v.split(':').map(Number); return h*60+m; };
+      const remaining = mins(maxAllowed) - mins(actualTime);
+      return remaining > 0 && remaining < 5;
+    }
+
     function isLateCheckin(record, restoTimeMap) {
       if (!record || isAbsenceShift(String(record.shifting || '').trim().toUpperCase())) return false;
+
+      const shift = String(record.shifting || '').trim().toUpperCase().replace(/\s+/g, ' ');
+      const restoName = formatRestoName(record.restoName || record.resto || record.cabang || '');
+      const suppliedMap = restoTimeMap || {};
+      const fallbackMap = getRestoMaxCheckinMap();
+      const findTiming = map => {
+        if (!map) return null;
+        if (map[restoName]) return map[restoName];
+        const target = String(restoName).toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const key = Object.keys(map).find(k =>
+          String(formatRestoName(k)).toUpperCase().replace(/[^A-Z0-9]/g, '') === target
+        );
+        return key ? map[key] : null;
+      };
+      const timing = findTiming(suppliedMap) || findTiming(fallbackMap) || {};
+      const normalizedTiming = {
+        ...timing,
+        type: timing.type || timing.tipe || timing.jenis || '24jam',
+        s1: timing.s1 || timing.shift1 || timing.shift_1,
+        s2: timing.s2 || timing.shift2 || timing.shift_2,
+        s3: timing.s3 || timing.shift3 || timing.shift_3
+      };
       const kasirMax = getKasirMaxTimeForShift(record);
-      const restoName = formatRestoName(record.restoName || record.resto || '');
-      const maxAllowed = kasirMax || getMaxTimeForShift((restoTimeMap || {})[restoName], record.shifting);
-      const info = getRecordWIBInfo(record);
-      const actualTime = info.time;
+      const maxAllowed = kasirMax || getMaxTimeForShift(normalizedTiming, shift);
+      const actualTime = String(getRecordWIBInfo(record).time || '').trim().slice(0, 5);
+      if (!/^\d{2}:\d{2}$/.test(actualTime)) return false;
 
-      const shift = String(record.shifting || '').trim().toUpperCase();
-      const restoNameKey = formatRestoName(record.restoName || record.resto || '');
-      const timing = (restoTimeMap || {})[restoNameKey] || {};
-      const restoType = String(timing.type || timing.tipe || '').toLowerCase().replace(/[ _-]/g, '');
+      const restoType = String(normalizedTiming.type || '').toLowerCase().replace(/[ _-]/g, '');
       const is24Jam = restoType.includes('24jam') || restoType.includes('24hour') || restoType.includes('24hours');
-      if (shift === 'SHIFT 1' && is24Jam && actualTime) {
-        if (actualTime > '23:30' || actualTime <= '07:00') return true;
-      }
-
-      return !!(maxAllowed && actualTime && actualTime > maxAllowed);
+      // Shift 1 resto 24 jam: check-in setelah batas 23:30 atau masuk hari berikutnya tetap terlambat.
+      if (shift === 'SHIFT 1' && is24Jam && (actualTime > '23:30' || actualTime <= '07:00')) return true;
+      return !!(maxAllowed && /^\d{2}:\d{2}$/.test(String(maxAllowed).slice(0, 5)) && actualTime > String(maxAllowed).slice(0, 5));
     }
 
     function getDashboardVisibleCheckins() {
@@ -4494,12 +4519,13 @@
         const timeStr = getRecordWIBInfo(item).time;
 
         const rKey = formatRestoName(item.restoName);
-        const restoTimingObj = restoTimeMap[rKey];
+        const restoTimingObj = restoTimeMap[rKey] || getRestoMaxCheckinMap()[rKey];
         const kasirMaxAllowed = getKasirMaxTimeForShift(item);
         const maxAllowed = kasirMaxAllowed || getMaxTimeForShift(restoTimingObj, item.shifting);
 
-        if (!['OFF', 'SAKIT', 'IZIN', 'CUTI', 'MIDDLE'].includes(item.shifting) && maxAllowed && timeStr > maxAllowed) {
-          statusBadge += ` <span class="badge-status terlambat">Terlambat (> ${maxAllowed})</span>`;
+        if (!['OFF', 'SAKIT', 'IZIN', 'CUTI', 'MIDDLE'].includes(String(item.shifting || '').toUpperCase()) && isLateCheckin(item, restoTimeMap)) {
+          const batasLabel = maxAllowed ? ` (batas ${maxAllowed})` : '';
+          statusBadge += ` <span class="badge-status terlambat">Terlambat${batasLabel}</span>`;
         }
 
         const photoData = String(item.photoUrl || item.foto || '').trim();
@@ -5996,7 +6022,7 @@
         const restoTimingObj = timingMap[restoName] || timingMap[restoName.toUpperCase()];
         const maxAllowed = getKasirMaxTimeForShift(record) || getMaxTimeForShift(restoTimingObj, record.shifting);
         late = !!(maxAllowed && time > maxAllowed);
-        nearMax = !late && isKasirNearMaxCheckin(record, time, maxAllowed);
+        nearMax = !late && (isKasirNearMaxCheckin(record, time, maxAllowed) || isKaRestoNearMaxCheckin(record, time, maxAllowed));
       } catch (e) {}
       if (late) return `<span class="gk-late">${escapeHtml(time.replace(':','.'))}</span>`;
       if (nearMax) return `<span class="gk-near-max" title="Check-in kurang dari 5 menit sebelum batas maksimal">${escapeHtml(time.replace(':','.'))}</span>`;
@@ -6095,6 +6121,7 @@
         `<span class="groming-kasir-badge"><i class="fa-solid fa-calendar-days"></i> ${escapeHtml(monthName)}</span>` +
         `<span class="groming-kasir-badge"><i class="fa-solid fa-user-tie"></i> ${employees.length} kasir</span>` +
         `<span class="groming-kasir-badge"><i class="fa-solid fa-store"></i> ${selectedResto === 'ALL' ? 'Semua resto' : escapeHtml(selectedResto)}</span>`;
+      summary.innerHTML += `<span class="groming-kasir-legend" style="margin:0;padding:6px 10px"><span><i class="fa-solid fa-square" style="color:#fef08a;border:1px solid #facc15"></i> Kuning: check-in kurang dari 5 menit sebelum batas waktu</span></span>`;
 
       thead.innerHTML = `<tr>
         <th class="gk-no gk-sticky-1">NO</th>
