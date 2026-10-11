@@ -4211,7 +4211,7 @@
 
     function isKaRestoNearMaxCheckin(record, actualTime, maxAllowed) {
       const jabatan = String(getCheckinRecordJabatan(record) || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
-      if (!/\b(?:ACT\s+)?KA\s+RESTO\b|\b(?:ACT\s+)?KARESTO\b|\bKEPALA\s+RESTO\b|\bKEPALA\s+RESTAURANT\b/.test(jabatan)) return false;
+      if (!/\b(?:ACT\s+)?KA\s+RESTO\b|\b(?:ACT\s+)?KARESTO\b|\bKEPALA\s+RESTO\b|\bKEPALA\s+RESTAURANT\b|\b(?:ACT\s+)?KA\s+SHIFT\b|\b(?:ACT\s+)?KASHIFT\b/.test(jabatan)) return false;
       if (!actualTime || !maxAllowed || !/^\d{2}:\d{2}$/.test(actualTime) || !/^\d{2}:\d{2}$/.test(String(maxAllowed))) return false;
       const mins = v => { const [h,m] = v.split(':').map(Number); return h*60+m; };
       const remaining = mins(maxAllowed) - mins(actualTime);
@@ -6298,7 +6298,8 @@
       summary.innerHTML =
         `<span class="groming-kasir-badge"><i class="fa-solid fa-calendar-days"></i> ${escapeHtml(monthName)}</span>` +
         `<span class="groming-kasir-badge"><i class="fa-solid fa-user-tie"></i> ${employees.length} KARESTO &amp; KSHIFT</span>` +
-        `<span class="groming-kasir-badge"><i class="fa-solid fa-store"></i> ${selectedResto === 'ALL' ? 'Semua resto' : escapeHtml(selectedResto)}</span>`;
+        `<span class="groming-kasir-badge"><i class="fa-solid fa-store"></i> ${selectedResto === 'ALL' ? 'Semua resto' : escapeHtml(selectedResto)}</span>` +
+        `<span class="groming-kasir-legend" style="margin:0;padding:6px 10px"><span><i class="fa-solid fa-square" style="color:#fef08a;border:1px solid #facc15"></i> Kuning: check-in kurang dari 5 menit sebelum batas maksimal</span><span><i class="fa-solid fa-square" style="color:#fee2e2;border:1px solid #fca5a5"></i> Merah: terlambat</span></span>`;
 
       thead.innerHTML = `<tr>
         <th class="gk-no gk-sticky-1">NO</th>
