@@ -2665,17 +2665,11 @@
                   <option value="supervisor">Supervisor</option>
                   <option value="psd">PSD</option>
                   <option value="admin">Admin Area</option>
-                  <option value="ae">Account Executive (AE)</option>
                 </select>
               </div>
               <div id="group_spv_coverage">
                 <label style="font-size: 0.78rem; font-weight: 700; color:#4338ca; display: block; margin-bottom: 4px;">Total Resto Coverage (Maksimal 10 Resto)</label>
                 <input type="number" id="internal_user_coverage" min="1" max="10" value="5" placeholder="10" style="width:100%; padding:10px 14px; border:1.5px solid #c7d2fe; border-radius:10px; background: #ffffff; font-size:0.88rem;">
-              </div>
-              <div id="group_internal_resto_coverage" style="display:none;grid-column:1/-1;">
-                <label style="font-size:.78rem;font-weight:800;color:#4338ca;display:block;margin-bottom:5px;">Coverage Resto (SPV / AE) — pilih dari database</label>
-                <select id="internal_user_coverage_restos" multiple size="6" style="width:100%;padding:10px;border:1.5px solid #c7d2fe;border-radius:10px;background:#fff;font-size:.88rem;min-height:130px;"></select>
-                <small style="display:block;color:#64748b;margin-top:5px;">Gunakan Ctrl (Windows) atau Cmd (Mac) untuk memilih beberapa resto. Maksimal 10 resto.</small>
               </div>
             </div>
             <button onclick="addNewInternalUser()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);">
@@ -5103,25 +5097,7 @@
 
     function toggleSpvCoverageInput() {
       const role = document.getElementById('internal_user_role').value;
-      const isSpv = role === 'supervisor';
-      const needsRestoCoverage = isSpv || role === 'ae';
-      const countGroup = document.getElementById('group_spv_coverage');
-      const restoGroup = document.getElementById('group_internal_resto_coverage');
-      if (countGroup) countGroup.style.display = isSpv ? 'block' : 'none';
-      if (restoGroup) restoGroup.style.display = needsRestoCoverage ? 'block' : 'none';
-      if (needsRestoCoverage) populateInternalUserCoverageRestos();
-    }
-
-    function populateInternalUserCoverageRestos() {
-      const select = document.getElementById('internal_user_coverage_restos');
-      if (!select) return;
-      const previous = new Set(Array.from(select.selectedOptions || []).map(o => o.value));
-      const restos = typeof getAvailableRestoListFromDatabase === 'function' ? getAvailableRestoListFromDatabase() : [];
-      select.innerHTML = restos.map(r => {
-        const safe = String(r).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        return `<option value="${safe}" ${previous.has(r) ? 'selected' : ''}>${safe}</option>`;
-      }).join('');
-      if (!restos.length) select.innerHTML = '<option disabled>Database resto belum dimuat</option>';
+      document.getElementById('group_spv_coverage').style.display = role === 'supervisor' ? 'block' : 'none';
     }
 
     function applyDashboardDataToUI(username, userRole) {
@@ -6706,7 +6682,6 @@
         if (u.role === 'admin') badgeColor = 'color:var(--lazatto-red); font-weight:800;';
         else if (u.role === 'supervisor') badgeColor = 'color:#4338ca; font-weight:800;';
         else if (u.role === 'psd') badgeColor = 'color:#15803d; font-weight:800;';
-        else if (u.role === 'ae') badgeColor = 'color:#c2410c; font-weight:800;';
 
         const lastOnlineHtml = getUserLastOnlineText(u);
         const displayName = u.role === 'user' ? formatRestoName(u.name) : u.name;
@@ -6910,16 +6885,6 @@
       const urole = document.getElementById('internal_user_role').value;
       let ucoverage = parseInt(document.getElementById('internal_user_coverage').value) || 5;
       if (ucoverage > 10) ucoverage = 10;
-      const coverageSelect = document.getElementById('internal_user_coverage_restos');
-      const coverageRestos = coverageSelect ? Array.from(coverageSelect.selectedOptions).map(o => o.value).filter(Boolean) : [];
-      if (['supervisor','ae'].includes(urole) && coverageRestos.length > 10) {
-        alert('Maksimal 10 resto coverage untuk setiap user.');
-        return;
-      }
-      if (['supervisor','ae'].includes(urole) && coverageRestos.length === 0) {
-        alert('Pilih minimal 1 resto coverage untuk user SPV atau AE.');
-        return;
-      }
 
       if (!uid || !uname || !upass) {
         alert('Mohon isi semua kolom data user internal baru!');
@@ -6933,9 +6898,7 @@
         new_user_name: uname,
         new_user_pass: upass,
         new_user_role: urole,
-        total_resto: urole === 'supervisor' ? ucoverage : (urole === 'ae' ? coverageRestos.length : 0),
-        coverage_restos: ['supervisor','ae'].includes(urole) ? coverageRestos : [],
-        coverage_resto: ['supervisor','ae'].includes(urole) ? coverageRestos : []
+        total_resto: urole === 'supervisor' ? ucoverage : 0
       };
 
       try {
