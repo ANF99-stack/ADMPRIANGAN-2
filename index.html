@@ -984,8 +984,13 @@
         border-radius: 10px;
       }
 
-      .app-nav-container { padding: 8px 14px; top: 61px; }
-      .nav-item { padding: 8px 14px; font-size: 0.8rem; border-radius: 10px; }
+      .app-nav-container { padding: 8px 10px; top: 61px; width:100%; max-width:100%; overflow:visible; }
+      .app-navbar { width:100%; max-width:100%; min-width:0; box-sizing:border-box; display:flex; flex-wrap:wrap; gap:5px; padding:5px; overflow:visible; }
+      .nav-item { padding: 8px 10px; font-size: 0.76rem; border-radius: 10px; white-space:normal; min-width:0; max-width:100%; flex:0 1 auto; }
+      .nav-item span { overflow-wrap:anywhere; }
+      .admin-nav-group { min-width:0; max-width:100%; }
+      .admin-nav-group > summary { white-space:normal; padding:8px 9px; font-size:.72rem; gap:5px; }
+      .admin-nav-group-menu { left:0; right:auto; max-width:min(300px, calc(100vw - 24px)); }
 
       main { padding: 16px; }
       .user-banner, .supervisor-banner, .psd-banner { padding: 22px; border-radius: 18px; margin-bottom: 20px; }
@@ -1115,6 +1120,12 @@
     .ae-brand-tabs button.active{background:#7f1d1d;color:#fff;border-color:#7f1d1d}
 
     @media(max-width:850px){.ae-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.ae-layout{grid-template-columns:1fr}}
+    @media(max-width:480px){
+      #main-app-navbar,.app-nav-container,#app-navbar-items{width:100%;max-width:100%;min-width:0}
+      #app-navbar-items{flex-wrap:wrap;justify-content:flex-start}
+      #app-navbar-items .admin-nav-group{flex:0 1 auto}
+      #app-navbar-items .admin-nav-group-menu{max-width:calc(100vw - 24px);box-sizing:border-box}
+    }
     @media(max-width:600px){.ae-hero{padding:20px}.ae-hero h2{font-size:1.25rem}.ae-kpi{padding:13px}.ae-kpi strong{font-size:1.1rem}.ae-form-grid{grid-template-columns:1fr}.ae-kpi small{font-size:.64rem}}
 </style>
 </head>
@@ -4647,6 +4658,8 @@
           <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
           <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
           <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-groming-kasir', this)"><i class="fa-solid fa-user-clock"></i><span>GROMING KASIR</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-groming-karesto', this)"><i class="fa-solid fa-user-tie"></i><span>GROMING KARESTO</span></div>
         `;
       } else if (role === 'psd') {
         html = `
@@ -5978,12 +5991,28 @@
       else select.value = 'ALL';
     }
 
+    // Untuk SPV, data Groming hanya menampilkan karyawan dari resto dalam coverage akun SPV aktif.
+    // Admin dan PSD tetap melihat seluruh resto sesuai perilaku sebelumnya.
+    function applyGromingSpvCoverage(employees) {
+      const role = localStorage.getItem('resto_user_role') || 'user';
+      if (role !== 'supervisor') return (employees || []).slice();
+
+      const currentUser = localStorage.getItem('resto_current_user') || '';
+      const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
+      const coverageNames = new Set(
+        String(spvIndiv.resto_names || '').split(',')
+          .map(s => formatRestoName(s)).filter(Boolean)
+      );
+      return (employees || []).filter(k => coverageNames.has(getGromingKasirResto(k)));
+    }
+
     function getGromingKasirEmployees() {
       const list = getStoredKaryawanData();
-      return (Array.isArray(list) ? list : []).filter(k => {
+      const employees = (Array.isArray(list) ? list : []).filter(k => {
         const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
         return /\bKASIR\b/.test(jabatan) || /\bACT\s+KASIR\b/.test(jabatan);
       });
+      return applyGromingSpvCoverage(employees);
     }
 
     function getGromingKaRestoResto(k) {
@@ -6001,10 +6030,11 @@
 
     function getGromingKaRestoEmployees() {
       const list = getStoredKaryawanData();
-      return (Array.isArray(list) ? list : []).filter(k => {
+      const employees = (Array.isArray(list) ? list : []).filter(k => {
         const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
         return /\bKARESTO\b/.test(jabatan) || /\bKA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTAURANT\b/.test(jabatan) || /\bACT\s+KARESTO\b/.test(jabatan) || /\bKASHIFT\b/.test(jabatan) || /\bKA\s+SHIFT\b/.test(jabatan) || /\bACT\s+KASHIFT\b/.test(jabatan) || /\bACT\s+KA\s+SHIFT\b/.test(jabatan);
       });
+      return applyGromingSpvCoverage(employees);
     }
 
     function getGromingKasirResto(k) {
