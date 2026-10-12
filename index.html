@@ -7046,10 +7046,15 @@
       return [...new Set(values.map(x=>String(typeof x==='string'?x:(x?.resto||x?.namaResto||x?.branch||x?.nama_cabang||x?.name||x?.nama||'')).trim()).filter(Boolean).filter(x=>!/\bOT\b/i.test(x)))].sort((a,b)=>a.localeCompare(b,'id'));
     }
     function populateAEPosRestos(){
-      const el=document.getElementById('ae-pos-resto');if(!el)return;const previous=el.value;const names=getAERestoNames();
-      el.innerHTML='<option value="">Pilih resto</option>'+names.map(n=>`<option value="${aeEsc(n)}">${aeEsc(n)}</option>`).join('');
+      const el=document.getElementById('ae-pos-resto');if(!el)return;
+      const previous=el.value;
+      // Gunakan sumber database resto aplikasi yang sama dengan halaman operasional/mutasi,
+      // bukan daftar resto statis atau daftar yang diketik manual.
+      const names=getAERestoNames();
+      el.innerHTML='<option value="">'+(names.length?'Pilih resto':'Data resto belum tersedia')+'</option>'+
+        names.map(n=>`<option value="${aeEsc(n)}">${aeEsc(n)}</option>`).join('');
       if(previous&&names.includes(previous))el.value=previous;
-      if(!names.length)el.innerHTML='<option value="">Data resto belum tersedia</option>';
+      el.dataset.source=names.length?'database-aplikasi':'database-belum-termuat';
     }
     async function loadAEPosAccountsForDashboard(){
       const wrap=document.getElementById('ae-live-pos-cards');if(!wrap)return;
@@ -7091,13 +7096,31 @@
         catch(err){alert('Menu gagal disimpan: '+err.message)}
       });}
       const pf=document.getElementById('ae-pos-form');
-      if(pf){populateAEPosRestos();pf.addEventListener('submit',async e=>{
-        e.preventDefault();const posType=document.getElementById('ae-pos-type').value;const brand=document.getElementById('ae-pos-brand').value;const resto=document.getElementById('ae-pos-resto').value;
-        const account={username:document.getElementById('ae-pos-user').value.trim(),password:document.getElementById('ae-pos-pass').value,type:posType,posType,brand,resto};
-        if(!resto){alert('Pilih resto terlebih dahulu.');return}
-        try {await aeApi({action:'savePosAccount',account});pf.reset();await populateAEPosRestos();await renderAEPosAccounts();await loadAEPosAccountsForDashboard();alert('Akun POS tersimpan di server.')}
-        catch(err){alert('Akun POS gagal disimpan: '+err.message)}
-      });}
+      if(pf){
+        populateAEPosRestos();
+        // Database cabang kadang selesai dimuat setelah halaman AE dirender; segarkan saat dropdown dipakai.
+        document.getElementById('ae-pos-resto')?.addEventListener('focus',populateAEPosRestos);
+        document.getElementById('ae-pos-resto')?.addEventListener('mousedown',populateAEPosRestos);
+        document.getElementById('ae-pos-brand')?.addEventListener('change',populateAEPosRestos);
+        pf.addEventListener('submit',async e=>{
+          e.preventDefault();
+          const posType=String(document.getElementById('ae-pos-type').value||'').trim().toUpperCase();
+          const brand=String(document.getElementById('ae-pos-brand').value||'').trim().toUpperCase();
+          const resto=document.getElementById('ae-pos-resto').value;
+          const username=document.getElementById('ae-pos-user').value.trim();
+          const password=document.getElementById('ae-pos-pass').value;
+          if(!resto){populateAEPosRestos();alert('Pilih resto dari database aplikasi terlebih dahulu.');return}
+          if(!['SATELIT','EVENT'].includes(posType)){alert('Tipe POS harus SATELIT atau EVENT.');return}
+          // Simpan type dan posType sekaligus agar kompatibel dengan backend POS yang membaca salah satunya.
+          const account={username,password,type:posType,posType,pos_type:posType,brand,resto};
+          try {
+            const result=await aeApi({action:'savePosAccount',account});
+            if(result && result.status==='error')throw new Error(result.message||'Server menolak penyimpanan akun.');
+            pf.reset();populateAEPosRestos();await renderAEPosAccounts();await loadAEPosAccountsForDashboard();
+            alert('Akun POS tersimpan. Tipe POS: '+posType+'. Pastikan backend/login POS membaca field type atau posType untuk menerapkan mode '+posType+' pada akun kasir.');
+          } catch(err){alert('Akun POS gagal disimpan: '+err.message)}
+        });
+      }
     });
 
     async function renderAEHistory(){
