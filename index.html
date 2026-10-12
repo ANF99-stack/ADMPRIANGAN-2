@@ -5397,6 +5397,12 @@
         if (s3) s3.value = '';
         if (s3Container) s3Container.style.display = 'none';
       }
+
+      // Simpan perubahan tipe dan jam ke GAS agar tidak kembali ke default setelah refresh.
+      // Sedikit jeda memberi kesempatan nilai select/input selesai diperbarui.
+      if (typeof window.saveSpvIndividualData === 'function') {
+        window.setTimeout(() => window.saveSpvIndividualData(key, true), 150);
+      }
     }
 
     function getAvailableRestoListFromDatabase() {
@@ -5743,7 +5749,7 @@
       }
     };
 
-    window.saveSpvIndividualData = async function(targetUsername) {
+    window.saveSpvIndividualData = async function(targetUsername, silent = false) {
       const currentUser = localStorage.getItem('resto_current_user');
       
       const restoTimingsObj = {};
@@ -5800,12 +5806,15 @@
           body: JSON.stringify(payload)
         });
         const result = await res.json();
-        alert(result.message);
-        if (result.status === "success") {
+        if (!silent) alert(result.message);
+        if (result.status === "success" && !silent) {
           fetchInitialDataFromGAS();
+        } else if (result.status !== "success" && silent) {
+          console.warn('Autosimpan pengaturan coverage SPV gagal:', result.message || 'Tidak ada detail dari server.');
         }
       } catch (err) {
-        alert("Gagal menyimpan data individual Supervisor!");
+        if (!silent) alert("Gagal menyimpan data individual Supervisor!");
+        else console.warn('Autosimpan pengaturan coverage SPV gagal:', err);
       }
     };
 
