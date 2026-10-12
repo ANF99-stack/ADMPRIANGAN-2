@@ -7164,6 +7164,12 @@
       if (!response.ok || data.status === "error") throw new Error(data.message || "Permintaan ke Web Apps POS gagal.");
       return data;
     }
+    function aePOSRequestContext(){
+      return {
+        userId: String(localStorage.getItem('resto_current_user')||'').trim(),
+        role: String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase()
+      };
+    }
     function aeEsc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
     function aeMoney(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0)}
     function aeDateToday(){return new Date().toLocaleDateString('en-CA')}
@@ -7172,7 +7178,7 @@
     let aeLiveMetricsCache=null, aeLiveAccountsCache=[], aeLiveRefreshTimer=null;
     async function renderAEDashboard(){
       try {
-        const [metrics,ordersRes]=await Promise.all([aeApi({action:'getAEMetrics'}),aeApi({action:'getBigOrders'})]);
+        const [metrics,ordersRes]=await Promise.all([aeApi({...{action:'getAEMetrics'},...aePOSRequestContext()}),aeApi({...{action:'getBigOrders'},...aePOSRequestContext()})]);
         const aeRole=String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase();
         const isAEUser=['ae','account executive','account_executive','account eksekutif'].includes(aeRole);
         const assignedNames=isAEUser?await getAECurrentCoverageNames():[];
@@ -7254,7 +7260,7 @@
         e.preventDefault();const restos=Array.from(document.getElementById('ae-big-restos').selectedOptions).map(o=>o.value);
         if(!restos.length){alert('Pilih minimal satu resto.');return}
         const order={date:document.getElementById('ae-big-date').value,restos,name:document.getElementById('ae-big-name').value.trim(),amount:Number(document.getElementById('ae-big-amount').value),createdBy:localStorage.getItem('resto_current_user')||(typeof currentUserName!=='undefined'?currentUserName:'AE')};
-        try { await aeApi({action:'saveBigOrder',order}); f.reset();document.getElementById('ae-big-date').value=aeDateToday();await renderAEHistory();await renderAEDashboard();alert('Big Order tersimpan di Google Sheets.'); }
+        try { await aeApi({...{action:'saveBigOrder',order},...aePOSRequestContext()}); f.reset();document.getElementById('ae-big-date').value=aeDateToday();await renderAEHistory();await renderAEDashboard();alert('Big Order tersimpan di Google Sheets.'); }
         catch(err){alert('Big Order gagal disimpan ke server POS: '+err.message)}
       });
       const mf=document.getElementById('ae-menu-form');
@@ -7297,7 +7303,7 @@
       const date=document.getElementById('ae-history-date')?.value||'',source=document.getElementById('ae-history-source')?.value||'ALL';
       wrap.innerHTML='<p class="ae-muted" style="padding:12px">Memuat riwayat dari Web Apps POS…</p>';
       try {
-        const [m,o]=await Promise.all([aeApi({action:'getAEMetrics'}),aeApi({action:'getBigOrders'})]);
+        const [m,o]=await Promise.all([aeApi({...{action:'getAEMetrics'},...aePOSRequestContext()}),aeApi({...{action:'getBigOrders'},...aePOSRequestContext()})]);
         let rows=[...(o.orders||[]).map(x=>({...x,source:'Big Order',description:x.name,resto:x.resto||''})),...(m.transactions||[]).filter(x=>['Event','Satelit'].includes(x.salesSource)).map(x=>({...x,source:x.salesSource,description:x.id,resto:x.resto||'-',amount:x.total,date:String(x.date||'').slice(0,10)}))];
         rows=rows.filter(x=>(!date||String(x.date||'').slice(0,10)===date)&&(source==='ALL'||x.source===source)).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
         wrap.innerHTML='<table class="ae-table"><thead><tr><th>Tanggal</th><th>Sumber</th><th>Resto</th><th>Keterangan</th><th>Omset</th></tr></thead><tbody>'+(rows.length?rows.map(x=>`<tr><td>${aeEsc(String(x.date||'').slice(0,10)||'-')}</td><td>${aeEsc(x.source)}</td><td>${aeEsc(x.resto||'-')}</td><td>${aeEsc(x.description||'-')}</td><td>${aeMoney(x.amount)}</td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#64748b">Belum ada riwayat untuk filter ini.</td></tr>')+'</tbody></table>';
