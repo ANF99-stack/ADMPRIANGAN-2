@@ -429,6 +429,15 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .cabang-checkin-nav-group { position: relative; flex: 0 1 auto; min-width: 0; }
+    .cabang-checkin-nav-group > summary { list-style: none; cursor: pointer; padding: 10px 14px; font-size: .78rem; font-weight: 800; color: var(--text-muted); border-radius: 10px; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+    .cabang-checkin-nav-group > summary::-webkit-details-marker { display:none; }
+    @media (max-width: 768px) {
+      .cabang-checkin-nav-group { max-width: 100%; }
+      .cabang-checkin-nav-group > summary { white-space: normal; padding: 8px 10px; font-size: .76rem; }
+      .cabang-checkin-nav-group .admin-nav-group-menu { left: 0; right: auto; min-width: min(245px, calc(100vw - 32px)); max-width: calc(100vw - 32px); }
+      .cabang-checkin-nav-group .admin-nav-group-menu .nav-item { white-space: normal; }
+    }
 
     .nav-item {
       padding: 10px 20px;
@@ -1321,11 +1330,13 @@
           </div>
 
           <div id="checkin_active_view" class="admin-card-item" style="border: 2px solid var(--lazatto-red); background: #ffffff;">
-            <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px;">
-              <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--lazatto-red); display: flex; align-items: center; gap: 10px;">
-                <i class="fa-solid fa-camera"></i> CHECKIN KARYAWAN
-              </h3>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Absensi langsung menggunakan kamera timestamp realtime perangkat.</p>
+            <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px; display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+              <div>
+                <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--lazatto-red); display: flex; align-items: center; gap: 10px;">
+                  <i class="fa-solid fa-camera"></i> CHECKIN KARYAWAN
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Absensi langsung menggunakan kamera timestamp realtime perangkat.</p>
+              </div>
             </div>
 
             <form onsubmit="submitCheckinKaryawan(event)" style="max-width: 600px;">
@@ -1951,6 +1962,41 @@
             </div>
           </div>
 
+        </div>
+      </div>
+
+      <!-- ================= PAGE: RIWAYAT CHECKIN USER CABANG ================= -->
+      <div id="page-user-riwayat-checkin" class="role-page-content" style="display:none;">
+        <div class="admin-card-item" style="border:2px solid #0f766e;background:#ffffff;">
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:18px;gap:12px;flex-wrap:wrap;">
+            <div>
+              <h3 style="font-size:1.3rem;font-weight:800;color:#0f766e;display:flex;align-items:center;gap:10px;">
+                <i class="fa-solid fa-clock-rotate-left"></i> RIWAYAT CHECKIN
+              </h3>
+              <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Data check-in karyawan cabang ini untuk tanggal hari ini.</p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" onclick="kembaliKeCheckinCabang()" style="padding:9px 14px;border:1px solid #fecaca;border-radius:10px;background:#fff1f2;color:#b91c1c;font-size:.8rem;font-weight:800;cursor:pointer;">
+                <i class="fa-solid fa-camera"></i> CHECKIN KARYAWAN
+              </button>
+              <button type="button" onclick="refreshRiwayatCheckinCabang()" style="padding:9px 14px;border:1px solid #99f6e4;border-radius:10px;background:#f0fdfa;color:#0f766e;font-size:.8rem;font-weight:800;cursor:pointer;">
+                <i class="fa-solid fa-rotate"></i> Refresh
+              </button>
+            </div>
+          </div>
+          <div class="check-karyawan-stats">
+            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">TOTAL KARYAWAN</div><div id="riwayat_checkin_total_karyawan" class="check-karyawan-stat-value">0</div></div>
+            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">SUDAH CHECK-IN</div><div id="riwayat_checkin_sudah" class="check-karyawan-stat-value" style="color:#15803d;">0</div></div>
+            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">BELUM CHECK-IN</div><div id="riwayat_checkin_belum" class="check-karyawan-stat-value" style="color:#dc2626;">0</div></div>
+            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">CHECK-IN TERBARU</div><div id="riwayat_checkin_terbaru" class="check-karyawan-stat-value" style="font-size:1rem;">-</div></div>
+            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">NAMA CABANG</div><div id="riwayat_checkin_cabang" class="check-karyawan-stat-value" style="font-size:1rem;">-</div></div>
+          </div>
+          <div class="check-karyawan-table-wrap">
+            <table>
+              <thead><tr><th>No</th><th>NIK</th><th>Nama Karyawan</th><th>Jabatan</th><th>Resto</th><th>Status</th><th>Tanggal</th><th>Jam</th><th>Shift</th></tr></thead>
+              <tbody id="riwayat-checkin-table-body"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -4750,7 +4796,13 @@
       } else {
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-user-laporan', this)"><i class="fa-solid fa-folder-open"></i><span>Laporan Cabang</span></div>
-          <div class="nav-item" onclick="switchRoleNav('page-user-checkin', this)"><i class="fa-solid fa-camera"></i><span>CHECKIN KARYAWAN</span></div>
+          <details class="admin-nav-group cabang-checkin-nav-group">
+            <summary><i class="fa-solid fa-camera"></i><span>CHECKIN KARYAWAN</span><i class="fa-solid fa-chevron-down" style="font-size:.65rem;margin-left:2px;"></i></summary>
+            <div class="admin-nav-group-menu">
+              <div class="nav-item" onclick="switchRoleNav('page-user-checkin', this); this.closest('details').removeAttribute('open');"><i class="fa-solid fa-camera"></i><span>CHECKIN KARYAWAN</span></div>
+              <div class="nav-item" onclick="switchRoleNav('page-user-riwayat-checkin', this); this.closest('details').removeAttribute('open');"><i class="fa-solid fa-clock-rotate-left"></i><span>RIWAYAT CHECKIN</span></div>
+            </div>
+          </details>
         `;
       }
 
@@ -4778,6 +4830,16 @@
       window.__adminNavDropdownBound = true;
     }
 
+    function bukaRiwayatCheckinCabang() {
+      const navItem = document.querySelector('#app-navbar-items .nav-item[onclick*="page-user-checkin"]');
+      if (navItem) switchRoleNav('page-user-riwayat-checkin', navItem);
+    }
+
+    function kembaliKeCheckinCabang() {
+      const navItem = document.querySelector('#app-navbar-items .nav-item[onclick*="page-user-checkin"]');
+      if (navItem) switchRoleNav('page-user-checkin', navItem);
+    }
+
     function switchRoleNav(pageId, element) {
       stopCameraStream();
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
@@ -4789,6 +4851,8 @@
 
       if (pageId === 'page-check-karyawan') {
         renderCheckKaryawanPage();
+      } else if (pageId === 'page-user-riwayat-checkin') {
+        renderRiwayatCheckinCabang();
       } else if (pageId === 'page-user-checkin') {
         updateCheckinSwitchUI();
         updateAutoDateTimeInput();
@@ -6602,6 +6666,65 @@
         .replace(/\s+/g, '_');
       const filename = `Groming_KARESTO_KSHIFT_${year}-${String(month).padStart(2, '0')}_${safeResto}.xlsx`;
       XLSX.writeFile(workbook, filename);
+    }
+
+
+    function renderRiwayatCheckinCabang() {
+      const tbody = document.getElementById('riwayat-checkin-table-body');
+      if (!tbody) return;
+      const branchName = formatRestoName(localStorage.getItem('resto_user_name') || localStorage.getItem('resto_current_user') || 'CABANG');
+      const branchKey = branchName.toLowerCase();
+      const today = getTodayYMD();
+      const allEmployees = getStoredKaryawanData();
+      const employees = allEmployees.filter(employee => {
+        const employeeResto = formatRestoName(employee?.resto || employee?.restoName || employee?.cabang || '').toLowerCase();
+        return employeeResto && employeeResto === branchKey;
+      });
+      const todayRecords = getStoredCheckinData().filter(record => {
+        const resto = formatRestoName(record?.restoName || record?.resto || record?.cabang || '').toLowerCase();
+        if (!resto || resto !== branchKey) return false;
+        return getRecordWIBInfo(record).date === today;
+      }).slice().sort((a,b) => (Number(b?.timestampMs)||0) - (Number(a?.timestampMs)||0));
+
+      // Satu check-in terbaru per kombinasi NIK dan cabang untuk menghitung status hari ini.
+      const checkedToday = new Map();
+      todayRecords.forEach(record => {
+        const nik = String(record?.nik || record?.NIK || '').trim();
+        if (!nik) return;
+        const key = nik + '|' + formatRestoName(record?.restoName || record?.resto || record?.cabang).toLowerCase();
+        if (!checkedToday.has(key)) checkedToday.set(key, record);
+      });
+      const totalEmployees = employees.length;
+      const checkedCount = employees.reduce((count, employee) => {
+        const nik = String(employee?.nik || employee?.NIK || '').trim();
+        const key = nik + '|' + formatRestoName(employee?.resto || employee?.restoName || employee?.cabang).toLowerCase();
+        return count + (nik && checkedToday.has(key) ? 1 : 0);
+      }, 0);
+      document.getElementById('riwayat_checkin_total_karyawan').textContent = totalEmployees;
+      document.getElementById('riwayat_checkin_sudah').textContent = checkedCount;
+      document.getElementById('riwayat_checkin_belum').textContent = Math.max(0, totalEmployees - checkedCount);
+      document.getElementById('riwayat_checkin_cabang').textContent = branchName || '-';
+      const latestInfo = todayRecords.length ? getRecordWIBInfo(todayRecords[0]) : null;
+      document.getElementById('riwayat_checkin_terbaru').textContent = latestInfo ? `${latestInfo.date} ${latestInfo.time}` : '-';
+
+      const rows = employees.map((employee, index) => {
+        const nik = String(employee?.nik || employee?.NIK || '').trim();
+        const key = nik + '|' + formatRestoName(employee?.resto || employee?.restoName || employee?.cabang).toLowerCase();
+        const record = checkedToday.get(key);
+        const info = record ? getRecordWIBInfo(record) : { date: '-', time: '-' };
+        const name = employee?.nama || employee?.namaLengkap || employee?.namaKaryawan || '-';
+        const jabatan = employee?.jabatan || employee?.posisi || '-';
+        const shift = record ? (record?.shifting || record?.shift || record?.keterangan || record?.catatan || '-') : '-';
+        const status = record
+          ? '<span class="check-status done"><i class="fa-solid fa-circle-check"></i> SUDAH CHECK-IN</span>'
+          : '<span class="check-status pending"><i class="fa-solid fa-circle-xmark"></i> BELUM CHECK-IN</span>';
+        return `<tr><td>${index + 1}</td><td style="font-weight:800;color:var(--lazatto-red);">${escapeHtml(nik || '-')}</td><td style="font-weight:800;">${escapeHtml(name)}</td><td>${escapeHtml(jabatan)}</td><td style="font-weight:800;">${escapeHtml(formatRestoName(employee?.resto || employee?.restoName || employee?.cabang) || branchName)}</td><td>${status}</td><td>${record ? escapeHtml(info.date || today) : '-'}</td><td class="check-time">${record ? escapeHtml(info.time || '-') : '-'}${record && info.time ? ' WIB' : ''}</td><td>${escapeHtml(String(shift))}</td></tr>`;
+      });
+      tbody.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--text-muted);">Belum ada data karyawan untuk cabang ini.</td></tr>';
+    }
+
+    function refreshRiwayatCheckinCabang() {
+      return refreshGromingDataAndRender(renderRiwayatCheckinCabang, '#page-user-riwayat-checkin button[onclick="refreshRiwayatCheckinCabang()"]', null);
     }
 
     function renderCheckKaryawanPage() {
