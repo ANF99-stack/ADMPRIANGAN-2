@@ -4242,7 +4242,7 @@
         return null;
       }
       if (shift === 'SHIFT 1') return cfg.s1 || '06:00';
-      if (shift === 'SHIFT 2') return cfg.s2 || '14:00';
+      if (shift === 'SHIFT 2') return cfg.s2 || '13:30';
       return null;
     }
 
@@ -5689,7 +5689,7 @@
       const d24 = schedules['24jam'] || {};
       const el = id => document.getElementById(id);
       if (el('kasir_global_reg_s1')) el('kasir_global_reg_s1').value = reg.s1 || '06:00';
-      if (el('kasir_global_reg_s2')) el('kasir_global_reg_s2').value = reg.s2 || '14:00';
+      if (el('kasir_global_reg_s2')) el('kasir_global_reg_s2').value = reg.s2 || '13:30';
       if (el('kasir_global_24_s1')) el('kasir_global_24_s1').value = d24.s1 || '';
       if (el('kasir_global_24_s2')) el('kasir_global_24_s2').value = d24.s2 || '';
       if (el('kasir_global_24_s3')) el('kasir_global_24_s3').value = d24.s3 || '';
