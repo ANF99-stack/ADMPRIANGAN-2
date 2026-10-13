@@ -3532,9 +3532,15 @@
       }
 
       const nowMs = Date.now();
-      // Khusus resto 24 jam: absensi SHIFT 1 direkap pada tanggal berikutnya,
-      // termasuk jika check-in dilakukan sebelum pergantian hari.
+      // Resto 24 jam: Shift 1 yang check-in pada penghujung hari sebelum pergantian tanggal
+      // (mulai 23:00 sampai 23:59) direkap ke tanggal berikutnya. Check-in pukul 00:00
+      // dan setelahnya tetap direkap pada tanggal kalender yang sama. Batas maksimal check-in tidak diubah.
       let attendanceDate = getTodayYMDFromMs(nowMs);
+      const timePartsForAttendance = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false
+      }).formatToParts(new Date(nowMs));
+      const getAttendancePart = type => timePartsForAttendance.find(p => p.type === type)?.value || '00';
+      const attendanceClock = `${getAttendancePart('hour')}:${getAttendancePart('minute')}`;
       const timingMapForAttendance = getRestoMaxCheckinMap();
       const timingForAttendance = timingMapForAttendance[formattedRestoName] ||
         timingMapForAttendance[String(formattedRestoName).toUpperCase()] || {};
@@ -3542,7 +3548,9 @@
         .toLowerCase().replace(/[ _-]/g, '');
       const is24HourAttendance = typeForAttendance.includes('24jam') ||
         typeForAttendance.includes('24hour') || typeForAttendance.includes('24hours');
-      if (is24HourAttendance && String(shifting).trim().toUpperCase().replace(/\s+/g, ' ') === 'SHIFT 1') {
+      if (is24HourAttendance &&
+          String(shifting).trim().toUpperCase().replace(/\s+/g, ' ') === 'SHIFT 1' &&
+          attendanceClock >= '23:00' && attendanceClock <= '23:59') {
         const dateParts = attendanceDate.split('-').map(Number);
         const nextDate = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2] + 1));
         attendanceDate = nextDate.getUTCFullYear() + '-' +
@@ -4233,7 +4241,7 @@
         const timing = timingMap[restoKey] || {};
         const restoType = String(timing.type || timing.tipe || timing.jenis || '').toLowerCase().replace(/[\s_-]/g, '');
         const is24Hour = ['24jam', '24hour', '24hours'].includes(restoType) || /24\s*jam/i.test(String(timing.type || timing.tipe || timing.jenis || ''));
-        if (is24Hour && (shift === 'SHIFT 1' || shift === 'SHIFT1')) {
+        if (is24Hour && (shift === 'SHIFT 1' || shift === 'SHIFT1') && `${get('hour')}:${get('minute')}` >= '23:00' && `${get('hour')}:${get('minute')}` <= '23:59') {
           const dateParts = timestampDate.split('-').map(Number);
           const nextDate = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2] + 1));
           effectiveDate = `${nextDate.getUTCFullYear()}-${String(nextDate.getUTCMonth() + 1).padStart(2, '0')}-${String(nextDate.getUTCDate()).padStart(2, '0')}`;
