@@ -1358,11 +1358,11 @@
               </div>
               <div id="checkin_duplicate_msg" class="checkin-lock-msg">
                 <i class="fa-solid fa-circle-exclamation"></i>
-                Karyawan ini sudah melakukan check-in hari ini di resto ini. Check-in ulang tidak diperbolehkan kecuali data check-in tersebut dihapus.
+                Karyawan sudah check-in untuk shift ini pada hari yang sama. Untuk resto 24 jam, shift berbeda (termasuk jumping Shift 1 ke Shift 2/3) tetap dapat diabsen.
               </div>
               <div class="input-group">
                 <label>SHIFTING / KETERANGAN ABSEN</label>
-                <select id="checkin_shifting" onchange="toggleKameraTimestamp()" required>
+                <select id="checkin_shifting" onchange="toggleKameraTimestamp(); updateCheckinDuplicateLock()" required>
                   <option value="SHIFT 1">SHIFT 1</option>
                   <option value="SHIFT 2">SHIFT 2</option>
                   <option value="SHIFT 3">SHIFT 3</option>
@@ -3170,14 +3170,55 @@
       return `${parts.find(p=>p.type==='year').value}-${parts.find(p=>p.type==='month').value}-${parts.find(p=>p.type==='day').value}`;
     }
 
-    function hasCheckinForToday(nik, restoName) {
-      const normalizedNik=String(nik||'').trim().toLowerCase();
-      const normalizedResto=formatRestoName(restoName);
-      if(!normalizedNik||!normalizedResto)return false;
-      return getStoredCheckinData().some(record=>{
-        if(String(record.nik||'').trim().toLowerCase()!==normalizedNik)return false;
-        if(formatRestoName(record.restoName)!==normalizedResto)return false;
-        return getRecordWIBInfo(record).ymd===getTodayYMDFromMs();
+    function hasCheckinForToday(nik, restoName, requestedShift) {
+      const normalizedNik = String(nik || '').trim().toLowerCase();
+      const normalizedResto = formatRestoName(restoName);
+      if (!normalizedNik || !normalizedResto) return false;
+
+      const timingMap = typeof getRestoMaxCheckinMap === 'function' ? getRestoMaxCheckinMap() : {};
+      const timing = timingMap[normalizedResto] || timingMap[String(normalizedResto).toUpperCase()] || {};
+      const restoTypeRaw = String(timing.type || timing.tipe || timing.jenis || '');
+      const restoType = restoTypeRaw.toLowerCase().replace(/[\s_-]/g, '');
+      const is24HourResto = ['24jam', '24hour', '24hours'].includes(restoType) || /24\s*jam/i.test(restoTypeRaw);
+      const selectedShift = String(requestedShift || document.getElementById('checkin_shifting')?.value || '')
+        .trim().toUpperCase().replace(/\s+/g, ' ');
+      const today = getTodayYMDFromMs();
+      // Untuk resto 24 jam, kunci mengikuti tanggal rekap yang akan dipakai oleh absensi baru.
+      // Shift 1 pukul 23:00-23:59 direkap ke tanggal berikutnya, jadi tidak terkunci
+      // oleh check-in Shift 1 yang tanggal rekapnya masih hari ini.
+      let requestedRecapDate = today;
+      if (is24HourResto && (selectedShift === 'SHIFT 1' || selectedShift === 'SHIFT1')) {
+        const clockParts = new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false
+        }).formatToParts(new Date());
+        const part = type => clockParts.find(p => p.type === type)?.value || '00';
+        const clock = `${part('hour')}:${part('minute')}`;
+        if (clock >= '23:00' && clock <= '23:59') {
+          const dateParts = today.split('-').map(Number);
+          const nextDate = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2] + 1));
+          requestedRecapDate = `${nextDate.getUTCFullYear()}-${String(nextDate.getUTCMonth() + 1).padStart(2, '0')}-${String(nextDate.getUTCDate()).padStart(2, '0')}`;
+        }
+      }
+
+      return getStoredCheckinData().some(record => {
+        if (String(record.nik || record.NIK || '').trim().toLowerCase() !== normalizedNik) return false;
+        if (formatRestoName(record.restoName || record.resto || record.cabang) !== normalizedResto) return false;
+
+        if (is24HourResto) {
+          // Cocokkan tanggal rekap (attendanceDate), bukan tanggal kalender timestamp.
+          // Ini menyelaraskan validasi dengan rekap Shift 1 yang bergeser ke tanggal berikutnya.
+          const existingRecapDate = getRecordWIBInfo(record).ymd;
+          if (existingRecapDate !== requestedRecapDate) return false;
+          // Resto 24 jam mengizinkan jumping antar-shift; shift yang sama pada tanggal rekap
+          // yang sama tetap dianggap duplikat.
+          const existingShift = String(record.shifting || record.shift || '').trim().toUpperCase().replace(/\s+/g, ' ');
+          return !!selectedShift && existingShift === selectedShift;
+        }
+
+        // Untuk resto biasa, aturan satu check-in per tanggal kalender tetap dipertahankan.
+        const ms = Number(record.timestampMs);
+        const actualDate = Number.isFinite(ms) ? getTodayYMDFromMs(ms) : getRecordWIBInfo(record).ymd;
+        return actualDate === today;
       });
     }
 
@@ -3198,7 +3239,7 @@
       const nik = document.getElementById('checkin_nik')?.value.trim() || '';
       const rawName = localStorage.getItem('resto_user_name') ||
                       localStorage.getItem('resto_current_user') || '';
-      const duplicate = hasCheckinForToday(nik, formatRestoName(rawName));
+      const duplicate = hasCheckinForToday(nik, formatRestoName(rawName), document.getElementById('checkin_shifting')?.value);
       const photoRequired = isPhotoRequiredForCurrentCheckin();
       const photoReady = hasValidCapturedCheckinPhoto();
 
@@ -3221,7 +3262,7 @@
     function updateCheckinDuplicateLock() {
       const nik=document.getElementById('checkin_nik')?.value.trim()||'';
       const rawName=localStorage.getItem('resto_user_name')||localStorage.getItem('resto_current_user')||'';
-      const locked=hasCheckinForToday(nik,formatRestoName(rawName));
+      const locked=hasCheckinForToday(nik,formatRestoName(rawName),document.getElementById('checkin_shifting')?.value);
       const msg=document.getElementById('checkin_duplicate_msg');
       if(msg)msg.classList.toggle('active',locked);
       updateCheckinSubmitButtonState();
@@ -3547,9 +3588,9 @@
         return;
       }
 
-      if (hasCheckinForToday(nik, formattedRestoName)) {
+      if (hasCheckinForToday(nik, formattedRestoName, shifting)) {
         updateCheckinDuplicateLock();
-        alert('Karyawan tersebut sudah melakukan check-in hari ini. Check-in ulang tidak diperbolehkan.');
+        alert('Karyawan sudah check-in untuk shift yang dipilih pada hari ini. Pilih shift yang sesuai; resto 24 jam dapat melakukan check-in untuk shift berbeda.');
         return;
       }
 
@@ -3604,10 +3645,24 @@
           String(nextDate.getUTCDate()).padStart(2, '0');
       }
 
+      // Sertakan tipe resto dari konfigurasi timing frontend agar backend
+      // dapat membedakan resto reguler dan resto 24 jam saat menyimpan check-in.
+      const restoTimingMapForCheckin = typeof getRestoMaxCheckinMap === 'function' ? getRestoMaxCheckinMap() : {};
+      const normalizedRestoKey = formatRestoName(formattedRestoName);
+      const restoTimingForCheckin = restoTimingMapForCheckin[normalizedRestoKey]
+        || restoTimingMapForCheckin[String(normalizedRestoKey).toUpperCase()]
+        || {};
+      const restoTypeRawForCheckin = String(
+        restoTimingForCheckin.type || restoTimingForCheckin.tipe || restoTimingForCheckin.jenis || ''
+      ).toLowerCase().replace(/[\\s_-]/g, '');
+      const restoTypeForCheckin = ['24jam', '24hour', '24hours'].includes(restoTypeRawForCheckin)
+        ? '24jam' : 'reguler';
+
       const newRecord = {
         id: 'chk_' + nowMs,
         restoUser: currentUser,
         restoName: formattedRestoName,
+        restoType: restoTypeForCheckin,
         dateTime: dateTime,
         timestampMs: nowMs,
         attendanceDate: attendanceDate,
