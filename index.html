@@ -4697,9 +4697,17 @@
       } else if (role === 'supervisor') {
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-spv-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
-          <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
-          <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
-          <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
+          <div class="nav-item" onclick="switchSupervisorOmsetArea(this)"><i class="fa-solid fa-chart-column"></i><span>OMSET AREA</span></div>
+          <details class="admin-nav-group">
+            <summary><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
+            <div class="admin-nav-group-menu">
+              <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
+              <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
+              <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
+              <div class="nav-item" onclick="switchRoleNav('page-groming-kasir', this)"><i class="fa-solid fa-user-clock"></i><span>GROMING KASIR</span></div>
+              <div class="nav-item" onclick="switchRoleNav('page-groming-karesto', this)"><i class="fa-solid fa-user-tie"></i><span>GROMING KARESTO</span></div>
+            </div>
+          </details>
         `;
       } else if (role === 'psd') {
         html = `
@@ -4746,6 +4754,29 @@
         }
       });
       window.__adminNavDropdownBound = true;
+    }
+
+    function switchSupervisorOmsetArea(element) {
+      stopCameraStream();
+      closeAdminNavGroups();
+      document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
+      if (element) element.classList.add('active');
+      document.querySelectorAll('.role-page-content').forEach(page => page.style.display = 'none');
+      // OMSET AREA berada di dalam #admin-view, jadi parent harus ditampilkan
+      // meskipun pengguna yang membuka halaman adalah SPV.
+      const adminView = document.getElementById('admin-view');
+      if (adminView) adminView.style.display = 'block';
+      document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
+      // Sembunyikan halaman operasional bersama yang mungkin masih terbuka.
+      ['page-shared-operasional','page-check-karyawan','page-daftar-karyawan','page-groming-kasir','page-groming-karesto'].forEach(id => {
+        const otherPage = document.getElementById(id);
+        if (otherPage) otherPage.style.display = 'none';
+      });
+      const adminStatsGrid = document.querySelector('#admin-view > .admin-stats-grid');
+      if (adminStatsGrid) adminStatsGrid.style.display = 'none';
+      const page = document.getElementById('page-omset-area');
+      if (page) page.style.display = 'block';
+      loadOmsetArea(true);
     }
 
     function switchRoleNav(pageId, element) {
@@ -6049,12 +6080,43 @@
       else select.value = 'ALL';
     }
 
+    function getCurrentSupervisorCoverageRestos() {
+      const role = String(localStorage.getItem('resto_user_role') || '').toLowerCase();
+      if (role !== 'supervisor') return null;
+      const currentUser = String(localStorage.getItem('resto_current_user') || '').trim();
+      const individual = globalDashboardData?.spvLinksIndividual || {};
+      // Gunakan sumber coverage yang sama dengan halaman Daftar Karyawan dan Check Karyawan.
+      let spvData = individual[currentUser];
+      if (!spvData) {
+        const key = Object.keys(individual).find(k => String(k).trim().toLowerCase() === currentUser.toLowerCase());
+        if (key) spvData = individual[key];
+      }
+      const rawNames = String(spvData?.resto_names || '').split(/[,;|]/).map(s => formatRestoName(s)).filter(Boolean);
+      if (rawNames.length) return new Set(rawNames);
+
+      // Cadangan untuk instalasi yang menyimpan coverage langsung pada data user.
+      const username = currentUser.toLowerCase();
+      const users = globalDashboardData?.usersList || [];
+      const user = users.find(u => String(u.username || u.user_id || u.id || '').trim().toLowerCase() === username);
+      const raw = user?.coverage_restos || user?.coverage_resto || user?.coverageRestos || [];
+      const list = Array.isArray(raw) ? raw : String(raw || '').split(/[,;|]/);
+      const names = list.map(x => formatRestoName(typeof x === 'object' ? (x.resto || x.name || x.nama || '') : x)).filter(Boolean);
+      // Jika coverage belum termuat, jangan kosongkan tabel; biarkan data tampil agar penyebabnya jelas.
+      return names.length ? new Set(names) : null;
+    }
+    function filterEmployeesToCurrentCoverage(list, getResto) {
+      const coverage = getCurrentSupervisorCoverageRestos();
+      if (!coverage) return list;
+      return list.filter(k => coverage.has(getResto(k)));
+    }
+
     function getGromingKasirEmployees() {
       const list = getStoredKaryawanData();
-      return (Array.isArray(list) ? list : []).filter(k => {
+      const employees = (Array.isArray(list) ? list : []).filter(k => {
         const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
         return /\bKASIR\b/.test(jabatan) || /\bACT\s+KASIR\b/.test(jabatan);
       });
+      return filterEmployeesToCurrentCoverage(employees, getGromingKasirResto);
     }
 
     function getGromingKaRestoResto(k) {
@@ -6072,10 +6134,11 @@
 
     function getGromingKaRestoEmployees() {
       const list = getStoredKaryawanData();
-      return (Array.isArray(list) ? list : []).filter(k => {
+      const employees = (Array.isArray(list) ? list : []).filter(k => {
         const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
         return /\bKARESTO\b/.test(jabatan) || /\bKA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTAURANT\b/.test(jabatan) || /\bACT\s+KARESTO\b/.test(jabatan) || /\bKASHIFT\b/.test(jabatan) || /\bKA\s+SHIFT\b/.test(jabatan) || /\bACT\s+KASHIFT\b/.test(jabatan) || /\bACT\s+KA\s+SHIFT\b/.test(jabatan);
       });
+      return filterEmployeesToCurrentCoverage(employees, getGromingKaRestoResto);
     }
 
     function getGromingKasirResto(k) {
