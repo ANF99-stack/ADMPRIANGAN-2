@@ -3602,12 +3602,27 @@
       }
 
       const nowMs = Date.now();
+      const actualDateTime = formatWIBTime(nowMs) + ' WIB';
+      const is24JamResto = isResto24JamForCheckin(formattedRestoName);
+      const normalizedShift = String(shifting || '').trim().toUpperCase().replace(/\s+/g, ' ');
+      const jakartaClock = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
+      }).format(new Date(nowMs));
+      const after2300 = jakartaClock > '23:00:00';
+      // Hanya Shift 1 di resto 24 jam yang check-in setelah 23:00
+      // memakai tanggal operasional hari berikutnya. Jam 00:00–02:00 tetap tanggal aktual.
+      const shiftOperationalDay = is24JamResto && normalizedShift === 'SHIFT 1' && after2300;
+      const operationalTimestampMs = nowMs + (shiftOperationalDay ? 24 * 60 * 60 * 1000 : 0);
+      const operationalDateTime = formatWIBTime(operationalTimestampMs) + ' WIB';
       const newRecord = {
         id: 'chk_' + nowMs,
         restoUser: currentUser,
         restoName: formattedRestoName,
-        dateTime: dateTime,
-        timestampMs: nowMs,
+        restoType: is24JamResto ? '24jam' : 'reguler',
+        dateTime: operationalDateTime,
+        actualDateTime: actualDateTime,
+        timestampMs: operationalTimestampMs,
+        actualTimestampMs: nowMs,
         nik: nik,
         nama: nama,
         shifting: shifting,
@@ -4259,19 +4274,47 @@
 
     const operasionalDerivedCache = new WeakMap();
 
+    // Tanggal operasional untuk resto 24 jam: Shift 1 setelah 23:00 masuk hari berikutnya.
+    // Fungsi ini juga menangani riwayat lama yang timestamp-nya masih tanggal aktual,
+    // tanpa mengubah/menghapus record asli di spreadsheet atau cache.
+    function getRecordOperationalInfo(record) {
+      if (!record || typeof record !== 'object') return { ymd: '', date: '', time: '', display: record?.dateTime || '-' };
+      const actualMs = Number(record.actualTimestampMs);
+      const savedMs = Number(record.timestampMs);
+      const sourceMs = Number.isFinite(actualMs) && actualMs > 0 ? actualMs : savedMs;
+      if (!Number.isFinite(sourceMs) || sourceMs <= 0) {
+        const raw = String(record.dateTime || record.tanggalWaktu || '');
+        return { ymd: '', date: '', time: '', display: raw || '-' };
+      }
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone:'Asia/Jakarta', year:'numeric', month:'2-digit', day:'2-digit',
+        hour:'2-digit', minute:'2-digit', second:'2-digit', hourCycle:'h23'
+      }).formatToParts(new Date(sourceMs));
+      const get = type => parts.find(p=>p.type===type)?.value || '';
+      let y = Number(get('year')), m = Number(get('month')), d = Number(get('day'));
+      const hour = Number(get('hour')), minute = Number(get('minute')), second = Number(get('second'));
+      const shift = String(record.shifting || record.shiftingName || '').trim().toUpperCase().replace(/\s+/g, ' ');
+      const restoName = formatRestoName(record.restoName || record.resto || record.cabang || '');
+      const timingMap = typeof getRestoMaxCheckinMap === 'function' ? getRestoMaxCheckinMap() : {};
+      const timing = timingMap[restoName] || {};
+      const timingType = String(timing.type || timing.tipe || timing.jenis || '').toLowerCase().replace(/[ _-]/g, '');
+      const is24Jam = String(record.restoType || '').toLowerCase().replace(/[ _-]/g, '').includes('24jam') || ['24jam','24hour','24hours'].includes(timingType);
+      const after2300 = hour > 23 || (hour === 23 && (minute > 0 || second > 0));
+      if (is24Jam && shift === 'SHIFT 1' && after2300) {
+        const next = new Date(Date.UTC(y, m - 1, d + 1));
+        y = next.getUTCFullYear(); m = next.getUTCMonth() + 1; d = next.getUTCDate();
+      }
+      const ymd = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const time = `${get('hour')}:${get('minute')}`;
+      const dateTimeDisplay = `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}, ${time}:${get('second')} WIB`;
+      return { ymd, date: ymd, time, display: dateTimeDisplay };
+    }
+
     function getRecordWIBInfo(record) {
       if (!record || typeof record !== 'object') return { ymd: '', time: '' };
       const cached = operasionalDerivedCache.get(record);
       if (cached) return cached;
-      const ms = Number(record.timestampMs);
-      if (!Number.isFinite(ms)) return { ymd: '', time: '' };
-
-      const parts = new Intl.DateTimeFormat('en-CA', {
-        timeZone:'Asia/Jakarta', year:'numeric', month:'2-digit', day:'2-digit',
-        hour:'2-digit', minute:'2-digit', hour12:false
-      }).formatToParts(new Date(ms));
-      const get = type => parts.find(p=>p.type===type)?.value || '';
-      const info = { ymd:`${get('year')}-${get('month')}-${get('day')}`, date:`${get('year')}-${get('month')}-${get('day')}`, time:`${get('hour')}:${get('minute')}` };
+      const info = getRecordOperationalInfo(record);
       operasionalDerivedCache.set(record, info);
       return info;
     }
@@ -4673,7 +4716,7 @@
         html += `
           <tr style="border-bottom: 1px solid var(--border);">
             <td style="padding:10px 14px; font-weight:700;">${formatRestoName(item.restoName)}</td>
-            <td style="padding:10px 14px;">${item.dateTime}</td>
+            <td style="padding:10px 14px;">${getRecordOperationalInfo(item).display}</td>
             <td style="padding:10px 14px;"><b>${item.nama}</b><br><small style="color:var(--text-muted);">${item.nik}</small></td>
             <td style="padding:10px 14px;">${statusBadge}</td>
             <td style="padding:10px 14px;">${fotoRender}</td>
