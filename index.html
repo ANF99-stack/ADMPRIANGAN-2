@@ -6183,7 +6183,10 @@
         renderFn();
       } catch (err) {
         console.error('Gagal refresh data Groming:', err);
-        alert('Data belum berhasil diperbarui dari server. Periksa koneksi lalu coba Refresh kembali.');
+        const detail = String(err?.message || err || '').trim();
+        alert('Data belum berhasil diperbarui dari server. ' +
+          (detail ? 'Detail: ' + detail + '\\n' : '') +
+          'Periksa koneksi lalu coba Refresh kembali.');
       } finally {
         if (button) {
           button.disabled = false;
