@@ -1371,7 +1371,7 @@
               </div>
               <div id="checkin_duplicate_msg" class="checkin-lock-msg">
                 <i class="fa-solid fa-circle-exclamation"></i>
-                Karyawan ini sudah melakukan check-in hari ini di resto ini. Check-in ulang tidak diperbolehkan kecuali data check-in tersebut dihapus.
+                Resto reguler: check-in hanya sekali per hari. Resto 24 jam: check-in ulang diperbolehkan setelah jeda 5 menit.
               </div>
               <div class="input-group">
                 <label>SHIFTING / KETERANGAN ABSEN</label>
@@ -3120,6 +3120,7 @@
 
     let cameraStream = null;
     let capturedSnapDataUrl = null;
+    let checkinUnlockTimer = null;
 
     function getTodayYMDFromMs(ms = Date.now()) {
       const parts = new Intl.DateTimeFormat('en-CA', {
@@ -3139,6 +3140,51 @@
       });
     }
 
+    // Resto 24 jam boleh check-in ulang pada hari yang sama, tetapi diberi jeda 5 menit
+    // untuk mencegah klik ganda / pengiriman data berulang. Resto reguler tetap terkunci seharian.
+    function isResto24JamForCheckin(restoName) {
+      const target = formatRestoName(restoName);
+      const timingMap = typeof getRestoMaxCheckinMap === 'function' ? getRestoMaxCheckinMap() : {};
+      const timing = Object.keys(timingMap || {}).find(name => formatRestoName(name) === target);
+      if (!timing) return false;
+      const cfg = timingMap[timing];
+      const type = String((cfg && (cfg.type || cfg.tipe || cfg.jenis)) || '').toLowerCase().replace(/[ _-]/g, '');
+      return type === '24jam' || type === '24hour' || type === '24hours';
+    }
+
+    function getCheckinCooldownRemainingMs(nik, restoName) {
+      const normalizedNik = String(nik || '').trim().toLowerCase();
+      const normalizedResto = formatRestoName(restoName);
+      if (!normalizedNik || !normalizedResto) return 0;
+      const records = getStoredCheckinData().filter(record =>
+        String(record.nik || '').trim().toLowerCase() === normalizedNik &&
+        formatRestoName(record.restoName) === normalizedResto
+      );
+      const latestTime = records.reduce((latest, record) => {
+        const rawTime = record.timestampMs || record.timestamp || record.dateTime || record.tanggalWaktu || '';
+        let time = typeof rawTime === 'number' ? rawTime : Date.parse(rawTime);
+        if (!Number.isFinite(time) && record.dateTime) time = Date.parse(String(record.dateTime).replace(/(\d{2})\.(\d{2})\.(\d{4})/, '$3-$2-$1'));
+        return Number.isFinite(time) ? Math.max(latest, time) : latest;
+      }, 0);
+      return latestTime > 0 ? Math.max(0, (5 * 60 * 1000) - (Date.now() - latestTime)) : 0;
+    }
+
+    function isCheckinDuplicateLocked(nik, restoName) {
+      const normalizedNik = String(nik || '').trim().toLowerCase();
+      const normalizedResto = formatRestoName(restoName);
+      if (!normalizedNik || !normalizedResto) return false;
+      const records = getStoredCheckinData().filter(record =>
+        String(record.nik || '').trim().toLowerCase() === normalizedNik &&
+        formatRestoName(record.restoName) === normalizedResto
+      );
+
+      if (!isResto24JamForCheckin(restoName)) {
+        return records.some(record => getRecordWIBInfo(record).ymd === getTodayYMDFromMs());
+      }
+
+      return getCheckinCooldownRemainingMs(nik, restoName) > 0;
+    }
+
     function isPhotoRequiredForCurrentCheckin() {
       const shift = document.getElementById('checkin_shifting')?.value || 'SHIFT 1';
       return !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(String(shift).toUpperCase());
@@ -3156,9 +3202,25 @@
       const nik = document.getElementById('checkin_nik')?.value.trim() || '';
       const rawName = localStorage.getItem('resto_user_name') ||
                       localStorage.getItem('resto_current_user') || '';
-      const duplicate = hasCheckinForToday(nik, formatRestoName(rawName));
+      const normalizedRestoName = formatRestoName(rawName);
+      const duplicate = isCheckinDuplicateLocked(nik, normalizedRestoName);
       const photoRequired = isPhotoRequiredForCurrentCheckin();
       const photoReady = hasValidCapturedCheckinPhoto();
+
+      if (checkinUnlockTimer) {
+        clearTimeout(checkinUnlockTimer);
+        checkinUnlockTimer = null;
+      }
+      if (duplicate && isResto24JamForCheckin(normalizedRestoName)) {
+        const remaining = getCheckinCooldownRemainingMs(nik, normalizedRestoName);
+        if (remaining > 0) {
+          checkinUnlockTimer = setTimeout(() => {
+            checkinUnlockTimer = null;
+            updateCheckinSubmitButtonState();
+            updateCheckinDuplicateLock();
+          }, remaining + 100);
+        }
+      }
 
       btn.disabled = duplicate || (photoRequired && !photoReady);
 
@@ -3179,7 +3241,7 @@
     function updateCheckinDuplicateLock() {
       const nik=document.getElementById('checkin_nik')?.value.trim()||'';
       const rawName=localStorage.getItem('resto_user_name')||localStorage.getItem('resto_current_user')||'';
-      const locked=hasCheckinForToday(nik,formatRestoName(rawName));
+      const locked=isCheckinDuplicateLocked(nik,formatRestoName(rawName));
       const msg=document.getElementById('checkin_duplicate_msg');
       if(msg)msg.classList.toggle('active',locked);
       updateCheckinSubmitButtonState();
@@ -3505,9 +3567,13 @@
         return;
       }
 
-      if (hasCheckinForToday(nik, formattedRestoName)) {
+      if (isCheckinDuplicateLocked(nik, formattedRestoName)) {
         updateCheckinDuplicateLock();
-        alert('Karyawan tersebut sudah melakukan check-in hari ini. Check-in ulang tidak diperbolehkan.');
+        if (isResto24JamForCheckin(formattedRestoName)) {
+          alert('Check-in baru saja dilakukan. Silakan tunggu 5 menit sebelum check-in kembali untuk menghindari double check-in.');
+        } else {
+          alert('Karyawan tersebut sudah melakukan check-in hari ini. Check-in ulang tidak diperbolehkan untuk resto reguler.');
+        }
         return;
       }
 
