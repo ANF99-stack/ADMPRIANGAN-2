@@ -380,6 +380,23 @@
       scrollbar-width: none;
     }
     .app-navbar::-webkit-scrollbar { display: none; }
+    /* Navigasi PSD/SPV dapat digeser horizontal pada layar kecil. */
+    .app-navbar.horizontal-scroll-nav {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      flex-wrap: nowrap;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+      touch-action: pan-x;
+      scrollbar-width: thin;
+    }
+    .app-navbar.horizontal-scroll-nav > .nav-item,
+    .app-navbar.horizontal-scroll-nav > .admin-nav-group {
+      flex: 0 0 auto;
+    }
+    .app-navbar.horizontal-scroll-nav::-webkit-scrollbar { display: block; height: 4px; }
 
     .admin-nav-group {
       position: relative;
@@ -428,6 +445,15 @@
     .admin-nav-group-menu .nav-item span {
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    /* Dropdown navigasi PSD/SPV tidak menambah scroll vertikal pada bar menu. */
+    .admin-nav-group-menu.dropdown-floating {
+      position: fixed;
+      top: var(--nav-dropdown-top, 110px);
+      left: var(--nav-dropdown-left, 12px);
+      max-height: min(70vh, 420px);
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .nav-item {
@@ -985,6 +1011,9 @@
       }
 
       .app-nav-container { padding: 8px 14px; top: 61px; }
+      .app-navbar.horizontal-scroll-nav { gap: 6px; padding: 5px; border-radius: 12px; }
+      .app-navbar.horizontal-scroll-nav > .nav-item,
+      .app-navbar.horizontal-scroll-nav > .admin-nav-group > summary { padding: 8px 11px; font-size: 0.74rem; }
       .nav-item { padding: 8px 14px; font-size: 0.8rem; border-radius: 10px; }
 
       main { padding: 16px; }
@@ -4699,7 +4728,7 @@
           <div class="nav-item active" onclick="switchRoleNav('page-spv-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
           <div class="nav-item" onclick="switchSupervisorOmsetArea(this)"><i class="fa-solid fa-chart-column"></i><span>OMSET AREA</span></div>
           <details class="admin-nav-group">
-            <summary><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
+            <summary><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
             <div class="admin-nav-group-menu">
               <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
               <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
@@ -4712,11 +4741,21 @@
       } else if (role === 'psd') {
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-psd-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
-          <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
-          <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
-          <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
-          <div class="nav-item" onclick="switchRoleNav('page-groming-kasir', this)"><i class="fa-solid fa-user-clock"></i><span>GROMING KASIR</span></div>
-          <div class="nav-item" onclick="switchRoleNav('page-groming-karesto', this)"><i class="fa-solid fa-user-tie"></i><span>GROMING KARESTO</span></div>
+          <details class="admin-nav-group">
+            <summary><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
+            <div class="admin-nav-group-menu">
+              <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
+              <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
+              <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
+            </div>
+          </details>
+          <details class="admin-nav-group">
+            <summary><i class="fa-solid fa-users"></i><span>GROMING</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
+            <div class="admin-nav-group-menu">
+              <div class="nav-item" onclick="switchRoleNav('page-groming-kasir', this)"><i class="fa-solid fa-user-clock"></i><span>GROMING KASIR</span></div>
+              <div class="nav-item" onclick="switchRoleNav('page-groming-karesto', this)"><i class="fa-solid fa-user-tie"></i><span>GROMING KARESTO</span></div>
+            </div>
+          </details>
         `;
       } else if (isAERole(role)) {
         html = `
@@ -4728,16 +4767,28 @@
       } else {
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-user-laporan', this)"><i class="fa-solid fa-folder-open"></i><span>Laporan Cabang</span></div>
-          <div class="nav-item" onclick="switchRoleNav('page-user-checkin', this)"><i class="fa-solid fa-camera"></i><span>CHECKIN KARYAWAN</span></div>
+          <details class="admin-nav-group branch-checking-group">
+            <summary><i class="fa-solid fa-clipboard-check"></i><span>CHECKING KARYAWAN</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
+            <div class="admin-nav-group-menu">
+              <div class="nav-item" onclick="switchRoleNav('page-user-checkin', this)"><i class="fa-solid fa-camera"></i><span>CHECKIN KARYAWAN</span></div>
+              <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
+            </div>
+          </details>
         `;
       }
 
       appNavbarItems.innerHTML = html;
+      // Aktifkan geser kiri/kanan untuk navigasi PSD, SPV, dan user cabang.
+      appNavbarItems.classList.toggle('horizontal-scroll-nav', role === 'psd' || role === 'supervisor' || role === 'user' || role === 'cabang');
+      appNavbarItems.scrollLeft = 0;
     }
 
     function closeAdminNavGroups(exceptGroup = null) {
       document.querySelectorAll('#app-navbar-items .admin-nav-group[open]').forEach(group => {
-        if (group !== exceptGroup) group.removeAttribute('open');
+        if (group !== exceptGroup) {
+          group.removeAttribute('open');
+          group.querySelector('.admin-nav-group-menu')?.classList.remove('dropdown-floating');
+        }
       });
     }
 
@@ -4750,7 +4801,24 @@
         }
 
         if (event.target.closest('summary')) {
-          setTimeout(() => closeAdminNavGroups(group), 0);
+          setTimeout(() => {
+            closeAdminNavGroups(group);
+            const menu = group.querySelector('.admin-nav-group-menu');
+            if (menu) {
+              const rect = group.querySelector('summary').getBoundingClientRect();
+              const isHorizontalNav = document.getElementById('app-navbar-items')?.classList.contains('horizontal-scroll-nav');
+              menu.classList.toggle('dropdown-floating', !!isHorizontalNav && group.hasAttribute('open'));
+              if (isHorizontalNav && group.hasAttribute('open')) {
+                const menuWidth = Math.min(300, window.innerWidth - 24);
+                const left = Math.max(12, Math.min(rect.left, window.innerWidth - menuWidth - 12));
+                menu.style.setProperty('--nav-dropdown-left', left + 'px');
+                menu.style.setProperty('--nav-dropdown-top', Math.min(rect.bottom + 6, window.innerHeight - 120) + 'px');
+                menu.style.minWidth = menuWidth + 'px';
+              } else if (menu) {
+                menu.style.removeProperty('min-width');
+              }
+            }
+          }, 0);
         }
       });
       window.__adminNavDropdownBound = true;
@@ -4781,6 +4849,7 @@
 
     function switchRoleNav(pageId, element) {
       stopCameraStream();
+      closeAdminNavGroups();
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
       document.querySelectorAll('.role-page-content').forEach(page => page.style.display = 'none');
       element.classList.add('active');
@@ -6066,11 +6135,22 @@
       const list = getStoredKaryawanData();
       const role = localStorage.getItem('resto_user_role') || 'user';
       const currentUser = localStorage.getItem('resto_current_user') || '';
-      if (role !== 'supervisor') return list.slice();
+      if (role === 'supervisor') {
+        const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
+        const coverageNames = (spvIndiv.resto_names || '').split(',').map(s => formatRestoName(s)).filter(Boolean);
+        return list.filter(k => coverageNames.includes(formatRestoName(k.resto || k.restoName || k.cabang)));
+      }
 
-      const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
-      const coverageNames = (spvIndiv.resto_names || '').split(',').map(s => formatRestoName(s)).filter(Boolean);
-      return list.filter(k => coverageNames.includes(formatRestoName(k.resto || k.restoName || k.cabang)));
+      // User cabang hanya melihat karyawan dari resto yang ditetapkan ke akun cabang tersebut.
+      if (role === 'user' || role === 'cabang') {
+        const currentResto = formatRestoName(
+          localStorage.getItem('resto_user_name') ||
+          localStorage.getItem('resto_current_user') || ''
+        );
+        if (!currentResto) return [];
+        return list.filter(k => formatRestoName(k.resto || k.restoName || k.cabang) === currentResto);
+      }
+      return list.slice();
     }
 
     function populateCheckKaryawanJabatanFilter(employees) {
@@ -6222,7 +6302,12 @@
       return `<span class="gk-time">${escapeHtml(time.replace(':','.'))}</span>`;
     }
 
+    let gromingRefreshInProgress = false;
+
     async function refreshGromingDataAndRender(renderFn, buttonSelector, monthSelector) {
+      // Hindari permintaan getInitialData bertumpuk saat tombol refresh diklik berulang.
+      if (gromingRefreshInProgress) return;
+      gromingRefreshInProgress = true;
       const button = buttonSelector ? document.querySelector(buttonSelector) : null;
       const originalHtml = button ? button.innerHTML : '';
       if (button) {
@@ -6233,7 +6318,8 @@
       try {
         const result = await gasRequestJson(
           { action: "getInitialData", includeCheckinPhotos: false },
-          { timeoutMs: 18000, retries: 2, retryDelayMs: 700 }
+          // getInitialData dapat memuat data banyak; beri waktu lebih longgar.
+          { timeoutMs: 60000, retries: 2, retryDelayMs: 1000 }
         );
         if (!result || result.status !== "success") {
           throw new Error(result?.message || 'Server tidak mengembalikan data terbaru.');
