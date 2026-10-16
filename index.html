@@ -4789,6 +4789,12 @@
       if (targetPage) targetPage.style.display = 'block';
 
       if (pageId === 'page-check-karyawan') {
+        // Saat halaman dibuka, filter tanggal langsung ke hari ini.
+        const checkToday = getTodayYMD();
+        const checkStart = document.getElementById('check_karyawan_date_start');
+        const checkEnd = document.getElementById('check_karyawan_date_end');
+        if (checkStart) checkStart.value = checkToday;
+        if (checkEnd) checkEnd.value = checkToday;
         renderCheckKaryawanPage();
       } else if (pageId === 'page-user-checkin') {
         updateCheckinSwitchUI();
@@ -4801,6 +4807,12 @@
         hidePsdAdmRestoSubPage();
       } else if (pageId === 'page-shared-operasional') {
         updateCheckinSwitchUI();
+        // Set filter tanggal ke hari ini setiap kali halaman dibuka.
+        const opToday = getTodayYMD();
+        const opStart = document.getElementById('op_start_date_filter');
+        const opEnd = document.getElementById('op_end_date_filter');
+        if (opStart) opStart.value = opToday;
+        if (opEnd) opEnd.value = opToday;
         setupOperasionalDateFilterLimits();
         populateOperasionalDashboardMonths();
         filterOperasionalCategory('ALL');
@@ -6740,6 +6752,12 @@
         document.getElementById('page-check-karyawan').style.display = 'none';
         document.getElementById('page-shared-operasional').style.display = 'block';
         updateCheckinSwitchUI();
+        // Set filter tanggal ke hari ini setiap kali halaman dibuka.
+        const opToday = getTodayYMD();
+        const opStart = document.getElementById('op_start_date_filter');
+        const opEnd = document.getElementById('op_end_date_filter');
+        if (opStart) opStart.value = opToday;
+        if (opEnd) opEnd.value = opToday;
         setupOperasionalDateFilterLimits();
         populateOperasionalDashboardMonths();
         filterOperasionalCategory('ALL');
@@ -6748,6 +6766,12 @@
         document.getElementById('page-shared-operasional').style.display = 'none';
         document.getElementById('page-daftar-karyawan').style.display = 'none';
         document.getElementById('page-check-karyawan').style.display = 'block';
+        // Saat halaman dibuka, tampilkan data untuk hari ini secara default.
+        const checkToday = getTodayYMD();
+        const checkStart = document.getElementById('check_karyawan_date_start');
+        const checkEnd = document.getElementById('check_karyawan_date_end');
+        if (checkStart) checkStart.value = checkToday;
+        if (checkEnd) checkEnd.value = checkToday;
         renderCheckKaryawanPage();
       } else if (pageId === 'page-daftar-karyawan') {
         document.getElementById('admin-view').style.display = 'none';
