@@ -429,15 +429,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .cabang-checkin-nav-group { position: relative; flex: 0 1 auto; min-width: 0; }
-    .cabang-checkin-nav-group > summary { list-style: none; cursor: pointer; padding: 10px 14px; font-size: .78rem; font-weight: 800; color: var(--text-muted); border-radius: 10px; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
-    .cabang-checkin-nav-group > summary::-webkit-details-marker { display:none; }
-    @media (max-width: 768px) {
-      .cabang-checkin-nav-group { max-width: 100%; }
-      .cabang-checkin-nav-group > summary { white-space: normal; padding: 8px 10px; font-size: .76rem; }
-      .cabang-checkin-nav-group .admin-nav-group-menu { left: 0; right: auto; min-width: min(245px, calc(100vw - 32px)); max-width: calc(100vw - 32px); }
-      .cabang-checkin-nav-group .admin-nav-group-menu .nav-item { white-space: normal; }
-    }
 
     .nav-item {
       padding: 10px 20px;
@@ -993,13 +984,8 @@
         border-radius: 10px;
       }
 
-      .app-nav-container { padding: 8px 10px; top: 61px; width:100%; max-width:100%; overflow:visible; }
-      .app-navbar { width:100%; max-width:100%; min-width:0; box-sizing:border-box; display:flex; flex-wrap:wrap; gap:5px; padding:5px; overflow:visible; }
-      .nav-item { padding: 8px 10px; font-size: 0.76rem; border-radius: 10px; white-space:normal; min-width:0; max-width:100%; flex:0 1 auto; }
-      .nav-item span { overflow-wrap:anywhere; }
-      .admin-nav-group { min-width:0; max-width:100%; }
-      .admin-nav-group > summary { white-space:normal; padding:8px 9px; font-size:.72rem; gap:5px; }
-      .admin-nav-group-menu { left:0; right:auto; max-width:min(300px, calc(100vw - 24px)); }
+      .app-nav-container { padding: 8px 14px; top: 61px; }
+      .nav-item { padding: 8px 14px; font-size: 0.8rem; border-radius: 10px; }
 
       main { padding: 16px; }
       .user-banner, .supervisor-banner, .psd-banner { padding: 22px; border-radius: 18px; margin-bottom: 20px; }
@@ -1116,8 +1102,6 @@
     .ae-btn{border:0;border-radius:10px;padding:10px 14px;background:#b91c1c;color:#fff;font-weight:800;cursor:pointer;margin-top:12px}
     .ae-btn.secondary{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0}
     .ae-table-wrap{overflow:auto;border:1px solid #e2e8f0;border-radius:12px;margin-top:12px}
-    #ae-live-pos-transactions{max-height:280px;overflow-y:auto;overscroll-behavior:contain}
-    #ae-live-pos-transactions .ae-table thead th{position:sticky;top:0;z-index:2}
     .ae-table{width:100%;border-collapse:collapse;min-width:570px;font-size:.78rem}
     .ae-table th,.ae-table td{text-align:left;padding:10px 12px;border-bottom:1px solid #eef2f7;white-space:nowrap}
     .ae-table th{background:#f8fafc;color:#475569;font-size:.7rem;text-transform:uppercase}
@@ -1129,13 +1113,15 @@
     .ae-brand-tabs button.active{background:#7f1d1d;color:#fff;border-color:#7f1d1d}
 
     @media(max-width:850px){.ae-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.ae-layout{grid-template-columns:1fr}}
-    @media(max-width:480px){
-      #main-app-navbar,.app-nav-container,#app-navbar-items{width:100%;max-width:100%;min-width:0}
-      #app-navbar-items{flex-wrap:wrap;justify-content:flex-start}
-      #app-navbar-items .admin-nav-group{flex:0 1 auto}
-      #app-navbar-items .admin-nav-group-menu{max-width:calc(100vw - 24px);box-sizing:border-box}
-    }
     @media(max-width:600px){.ae-hero{padding:20px}.ae-hero h2{font-size:1.25rem}.ae-kpi{padding:13px}.ae-kpi strong{font-size:1.1rem}.ae-form-grid{grid-template-columns:1fr}.ae-kpi small{font-size:.64rem}}
+
+    /* OMSET AREA dashboard */
+    .oa-wrap{color:#14213d;font-family:inherit}.oa-hero{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}.oa-title{font-size:clamp(1.35rem,2.4vw,2rem);font-weight:900;margin:0;color:#14213d}.oa-subtitle{margin:5px 0 0;color:#64748b;font-size:.9rem}.oa-btn{border:1px solid #dbe4ef;border-radius:10px;background:#fff;padding:10px 13px;font-weight:800;color:#334155;cursor:pointer}.oa-btn.primary{background:linear-gradient(135deg,#ef233c,#c1121f);color:white;border:0}.oa-btn.export{background:#ecfdf5;color:#047857;border-color:#a7f3d0}.oa-filter,.oa-card{background:#fff;border:1px solid #e4eaf2;border-radius:16px;box-shadow:0 5px 18px rgba(15,23,42,.045)}.oa-filter{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr)) auto;gap:12px;padding:15px;margin-bottom:16px;align-items:end}.oa-field label{display:block;font-size:.75rem;font-weight:800;color:#64748b;margin-bottom:6px}.oa-field input,.oa-field select{width:100%;min-width:0;border:1px solid #dbe3ed;border-radius:9px;padding:10px;background:#fff;color:#172554;box-sizing:border-box}.oa-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}.oa-kpi{padding:17px;position:relative;overflow:hidden}.oa-kpi:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#ef233c}.oa-kpi:nth-child(2):before{background:#f59e0b}.oa-kpi:nth-child(3):before{background:#10b981}.oa-kpi:nth-child(4):before{background:#6366f1}.oa-kpi-label{font-size:.78rem;color:#64748b;font-weight:800}.oa-kpi-value{font-size:clamp(1.05rem,1.7vw,1.65rem);font-weight:900;margin-top:8px;overflow-wrap:anywhere}.oa-kpi-note{font-size:.75rem;color:#64748b;margin-top:5px}.oa-panels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}.oa-card{padding:16px;min-width:0}.oa-card-title{font-size:1rem;font-weight:900;margin:0 0 14px;display:flex;align-items:center;gap:9px}.oa-card-title i{color:#e11d2e}.oa-chart{width:100%;height:auto;display:block;min-height:190px}.oa-zone-row{display:grid;grid-template-columns:105px 1fr 48px;gap:8px;align-items:center;margin:15px 0;font-size:.78rem}.oa-track{height:10px;border-radius:99px;background:#eef2f7;overflow:hidden}.oa-track span{height:100%;display:block;border-radius:99px}.oa-bottom{display:block;margin-bottom:16px}.oa-bottom>.oa-card{width:100%;box-sizing:border-box}.oa-table-wrap{overflow:auto;max-width:100%;border:1px solid #e5eaf1;border-radius:11px}.oa-table{border-collapse:separate;border-spacing:0;width:100%;min-width:850px;font-size:.78rem;white-space:nowrap;table-layout:auto}.oa-average-row{display:none}
+      .oa-table th,.oa-table td{padding:8px 9px}.oa-table th:nth-child(2),.oa-table td:nth-child(2){min-width:175px}.oa-table th:nth-child(3),.oa-table td:nth-child(3),.oa-table th:nth-child(4),.oa-table td:nth-child(4),.oa-table th:nth-child(5),.oa-table td:nth-child(5){min-width:115px}.oa-table th{background:#f1f5f9;color:#334155;font-weight:900;text-align:left;padding:11px 10px;position:sticky;top:0;z-index:1;cursor:pointer}.oa-table td{padding:10px;border-top:1px solid #edf1f6}.oa-table tbody tr:hover{background:#fff7f7}.oa-zone{display:inline-flex;border-radius:99px;padding:5px 9px;font-size:.68rem;font-weight:900}.oa-green{background:#dcfce7;color:#15803d}.oa-yellow{background:#fef3c7;color:#92400e}.oa-red{background:#fee2e2;color:#b91c1c}.oa-rank-row{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #edf1f6;font-size:.78rem}.oa-rank-row:last-child{border:0}.oa-rank-num{background:#f1f5f9;border-radius:7px;text-align:center;padding:5px;font-weight:900}.oa-rank-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}.oa-muted{color:#64748b;font-size:.8rem}.oa-table-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.oa-table-tools input{border:1px solid #dbe3ed;border-radius:9px;padding:10px;min-width:200px;flex:1}.oa-pagination{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-top:12px}.oa-status{padding:12px;border-radius:10px;background:#f8fafc;color:#64748b;font-size:.85rem}
+    @media(max-width:1200px){.oa-panels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:1000px){.oa-filter{grid-template-columns:repeat(2,minmax(0,1fr))}.oa-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.oa-panels{grid-template-columns:1fr}}
+    @media(max-width:560px){.oa-filter{grid-template-columns:1fr}.oa-kpis{gap:8px}.oa-kpi{padding:13px}.oa-card{padding:12px}.oa-hero .oa-actions{width:100%;display:flex;gap:8px}.oa-hero .oa-actions button{flex:1}}
+
 </style>
 </head>
 <body>
@@ -1330,13 +1316,11 @@
           </div>
 
           <div id="checkin_active_view" class="admin-card-item" style="border: 2px solid var(--lazatto-red); background: #ffffff;">
-            <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px; display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-              <div>
-                <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--lazatto-red); display: flex; align-items: center; gap: 10px;">
-                  <i class="fa-solid fa-camera"></i> CHECKIN KARYAWAN
-                </h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Absensi langsung menggunakan kamera timestamp realtime perangkat.</p>
-              </div>
+            <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px;">
+              <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--lazatto-red); display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-camera"></i> CHECKIN KARYAWAN
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Absensi langsung menggunakan kamera timestamp realtime perangkat.</p>
             </div>
 
             <form onsubmit="submitCheckinKaryawan(event)" style="max-width: 600px;">
@@ -1358,11 +1342,11 @@
               </div>
               <div id="checkin_duplicate_msg" class="checkin-lock-msg">
                 <i class="fa-solid fa-circle-exclamation"></i>
-                Karyawan sudah check-in untuk shift ini pada hari yang sama. Untuk resto 24 jam, shift berbeda (termasuk jumping Shift 1 ke Shift 2/3) tetap dapat diabsen.
+                Karyawan ini sudah melakukan check-in hari ini di resto ini. Check-in ulang tidak diperbolehkan kecuali data check-in tersebut dihapus.
               </div>
               <div class="input-group">
                 <label>SHIFTING / KETERANGAN ABSEN</label>
-                <select id="checkin_shifting" onchange="toggleKameraTimestamp(); updateCheckinDuplicateLock()" required>
+                <select id="checkin_shifting" onchange="toggleKameraTimestamp()" required>
                   <option value="SHIFT 1">SHIFT 1</option>
                   <option value="SHIFT 2">SHIFT 2</option>
                   <option value="SHIFT 3">SHIFT 3</option>
@@ -1965,41 +1949,6 @@
         </div>
       </div>
 
-      <!-- ================= PAGE: RIWAYAT CHECKIN USER CABANG ================= -->
-      <div id="page-user-riwayat-checkin" class="role-page-content" style="display:none;">
-        <div class="admin-card-item" style="border:2px solid #0f766e;background:#ffffff;">
-          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:18px;gap:12px;flex-wrap:wrap;">
-            <div>
-              <h3 style="font-size:1.3rem;font-weight:800;color:#0f766e;display:flex;align-items:center;gap:10px;">
-                <i class="fa-solid fa-clock-rotate-left"></i> RIWAYAT CHECKIN
-              </h3>
-              <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Data check-in karyawan cabang ini untuk tanggal hari ini.</p>
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button type="button" onclick="kembaliKeCheckinCabang()" style="padding:9px 14px;border:1px solid #fecaca;border-radius:10px;background:#fff1f2;color:#b91c1c;font-size:.8rem;font-weight:800;cursor:pointer;">
-                <i class="fa-solid fa-camera"></i> CHECKIN KARYAWAN
-              </button>
-              <button type="button" onclick="refreshRiwayatCheckinCabang()" style="padding:9px 14px;border:1px solid #99f6e4;border-radius:10px;background:#f0fdfa;color:#0f766e;font-size:.8rem;font-weight:800;cursor:pointer;">
-                <i class="fa-solid fa-rotate"></i> Refresh
-              </button>
-            </div>
-          </div>
-          <div class="check-karyawan-stats">
-            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">TOTAL KARYAWAN</div><div id="riwayat_checkin_total_karyawan" class="check-karyawan-stat-value">0</div></div>
-            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">SUDAH CHECK-IN</div><div id="riwayat_checkin_sudah" class="check-karyawan-stat-value" style="color:#15803d;">0</div></div>
-            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">BELUM CHECK-IN</div><div id="riwayat_checkin_belum" class="check-karyawan-stat-value" style="color:#dc2626;">0</div></div>
-            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">CHECK-IN TERBARU</div><div id="riwayat_checkin_terbaru" class="check-karyawan-stat-value" style="font-size:1rem;">-</div></div>
-            <div class="check-karyawan-stat"><div class="check-karyawan-stat-label">NAMA CABANG</div><div id="riwayat_checkin_cabang" class="check-karyawan-stat-value" style="font-size:1rem;">-</div></div>
-          </div>
-          <div class="check-karyawan-table-wrap">
-            <table>
-              <thead><tr><th>No</th><th>NIK</th><th>Nama Karyawan</th><th>Jabatan</th><th>Resto</th><th>Status</th><th>Tanggal</th><th>Jam</th><th>Shift</th></tr></thead>
-              <tbody id="riwayat-checkin-table-body"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
       <!-- ================= SHARED PAGE: CHECK KARYAWAN (ADMIN, PSD, SPV) ================= -->
       <div id="page-check-karyawan" class="role-page-content" style="display:none;">
         <div class="admin-card-item" style="border:2px solid #4338ca;background:#ffffff;">
@@ -2588,7 +2537,7 @@
 
             <div style="padding:12px 14px; background:#fff; border:1px solid #fde68a; border-radius:12px; margin-bottom:16px; color:#78350f; font-size:.78rem; line-height:1.6;">
               <b><i class="fa-solid fa-circle-info"></i> Aturan:</b><br>
-              • <b>REGULER:</b> Shift 1 default <b>06:00</b>, Shift 2 default <b>13:30</b>. Admin tetap dapat mengubah kedua jam tersebut secara global.<br>
+              • <b>REGULER:</b> Shift 1 default <b>06:00</b>, Shift 2 default <b>14:00</b>. Admin tetap dapat mengubah kedua jam tersebut secara global.<br>
               • <b>24 JAM:</b> Admin mengatur <b>Shift 1, Shift 2, Shift 3</b> secara manual. Ketiga jam wajib diisi.<br>
               • Pengaturan hanya berlaku untuk <b>RESTO LAZATTO</b> sesuai tipe resto yang sudah ada. Tidak ada lagi input per resto.<br>
               • Resto/brand selain Lazatto <b>tidak menggunakan</b> batas check-in kasir ini dan tetap mengikuti aturan check-in yang sudah ada.<br>
@@ -2606,7 +2555,7 @@
                     <input id="kasir_global_reg_s1" type="time" value="06:00" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #cbd5e1; border-radius:9px; font-weight:800;">
                   </label>
                   <label style="font-size:.78rem; font-weight:800; color:#475569;">SHIFT 2
-                    <input id="kasir_global_reg_s2" type="time" value="13:30" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #cbd5e1; border-radius:9px; font-weight:800;">
+                    <input id="kasir_global_reg_s2" type="time" value="14:00" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #cbd5e1; border-radius:9px; font-weight:800;">
                   </label>
                 </div>
                 <div style="margin-top:10px; color:#64748b; font-size:.72rem;">Shift 3 tidak digunakan untuk resto reguler.</div>
@@ -2703,7 +2652,7 @@
 
           <div class="admin-card-item" style="border: 2px solid #e0e7ff; background: #f5f3ff;">
             <h4 style="margin-bottom: 12px; font-weight: 800; color: #3730a3;">
-              <i class="fa-solid fa-user-shield"></i> Tambah User Internal (SPV, PSD, Admin, AE)
+              <i class="fa-solid fa-user-shield"></i> Tambah User Internal (SPV, PSD, Admin)
             </h4>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
               <div>
@@ -2724,12 +2673,17 @@
                   <option value="supervisor">Supervisor</option>
                   <option value="psd">PSD</option>
                   <option value="admin">Admin Area</option>
-                  <option value="ae">ACCOUNT EKSEKUTIF (AE)</option>
+                  <option value="ae">Account Executive (AE)</option>
                 </select>
               </div>
               <div id="group_spv_coverage">
                 <label style="font-size: 0.78rem; font-weight: 700; color:#4338ca; display: block; margin-bottom: 4px;">Total Resto Coverage (Maksimal 10 Resto)</label>
                 <input type="number" id="internal_user_coverage" min="1" max="10" value="5" placeholder="10" style="width:100%; padding:10px 14px; border:1.5px solid #c7d2fe; border-radius:10px; background: #ffffff; font-size:0.88rem;">
+              </div>
+              <div id="group_internal_resto_coverage" style="display:none;grid-column:1/-1;">
+                <label style="font-size:.78rem;font-weight:800;color:#4338ca;display:block;margin-bottom:5px;">Coverage Resto (SPV / AE) — pilih dari database</label>
+                <select id="internal_user_coverage_restos" multiple size="6" style="width:100%;padding:10px;border:1.5px solid #c7d2fe;border-radius:10px;background:#fff;font-size:.88rem;min-height:130px;"></select>
+                <small style="display:block;color:#64748b;margin-top:5px;">Gunakan Ctrl (Windows) atau Cmd (Mac) untuk memilih beberapa resto. Maksimal 10 resto.</small>
               </div>
             </div>
             <button onclick="addNewInternalUser()" class="btn-login-submit" style="width: auto; padding: 10px 24px; background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);">
@@ -2743,39 +2697,14 @@
           </div>
         </div>
 
-
-        <!-- PAGE: UPDATE COVERAGE AE -->
-        <div id="page-ae-coverage-update" class="admin-page-content" style="display:none;">
-          <div class="admin-card-item" style="border:2px solid #c7d2fe;background:#fff;">
-            <div style="margin-bottom:18px">
-              <h3 style="font-size:1.25rem;font-weight:900;color:#4338ca"><i class="fa-solid fa-store"></i> UPDATE COVERAGE AE</h3>
-              <p style="font-size:.85rem;color:var(--text-muted);margin-top:5px">Atur minimal 15 resto untuk setiap user dengan role Account Executive (AE). Daftar resto memakai master database aplikasi yang sudah tersedia.</p>
-            </div>
-            <div class="admin-input-grid">
-              <div class="admin-input-group">
-                <label for="ae-coverage-user">Pilih User AE</label>
-                <select id="ae-coverage-user" onchange="loadAECoverageForSelectedUser()"><option value="">-- Pilih User AE --</option></select>
-              </div>
-              <div class="admin-input-group">
-                <label for="ae-coverage-search">Cari Resto</label>
-                <input id="ae-coverage-search" type="search" placeholder="Ketik nama resto..." oninput="filterAECoverageOptions()">
-              </div>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:14px 0 8px">
-              <b>Daftar Coverage Resto</b>
-              <span id="ae-coverage-count" class="ae-tag">0 resto dipilih · minimal 15</span>
-            </div>
-            <div id="ae-coverage-resto-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;max-height:420px;overflow:auto;padding:12px;border:1px solid var(--border);border-radius:12px;background:#f8fafc">
-              <p style="color:var(--text-muted);font-size:.85rem">Memuat daftar resto dari database aplikasi…</p>
-            </div>
-            <div id="ae-coverage-message" role="status" style="margin-top:12px;font-size:.82rem;font-weight:700"></div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
-              <button type="button" class="ae-btn" onclick="saveAECoverage()"><i class="fa-solid fa-floppy-disk"></i> Simpan Coverage AE</button>
-              <button type="button" class="ae-btn secondary" onclick="renderAECoveragePage()"><i class="fa-solid fa-rotate"></i> Muat Ulang</button>
-            </div>
-            <p class="ae-muted" style="margin-top:12px">Catatan: penyimpanan dikirim ke backend aplikasi. Backend Google Apps Script perlu mendukung action <code>saveAECoverage</code> agar data tersimpan permanen dan dapat dibaca kembali lintas perangkat.</p>
-          </div>
-        </div>
+      <section id="page-omset-area" class="admin-page-content oa-wrap" style="display:none">
+        <div class="oa-hero"><div><h2 class="oa-title"><i class="fa-solid fa-chart-column" style="color:#e11d2e"></i> OMSET AREA</h2><p class="oa-subtitle">Monitoring pencapaian omset dan performa seluruh outlet</p></div><div class="oa-actions" style="display:flex;gap:8px;flex-wrap:wrap"><button class="oa-btn" onclick="loadOmsetArea(true)"><i class="fa-solid fa-rotate"></i> Refresh</button><button class="oa-btn export" onclick="exportOmsetAreaExcel()"><i class="fa-solid fa-file-excel"></i> Export Excel</button></div></div>
+        <div class="oa-filter"><div class="oa-field"><label>PERIODE DATA</label><select id="oa-period" onchange="renderOmsetArea()"><option value="current">Data terbaru dari sheet OMSET</option></select></div><div class="oa-field"><label>ZONA</label><select id="oa-zone" onchange="renderOmsetArea()"><option value="ALL">Semua Zona</option><option value="GREEN">Green Zone</option><option value="YELLOW">Yellow Zone</option><option value="RED">Red Zone</option></select></div><div class="oa-field"><label>SPV</label><select id="oa-spv" onchange="renderOmsetArea()"><option value="ALL">Semua SPV</option></select></div><div class="oa-field"><label>CARI OUTLET / ID CABANG</label><input id="oa-search" placeholder="Ketik nama outlet atau ID..." oninput="renderOmsetArea()"></div><button class="oa-btn primary" onclick="renderOmsetArea()"><i class="fa-solid fa-filter"></i> Terapkan</button></div>
+        <div id="oa-status" class="oa-status" style="margin-bottom:14px">Memuat data OMSET dari server...</div>
+        <div class="oa-kpis"><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-coins" style="color:#e11d2e"></i> TOTAL OMSET AREA</div><div id="oa-total-omset" class="oa-kpi-value">Rp0</div><div class="oa-kpi-note">Sesuai filter outlet dan SPV</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-bullseye" style="color:#f59e0b"></i> TOTAL TARGET</div><div id="oa-total-target" class="oa-kpi-value">Rp0</div><div class="oa-kpi-note">Target area dari ringkasan sheet OMSET</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-trophy" style="color:#10b981"></i> ACHIEVEMENT AREA</div><div id="oa-achievement" class="oa-kpi-value">0%</div><div class="oa-kpi-note">Actual area ÷ target area dari sheet OMSET</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-store" style="color:#6366f1"></i> TOTAL OUTLET</div><div id="oa-outlet-count" class="oa-kpi-value">0</div><div class="oa-kpi-note">Outlet yang sesuai filter</div></div></div>
+        <div class="oa-panels"><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-chart-pie"></i> Komposisi Zona Outlet</h3><div id="oa-zone-chart"></div></div><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-people-group"></i> Pencapaian per SPV</h3><div id="oa-spv-chart"></div></div><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-ranking-star"></i> Top 5 Outlet berdasarkan Omset</h3><div id="oa-top-outlet-chart"></div></div></div>
+        <div class="oa-bottom"><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-table-list"></i> Data Omset Outlet</h3><div class="oa-table-tools"><span id="oa-table-count" class="oa-muted">0 outlet</span><span style="flex:1"></span><button class="oa-btn" onclick="exportOmsetAreaExcel()"><i class="fa-solid fa-file-excel"></i> Export Excel</button></div><div id="oa-table" class="oa-table-wrap"></div><div class="oa-pagination"><span id="oa-page-info" class="oa-muted"></span><div style="display:flex;gap:7px"><button class="oa-btn" onclick="changeOmsetAreaPage(-1)">‹ Sebelumnya</button><button class="oa-btn" onclick="changeOmsetAreaPage(1)">Berikutnya ›</button></div></div></div></div>
+      </section>
 
       </div> <!-- CLOSES #admin-view cleanly -->
 
@@ -2784,7 +2713,7 @@
         <div id="page-ae-dashboard" class="role-page-content">
           <div class="ae-hero"><div><h2>Dashboard Account Executive</h2><p>Ringkasan pencapaian big order, event, dan satelit dalam satu tampilan.</p></div><span class="ae-live"><i class="fa-solid fa-circle" style="font-size:.55rem;color:#4ade80"></i> MONITORING AE</span></div>
           <div class="ae-kpis"><div class="ae-kpi"><small>Total Pencapaian AE</small><strong id="ae-total">Rp0</strong><span>Big order + event + satelit</span></div><div class="ae-kpi"><small>Big Order</small><strong id="ae-big-total">Rp0</strong><span>Input yang tercatat</span></div><div class="ae-kpi"><small>Omset Event</small><strong id="ae-event-total">Rp0</strong><span id="ae-event-status">Menunggu integrasi POS</span></div><div class="ae-kpi"><small>Omset Satelit</small><strong id="ae-sat-total">Rp0</strong><span id="ae-sat-status">Menunggu tutup shift POS</span></div></div>
-          <div class="ae-panel" style="margin-top:14px"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0"><i class="fa-solid fa-cash-register" style="color:#2563eb"></i> Realtime Omset Akun POS</h3><span class="ae-tag" id="ae-live-pos-status">Memuat data POS… · update otomatis 15 detik</span></div><div id="ae-live-pos-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px"><p class="ae-muted">Memuat semua akun POS…</p></div><div style="margin-top:18px"><h4 style="margin:0 0 10px">Transaksi Terbaru Semua Akun</h4><div id="ae-live-pos-transactions" class="ae-table-wrap" aria-label="Daftar transaksi terbaru, dapat digulir"></div></div><p class="ae-muted" style="margin-top:8px">Semua akun terdaftar ditampilkan tanpa dropdown. Omset dihitung dari transaksi yang dikirim Web Apps POS dan dicocokkan menggunakan username atau ID akun.</p></div>
+          <div class="ae-panel" style="margin-top:14px"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h3 style="margin:0"><i class="fa-solid fa-cash-register" style="color:#2563eb"></i> Realtime Omset Akun POS</h3><span class="ae-tag" id="ae-live-pos-status">Memuat data POS… · update otomatis 15 detik</span></div><div id="ae-live-pos-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px"><p class="ae-muted">Memuat semua akun POS…</p></div><div style="margin-top:18px"><h4 style="margin:0 0 10px">Transaksi Terbaru Semua Akun</h4><div id="ae-live-pos-transactions" class="ae-table-wrap"></div></div><p class="ae-muted" style="margin-top:8px">Semua akun terdaftar ditampilkan tanpa dropdown. Omset dihitung dari transaksi yang dikirim Web Apps POS dan dicocokkan menggunakan username atau ID akun.</p></div>
           <div class="ae-layout"><div class="ae-panel"><h3><i class="fa-solid fa-chart-column" style="color:#b91c1c"></i> Sumber Pencapaian</h3><div class="ae-bars"><div><div class="ae-bar-head"><span>Big Order</span><b id="ae-big-label">Rp0</b></div><div class="ae-track"><div class="ae-fill" id="ae-big-bar" style="width:0%"></div></div></div><div><div class="ae-bar-head"><span>Event</span><b id="ae-event-label">Rp0</b></div><div class="ae-track"><div class="ae-fill" id="ae-event-bar" style="width:0%;background:linear-gradient(90deg,#2563eb,#38bdf8)"></div></div></div><div><div class="ae-bar-head"><span>Satelit</span><b id="ae-sat-label">Rp0</b></div><div class="ae-track"><div class="ae-fill" id="ae-sat-bar" style="width:0%;background:linear-gradient(90deg,#059669,#34d399)"></div></div></div></div><p class="ae-muted" style="margin-top:16px">Grafik mengikuti data yang tersedia. Omset Event dan Satelit akan menjadi realtime setelah endpoint POS dihubungkan.</p></div><div class="ae-panel"><h3><i class="fa-solid fa-bolt" style="color:#d97706"></i> Status Integrasi</h3><div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #eef2f7"><span class="ae-muted">Input Big Order</span><span class="ae-tag">AKTIF</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #eef2f7"><span class="ae-muted">POS Event</span><span class="ae-tag" style="background:#fef3c7;color:#92400e">MENUNGGU API</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0"><span class="ae-muted">POS Satelit / tutup shift</span><span class="ae-tag" style="background:#fef3c7;color:#92400e">MENUNGGU API</span></div><div class="ae-notice">Angka POS belum ditampilkan sebagai realtime palsu. Diperlukan endpoint GAS/POS dan struktur data transaksi untuk sinkronisasi sebenarnya.</div></div></div>
         </div>
         <div id="page-ae-input" class="role-page-content" style="display:none"><div class="ae-hero"><div><h2>Input Pencapaian</h2><p>Catat big order dan tinjau riwayat pencapaian per hari.</p></div></div><div class="ae-panel"><h3>Input Big Order</h3><form id="ae-big-form"><div class="ae-form-grid"><div class="ae-field"><label>Tanggal</label><input type="date" id="ae-big-date" required></div><div class="ae-field"><label>Resto (bisa pilih lebih dari satu)</label><select id="ae-big-restos" multiple size="5" required></select><small class="ae-muted">Daftar resto diambil dari data aplikasi yang tersedia. Gunakan Ctrl/⌘ untuk memilih beberapa resto.</small></div><div class="ae-field"><label>Nama / Keterangan Order</label><input id="ae-big-name" placeholder="Contoh: Order kantor / katering" required></div><div class="ae-field"><label>Omset (Rp)</label><input id="ae-big-amount" type="number" min="1" step="1" placeholder="0" required></div></div><button class="ae-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan Big Order</button></form></div><div class="ae-panel" style="margin-top:14px"><h3>Riwayat Omset Satelit & Big Order per Hari</h3><div class="ae-form-grid"><div class="ae-field"><label>Filter tanggal</label><input type="date" id="ae-history-date" onchange="renderAEHistory()"></div><div class="ae-field"><label>Sumber</label><select id="ae-history-source" onchange="renderAEHistory()"><option value="ALL">Semua sumber</option><option value="Big Order">Big Order</option><option value="Satelit">Satelit (POS)</option><option value="Event">Event (POS)</option></select></div></div><div id="ae-history-table" class="ae-table-wrap"></div><p class="ae-muted" style="margin-top:8px">Riwayat POS akan terisi otomatis setelah integrasi POS menyediakan data transaksi dan event tutup shift.</p></div></div>
@@ -3170,55 +3099,14 @@
       return `${parts.find(p=>p.type==='year').value}-${parts.find(p=>p.type==='month').value}-${parts.find(p=>p.type==='day').value}`;
     }
 
-    function hasCheckinForToday(nik, restoName, requestedShift) {
-      const normalizedNik = String(nik || '').trim().toLowerCase();
-      const normalizedResto = formatRestoName(restoName);
-      if (!normalizedNik || !normalizedResto) return false;
-
-      const timingMap = typeof getRestoMaxCheckinMap === 'function' ? getRestoMaxCheckinMap() : {};
-      const timing = timingMap[normalizedResto] || timingMap[String(normalizedResto).toUpperCase()] || {};
-      const restoTypeRaw = String(timing.type || timing.tipe || timing.jenis || '');
-      const restoType = restoTypeRaw.toLowerCase().replace(/[\s_-]/g, '');
-      const is24HourResto = ['24jam', '24hour', '24hours'].includes(restoType) || /24\s*jam/i.test(restoTypeRaw);
-      const selectedShift = String(requestedShift || document.getElementById('checkin_shifting')?.value || '')
-        .trim().toUpperCase().replace(/\s+/g, ' ');
-      const today = getTodayYMDFromMs();
-      // Untuk resto 24 jam, kunci mengikuti tanggal rekap yang akan dipakai oleh absensi baru.
-      // Shift 1 pukul 23:00-23:59 direkap ke tanggal berikutnya, jadi tidak terkunci
-      // oleh check-in Shift 1 yang tanggal rekapnya masih hari ini.
-      let requestedRecapDate = today;
-      if (is24HourResto && (selectedShift === 'SHIFT 1' || selectedShift === 'SHIFT1')) {
-        const clockParts = new Intl.DateTimeFormat('en-GB', {
-          timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false
-        }).formatToParts(new Date());
-        const part = type => clockParts.find(p => p.type === type)?.value || '00';
-        const clock = `${part('hour')}:${part('minute')}`;
-        if (clock >= '23:00' && clock <= '23:59') {
-          const dateParts = today.split('-').map(Number);
-          const nextDate = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2] + 1));
-          requestedRecapDate = `${nextDate.getUTCFullYear()}-${String(nextDate.getUTCMonth() + 1).padStart(2, '0')}-${String(nextDate.getUTCDate()).padStart(2, '0')}`;
-        }
-      }
-
-      return getStoredCheckinData().some(record => {
-        if (String(record.nik || record.NIK || '').trim().toLowerCase() !== normalizedNik) return false;
-        if (formatRestoName(record.restoName || record.resto || record.cabang) !== normalizedResto) return false;
-
-        if (is24HourResto) {
-          // Cocokkan tanggal rekap (attendanceDate), bukan tanggal kalender timestamp.
-          // Ini menyelaraskan validasi dengan rekap Shift 1 yang bergeser ke tanggal berikutnya.
-          const existingRecapDate = getRecordWIBInfo(record).ymd;
-          if (existingRecapDate !== requestedRecapDate) return false;
-          // Resto 24 jam mengizinkan jumping antar-shift; shift yang sama pada tanggal rekap
-          // yang sama tetap dianggap duplikat.
-          const existingShift = String(record.shifting || record.shift || '').trim().toUpperCase().replace(/\s+/g, ' ');
-          return !!selectedShift && existingShift === selectedShift;
-        }
-
-        // Untuk resto biasa, aturan satu check-in per tanggal kalender tetap dipertahankan.
-        const ms = Number(record.timestampMs);
-        const actualDate = Number.isFinite(ms) ? getTodayYMDFromMs(ms) : getRecordWIBInfo(record).ymd;
-        return actualDate === today;
+    function hasCheckinForToday(nik, restoName) {
+      const normalizedNik=String(nik||'').trim().toLowerCase();
+      const normalizedResto=formatRestoName(restoName);
+      if(!normalizedNik||!normalizedResto)return false;
+      return getStoredCheckinData().some(record=>{
+        if(String(record.nik||'').trim().toLowerCase()!==normalizedNik)return false;
+        if(formatRestoName(record.restoName)!==normalizedResto)return false;
+        return getRecordWIBInfo(record).ymd===getTodayYMDFromMs();
       });
     }
 
@@ -3239,7 +3127,7 @@
       const nik = document.getElementById('checkin_nik')?.value.trim() || '';
       const rawName = localStorage.getItem('resto_user_name') ||
                       localStorage.getItem('resto_current_user') || '';
-      const duplicate = hasCheckinForToday(nik, formatRestoName(rawName), document.getElementById('checkin_shifting')?.value);
+      const duplicate = hasCheckinForToday(nik, formatRestoName(rawName));
       const photoRequired = isPhotoRequiredForCurrentCheckin();
       const photoReady = hasValidCapturedCheckinPhoto();
 
@@ -3262,7 +3150,7 @@
     function updateCheckinDuplicateLock() {
       const nik=document.getElementById('checkin_nik')?.value.trim()||'';
       const rawName=localStorage.getItem('resto_user_name')||localStorage.getItem('resto_current_user')||'';
-      const locked=hasCheckinForToday(nik,formatRestoName(rawName),document.getElementById('checkin_shifting')?.value);
+      const locked=hasCheckinForToday(nik,formatRestoName(rawName));
       const msg=document.getElementById('checkin_duplicate_msg');
       if(msg)msg.classList.toggle('active',locked);
       updateCheckinSubmitButtonState();
@@ -3588,9 +3476,9 @@
         return;
       }
 
-      if (hasCheckinForToday(nik, formattedRestoName, shifting)) {
+      if (hasCheckinForToday(nik, formattedRestoName)) {
         updateCheckinDuplicateLock();
-        alert('Karyawan sudah check-in untuk shift yang dipilih pada hari ini. Pilih shift yang sesuai; resto 24 jam dapat melakukan check-in untuk shift berbeda.');
+        alert('Karyawan tersebut sudah melakukan check-in hari ini. Check-in ulang tidak diperbolehkan.');
         return;
       }
 
@@ -3619,53 +3507,12 @@
       }
 
       const nowMs = Date.now();
-      // Resto 24 jam: Shift 1 yang check-in pada penghujung hari sebelum pergantian tanggal
-      // (mulai 23:00 sampai 23:59) direkap ke tanggal berikutnya. Check-in pukul 00:00
-      // dan setelahnya tetap direkap pada tanggal kalender yang sama. Batas maksimal check-in tidak diubah.
-      let attendanceDate = getTodayYMDFromMs(nowMs);
-      const timePartsForAttendance = new Intl.DateTimeFormat('en-GB', {
-        timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false
-      }).formatToParts(new Date(nowMs));
-      const getAttendancePart = type => timePartsForAttendance.find(p => p.type === type)?.value || '00';
-      const attendanceClock = `${getAttendancePart('hour')}:${getAttendancePart('minute')}`;
-      const timingMapForAttendance = getRestoMaxCheckinMap();
-      const timingForAttendance = timingMapForAttendance[formattedRestoName] ||
-        timingMapForAttendance[String(formattedRestoName).toUpperCase()] || {};
-      const typeForAttendance = String(timingForAttendance.type || timingForAttendance.tipe || timingForAttendance.jenis || '')
-        .toLowerCase().replace(/[ _-]/g, '');
-      const is24HourAttendance = typeForAttendance.includes('24jam') ||
-        typeForAttendance.includes('24hour') || typeForAttendance.includes('24hours');
-      if (is24HourAttendance &&
-          String(shifting).trim().toUpperCase().replace(/\s+/g, ' ') === 'SHIFT 1' &&
-          attendanceClock >= '23:00' && attendanceClock <= '23:59') {
-        const dateParts = attendanceDate.split('-').map(Number);
-        const nextDate = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2] + 1));
-        attendanceDate = nextDate.getUTCFullYear() + '-' +
-          String(nextDate.getUTCMonth() + 1).padStart(2, '0') + '-' +
-          String(nextDate.getUTCDate()).padStart(2, '0');
-      }
-
-      // Sertakan tipe resto dari konfigurasi timing frontend agar backend
-      // dapat membedakan resto reguler dan resto 24 jam saat menyimpan check-in.
-      const restoTimingMapForCheckin = typeof getRestoMaxCheckinMap === 'function' ? getRestoMaxCheckinMap() : {};
-      const normalizedRestoKey = formatRestoName(formattedRestoName);
-      const restoTimingForCheckin = restoTimingMapForCheckin[normalizedRestoKey]
-        || restoTimingMapForCheckin[String(normalizedRestoKey).toUpperCase()]
-        || {};
-      const restoTypeRawForCheckin = String(
-        restoTimingForCheckin.type || restoTimingForCheckin.tipe || restoTimingForCheckin.jenis || ''
-      ).toLowerCase().replace(/[\\s_-]/g, '');
-      const restoTypeForCheckin = ['24jam', '24hour', '24hours'].includes(restoTypeRawForCheckin)
-        ? '24jam' : 'reguler';
-
       const newRecord = {
         id: 'chk_' + nowMs,
         restoUser: currentUser,
         restoName: formattedRestoName,
-        restoType: restoTypeForCheckin,
         dateTime: dateTime,
         timestampMs: nowMs,
-        attendanceDate: attendanceDate,
         nik: nik,
         nama: nama,
         shifting: shifting,
@@ -4322,33 +4169,14 @@
       const cached = operasionalDerivedCache.get(record);
       if (cached) return cached;
       const ms = Number(record.timestampMs);
-      if (!Number.isFinite(ms)) return { ymd: '', date: '', time: '' };
+      if (!Number.isFinite(ms)) return { ymd: '', time: '' };
 
       const parts = new Intl.DateTimeFormat('en-CA', {
         timeZone:'Asia/Jakarta', year:'numeric', month:'2-digit', day:'2-digit',
         hour:'2-digit', minute:'2-digit', hour12:false
       }).formatToParts(new Date(ms));
       const get = type => parts.find(p=>p.type===type)?.value || '';
-      const timestampDate = `${get('year')}-${get('month')}-${get('day')}`;
-      let effectiveDate = /^\d{4}-\d{2}-\d{2}$/.test(String(record.attendanceDate || ''))
-        ? String(record.attendanceDate) : timestampDate;
-
-      // Kompatibilitas data lama: jika AttendanceDate belum tersimpan di Sheets,
-      // hitung ulang tanggal laporan untuk Shift 1 di resto 24 jam.
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(record.attendanceDate || ''))) {
-        const shift = String(record.shifting || record.shift || '').toUpperCase().replace(/\s+/g, ' ').trim();
-        const restoKey = formatRestoName(record.restoName || record.resto || record.cabang || '');
-        const timingMap = typeof getRestoMaxCheckinMap === 'function' ? getRestoMaxCheckinMap() : {};
-        const timing = timingMap[restoKey] || {};
-        const restoType = String(timing.type || timing.tipe || timing.jenis || '').toLowerCase().replace(/[\s_-]/g, '');
-        const is24Hour = ['24jam', '24hour', '24hours'].includes(restoType) || /24\s*jam/i.test(String(timing.type || timing.tipe || timing.jenis || ''));
-        if (is24Hour && (shift === 'SHIFT 1' || shift === 'SHIFT1') && `${get('hour')}:${get('minute')}` >= '23:00' && `${get('hour')}:${get('minute')}` <= '23:59') {
-          const dateParts = timestampDate.split('-').map(Number);
-          const nextDate = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2] + 1));
-          effectiveDate = `${nextDate.getUTCFullYear()}-${String(nextDate.getUTCMonth() + 1).padStart(2, '0')}-${String(nextDate.getUTCDate()).padStart(2, '0')}`;
-        }
-      }
-      const info = { ymd:effectiveDate, date:effectiveDate, time:`${get('hour')}:${get('minute')}` };
+      const info = { ymd:`${get('year')}-${get('month')}-${get('day')}`, date:`${get('year')}-${get('month')}-${get('day')}`, time:`${get('hour')}:${get('minute')}` };
       operasionalDerivedCache.set(record, info);
       return info;
     }
@@ -4389,7 +4217,7 @@
         return null;
       }
       if (shift === 'SHIFT 1') return cfg.s1 || '06:00';
-      if (shift === 'SHIFT 2') return cfg.s2 || '13:30';
+      if (shift === 'SHIFT 2') return cfg.s2 || '14:00';
       return null;
     }
 
@@ -4680,19 +4508,7 @@
       const endDate = document.getElementById('op_end_date_filter')?.value || getTodayYMD();
 
       filtered = filtered.filter(item => {
-        // Operasional Resto harus tetap menampilkan check-in pada hari aktual
-        // saat karyawan absen, meskipun tanggal pencatatannya untuk Shift 1
-        // resto 24 jam diarahkan ke hari berikutnya.
-        const ms = Number(item.timestampMs);
-        let actualYMD = '';
-        if (Number.isFinite(ms)) {
-          const parts = new Intl.DateTimeFormat('en-CA', {
-            timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit'
-          }).formatToParts(new Date(ms));
-          const getPart = type => parts.find(p => p.type === type)?.value || '';
-          actualYMD = `${getPart('year')}-${getPart('month')}-${getPart('day')}`;
-        }
-        const itemYMD = actualYMD || getRecordWIBInfo(item).ymd;
+        const itemYMD = getRecordWIBInfo(item).ymd;
         return !itemYMD || (itemYMD >= startDate && itemYMD <= endDate);
       });
 
@@ -4762,7 +4578,7 @@
         html += `
           <tr style="border-bottom: 1px solid var(--border);">
             <td style="padding:10px 14px; font-weight:700;">${formatRestoName(item.restoName)}</td>
-            <td style="padding:10px 14px;">${(() => { const info = getRecordWIBInfo(item); const p = String(info.ymd || '').split('-'); const displayDate = p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : (item.dateTime || '-'); const rawTime = String(item.dateTime || '').match(/\b\d{2}:\d{2}:\d{2}\b/); const displayTime = rawTime ? rawTime[0] : (info.time || ''); return `${displayDate}, ${displayTime} WIB`; })()}</td>
+            <td style="padding:10px 14px;">${item.dateTime}</td>
             <td style="padding:10px 14px;"><b>${item.nama}</b><br><small style="color:var(--text-muted);">${item.nik}</small></td>
             <td style="padding:10px 14px;">${statusBadge}</td>
             <td style="padding:10px 14px;">${fotoRender}</td>
@@ -4773,12 +4589,80 @@
       tbody.innerHTML = html;
     }
 
+    // OMSET AREA: data dibaca dari sheet sumber tanpa menulis/mengubah data spreadsheet.
+    let omsetAreaRows = [], omsetAreaHeaders = [], omsetAreaPage = 1, omsetAreaSort = {key:'achievement',dir:'desc'}, omsetAreaLoaded = false, omsetAreaSummary = {actual:null,target:null}, omsetAreaAverageDays = 1;
+    const oaMoney = n => 'Rp' + (Number(n)||0).toLocaleString('id-ID');
+    const oaNum = v => { if(typeof v==='number') return v; let s=String(v??'').trim().replace(/Rp/gi,'').replace(/\s/g,''); if(!s)return 0; if(s.includes(',')&&s.includes('.')) s=s.replace(/\./g,'').replace(',','.'); else if(s.includes(',')) s=s.replace(',','.'); else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,''); else if(/\.\d{3}$/.test(s))s=s.replace('.',''); return Number(s.replace(/[^\d.-]/g,''))||0; };
+    const oaEsc = v => String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function oaZone(r){const z=String(r.zone||'').toUpperCase(); if(z.includes('GREEN'))return 'GREEN';if(z.includes('YELLOW'))return 'YELLOW';if(z.includes('RED'))return 'RED';return z||'UNKNOWN';}
+    function oaBadge(z){const k=String(z).toUpperCase();return `<span class="oa-zone ${k.includes('GREEN')?'oa-green':k.includes('YELLOW')?'oa-yellow':k.includes('RED')?'oa-red':''}">${oaEsc(z||'-')}</span>`;}
+    async function loadOmsetArea(force){
+      const status=document.getElementById('oa-status');if(!status)return;
+      if(omsetAreaLoaded&&!force){renderOmsetArea();return;}
+      status.textContent='Mengambil data dari sheet OMSET…';
+      try{const res=await gasRequestJson({action:'getOmsetAreaData'});if(res.status!=='success')throw new Error(res.message||'Gagal membaca data OMSET');
+        omsetAreaHeaders=res.headers||[];omsetAreaSummary={actual:res.areaActual==null?null:oaNum(res.areaActual),target:res.areaTarget==null?null:oaNum(res.areaTarget)};
+        // Pada sheet OMSET, tanggal "TANGGAL NOW" adalah tanggal berjalan, sementara
+        // omset snapshot mencakup hari yang sudah selesai. Contoh 16/10 berarti dibagi 15 hari.
+        const snapMatch=String(res.snapshotDate||'').match(/(\\d{1,2})[\\/.-](\\d{1,2})[\\/.-](\\d{4})/);
+        const snapDay=snapMatch?Number(snapMatch[1]):new Date().getDate();
+        omsetAreaAverageDays=Math.max(1,snapDay-1);
+        omsetAreaRows=(res.rows||[]).map((r,i)=>({...r,_index:i+1,omset:oaNum(r.omset),avgOmsetPerResto:Math.round(oaNum(r.omset)/omsetAreaAverageDays),target:oaNum(r.target),exp:oaNum(r.exp),achievement:oaNum(r.achievement),zone:oaZone(r)}));
+        const spvs=[...new Set(omsetAreaRows.map(r=>r.spv).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));
+        const spvEl=document.getElementById('oa-spv'),old=spvEl.value||'ALL';spvEl.innerHTML='<option value="ALL">Semua SPV</option>'+spvs.map(x=>`<option value="${oaEsc(x)}">${oaEsc(x)}</option>`).join('');spvEl.value=spvs.includes(old)?old:'ALL';
+        status.textContent=`Data terbaru berhasil diambil: ${omsetAreaRows.length} outlet · Sumber: sheet OMSET${res.snapshotDate?' · Tanggal data: '+res.snapshotDate:''}${res.fetchedAt?' · Diperbarui: '+new Date(res.fetchedAt).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''}. Data sumber tidak diubah.`;omsetAreaLoaded=true;omsetAreaPage=1;renderOmsetArea();
+      }catch(e){status.textContent='Gagal memuat data OMSET: '+e.message+'. Pastikan fungsi GAS terbaru sudah dipasang dan sheet bernama OMSET tersedia.';}
+    }
+    function getFilteredOmsetArea(){const zone=document.getElementById('oa-zone')?.value||'ALL',spv=document.getElementById('oa-spv')?.value||'ALL',q=(document.getElementById('oa-search')?.value||'').trim().toLowerCase();return omsetAreaRows.filter(r=>(zone==='ALL'||r.zone===zone)&&(spv==='ALL'||r.spv===spv)&&(!q||[r.branchId,r.spv,r.outlet].some(v=>String(v||'').toLowerCase().includes(q))));}
+    function renderOmsetArea(){
+      const rows=getFilteredOmsetArea();
+      const sum=rows.reduce((a,r)=>a+r.omset,0),sumTarget=rows.reduce((a,r)=>a+r.target,0);
+      const allArea=(document.getElementById('oa-zone')?.value||'ALL')==='ALL'&&(document.getElementById('oa-spv')?.value||'ALL')==='ALL'&&!(document.getElementById('oa-search')?.value||'').trim();
+      const areaActual=allArea&&omsetAreaSummary.actual!=null?omsetAreaSummary.actual:sum;
+      const target=allArea&&omsetAreaSummary.target!=null?omsetAreaSummary.target:sumTarget;
+      const ach=target?areaActual/target*100:0;
+      document.getElementById('oa-total-omset').textContent=oaMoney(areaActual);
+      document.getElementById('oa-total-target').textContent=oaMoney(target);
+      document.getElementById('oa-achievement').textContent=ach.toLocaleString('id-ID',{maximumFractionDigits:1})+'%';
+      document.getElementById('oa-outlet-count').textContent=rows.length.toLocaleString('id-ID');
+
+      // Grafik zona: batang proporsional dengan label yang ringkas dan konsisten.
+      const zones=['GREEN','YELLOW','RED'],colors={GREEN:'#16a34a',YELLOW:'#f59e0b',RED:'#ef4444'};
+      const counts=zones.map(z=>({z,n:rows.filter(r=>r.zone===z).length}));
+      document.getElementById('oa-zone-chart').innerHTML=counts.map(x=>`<div class="oa-zone-row"><b>${x.z} ZONE</b><div class="oa-track"><span style="width:${rows.length?x.n/rows.length*100:0}%;background:${colors[x.z]}"></span></div><strong>${x.n}</strong></div>`).join('')+`<div class="oa-muted" style="margin-top:14px">${rows.length} outlet · dihitung sesuai filter</div>`;
+
+      // Kontribusi omset per SPV: persentase menunjukkan porsi dari total omset outlet yang sedang difilter.
+      const spvGroups={};rows.forEach(r=>{const k=r.spv||'Tanpa SPV';if(!spvGroups[k])spvGroups[k]={omset:0,n:0};spvGroups[k].omset+=r.omset;spvGroups[k].n++;});
+      const spvRows=Object.entries(spvGroups).map(([name,v])=>({name,...v,share:sum?v.omset/sum*100:0})).sort((a,b)=>b.omset-a.omset).slice(0,8);
+      const maxSpvShare=Math.max(1,...spvRows.map(r=>r.share));
+      document.getElementById('oa-spv-chart').innerHTML=spvRows.length?spvRows.map((r,i)=>{const visualPct=Math.max(2,r.share/maxSpvShare*100);const color=['#e11d2e','#f97316','#2563eb','#0d9488','#7c3aed','#db2777','#65a30d','#64748b'][i%8];return `<div style="margin:10px 0"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.75rem;margin-bottom:5px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${oaEsc(r.name)}">${oaEsc(r.name)}</span><b style="white-space:nowrap">${r.share.toLocaleString('id-ID',{maximumFractionDigits:1})}%</b></div><div class="oa-track" title="${r.share.toLocaleString('id-ID',{maximumFractionDigits:2})}% dari total omset"><span style="width:${visualPct}%;background:linear-gradient(90deg,${color},${color}aa)"></span></div><div class="oa-muted">${r.n} outlet · ${oaMoney(r.omset)}</div></div>`;}).join(''):'<div class="oa-muted">Data SPV belum tersedia.</div>';
+
+      // Grafik alternatif: 5 outlet dengan omset terbesar dalam hasil filter saat ini.
+      const topOutlets=[...rows].sort((a,b)=>b.omset-a.omset).slice(0,5);
+      const topOutletMax=Math.max(1,...topOutlets.map(r=>r.omset));
+      document.getElementById('oa-top-outlet-chart').innerHTML=topOutlets.length?topOutlets.map((r,i)=>{const share=sum?r.omset/sum*100:0;const pct=Math.max(1,r.omset/topOutletMax*100);const color=['#e11d2e','#f97316','#2563eb','#0d9488','#7c3aed'][i%5];return `<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px;align-items:center;margin:13px 0"><div style="font-size:.78rem;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${oaEsc(r.outlet||'-')}"><span style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:#f1f5f9;color:#475569;margin-right:6px;font-size:.68rem">${i+1}</span>${oaEsc(r.outlet||'-')}</div><strong style="font-size:.78rem;white-space:nowrap">${oaMoney(r.omset)}</strong><div class="oa-track" style="grid-column:1/-1;height:11px"><span style="width:${pct}%;background:linear-gradient(90deg,${color},${color}aa)"></span></div><div class="oa-muted" style="grid-column:1/-1">${share.toLocaleString('id-ID',{maximumFractionDigits:1})}% dari total omset</div></div>`;}).join(''):'<div class="oa-muted">Belum ada data outlet untuk ditampilkan.</div>';
+
+      // Tabel lebar penuh; record error formula (#REF!) tidak ditampilkan.
+      const sortKey=omsetAreaSort.key;rows.sort((a,b)=>{let x=a[sortKey],y=b[sortKey];if(typeof x==='number'&&typeof y==='number')return (x-y)*omsetAreaSort.dir;return String(x||'').localeCompare(String(y||''),'id')*omsetAreaSort.dir;});
+      const pageSize=15,totalPages=Math.max(1,Math.ceil(rows.length/pageSize));omsetAreaPage=Math.min(omsetAreaPage,totalPages);const visible=rows.slice((omsetAreaPage-1)*pageSize,omsetAreaPage*pageSize);
+      const cols=[['no','NO'],['outlet','NAMA OUTLET'],['omset','OMSET'],['avgOmsetPerResto','RATA RATA OMSET'],['target','TARGET'],['exp','EXP'],['achievement','ACHIVMENT'],['zone','ZONA JUNI']];
+      document.getElementById('oa-table-count').textContent=`${rows.length} outlet`;
+      const avg = key => rows.length ? rows.reduce((total, r) => total + (Number(r[key]) || 0), 0) / rows.length : 0;
+      const avgOmsetTable = avg('omset'), avgDailyOmsetTable = avg('avgOmsetPerResto'), avgTargetTable = avg('target'), avgExpTable = avg('exp'), avgAchievementTable = avg('achievement');
+      document.getElementById('oa-table').innerHTML=`<table class="oa-table"><thead><tr>${cols.map(c=>`<th onclick="sortOmsetArea('${c[0]}')">${c[1]} ↕</th>`).join('')}</tr></thead><tbody>${visible.map((r,i)=>`<tr><td>${oaEsc(r.no||((omsetAreaPage-1)*pageSize+i+1))}</td><td><b>${oaEsc(r.outlet||'-')}</b></td><td>${oaMoney(r.omset)}</td><td>${oaMoney(r.avgOmsetPerResto)}</td><td>${oaMoney(r.target)}</td><td>${oaEsc(r.expDisplay||((r.exp||0).toLocaleString('id-ID')+'%'))}</td><td>${oaEsc(r.achievementDisplay||((r.achievement||0).toLocaleString('id-ID')+'%'))}</td><td>${oaBadge(r.zone)}</td></tr>`).join('')||'<tr><td colspan="8" style="text-align:center;padding:24px">Tidak ada data yang sesuai filter.</td></tr>'}</tbody></table>`;
+      document.getElementById('oa-page-info').textContent=`Menampilkan ${rows.length?((omsetAreaPage-1)*pageSize+1):0}–${Math.min(omsetAreaPage*pageSize,rows.length)} dari ${rows.length} outlet · Halaman ${omsetAreaPage}/${totalPages}`;
+    }
+    function sortOmsetArea(key){if(omsetAreaSort.key===key)omsetAreaSort.dir*=-1;else omsetAreaSort={key,dir:1};omsetAreaPage=1;renderOmsetArea();}
+    function changeOmsetAreaPage(delta){const n=Math.max(1,Math.ceil(getFilteredOmsetArea().length/15));omsetAreaPage=Math.max(1,Math.min(n,omsetAreaPage+delta));renderOmsetArea();}
+    function exportOmsetAreaExcel(){const rows=getFilteredOmsetArea();const headers=['NO','ID CABANG','SPV','NAMA OUTLET','OMSET','RATA RATA OMSET','TARGET','EXP','ACHIVMENT','ZONA JUNI'];const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const average=key=>rows.length?rows.reduce((sum,r)=>sum+(Number(r[key])||0),0)/rows.length:0;const lines=[headers,...rows.map((r,i)=>[r.no||i+1,r.branchId,r.spv,r.outlet,r.omset,r.avgOmsetPerResto??Math.round((Number(r.omset)||0)/omsetAreaAverageDays),r.target,r.expDisplay||r.exp,r.achievementDisplay||r.achievement,r.zone]),['','RATA-RATA','','('+rows.length+' OUTLET)',average('omset'),average('avgOmsetPerResto'),average('target'),average('exp'),average('achievement'),'']].map(row=>row.map(esc).join(';'));const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='OMSET_AREA_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}
+
     function setupNavbarForRole(role) {
       let html = '';
 
       if (role === 'admin') {
         html = `
           <div class="nav-item active" onclick="switchAdminNav('page-preview-user', this)"><i class="fa-solid fa-chart-line"></i><span>REKAPITULASI AREA</span></div>
+          <div class="nav-item" onclick="switchAdminNav('page-omset-area', this)"><i class="fa-solid fa-chart-column"></i><span>OMSET AREA</span></div>
 
           <details class="admin-nav-group">
             <summary><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
@@ -4795,7 +4679,6 @@
             <summary><i class="fa-solid fa-store"></i><span>MANAGEMENT RESTO</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
             <div class="admin-nav-group-menu">
               <div class="nav-item" onclick="switchAdminNav('page-spv-coverage-update', this)"><i class="fa-solid fa-store"></i><span>UPDATE COVERAGE SPV</span></div>
-              <div class="nav-item" onclick="switchAdminNav('page-ae-coverage-update', this)"><i class="fa-solid fa-user-tie"></i><span>UPDATE COVERAGE AE</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-checkin-kasir-limit', this)"><i class="fa-solid fa-clock"></i><span>JAM CHECK-IN KASIR</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-links', this)"><i class="fa-solid fa-link"></i><span>KELOLA LINK AREA & CABANG</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-spv-links', this)"><i class="fa-solid fa-user-tie"></i><span>KELOLA LINK SUPERVISOR</span></div>
@@ -4814,32 +4697,18 @@
       } else if (role === 'supervisor') {
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-spv-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
-
-          <details class="admin-nav-group">
-            <summary><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
-            <div class="admin-nav-group-menu">
-              <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
-              <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
-              <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
-              <div class="nav-item" onclick="switchRoleNav('page-groming-kasir', this)"><i class="fa-solid fa-user-clock"></i><span>GROMING KASIR</span></div>
-              <div class="nav-item" onclick="switchRoleNav('page-groming-karesto', this)"><i class="fa-solid fa-user-tie"></i><span>GROMING KARESTO</span></div>
-            </div>
-          </details>
+          <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
         `;
       } else if (role === 'psd') {
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-psd-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
-
-          <details class="admin-nav-group">
-            <summary><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
-            <div class="admin-nav-group-menu">
-              <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
-              <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
-              <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
-              <div class="nav-item" onclick="switchRoleNav('page-groming-kasir', this)"><i class="fa-solid fa-user-clock"></i><span>GROMING KASIR</span></div>
-              <div class="nav-item" onclick="switchRoleNav('page-groming-karesto', this)"><i class="fa-solid fa-user-tie"></i><span>GROMING KARESTO</span></div>
-            </div>
-          </details>
+          <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-groming-kasir', this)"><i class="fa-solid fa-user-clock"></i><span>GROMING KASIR</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-groming-karesto', this)"><i class="fa-solid fa-user-tie"></i><span>GROMING KARESTO</span></div>
         `;
       } else if (isAERole(role)) {
         html = `
@@ -4851,13 +4720,7 @@
       } else {
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-user-laporan', this)"><i class="fa-solid fa-folder-open"></i><span>Laporan Cabang</span></div>
-          <details class="admin-nav-group cabang-checkin-nav-group">
-            <summary><i class="fa-solid fa-camera"></i><span>CHECKIN KARYAWAN</span><i class="fa-solid fa-chevron-down" style="font-size:.65rem;margin-left:2px;"></i></summary>
-            <div class="admin-nav-group-menu">
-              <div class="nav-item" onclick="switchRoleNav('page-user-checkin', this); this.closest('details').removeAttribute('open');"><i class="fa-solid fa-camera"></i><span>CHECKIN KARYAWAN</span></div>
-              <div class="nav-item" onclick="switchRoleNav('page-user-riwayat-checkin', this); this.closest('details').removeAttribute('open');"><i class="fa-solid fa-clock-rotate-left"></i><span>RIWAYAT CHECKIN</span></div>
-            </div>
-          </details>
+          <div class="nav-item" onclick="switchRoleNav('page-user-checkin', this)"><i class="fa-solid fa-camera"></i><span>CHECKIN KARYAWAN</span></div>
         `;
       }
 
@@ -4885,16 +4748,6 @@
       window.__adminNavDropdownBound = true;
     }
 
-    function bukaRiwayatCheckinCabang() {
-      const navItem = document.querySelector('#app-navbar-items .nav-item[onclick*="page-user-checkin"]');
-      if (navItem) switchRoleNav('page-user-riwayat-checkin', navItem);
-    }
-
-    function kembaliKeCheckinCabang() {
-      const navItem = document.querySelector('#app-navbar-items .nav-item[onclick*="page-user-checkin"]');
-      if (navItem) switchRoleNav('page-user-checkin', navItem);
-    }
-
     function switchRoleNav(pageId, element) {
       stopCameraStream();
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
@@ -4906,8 +4759,6 @@
 
       if (pageId === 'page-check-karyawan') {
         renderCheckKaryawanPage();
-      } else if (pageId === 'page-user-riwayat-checkin') {
-        renderRiwayatCheckinCabang();
       } else if (pageId === 'page-user-checkin') {
         updateCheckinSwitchUI();
         updateAutoDateTimeInput();
@@ -5337,7 +5188,25 @@
 
     function toggleSpvCoverageInput() {
       const role = document.getElementById('internal_user_role').value;
-      document.getElementById('group_spv_coverage').style.display = role === 'supervisor' ? 'block' : 'none';
+      const isSpv = role === 'supervisor';
+      const needsRestoCoverage = isSpv || role === 'ae';
+      const countGroup = document.getElementById('group_spv_coverage');
+      const restoGroup = document.getElementById('group_internal_resto_coverage');
+      if (countGroup) countGroup.style.display = isSpv ? 'block' : 'none';
+      if (restoGroup) restoGroup.style.display = needsRestoCoverage ? 'block' : 'none';
+      if (needsRestoCoverage) populateInternalUserCoverageRestos();
+    }
+
+    function populateInternalUserCoverageRestos() {
+      const select = document.getElementById('internal_user_coverage_restos');
+      if (!select) return;
+      const previous = new Set(Array.from(select.selectedOptions || []).map(o => o.value));
+      const restos = typeof getAvailableRestoListFromDatabase === 'function' ? getAvailableRestoListFromDatabase() : [];
+      select.innerHTML = restos.map(r => {
+        const safe = String(r).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        return `<option value="${safe}" ${previous.has(r) ? 'selected' : ''}>${safe}</option>`;
+      }).join('');
+      if (!restos.length) select.innerHTML = '<option disabled>Database resto belum dimuat</option>';
     }
 
     function applyDashboardDataToUI(username, userRole) {
@@ -5866,7 +5735,7 @@
       const d24 = schedules['24jam'] || {};
       const el = id => document.getElementById(id);
       if (el('kasir_global_reg_s1')) el('kasir_global_reg_s1').value = reg.s1 || '06:00';
-      if (el('kasir_global_reg_s2')) el('kasir_global_reg_s2').value = reg.s2 || '13:30';
+      if (el('kasir_global_reg_s2')) el('kasir_global_reg_s2').value = reg.s2 || '14:00';
       if (el('kasir_global_24_s1')) el('kasir_global_24_s1').value = d24.s1 || '';
       if (el('kasir_global_24_s2')) el('kasir_global_24_s2').value = d24.s2 || '';
       if (el('kasir_global_24_s3')) el('kasir_global_24_s3').value = d24.s3 || '';
@@ -6180,28 +6049,12 @@
       else select.value = 'ALL';
     }
 
-    // Untuk SPV, data Groming hanya menampilkan karyawan dari resto dalam coverage akun SPV aktif.
-    // Admin dan PSD tetap melihat seluruh resto sesuai perilaku sebelumnya.
-    function applyGromingSpvCoverage(employees) {
-      const role = localStorage.getItem('resto_user_role') || 'user';
-      if (role !== 'supervisor') return (employees || []).slice();
-
-      const currentUser = localStorage.getItem('resto_current_user') || '';
-      const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[currentUser] || {};
-      const coverageNames = new Set(
-        String(spvIndiv.resto_names || '').split(',')
-          .map(s => formatRestoName(s)).filter(Boolean)
-      );
-      return (employees || []).filter(k => coverageNames.has(getGromingKasirResto(k)));
-    }
-
     function getGromingKasirEmployees() {
       const list = getStoredKaryawanData();
-      const employees = (Array.isArray(list) ? list : []).filter(k => {
+      return (Array.isArray(list) ? list : []).filter(k => {
         const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
         return /\bKASIR\b/.test(jabatan) || /\bACT\s+KASIR\b/.test(jabatan);
       });
-      return applyGromingSpvCoverage(employees);
     }
 
     function getGromingKaRestoResto(k) {
@@ -6219,11 +6072,10 @@
 
     function getGromingKaRestoEmployees() {
       const list = getStoredKaryawanData();
-      const employees = (Array.isArray(list) ? list : []).filter(k => {
+      return (Array.isArray(list) ? list : []).filter(k => {
         const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
         return /\bKARESTO\b/.test(jabatan) || /\bKA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTO\b/.test(jabatan) || /\bKEPALA\s+RESTAURANT\b/.test(jabatan) || /\bACT\s+KARESTO\b/.test(jabatan) || /\bKASHIFT\b/.test(jabatan) || /\bKA\s+SHIFT\b/.test(jabatan) || /\bACT\s+KASHIFT\b/.test(jabatan) || /\bACT\s+KA\s+SHIFT\b/.test(jabatan);
       });
-      return applyGromingSpvCoverage(employees);
     }
 
     function getGromingKasirResto(k) {
@@ -6723,65 +6575,6 @@
       XLSX.writeFile(workbook, filename);
     }
 
-
-    function renderRiwayatCheckinCabang() {
-      const tbody = document.getElementById('riwayat-checkin-table-body');
-      if (!tbody) return;
-      const branchName = formatRestoName(localStorage.getItem('resto_user_name') || localStorage.getItem('resto_current_user') || 'CABANG');
-      const branchKey = branchName.toLowerCase();
-      const today = getTodayYMD();
-      const allEmployees = getStoredKaryawanData();
-      const employees = allEmployees.filter(employee => {
-        const employeeResto = formatRestoName(employee?.resto || employee?.restoName || employee?.cabang || '').toLowerCase();
-        return employeeResto && employeeResto === branchKey;
-      });
-      const todayRecords = getStoredCheckinData().filter(record => {
-        const resto = formatRestoName(record?.restoName || record?.resto || record?.cabang || '').toLowerCase();
-        if (!resto || resto !== branchKey) return false;
-        return getRecordWIBInfo(record).date === today;
-      }).slice().sort((a,b) => (Number(b?.timestampMs)||0) - (Number(a?.timestampMs)||0));
-
-      // Satu check-in terbaru per kombinasi NIK dan cabang untuk menghitung status hari ini.
-      const checkedToday = new Map();
-      todayRecords.forEach(record => {
-        const nik = String(record?.nik || record?.NIK || '').trim();
-        if (!nik) return;
-        const key = nik + '|' + formatRestoName(record?.restoName || record?.resto || record?.cabang).toLowerCase();
-        if (!checkedToday.has(key)) checkedToday.set(key, record);
-      });
-      const totalEmployees = employees.length;
-      const checkedCount = employees.reduce((count, employee) => {
-        const nik = String(employee?.nik || employee?.NIK || '').trim();
-        const key = nik + '|' + formatRestoName(employee?.resto || employee?.restoName || employee?.cabang).toLowerCase();
-        return count + (nik && checkedToday.has(key) ? 1 : 0);
-      }, 0);
-      document.getElementById('riwayat_checkin_total_karyawan').textContent = totalEmployees;
-      document.getElementById('riwayat_checkin_sudah').textContent = checkedCount;
-      document.getElementById('riwayat_checkin_belum').textContent = Math.max(0, totalEmployees - checkedCount);
-      document.getElementById('riwayat_checkin_cabang').textContent = branchName || '-';
-      const latestInfo = todayRecords.length ? getRecordWIBInfo(todayRecords[0]) : null;
-      document.getElementById('riwayat_checkin_terbaru').textContent = latestInfo ? `${latestInfo.date} ${latestInfo.time}` : '-';
-
-      const rows = employees.map((employee, index) => {
-        const nik = String(employee?.nik || employee?.NIK || '').trim();
-        const key = nik + '|' + formatRestoName(employee?.resto || employee?.restoName || employee?.cabang).toLowerCase();
-        const record = checkedToday.get(key);
-        const info = record ? getRecordWIBInfo(record) : { date: '-', time: '-' };
-        const name = employee?.nama || employee?.namaLengkap || employee?.namaKaryawan || '-';
-        const jabatan = employee?.jabatan || employee?.posisi || '-';
-        const shift = record ? (record?.shifting || record?.shift || record?.keterangan || record?.catatan || '-') : '-';
-        const status = record
-          ? '<span class="check-status done"><i class="fa-solid fa-circle-check"></i> SUDAH CHECK-IN</span>'
-          : '<span class="check-status pending"><i class="fa-solid fa-circle-xmark"></i> BELUM CHECK-IN</span>';
-        return `<tr><td>${index + 1}</td><td style="font-weight:800;color:var(--lazatto-red);">${escapeHtml(nik || '-')}</td><td style="font-weight:800;">${escapeHtml(name)}</td><td>${escapeHtml(jabatan)}</td><td style="font-weight:800;">${escapeHtml(formatRestoName(employee?.resto || employee?.restoName || employee?.cabang) || branchName)}</td><td>${status}</td><td>${record ? escapeHtml(info.date || today) : '-'}</td><td class="check-time">${record ? escapeHtml(info.time || '-') : '-'}${record && info.time ? ' WIB' : ''}</td><td>${escapeHtml(String(shift))}</td></tr>`;
-      });
-      tbody.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--text-muted);">Belum ada data karyawan untuk cabang ini.</td></tr>';
-    }
-
-    function refreshRiwayatCheckinCabang() {
-      return refreshGromingDataAndRender(renderRiwayatCheckinCabang, '#page-user-riwayat-checkin button[onclick="refreshRiwayatCheckinCabang()"]', null);
-    }
-
     function renderCheckKaryawanPage() {
       const startEl = document.getElementById('check_karyawan_date_start');
       const endEl = document.getElementById('check_karyawan_date_end');
@@ -6923,133 +6716,21 @@
         document.getElementById('admin-view').style.display = 'block';
         document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
         document.getElementById(pageId).style.display = 'block';
+        // Sembunyikan kartu statistik global hanya pada halaman OMSET AREA agar tampil lebih bersih.
+        const adminStatsGrid = document.querySelector('#admin-view > .admin-stats-grid');
+        if (adminStatsGrid) adminStatsGrid.style.display = pageId === 'page-omset-area' ? 'none' : '';
 
         if (pageId === 'page-preview-user') {
           hideAdmRestoSubPage();
           hideAdminStokOpnameSubPage();
         } else if (pageId === 'page-admin-stok-opname') {
           loadAdminStokOpnameLinks();
-        } else if (pageId === 'page-ae-coverage-update') {
-          renderAECoveragePage();
         } else if (pageId === 'page-checkin-kasir-limit') {
           renderCheckinKasirLimitPage();
           renderCheckinKasirSchedulePage();
+        } else if (pageId === 'page-omset-area') {
+          loadOmsetArea(true);
         }
-      }
-    }
-
-
-    let aeCoverageAvailableRestos = [];
-    let aeCoverageCurrentSelection = new Set();
-
-    function renderAECoveragePage() {
-      const users = (globalDashboardData.usersList || []).filter(u =>
-        String(u.role || '').toLowerCase() === 'ae' ||
-        String(u.role || '').toLowerCase() === 'account executive' ||
-        String(u.role || '').toLowerCase() === 'account_executive'
-      );
-      const userSelect = document.getElementById('ae-coverage-user');
-      const previous = userSelect.value;
-      userSelect.innerHTML = '<option value="">-- Pilih User AE --</option>' +
-        users.map(u => `<option value="${String(u.username || u.id || u.name || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${String(u.name || u.username || u.id || 'User AE')} (${String(u.username || u.id || '').replace(/</g,'&lt;')})</option>`).join('');
-      if (users.some(u => String(u.username || u.id || u.name || '') === previous)) userSelect.value = previous;
-
-      aeCoverageAvailableRestos = getAvailableRestoListFromDatabase();
-      if (aeCoverageAvailableRestos.length < 15) {
-        document.getElementById('ae-coverage-message').style.color = '#b91c1c';
-        document.getElementById('ae-coverage-message').textContent = `Database saat ini hanya menyediakan ${aeCoverageAvailableRestos.length} resto. Minimal 15 resto harus tersedia pada master database.`;
-      } else {
-        document.getElementById('ae-coverage-message').textContent = '';
-      }
-      renderAECoverageOptions();
-      updateAECoverageCount();
-      if (userSelect.value) loadAECoverageForSelectedUser();
-    }
-
-    function renderAECoverageOptions() {
-      const container = document.getElementById('ae-coverage-resto-list');
-      const q = (document.getElementById('ae-coverage-search').value || '').trim().toUpperCase();
-      const list = aeCoverageAvailableRestos.filter(r => r.toUpperCase().includes(q));
-      container.innerHTML = list.length ? list.map((r, i) => {
-        const id = 'ae_cov_' + btoa(unescape(encodeURIComponent(r))).replace(/[^a-zA-Z0-9]/g,'').slice(0,40);
-        const checked = aeCoverageCurrentSelection.has(r) ? 'checked' : '';
-        return `<label for="${id}" style="display:flex;align-items:center;gap:9px;padding:10px;background:#fff;border:1px solid var(--border);border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer"><input id="${id}" type="checkbox" value="${r.replace(/"/g,'&quot;')}" ${checked} onchange="toggleAECoverageResto(this)" style="width:16px;height:16px;accent-color:#4338ca;flex-shrink:0"><span>${r.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span></label>`;
-      }).join('') : '<p style="color:var(--text-muted);font-size:.82rem">Resto tidak ditemukan.</p>';
-    }
-
-    function filterAECoverageOptions() { renderAECoverageOptions(); }
-
-    function toggleAECoverageResto(input) {
-      if (input.checked) aeCoverageCurrentSelection.add(input.value);
-      else aeCoverageCurrentSelection.delete(input.value);
-      updateAECoverageCount();
-    }
-
-    function updateAECoverageCount() {
-      const count = aeCoverageCurrentSelection.size;
-      const el = document.getElementById('ae-coverage-count');
-      if (el) {
-        el.textContent = `${count} resto dipilih · minimal 15`;
-        el.style.background = count >= 15 ? '#dcfce7' : '#fee2e2';
-        el.style.color = count >= 15 ? '#166534' : '#991b1b';
-      }
-    }
-
-    async function loadAECoverageForSelectedUser() {
-      const userId = document.getElementById('ae-coverage-user').value;
-      aeCoverageCurrentSelection = new Set();
-      if (!userId) { renderAECoverageOptions(); updateAECoverageCount(); return; }
-      const msg = document.getElementById('ae-coverage-message');
-      msg.style.color = '#64748b'; msg.textContent = 'Memuat coverage tersimpan…';
-      try {
-        const response = await fetch(GAS_API_URL, {
-          method: 'POST', headers: {'Content-Type':'text/plain;charset=utf-8'}, redirect: 'follow',
-          body: JSON.stringify({action:'getAECoverage', userId, adminUser:localStorage.getItem('resto_current_user')})
-        });
-        const result = await response.json();
-        const saved = result.coverage || result.restos || result.data || [];
-        if (Array.isArray(saved)) saved.forEach(r => aeCoverageCurrentSelection.add(formatRestoName(typeof r === 'string' ? r : (r.resto || r.name || ''))));
-        msg.textContent = result.status === 'success' || result.success ? 'Coverage tersimpan berhasil dimuat.' : (saved.length ? 'Coverage tersimpan berhasil dimuat.' : 'Belum ada coverage tersimpan untuk user ini.');
-        msg.style.color = '#475569';
-      } catch (e) {
-        msg.style.color = '#b45309';
-        msg.textContent = 'Coverage lama tidak dapat dimuat dari backend. Anda tetap dapat memilih resto dan menyimpan jika action backend sudah tersedia.';
-      }
-      renderAECoverageOptions(); updateAECoverageCount();
-    }
-
-    async function saveAECoverage() {
-      const userId = document.getElementById('ae-coverage-user').value;
-      const msg = document.getElementById('ae-coverage-message');
-      if (!userId) { alert('Pilih user dengan role AE terlebih dahulu.'); return; }
-      if (aeCoverageAvailableRestos.length < 15 || aeCoverageCurrentSelection.size < 15) {
-        alert('Pilih minimal 15 resto dan pastikan master database memiliki minimal 15 resto.'); return;
-      }
-      const button = document.querySelector('#page-ae-coverage-update button.ae-btn:not(.secondary)');
-      if (button) { button.disabled = true; button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan…'; }
-      try {
-        const response = await fetch(GAS_API_URL, {
-          method: 'POST', headers: {'Content-Type':'text/plain;charset=utf-8'}, redirect: 'follow',
-          body: JSON.stringify({
-            action: 'saveAECoverage',
-            adminUser: localStorage.getItem('resto_current_user'),
-            userId,
-            coverage: Array.from(aeCoverageCurrentSelection)
-          })
-        });
-        const result = await response.json();
-        if (result.status === 'success' || result.success === true) {
-          msg.style.color = '#15803d'; msg.textContent = result.message || 'Coverage AE berhasil disimpan.';
-        } else {
-          msg.style.color = '#b91c1c'; msg.textContent = result.message || 'Backend belum mengonfirmasi penyimpanan coverage AE.';
-          alert(msg.textContent);
-        }
-      } catch (e) {
-        msg.style.color = '#b91c1c';
-        msg.textContent = 'Gagal menyimpan coverage AE: ' + (e.message || 'Periksa koneksi dan deployment backend.');
-        alert(msg.textContent);
-      } finally {
-        if (button) { button.disabled = false; button.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Coverage AE'; }
       }
     }
 
@@ -7115,6 +6796,7 @@
         if (u.role === 'admin') badgeColor = 'color:var(--lazatto-red); font-weight:800;';
         else if (u.role === 'supervisor') badgeColor = 'color:#4338ca; font-weight:800;';
         else if (u.role === 'psd') badgeColor = 'color:#15803d; font-weight:800;';
+        else if (u.role === 'ae') badgeColor = 'color:#c2410c; font-weight:800;';
 
         const lastOnlineHtml = getUserLastOnlineText(u);
         const displayName = u.role === 'user' ? formatRestoName(u.name) : u.name;
@@ -7318,6 +7000,16 @@
       const urole = document.getElementById('internal_user_role').value;
       let ucoverage = parseInt(document.getElementById('internal_user_coverage').value) || 5;
       if (ucoverage > 10) ucoverage = 10;
+      const coverageSelect = document.getElementById('internal_user_coverage_restos');
+      const coverageRestos = coverageSelect ? Array.from(coverageSelect.selectedOptions).map(o => o.value).filter(Boolean) : [];
+      if (['supervisor','ae'].includes(urole) && coverageRestos.length > 10) {
+        alert('Maksimal 10 resto coverage untuk setiap user.');
+        return;
+      }
+      if (['supervisor','ae'].includes(urole) && coverageRestos.length === 0) {
+        alert('Pilih minimal 1 resto coverage untuk user SPV atau AE.');
+        return;
+      }
 
       if (!uid || !uname || !upass) {
         alert('Mohon isi semua kolom data user internal baru!');
@@ -7331,7 +7023,9 @@
         new_user_name: uname,
         new_user_pass: upass,
         new_user_role: urole,
-        total_resto: urole === 'supervisor' ? ucoverage : 0
+        total_resto: urole === 'supervisor' ? ucoverage : (urole === 'ae' ? coverageRestos.length : 0),
+        coverage_restos: ['supervisor','ae'].includes(urole) ? coverageRestos : [],
+        coverage_resto: ['supervisor','ae'].includes(urole) ? coverageRestos : []
       };
 
       try {
@@ -7444,12 +7138,6 @@
       if (!response.ok || data.status === "error") throw new Error(data.message || "Permintaan ke Web Apps POS gagal.");
       return data;
     }
-    function aePOSRequestContext(){
-      return {
-        userId: String(localStorage.getItem('resto_current_user')||'').trim(),
-        role: String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase()
-      };
-    }
     function aeEsc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
     function aeMoney(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0)}
     function aeDateToday(){return new Date().toLocaleDateString('en-CA')}
@@ -7458,58 +7146,18 @@
     let aeLiveMetricsCache=null, aeLiveAccountsCache=[], aeLiveRefreshTimer=null;
     async function renderAEDashboard(){
       try {
-        const [metrics,ordersRes]=await Promise.all([aeApi({...{action:'getAEMetrics'},...aePOSRequestContext()}),aeApi({...{action:'getBigOrders'},...aePOSRequestContext()})]);
-        const aeRole=String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase();
-        const isAEUser=['ae','account executive','account_executive','account eksekutif'].includes(aeRole);
-        const assignedNames=isAEUser?await getAECurrentCoverageNames():[];
-        const assignedSet=new Set(assignedNames.map(x=>String(x).trim().toUpperCase()));
-        const matchesCoverage=x=>{const r=String(x.resto||x.branch||x.restoName||'').trim().toUpperCase();return !isAEUser||(r&&assignedSet.has(r));};
-        const username=String(localStorage.getItem('resto_current_user')||'').trim().toLowerCase();
-        const sourceOrders=ordersRes.orders||metrics.bigOrders||[];
-        const orders=sourceOrders.filter(x=>{const owner=String(x.createdBy||x.username||x.aeUsername||'').trim().toLowerCase();const orderRestos=Array.isArray(x.restos)?x.restos:(x.resto?[x.resto]:[]);const hasCoverage=!isAEUser||orderRestos.some(r=>assignedSet.has(String(r).trim().toUpperCase()));return (!isAEUser||(!owner||owner===username))&&hasCoverage;});
-        const scopedTransactions=(metrics.transactions||[]).filter(x=>matchesCoverage(x));
-        // Ambil tipe akun POS sebagai sumber utama klasifikasi omset EVENT/SATELIT.
-        try { const accountData=await aeApi({action:'listPosAccounts'}); aeLiveAccountsCache=accountData.accounts||aeLiveAccountsCache||[]; } catch(accountError) { console.warn('Tipe akun POS belum dapat dimuat:',accountError); }
-        const getWho=t=>String(t.username||t.cashierUsername||t.posUsername||t.accountUsername||t.cashier||t.user||t.createdBy||t.loginUsername||t.userId||'').trim().toLowerCase();
-        const getId=t=>String(t.accountId||t.posAccountId||t.cashierId||t.userId||t.posUserId||t.idAkun||'').trim();
-        const normType=v=>String(v||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-        const accountFor=t=>{
-          const who=getWho(t),id=getId(t);
-          return aeLiveAccountsCache.find(a=>{
-            const au=String(a.username||a.userId||a.loginUsername||'').trim().toLowerCase();
-            const ai=String(a.id||a.accountId||a.posAccountId||'').trim();
-            if((au&&who&&au===who)||(ai&&id&&ai===id))return true;
-            // Fallback: backend tertentu hanya mengirim nama resto/brand, bukan username/ID.
-            const tr=String(t.resto||t.branch||t.restoName||'').trim().toUpperCase();
-            const ar=String(a.resto||a.branch||a.restoName||'').trim().toUpperCase();
-            const tb=String(t.brand||'').trim().toUpperCase(),ab=String(a.brand||'').trim().toUpperCase();
-            return !!tr&&tr===ar&&(!tb||!ab||tb===ab);
-          });
-        };
-        const sourceFor=t=>{
-          const a=accountFor(t);
-          const fields=[a?.type,a?.posType,a?.salesSource,a?.cashierType,a?.tipeKasir,a?.tipeUser,a?.tipeOmset,a?.kategori,t.salesSource,t.posType,t.cashierType,t.tipeKasir,t.tipeUser,t.tipeOmset,t.kategori,t.type,t.accountType];
-          const type=fields.map(normType).find(v=>v.includes('event')||v.includes('satelit'))||'';
-          if(type.includes('event'))return 'event';
-          if(type.includes('satelit'))return 'satelit';
-          return '';
-        };
-        const eventScoped=scopedTransactions.filter(x=>sourceFor(x)==='event');
-        // Hitung seluruh transaksi satelit yang diterima backend; status shift yang tidak dikirim
-        // atau memakai label berbeda tidak boleh membuat omset tampil Rp0.
-        const satScoped=scopedTransactions.filter(x=>sourceFor(x)==='satelit');
-        const event=eventScoped.reduce((n,x)=>n+(Number(x.total||x.amount||x.omset||x.grandTotal)||0),0);
-        const sat=satScoped.reduce((n,x)=>n+(Number(x.total||x.amount||x.omset||x.grandTotal)||0),0);
-        aeLiveMetricsCache={...metrics,transactions:scopedTransactions,aeCoverage:assignedNames};
+        const [metrics,ordersRes]=await Promise.all([aeApi({action:'getAEMetrics'}),aeApi({action:'getBigOrders'})]);
+        aeLiveMetricsCache=metrics;
         await loadAEPosAccountsForDashboard();
         renderAESelectedAccountTurnover();
-        const big=orders.reduce((a,x)=>a+(+x.amount||0),0);
+        const orders=ordersRes.orders||metrics.bigOrders||[];
+        const big=orders.reduce((a,x)=>a+(+x.amount||0),0), event=+metrics.eventOmset||0, sat=+metrics.satelitOmset||0;
         const total=big+event+sat;
         [['ae-total',total],['ae-big-total',big],['ae-event-total',event],['ae-sat-total',sat],['ae-big-label',big],['ae-event-label',event],['ae-sat-label',sat]].forEach(([id,n])=>{const el=document.getElementById(id);if(el)el.textContent=aeMoney(n)});
         const max=Math.max(big,event,sat,1);
         [['ae-big-bar',big],['ae-event-bar',event],['ae-sat-bar',sat]].forEach(([id,n])=>{const el=document.getElementById(id);if(el)el.style.width=(n/max*100)+'%'});
-        aeStatus('ae-event-status','Terhubung ke Web Apps POS · '+eventScoped.length+' transaksi dalam coverage');
-        aeStatus('ae-sat-status','Terhubung ke Web Apps POS · '+satScoped.length+' transaksi shift tertutup dalam coverage');
+        aeStatus('ae-event-status','Terhubung ke Web Apps POS · '+(metrics.transactions||[]).filter(x=>String(x.salesSource).toLowerCase()==='event').length+' transaksi');
+        aeStatus('ae-sat-status','Terhubung ke Web Apps POS · '+(metrics.transactions||[]).filter(x=>String(x.salesSource).toLowerCase()==='satelit'&&String(x.shiftStatus).toUpperCase()==='CLOSED').length+' transaksi shift tertutup');
       } catch(e) {
         [['ae-total',0],['ae-big-total',0],['ae-event-total',0],['ae-sat-total',0],['ae-big-label',0],['ae-event-label',0],['ae-sat-label',0]].forEach(([id,n])=>{const el=document.getElementById(id);if(el)el.textContent=aeMoney(n)});
         aeStatus('ae-event-status','Gagal memuat POS: '+e.message);
@@ -7543,23 +7191,19 @@
     function renderAESelectedAccountTurnover(){
       const cards=document.getElementById('ae-live-pos-cards'),wrap=document.getElementById('ae-live-pos-transactions');if(!cards||!wrap)return;
       const all=(aeLiveMetricsCache?.transactions||[]);
-      const role=String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase();
-      const isAEUser=['ae','account executive','account_executive','account eksekutif'].includes(role);
-      const assignedSet=new Set((aeLiveMetricsCache?.aeCoverage||[]).map(x=>String(x).trim().toUpperCase()));
-      const visibleAccounts=aeLiveAccountsCache.filter(a=>!isAEUser||assignedSet.has(String(a.resto||'').trim().toUpperCase()));
       const today=new Date().toLocaleDateString('en-CA');
       const getWho=t=>String(t.username||t.cashierUsername||t.posUsername||t.accountUsername||t.cashier||t.user||t.createdBy||'').toLowerCase();
       const getId=t=>String(t.accountId||t.posAccountId||t.cashierId||'');
       const matches=(t,a)=>{const who=getWho(t),id=getId(t);return (!!a.username&&who===String(a.username).toLowerCase())||(!!a.id&&id===String(a.id));};
       const amount=t=>Number(t.total||t.amount||t.omset||t.grandTotal||0)||0;
-      cards.innerHTML=visibleAccounts.length?visibleAccounts.map((a,i)=>{
+      cards.innerHTML=aeLiveAccountsCache.length?aeLiveAccountsCache.map((a,i)=>{
         const rows=all.filter(t=>matches(t,a));const dayRows=rows.filter(t=>String(t.date||t.createdAt||t.timestamp||'').slice(0,10)===today);
         const sum=dayRows.reduce((n,t)=>n+amount(t),0);const brand=String(a.brand||'-').toUpperCase();const type=String(a.type||a.posType||'-').toUpperCase();
         return `<div style="border:1px solid #e2e8f0;border-radius:13px;padding:15px;background:linear-gradient(145deg,#fff,#f8fafc);min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span class="ae-tag" style="background:${brand==='NGEUMI'?'#ffedd5':'#fee2e2'};color:${brand==='NGEUMI'?'#9a3412':'#b91c1c'}">${aeEsc(brand)}</span><span class="ae-tag">${aeEsc(type)}</span></div><h4 style="margin:12px 0 4px;overflow-wrap:anywhere">${aeEsc(a.username||'Akun POS')}</h4><div class="ae-muted" style="font-size:.82rem">${aeEsc(a.resto||'Resto belum ditentukan')}</div><div style="margin-top:15px;font-size:.78rem;color:#64748b">Omset Hari Ini</div><strong style="display:block;font-size:1.35rem;color:#0f766e;margin:3px 0 8px">${aeMoney(sum)}</strong><div class="ae-muted" style="font-size:.8rem">${dayRows.length} transaksi hari ini</div><div class="ae-muted" style="font-size:.75rem;margin-top:8px">${rows.length?'Data transaksi diterima':'Menunggu transaksi / identitas akun'}</div></div>`;
       }).join(''):'<p class="ae-muted">Belum ada akun POS terdaftar. Tambahkan akun pada menu Management Account → Akun POS.</p>';
-      const allRows=all.filter(t=>!isAEUser||assignedSet.has(String(t.resto||t.branch||'').trim().toUpperCase())).slice().sort((a,b)=>String(b.date||b.createdAt||b.timestamp||'').localeCompare(String(a.date||a.createdAt||a.timestamp||''))).slice(0,100);
-      wrap.innerHTML='<table class="ae-table"><thead><tr><th>Waktu</th><th>Akun POS</th><th>Brand</th><th>Resto</th><th>Tipe</th><th>Nominal</th></tr></thead><tbody>'+(allRows.length?allRows.map(t=>{const account=aeLiveAccountsCache.find(a=>matches(t,a));const type=String(account?.type||account?.posType||t.salesSource||t.posType||'-').toUpperCase();return `<tr><td>${aeEsc(String(t.date||t.createdAt||t.timestamp||'-').slice(0,19))}</td><td>${aeEsc(account?.username||t.username||t.cashierUsername||t.posUsername||t.accountUsername||t.cashier||'-')}</td><td>${aeEsc(account?.brand||t.brand||'-')}</td><td>${aeEsc(account?.resto||t.resto||t.branch||'-')}</td><td>${aeEsc(type)}</td><td>${aeMoney(amount(t))}</td></tr>`}).join(''):'<tr><td colspan="6" style="text-align:center;color:#64748b">Belum ada transaksi yang dikirim endpoint getAEMetrics.</td></tr>')+'</tbody></table>';
-      aeStatus('ae-live-pos-status',''+visibleAccounts.length+' akun POS dalam coverage · diperbarui '+new Date().toLocaleTimeString('id-ID')+' · otomatis 15 detik');
+      const allRows=all.slice().sort((a,b)=>String(b.date||b.createdAt||b.timestamp||'').localeCompare(String(a.date||a.createdAt||a.timestamp||''))).slice(0,30);
+      wrap.innerHTML='<table class="ae-table"><thead><tr><th>Waktu</th><th>Akun POS</th><th>Brand</th><th>Resto</th><th>Nominal</th></tr></thead><tbody>'+(allRows.length?allRows.map(t=>{const account=aeLiveAccountsCache.find(a=>matches(t,a));return `<tr><td>${aeEsc(String(t.date||t.createdAt||t.timestamp||'-').slice(0,19))}</td><td>${aeEsc(account?.username||t.username||t.cashierUsername||t.posUsername||t.accountUsername||t.cashier||'-')}</td><td>${aeEsc(account?.brand||t.brand||'-')}</td><td>${aeEsc(account?.resto||t.resto||t.branch||'-')}</td><td>${aeMoney(amount(t))}</td></tr>`}).join(''):'<tr><td colspan="5" style="text-align:center;color:#64748b">Belum ada transaksi yang dikirim endpoint getAEMetrics.</td></tr>')+'</tbody></table>';
+      aeStatus('ae-live-pos-status',''+aeLiveAccountsCache.length+' akun POS · diperbarui '+new Date().toLocaleTimeString('id-ID')+' · otomatis 15 detik');
     }
     document.addEventListener('DOMContentLoaded',()=>{
       const d=document.getElementById('ae-big-date');if(d)d.value=aeDateToday();
@@ -7567,8 +7211,8 @@
       if(f)f.addEventListener('submit',async e=>{
         e.preventDefault();const restos=Array.from(document.getElementById('ae-big-restos').selectedOptions).map(o=>o.value);
         if(!restos.length){alert('Pilih minimal satu resto.');return}
-        const order={date:document.getElementById('ae-big-date').value,restos,name:document.getElementById('ae-big-name').value.trim(),amount:Number(document.getElementById('ae-big-amount').value),createdBy:localStorage.getItem('resto_current_user')||(typeof currentUserName!=='undefined'?currentUserName:'AE')};
-        try { await aeApi({...{action:'saveBigOrder',order},...aePOSRequestContext()}); f.reset();document.getElementById('ae-big-date').value=aeDateToday();await renderAEHistory();await renderAEDashboard();alert('Big Order tersimpan di Google Sheets.'); }
+        const order={date:document.getElementById('ae-big-date').value,restos,name:document.getElementById('ae-big-name').value.trim(),amount:Number(document.getElementById('ae-big-amount').value),createdBy:typeof currentUserName!=='undefined'?currentUserName:'AE'};
+        try { await aeApi({action:'saveBigOrder',order}); f.reset();document.getElementById('ae-big-date').value=aeDateToday();await renderAEHistory();await renderAEDashboard();alert('Big Order tersimpan di Google Sheets.'); }
         catch(err){alert('Big Order gagal disimpan ke server POS: '+err.message)}
       });
       const mf=document.getElementById('ae-menu-form');
@@ -7611,27 +7255,13 @@
       const date=document.getElementById('ae-history-date')?.value||'',source=document.getElementById('ae-history-source')?.value||'ALL';
       wrap.innerHTML='<p class="ae-muted" style="padding:12px">Memuat riwayat dari Web Apps POS…</p>';
       try {
-        const [m,o]=await Promise.all([aeApi({...{action:'getAEMetrics'},...aePOSRequestContext()}),aeApi({...{action:'getBigOrders'},...aePOSRequestContext()})]);
+        const [m,o]=await Promise.all([aeApi({action:'getAEMetrics'}),aeApi({action:'getBigOrders'})]);
         let rows=[...(o.orders||[]).map(x=>({...x,source:'Big Order',description:x.name,resto:x.resto||''})),...(m.transactions||[]).filter(x=>['Event','Satelit'].includes(x.salesSource)).map(x=>({...x,source:x.salesSource,description:x.id,resto:x.resto||'-',amount:x.total,date:String(x.date||'').slice(0,10)}))];
         rows=rows.filter(x=>(!date||String(x.date||'').slice(0,10)===date)&&(source==='ALL'||x.source===source)).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
         wrap.innerHTML='<table class="ae-table"><thead><tr><th>Tanggal</th><th>Sumber</th><th>Resto</th><th>Keterangan</th><th>Omset</th></tr></thead><tbody>'+(rows.length?rows.map(x=>`<tr><td>${aeEsc(String(x.date||'').slice(0,10)||'-')}</td><td>${aeEsc(x.source)}</td><td>${aeEsc(x.resto||'-')}</td><td>${aeEsc(x.description||'-')}</td><td>${aeMoney(x.amount)}</td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#64748b">Belum ada riwayat untuk filter ini.</td></tr>')+'</tbody></table>';
       }catch(e){wrap.innerHTML=`<p class="ae-muted" style="padding:12px">Gagal memuat riwayat POS: ${aeEsc(e.message)}</p>`}
     }
-    async function getAECurrentCoverageNames(){
-      const username=String(localStorage.getItem('resto_current_user')||'').trim();
-      const role=String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase();
-      if(!username) return [];
-      try {
-        const response=await fetch(GAS_API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',cache:'no-store',body:JSON.stringify({action:'getAECoverage',userId:username,adminUser:username})});
-        const result=await response.json();
-        if(result.status==='success'&&Array.isArray(result.coverage)) return result.coverage.map(x=>String(typeof x==='string'?x:(x.resto||x.name||'')).trim()).filter(Boolean);
-      } catch(e){console.warn('Coverage AE tidak dapat dimuat:',e)}
-      // User AE tanpa coverage tidak boleh diberi dropdown semua resto.
-      if(['ae','account executive','account_executive','account eksekutif'].includes(role)) return [];
-      return [];
-    }
-
-    async function populateAEBigOrderRestos(){
+    function populateAEBigOrderRestos(){
       const el=document.getElementById('ae-big-restos'); if(!el) return;
       let names=[];
       try {
@@ -7646,15 +7276,9 @@
         }
       } catch(e) { console.warn('Daftar resto AE:',e); }
       names=[...new Set(names.map(x=>String(x||'').trim()).filter(x=>x && !/\bOT\b/i.test(x)))].sort((a,b)=>a.localeCompare(b,'id'));
-      const role=String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase();
-      if(['ae','account executive','account_executive','account eksekutif'].includes(role)){
-        const assigned=await getAECurrentCoverageNames();
-        const assignedSet=new Set(assigned.map(x=>x.toUpperCase()));
-        names=names.filter(n=>assignedSet.has(n.toUpperCase()));
-        if(!assigned.length) el.innerHTML='<option value="">Coverage belum diatur admin</option>';
-      } else if(!names.length) names=['Lazatto','Lazatto Ngeumi'];
+      if(!names.length) names=['Lazatto','Lazatto Ngeumi'];
       const selected=new Set(Array.from(el.selectedOptions||[]).map(o=>o.value));
-      if(names.length) el.innerHTML=names.map(n=>`<option value="${aeEsc(n)}" ${selected.has(n)?'selected':''}>${aeEsc(n)}</option>`).join('');
+      el.innerHTML=names.map(n=>`<option value="${aeEsc(n)}" ${selected.has(n)?'selected':''}>${aeEsc(n)}</option>`).join('');
     }
     window.aeCurrentBrand='LAZATTO';
     function makeAESku(brand,name){
