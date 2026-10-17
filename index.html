@@ -5101,6 +5101,79 @@
       if (loggedUser) recordUserActivity(loggedUser);
     }, 30000);
 
+    let checkinSyncInProgress = false;
+
+    async function fetchCheckinUpdatesFromGAS() {
+      const loggedUser = localStorage.getItem('resto_current_user');
+      if (!loggedUser || checkinSyncInProgress) return;
+
+      // Jika data awal belum memuat cursor, lakukan sinkronisasi penuh satu kali.
+      const cursor = Number(globalDashboardData?.checkinsRowCount);
+      if (!Number.isFinite(cursor) || cursor < 0) {
+        fetchInitialDataFromGAS(() => {
+          updateCheckinSwitchUI();
+          renderOperasionalTable();
+          renderKaryawanTable();
+        });
+        return;
+      }
+
+      checkinSyncInProgress = true;
+      try {
+        const result = await gasRequestJson(
+          { action: 'getCheckinUpdates', afterRow: cursor },
+          { timeoutMs: 15000, retries: 1, retryDelayMs: 500 }
+        );
+        if (!result || result.status !== 'success' || !result.data) return;
+
+        const data = result.data;
+        const current = Array.isArray(globalDashboardData.checkinsList)
+          ? globalDashboardData.checkinsList : [];
+        const knownIds = new Set(current.map(item => String(item?.id || '')));
+        const incoming = (Array.isArray(data.checkinsList) ? data.checkinsList : [])
+          .filter(item => item && item.id && !knownIds.has(String(item.id)));
+
+        // Data baru disimpan paling depan agar urutan sama dengan getInitialData.
+        if (incoming.length) {
+          globalDashboardData.checkinsList = incoming.reverse().concat(current);
+          try {
+            localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
+            localStorage.setItem('resto_cached_data_at', String(Date.now()));
+          } catch (e) {}
+          updateCheckinSwitchUI();
+          renderOperasionalTable();
+          renderKaryawanTable();
+
+          // Jika halaman Groming sedang terbuka, perbarui dari cache terbaru tanpa
+          // mengirim ulang permintaan getInitialData yang berat.
+          if (document.getElementById('page-groming-kasir')?.style.display !== 'none') {
+            renderGromingKasirPage();
+          }
+          if (document.getElementById('page-groming-karesto')?.style.display !== 'none') {
+            renderGromingKaRestoPage();
+          }
+          if (document.getElementById('page-check-karyawan')?.style.display !== 'none') {
+            renderCheckKaryawanPage();
+          }
+        }
+
+        globalDashboardData.checkinsRowCount = Number(data.checkinsRowCount ?? cursor);
+        // Ambil batch berikutnya segera jika ada lebih dari 500 baris baru.
+        if (data.hasMore) {
+          setTimeout(() => fetchCheckinUpdatesFromGAS(), 150);
+        }
+      } catch (e) {
+        console.warn('Sinkronisasi check-in ringan gagal:', e);
+      } finally {
+        checkinSyncInProgress = false;
+      }
+    }
+
+    // Check-in baru disinkronkan tiap 10 detik dengan endpoint ringan (baris baru saja).
+    setInterval(fetchCheckinUpdatesFromGAS, 10000);
+
+    // Data konfigurasi/user/coverage disegarkan penuh lebih jarang, agar tidak membaca
+    // semua sheet berulang kali. Perubahan konfigurasi tetap tersinkron dalam ~60 detik.
     setInterval(() => {
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) {
@@ -5113,7 +5186,7 @@
           }
         });
       }
-    }, 10000);
+    }, 60000);
 
     function getStoredMessages() {
       const msgs = localStorage.getItem('resto_system_messages');
