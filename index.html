@@ -4342,6 +4342,10 @@
       const timingType = String(timing.type || timing.tipe || timing.jenis || '').toLowerCase().replace(/[ _-]/g, '');
       const is24Jam = String(record.restoType || '').toLowerCase().replace(/[ _-]/g, '').includes('24jam') || ['24jam','24hour','24hours'].includes(timingType);
       const after2300 = hour > 23 || (hour === 23 && (minute > 0 || second > 0));
+      // Aturan operasional: semua check-in SHIFT 1 pada resto 24 jam
+      // setelah pukul 23:00 masuk ke tanggal operasional berikutnya, termasuk
+      // data yang ditampilkan di Groming Kasir maupun Groming Karesto/Kshift.
+      // Jam tetap memakai waktu aktual; hanya tanggal rekap yang digeser.
       if (is24Jam && shift === 'SHIFT 1' && after2300) {
         const next = new Date(Date.UTC(y, m - 1, d + 1));
         y = next.getUTCFullYear(); m = next.getUTCMonth() + 1; d = next.getUTCDate();
