@@ -6499,8 +6499,16 @@
         if (!nik || !resto) return;
         const info = getRecordWIBInfo(c);
         if (!info.date) return;
-        const key = `${nik}|${resto}|${info.date}`;
-        if (!map[key] || (Number(c.timestampMs) || 0) > (Number(map[key].timestampMs) || 0)) map[key] = c;
+        // Prioritas 1: NIK + resto + tanggal (perilaku lama).
+        // Fallback: NIK + tanggal agar check-in tetap terbaca bila karyawan
+        // melakukan absensi melalui user/akun resto lain.
+        const exactKey = `${nik}|${resto}|${info.date}`;
+        const nikDateKey = `${nik}|${info.date}`;
+        const ts = Number(c.actualTimestampMs || c.timestampMs) || 0;
+        const exactTs = Number(map[exactKey]?.actualTimestampMs || map[exactKey]?.timestampMs) || 0;
+        const nikDateTs = Number(map[nikDateKey]?.actualTimestampMs || map[nikDateKey]?.timestampMs) || 0;
+        if (!map[exactKey] || ts >= exactTs) map[exactKey] = c;
+        if (!map[nikDateKey] || ts >= nikDateTs) map[nikDateKey] = c;
       });
       return map;
     }
@@ -6665,8 +6673,10 @@
           const resto = group.resto;
           const nik = String(k?.nik || '').trim();
           const cells = days.map(ymd => {
-            const key = `${nik.toLowerCase()}|${resto.toLowerCase()}|${ymd}`;
-            return `<td>${getGromingKasirCell(checkinMap[key])}</td>`;
+            const normalizedNik = nik.toLowerCase();
+            const key = `${normalizedNik}|${resto.toLowerCase()}|${ymd}`;
+            const nikDateKey = `${normalizedNik}|${ymd}`;
+            return `<td>${getGromingKasirCell(checkinMap[key] || checkinMap[nikDateKey])}</td>`;
           }).join('');
           const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
           const jabatanLabel = /\bACT\s+KASIR\b/.test(jabatan) ? 'ACT KASIR' : /\bKASIR\b/.test(jabatan) ? 'KASIR' : (jabatan || '-');
@@ -6742,8 +6752,9 @@
           const resto = group.resto;
           const nik = String(k?.nik || '').trim();
           const values = days.map(ymd => {
-            const key = `${nik.toLowerCase()}|${resto.toLowerCase()}|${ymd}`;
-            const record = checkinMap[key];
+            const normalizedNik = nik.toLowerCase();
+            const key = `${normalizedNik}|${resto.toLowerCase()}|${ymd}`;
+            const record = checkinMap[key] || checkinMap[`${normalizedNik}|${ymd}`];
             if (!record) return '-';
             const shift = String(record.shifting || '').trim().toUpperCase();
             if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) return shift.toLowerCase();
@@ -6843,8 +6854,10 @@
           const resto = group.resto;
           const nik = String(k?.nik || '').trim();
           const cells = days.map(ymd => {
-            const key = `${nik.toLowerCase()}|${resto.toLowerCase()}|${ymd}`;
-            return `<td>${getGromingKasirCell(checkinMap[key])}</td>`;
+            const normalizedNik = nik.toLowerCase();
+            const key = `${normalizedNik}|${resto.toLowerCase()}|${ymd}`;
+            const nikDateKey = `${normalizedNik}|${ymd}`;
+            return `<td>${getGromingKasirCell(checkinMap[key] || checkinMap[nikDateKey])}</td>`;
           }).join('');
           const jabatan = String(k?.jabatan || k?.posisi || k?.position || k?.namaJabatan || '').toUpperCase().replace(/[._-]/g, ' ').replace(/\s+/g, ' ').trim();
           const isActKaResto = /\bACT\s+KARESTO\b/.test(jabatan) || /\bACT\s+KA\s+RESTO\b/.test(jabatan);
@@ -6926,8 +6939,9 @@
           const resto = group.resto;
           const nik = String(k?.nik || '').trim();
           const values = days.map(ymd => {
-            const key = `${nik.toLowerCase()}|${resto.toLowerCase()}|${ymd}`;
-            const record = checkinMap[key];
+            const normalizedNik = nik.toLowerCase();
+            const key = `${normalizedNik}|${resto.toLowerCase()}|${ymd}`;
+            const record = checkinMap[key] || checkinMap[`${normalizedNik}|${ymd}`];
             if (!record) return '-';
             const shift = String(record.shifting || '').trim().toUpperCase();
             if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) return shift.toLowerCase();
