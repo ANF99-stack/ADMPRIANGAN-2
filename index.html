@@ -4425,6 +4425,18 @@
       return remaining > 0 && remaining < 5;
     }
 
+    // Pewarnaan Groming: Shift 1 resto 24 jam berwarna merah bila check-in
+    // pada rentang 23:30–23:59 atau 00:00–02:00 (inklusif).
+    function isLateShift1Resto24Groming(record, actualTime, timingObj) {
+      const shift = String(record?.shifting || record?.keterangan || record?.catatan || '').trim().toUpperCase().replace(/\s+/g, ' ');
+      if (shift !== 'SHIFT 1') return false;
+      const type = String(record?.restoType || timingObj?.type || timingObj?.tipe || timingObj?.jenis || '').toLowerCase().replace(/[ _-]/g, '');
+      const is24Jam = type.includes('24jam') || type.includes('24hour') || type.includes('24hours');
+      if (!is24Jam || !/^\d{2}:\d{2}$/.test(String(actualTime || '').slice(0, 5))) return false;
+      const time = String(actualTime).slice(0, 5);
+      return time >= '23:30' || time <= '02:00';
+    }
+
     function isLateCheckin(record, restoTimeMap) {
       if (!record || isAbsenceShift(String(record.shifting || '').trim().toUpperCase())) return false;
 
@@ -6528,9 +6540,11 @@
       try {
         const restoName = formatRestoName(record.restoName || record.resto || record.cabang || '');
         const timingMap = globalDashboardData.restoTimingMap || globalDashboardData.restoTimeMap || getRestoMaxCheckinMap();
-        const restoTimingObj = timingMap[restoName] || timingMap[restoName.toUpperCase()];
+        const timingTarget = String(restoName).toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const timingKey = Object.keys(timingMap || {}).find(k => String(formatRestoName(k)).toUpperCase().replace(/[^A-Z0-9]/g, '') === timingTarget);
+        const restoTimingObj = timingMap[restoName] || timingMap[restoName.toUpperCase()] || (timingKey ? timingMap[timingKey] : null) || (record.restoType ? {type: record.restoType} : null);
         const maxAllowed = getKasirMaxTimeForShift(record) || getMaxTimeForShift(restoTimingObj, record.shifting);
-        late = !!(maxAllowed && time > maxAllowed);
+        late = isLateShift1Resto24Groming(record, time, restoTimingObj) || !!(maxAllowed && time > maxAllowed);
         nearMax = !late && (isKasirNearMaxCheckin(record, time, maxAllowed) || isKaRestoNearMaxCheckin(record, time, maxAllowed));
       } catch (e) {}
       if (late) return `<span class="gk-late">${escapeHtml(time.replace(':','.'))}</span>`;
