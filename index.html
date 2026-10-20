@@ -1377,7 +1377,7 @@
               </div>
               <div class="input-group">
                 <label>NIK KARYAWAN</label>
-                <input type="text" id="checkin_nik" placeholder="Masukkan NIK Karyawan" oninput="autoFillNamaByNIK()" onchange="autoFillNamaByNIK()" required>
+                <input type="text" id="checkin_nik" placeholder="Masukkan NIK Karyawan" oninput="this.value=this.value.toUpperCase(); autoFillNamaByNIK()" onchange="this.value=this.value.toUpperCase(); autoFillNamaByNIK()" autocapitalize="characters" required>
               </div>
               <div class="input-group">
                 <label>NAMA LENGKAP (TERISI OTOMATIS BERDASARKAN NIK)</label>
@@ -3590,7 +3590,7 @@
       const rawName = localStorage.getItem('resto_user_name') || currentUser;
       const formattedRestoName = formatRestoName(rawName);
       const dateTime = document.getElementById('checkin_datetime').value;
-      const nik = document.getElementById('checkin_nik').value.trim();
+      const nik = document.getElementById('checkin_nik').value.trim().toUpperCase();
       const nama = document.getElementById('checkin_nama').value.trim();
       const shifting = document.getElementById('checkin_shifting').value;
       const catatan = document.getElementById('checkin_catatan')?.value.trim() || '';
@@ -5446,6 +5446,34 @@
 
     window.addEventListener('online', () => {
       flushPendingCheckins();
+      // Saat koneksi kembali, tarik konfigurasi dan data terbaru dari GAS.
+      const username = localStorage.getItem('resto_current_user');
+      const role = localStorage.getItem('resto_user_role') || 'user';
+      if (username) {
+        fetchInitialDataFromGAS(() => {
+          applyDashboardDataToUI(username, role);
+          updateCheckinSwitchUI();
+          renderOperasionalTable();
+          renderKaryawanTable();
+          fetchCheckinUpdatesFromGAS();
+        });
+      }
+    });
+
+    // Jika halaman dipulihkan dari tab/background atau cache browser, sinkronkan lagi
+    // segera setelah halaman aktif dan jaringan tersedia.
+    window.addEventListener('pageshow', () => {
+      const username = localStorage.getItem('resto_current_user');
+      const role = localStorage.getItem('resto_user_role') || 'user';
+      if (username && navigator.onLine) {
+        fetchInitialDataFromGAS(() => {
+          applyDashboardDataToUI(username, role);
+          updateCheckinSwitchUI();
+          renderOperasionalTable();
+          renderKaryawanTable();
+          fetchCheckinUpdatesFromGAS();
+        });
+      }
     });
 
     loginForm.addEventListener('submit', async function(e) {
@@ -5688,8 +5716,17 @@
 
       applyDashboardDataToUI(username, userRole);
 
+      // Sinkronisasi penuh ke GAS langsung saat dashboard pertama kali dibuka.
+      // Cache lokal tetap ditampilkan lebih dulu agar halaman tidak terasa kosong,
+      // lalu data terbaru dari GAS diterapkan setelah respons berhasil diterima.
       fetchInitialDataFromGAS(() => {
         applyDashboardDataToUI(username, userRole);
+        updateCheckinSwitchUI();
+        renderOperasionalTable();
+        renderKaryawanTable();
+        if (userRole === 'admin') renderUserTable();
+        // Setelah data awal masuk, cek lagi jika ada check-in baru sejak snapshot dibuat.
+        fetchCheckinUpdatesFromGAS();
       });
     }
 
