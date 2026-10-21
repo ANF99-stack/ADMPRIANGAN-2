@@ -1907,24 +1907,6 @@
             </div>
           </div>
 
-          <div id="admin-checkin-switch-wrapper" class="switch-toggle-wrapper" style="display: none; border-color: #c7d2fe; background: #f5f3ff;">
-            <div>
-              <h4 style="font-size: 0.95rem; font-weight: 800; color: #4338ca; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-sliders"></i> KONTROL HAK AKSES FEATURE "CHECKIN KARYAWAN" (KHUSUS ADMIN)
-              </h4>
-              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
-                Aktifkan switch ini untuk membuka form Check-in Karyawan di User Cabang. Jika OFF, seluruh halaman check-in akan menampilkan status "Coming Soon".
-              </p>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <span id="checkin_switch_status_text" style="font-weight: 800; font-size: 0.85rem; color: #dc2626;">OFF (COMING SOON)</span>
-              <label class="toggle-switch">
-                <input type="checkbox" id="checkin_toggle_switch" onchange="toggleCheckinFeatureAdmin(this.checked)">
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-
           <div id="operasional_coming_soon_view" class="coming-soon-box" style="display: none;">
             <div class="coming-soon-icon"><i class="fa-solid fa-person-digging"></i></div>
             <span class="coming-soon-badge"><i class="fa-solid fa-clock"></i> COMING SOON</span>
@@ -3286,85 +3268,39 @@
       updateCheckinDuplicateLock();
     }
 
+    // Check-in selalu aktif; status tidak lagi dikendalikan oleh switch admin/localStorage.
     function isCheckinFeatureEnabled() {
-      return globalDashboardData.checkinEnabled === true || localStorage.getItem('resto_checkin_feature_enabled') === 'true';
+      if (globalDashboardData) globalDashboardData.checkinEnabled = true;
+      return true;
     }
 
     async function toggleCheckinFeatureAdmin(isEnabled) {
-      localStorage.setItem('resto_checkin_feature_enabled', isEnabled ? 'true' : 'false');
-      globalDashboardData.checkinEnabled = isEnabled;
+      // Kompatibilitas jika ada pemanggilan lama: fitur tetap aktif.
+      if (globalDashboardData) globalDashboardData.checkinEnabled = true;
       updateCheckinSwitchUI();
-
-      const currentUser = localStorage.getItem('resto_current_user');
-      try {
-        await fetch(GAS_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          redirect: "follow",
-          body: JSON.stringify({
-            action: "saveCheckinSwitchStatus",
-            adminUser: currentUser,
-            isEnabled: isEnabled
-          })
-        });
-      } catch (err) {
-        console.error("Gagal sinkronisasi status switch ke server", err);
-      }
     }
 
     function updateCheckinSwitchUI() {
-      const isEnabled = isCheckinFeatureEnabled();
-      const userRole = localStorage.getItem('resto_user_role') || 'user';
-      
-      const switchWrapper = document.getElementById('admin-checkin-switch-wrapper');
-      const switchToggle = document.getElementById('checkin_toggle_switch');
-      const switchText = document.getElementById('checkin_switch_status_text');
+      const userRole = String(localStorage.getItem('resto_user_role') || 'user').toLowerCase();
 
-      if (switchWrapper) {
-        switchWrapper.style.display = (userRole === 'admin') ? 'flex' : 'none';
-      }
-
-      if (switchToggle) switchToggle.checked = isEnabled;
-      if (switchText) {
-        if (isEnabled) {
-          switchText.textContent = 'ON (FITUR AKTIF)';
-          switchText.style.color = '#059669';
-        } else {
-          switchText.textContent = 'OFF (COMING SOON)';
-          switchText.style.color = '#dc2626';
-        }
-      }
-
+      // Form check-in selalu ditampilkan di user cabang.
       const activeView = document.getElementById('checkin_active_view');
       const comingSoonView = document.getElementById('checkin_coming_soon_view');
+      if (activeView) activeView.style.display = 'block';
+      if (comingSoonView) comingSoonView.style.display = 'none';
 
-      if (activeView && comingSoonView) {
-        if (isEnabled) {
-          activeView.style.display = 'block';
-          comingSoonView.style.display = 'none';
-        } else {
-          activeView.style.display = 'none';
-          comingSoonView.style.display = 'block';
-          stopCameraStream();
-        }
-      }
-
+      // Halaman operasional/checking karyawan juga tidak lagi dikunci oleh switch.
       const opContentView = document.getElementById('operasional_active_content_view');
       const opComingSoonView = document.getElementById('operasional_coming_soon_view');
+      if (opContentView) opContentView.style.display = 'block';
+      if (opComingSoonView) opComingSoonView.style.display = 'none';
 
-      if (opContentView && opComingSoonView) {
-        if (isEnabled || userRole === 'admin') {
-          opContentView.style.display = 'block';
-          opComingSoonView.style.display = 'none';
-        } else {
-          opContentView.style.display = 'none';
-          opComingSoonView.style.display = 'block';
-        }
-      }
+      const switchWrapper = document.getElementById('admin-checkin-switch-wrapper');
+      if (switchWrapper) switchWrapper.style.display = 'none';
 
       const mutasiBtnContainer = document.getElementById('spv-mutasi-btn-container');
       if (mutasiBtnContainer) {
-        mutasiBtnContainer.style.display = (userRole === 'supervisor') ? 'block' : 'none';
+        mutasiBtnContainer.style.display = (userRole === 'supervisor' || userRole === 'spv') ? 'block' : 'none';
       }
     }
 
