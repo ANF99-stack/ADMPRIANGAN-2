@@ -6955,14 +6955,26 @@
       const selectedResto = formatRestoName(document.getElementById('check_karyawan_resto')?.value || 'ALL');
       const checkins = getStoredCheckinData();
 
-      const byNikDate = {};
+      // Indeks check-in berdasarkan NIK yang dinormalisasi. Data absensi bisa
+      // datang dari akun/cabang berbeda, sehingga NIK menjadi identitas utama.
+      // Simpan kecocokan NIK+resto sebagai prioritas, lalu siapkan fallback NIK
+      // saja agar jam tetap terdeteksi ketika karyawan check-in dari resto lain.
+      const byNikResto = Object.create(null);
+      const byNikOnly = Object.create(null);
+      const normalizeCheckNik = value => String(value ?? '').trim().toUpperCase().replace(/\s+/g, '');
+      const getCheckinNik = record => normalizeCheckNik(record?.nik ?? record?.NIK ?? record?.nikKaryawan ?? record?.employeeNik ?? '');
+      const getCheckinResto = record => formatRestoName(record?.restoName || record?.resto || record?.cabang || record?.namaResto || '');
+      const getCheckinTimestamp = record => Number(record?.actualTimestampMs || record?.timestampMs || record?.timestamp || 0) || 0;
       checkins.forEach(c => {
-        const nik = String(c.nik || '').trim();
+        const nik = getCheckinNik(c);
         if (!nik) return;
         const info = getRecordWIBInfo(c);
-        if (info.date < selectedRange.start || info.date > selectedRange.end) return;
-        const key = nik + '|' + formatRestoName(c.restoName);
-        if (!byNikDate[key] || (Number(c.timestampMs) || 0) > (Number(byNikDate[key].timestampMs) || 0)) byNikDate[key] = c;
+        if (!info.date || info.date < selectedRange.start || info.date > selectedRange.end) return;
+        const resto = getCheckinResto(c).toLowerCase();
+        const key = nik + '|' + resto;
+        const ts = getCheckinTimestamp(c);
+        if (!byNikOnly[nik] || ts >= getCheckinTimestamp(byNikOnly[nik])) byNikOnly[nik] = c;
+        if (resto && (!byNikResto[key] || ts >= getCheckinTimestamp(byNikResto[key]))) byNikResto[key] = c;
       });
 
       let filtered = employees.filter(k => {
@@ -6977,8 +6989,10 @@
       const total = filtered.length;
       let done = 0;
       const rows = filtered.map((k, idx) => {
-        const key = String(k.nik || '').trim() + '|' + formatRestoName(k.resto || k.restoName || k.cabang);
-        const c = byNikDate[key];
+        const employeeNik = normalizeCheckNik(k?.nik ?? k?.NIK ?? k?.nikKaryawan ?? '');
+        const employeeResto = formatRestoName(k?.resto || k?.restoName || k?.cabang || k?.namaResto || '').toLowerCase();
+        const key = employeeNik + '|' + employeeResto;
+        const c = (employeeNik && byNikResto[key]) || (employeeNik && byNikOnly[employeeNik]) || null;
         if (c) done++;
         const info = c ? getRecordWIBInfo(c) : { date: '-', time: '-' };
         let timeHtml = c ? `${escapeHtml(info.time)} WIB` : '-';
@@ -7001,7 +7015,7 @@
           : '<span class="check-status pending"><i class="fa-solid fa-circle-xmark"></i> BELUM CHECK-IN</span>';
         return `<tr>
           <td>${idx + 1}</td>
-          <td style="font-weight:800; color:var(--lazatto-red);">${escapeHtml(k.nik || '-')}</td>
+          <td style="font-weight:800; color:var(--lazatto-red);">${escapeHtml(k.nik || k.NIK || k.nikKaryawan || '-')}</td>
           <td style="font-weight:800;">${escapeHtml(k.nama || '-')}</td>
           <td>${escapeHtml(k.jabatan || '-')}</td>
           <td style="font-weight:800;">${escapeHtml(formatRestoName(k.resto || k.restoName || k.cabang) || '-')}</td>
