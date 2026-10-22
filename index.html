@@ -3661,10 +3661,23 @@
       const btnDownload = document.getElementById('btn_download_template_karyawan');
       const btnImport = document.getElementById('btn_import_excel_karyawan');
       const btnGlobalUpdate = document.getElementById('btn_global_update_karyawan');
+      const mutasiBtnContainer = document.getElementById('spv-mutasi-btn-container');
+      const normalizedRole = String(userRole).trim().toLowerCase();
 
-      if (btnDownload) btnDownload.style.display = userRole === 'supervisor' ? 'none' : 'inline-flex';
-      if (btnImport) btnImport.style.display = userRole === 'supervisor' ? 'none' : 'inline-flex';
-      if (btnGlobalUpdate) btnGlobalUpdate.style.display = ['supervisor', 'psd', 'admin'].includes(String(userRole).toLowerCase()) ? 'inline-flex' : 'none';
+      if (btnDownload) btnDownload.style.display = normalizedRole === 'supervisor' || normalizedRole === 'spv' ? 'none' : 'inline-flex';
+      if (btnImport) btnImport.style.display = normalizedRole === 'supervisor' || normalizedRole === 'spv' ? 'none' : 'inline-flex';
+      if (btnGlobalUpdate) btnGlobalUpdate.style.display = ['supervisor', 'spv', 'psd', 'admin'].includes(normalizedRole) ? 'inline-flex' : 'none';
+
+      // Pastikan tombol Mutasi selalu dipulihkan setiap kali tabel dirender,
+      // termasuk setelah proses mutasi selesai dan data dimuat ulang dari GAS.
+      if (mutasiBtnContainer) {
+        mutasiBtnContainer.style.display = ['supervisor', 'spv'].includes(normalizedRole) ? 'block' : 'none';
+        const mutasiButton = mutasiBtnContainer.querySelector('button');
+        if (mutasiButton) {
+          mutasiButton.style.display = 'inline-flex';
+          mutasiButton.disabled = false;
+        }
+      }
     }
 
     function renderKaryawanTable() {
@@ -4105,6 +4118,7 @@
           closeModalMutasiKaryawan();
           
           fetchInitialDataFromGAS(() => {
+            updateKaryawanActionButtonsForRole();
             renderKaryawanTable();
           });
         } else {
@@ -5270,9 +5284,14 @@
 
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) {
+        // Tampilkan cache terlebih dahulu supaya UI segera terbuka, lalu ambil data terbaru dari GAS.
         restoreCachedDashboardData();
         recordUserActivity(loggedUser);
         showDashboard(loggedUser);
+        fetchInitialDataFromGAS(() => {
+          const role = localStorage.getItem('resto_user_role') || 'user';
+          applyDashboardDataToUI(loggedUser, role);
+        }, { force: true });
       }
 
       const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 800));
@@ -5437,41 +5456,61 @@
       }
     }
 
-    async function fetchInitialDataFromGAS(onSuccess) {
-      if (initialDataFetchPromise) {
-        try { await initialDataFetchPromise; } catch(e) {}
+    // Ambil data GAS sekali per waktu; data cache langsung dipakai untuk tampilan awal.
+    // Refresh berjalan di latar belakang agar halaman tidak menunggu beberapa retry yang lambat.
+    let lastInitialDataFetchAt = 0;
+    async function fetchInitialDataFromGAS(onSuccess, options = {}) {
+      const force = options.force === true;
+      const minIntervalMs = Number(options.minIntervalMs ?? 12000);
+      const now = Date.now();
+
+      if (!force && initialDataFetchPromise) {
+        const sharedResult = await initialDataFetchPromise;
+        if (sharedResult && onSuccess) onSuccess();
+        return !!sharedResult;
+      }
+      if (!force && now - lastInitialDataFetchAt < minIntervalMs) {
         if (onSuccess) onSuccess();
-        return;
+        return true;
       }
 
-      initialDataFetchPromise=(async()=>{
+      lastInitialDataFetchAt = now;
+      initialDataFetchPromise = (async () => {
         try {
-          const result=await gasRequestJson(
-            {action:"getInitialData", includeCheckinPhotos:false},
-            {timeoutMs:18000,retries:2,retryDelayMs:700}
+          const result = await gasRequestJson(
+            { action: 'getInitialData', includeCheckinPhotos: false },
+            { timeoutMs: 15000, retries: 0 }
           );
-          if(result.status==="success"){
-            globalDashboardData=result.data||{};
-            if(!globalDashboardData.spvLinksMaster)globalDashboardData.spvLinksMaster={};
-            if(!globalDashboardData.spvLinksIndividual)globalDashboardData.spvLinksIndividual={};
-            if(!globalDashboardData.psdLinksMaster)globalDashboardData.psdLinksMaster={};
-            if(!globalDashboardData.checkinKasirLimits)globalDashboardData.checkinKasirLimits={};
-            if(!globalDashboardData.checkinsList)globalDashboardData.checkinsList=[];
-            if(!globalDashboardData.karyawanList)globalDashboardData.karyawanList=[];
-            localStorage.setItem('resto_checkin_feature_enabled',globalDashboardData.checkinEnabled?'true':'false');
-            try {
-              localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
-              localStorage.setItem('resto_cached_data_at', String(Date.now()));
-            } catch(e) {}
-            return true;
+          if (result?.status !== 'success') return false;
+
+          const data = result.data || {};
+          if (!data.spvLinksMaster) data.spvLinksMaster = {};
+          if (!data.spvLinksIndividual) data.spvLinksIndividual = {};
+          if (!data.psdLinksMaster) data.psdLinksMaster = {};
+          if (!data.checkinKasirLimits) data.checkinKasirLimits = {};
+          if (!Array.isArray(data.checkinsList)) data.checkinsList = [];
+          if (!Array.isArray(data.karyawanList)) data.karyawanList = [];
+
+          globalDashboardData = data;
+          localStorage.setItem('resto_checkin_feature_enabled', data.checkinEnabled ? 'true' : 'false');
+          try {
+            localStorage.setItem('resto_cached_data', JSON.stringify(data));
+            localStorage.setItem('resto_cached_data_at', String(Date.now()));
+          } catch (cacheError) {
+            console.warn('Cache data dashboard tidak dapat diperbarui:', cacheError);
           }
-        }catch(e){console.error("Gagal memuat data dari GAS",e);}
-        return false;
+          return true;
+        } catch (err) {
+          console.error('Gagal memuat data dari GAS:', err);
+          return false;
+        }
       })();
 
-      const success=await initialDataFetchPromise;
-      initialDataFetchPromise=null;
-      if(success&&onSuccess)onSuccess();
+      const request = initialDataFetchPromise;
+      const success = await request;
+      if (initialDataFetchPromise === request) initialDataFetchPromise = null;
+      if (success && onSuccess) onSuccess();
+      return success;
     }
 
     function toggleSpvCoverageInput() {
