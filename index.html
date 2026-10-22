@@ -1165,7 +1165,79 @@
     @media(max-width:1000px){.oa-filter{grid-template-columns:repeat(2,minmax(0,1fr))}.oa-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.oa-panels{grid-template-columns:1fr}}
     @media(max-width:560px){.oa-filter{grid-template-columns:1fr}.oa-kpis{gap:8px}.oa-kpi{padding:13px}.oa-card{padding:12px}.oa-hero .oa-actions{width:100%;display:flex;gap:8px}.oa-hero .oa-actions button{flex:1}}
 
-</style>
+
+
+    
+    .cogs-detail-overlay{position:fixed;inset:0;z-index:10050;background:rgba(15,23,42,.58);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px}
+    .cogs-detail-dialog{width:min(1050px,96vw);max-height:88vh;overflow:auto;background:#fff;border:1px solid #e2e8f0;border-radius:22px;padding:clamp(16px,3vw,28px);box-shadow:0 25px 80px rgba(15,23,42,.28);animation:cogsDetailIn .18s ease-out}
+    .cogs-detail-dialog .cogs-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px}
+    .cogs-detail-dialog .cogs-heading h2{margin:0 0 6px}
+    .cogs-doc-link{border:0;background:transparent;color:#2563eb;font-weight:750;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:5px 2px;border-radius:6px}
+    .cogs-doc-link:hover{color:#1d4ed8;background:#eff6ff}
+    .cogs-detail-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+    .cogs-detail-stat{padding:13px 15px;border:1px solid #e2e8f0;border-radius:14px;background:linear-gradient(145deg,#f8fafc,#fff)}
+    .cogs-detail-stat small{display:block;color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+    .cogs-detail-stat strong{font-size:15px;color:#0f172a;overflow-wrap:anywhere}
+    @keyframes cogsDetailIn{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
+    @media(max-width:600px){.cogs-detail-overlay{padding:8px;align-items:flex-end}.cogs-detail-dialog{width:100%;max-height:92vh;border-radius:20px 20px 12px 12px;padding:14px}.cogs-detail-summary{grid-template-columns:1fr 1fr}.cogs-detail-dialog .cogs-heading{gap:8px}.cogs-detail-dialog .cogs-heading h2{font-size:18px}}
+
+    /* Modern COGS UI — visual-only enhancement for STOK BARANG, COGS and UPDATE ORDERAN */
+    .cogs-shell {
+      --cogs-ink:#172033; --cogs-muted:#667085; --cogs-line:#e6eaf0;
+      width:min(1440px, calc(100% - 28px)); margin:22px auto 36px; padding:clamp(16px,2.2vw,28px);
+      background:linear-gradient(145deg,#ffffff 0%,#fbfcff 100%); border:1px solid #e9edf4;
+      border-radius:24px; box-shadow:0 16px 44px rgba(24,39,75,.07); color:var(--cogs-ink);
+      animation:cogsFadeIn .28s ease-out;
+    }
+    @keyframes cogsFadeIn { from {opacity:0; transform:translateY(5px)} to {opacity:1;transform:translateY(0)} }
+    .cogs-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin:0 0 18px; padding:0 0 18px; border-bottom:1px solid #edf0f5; }
+    .cogs-heading h2 { display:flex; align-items:center; gap:12px; margin:0; color:#111827; font-size:clamp(1.12rem,2vw,1.55rem); font-weight:800; letter-spacing:-.035em; line-height:1.3; }
+    .cogs-heading h2 i { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:14px; color:#fff; background:linear-gradient(135deg,#ef4444,#b91c1c); box-shadow:0 8px 18px rgba(220,38,38,.2); font-size:1.1rem; }
+    #page-cogs-riwayat .cogs-heading h2 i { background:linear-gradient(135deg,#6366f1,#4338ca); box-shadow:0 8px 18px rgba(79,70,229,.2); }
+    #page-cogs-order .cogs-heading h2 i { background:linear-gradient(135deg,#0ea5e9,#0369a1); box-shadow:0 8px 18px rgba(2,132,199,.2); }
+    .cogs-actions { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+    .cogs-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; padding:10px 16px; border:1px solid transparent; border-radius:12px; font:700 .86rem 'Plus Jakarta Sans',sans-serif; cursor:pointer; transition:transform .16s ease,box-shadow .16s ease,background .16s ease; }
+    .cogs-btn:hover { transform:translateY(-1px); box-shadow:0 7px 15px rgba(15,23,42,.12); }
+    .cogs-btn:active { transform:translateY(0); }
+    .cogs-btn.green { color:#fff; background:linear-gradient(135deg,#16a34a,#15803d); box-shadow:0 4px 10px rgba(22,163,74,.15); }
+    .cogs-btn.gray { color:#344054; background:#fff; border-color:#dce2eb; }
+    .cogs-info { display:flex; align-items:flex-start; gap:10px; margin:0 0 18px; padding:13px 15px; border:1px solid #dbeafe; border-radius:13px; color:#1d4ed8; background:linear-gradient(90deg,#eff6ff,#f8fbff); font-size:.88rem; line-height:1.6; }
+    .cogs-info:before { content:'\f05a'; font-family:'Font Awesome 6 Free'; font-weight:900; margin-top:2px; }
+    .cogs-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin:0 0 18px; padding:18px; background:#f8fafc; border:1px solid #edf0f5; border-radius:16px; }
+    .cogs-field { display:flex; flex-direction:column; gap:7px; min-width:0; }
+    .cogs-field label { font-size:.78rem; font-weight:800; color:#475467; letter-spacing:.025em; }
+    .cogs-field input,.cogs-field textarea { width:100%; min-height:43px; padding:11px 13px; border:1px solid #d8dee8; border-radius:11px; background:#fff; color:#101828; font:500 .9rem 'Plus Jakarta Sans',sans-serif; outline:none; transition:border-color .15s,box-shadow .15s; }
+    .cogs-field input:focus,.cogs-field textarea:focus { border-color:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,.11); }
+    .cogs-field textarea { min-height:80px; resize:vertical; }
+    .cogs-table-wrap { width:100%; overflow:auto; border:1px solid #e6eaf0; border-radius:16px; background:#fff; box-shadow:0 4px 14px rgba(16,24,40,.035); }
+    .cogs-table { width:100%; min-width:850px; border-collapse:separate; border-spacing:0; font-size:.84rem; }
+    .cogs-table thead th { position:sticky; top:0; z-index:1; padding:14px 13px; background:#f4f6fa; border-bottom:1px solid #e1e6ee; color:#475467; text-align:center; white-space:nowrap; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.045em; }
+    .cogs-table thead th:first-child { border-top-left-radius:14px; }
+    .cogs-table thead th:last-child { border-top-right-radius:14px; }
+    .cogs-table tbody td { padding:13px 13px; border-bottom:1px solid #eef1f5; color:#344054; text-align:center; white-space:nowrap; }
+    .cogs-table tbody tr:last-child td { border-bottom:0; }
+    .cogs-table tbody tr:nth-child(even) { background:#fbfcfe; }
+    .cogs-table tbody tr:hover { background:#fff7f7; }
+    .cogs-table tbody td.left { text-align:left; font-weight:700; color:#1d2939; }
+    .cogs-table tbody td b { color:#111827; font-weight:800; }
+    .cogs-qty-input { width:105px; max-width:100%; padding:9px 10px; border:1px solid #d0d5dd; border-radius:9px; text-align:right; font:700 .86rem 'Plus Jakarta Sans',sans-serif; outline:none; }
+    .cogs-qty-input:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.12); }
+    #cogs-stock-table > p,#cogs-history-table > p,#cogs-order-table > p,#cogs-input-items > p { margin:0; padding:30px 18px !important; color:#667085; text-align:center; font-size:.9rem; }
+    #cogs-start,#cogs-end { accent-color:#dc2626; }
+    @media (max-width:700px) {
+      .cogs-shell { width:calc(100% - 18px); margin:12px auto 24px; padding:14px; border-radius:18px; }
+      .cogs-heading { align-items:flex-start; gap:12px; }
+      .cogs-heading h2 { font-size:1.05rem; gap:9px; }
+      .cogs-heading h2 i { width:38px; height:38px; border-radius:12px; font-size:.95rem; flex:0 0 38px; }
+      .cogs-actions { width:100%; }
+      .cogs-actions .cogs-btn { flex:1; padding:10px 11px; font-size:.78rem; }
+      .cogs-heading > .cogs-btn { width:100%; }
+      .cogs-info { font-size:.8rem; padding:11px 12px; }
+      .cogs-form-grid { grid-template-columns:1fr; padding:13px; gap:12px; }
+      .cogs-table { min-width:780px; }
+    }
+
+  </style>
 </head>
 <body>
 
@@ -1347,6 +1419,31 @@
         </div>
 
         <!-- PAGE 2: SIDEBAR PAGE - CHECKIN KARYAWAN REALTIME KAMERA -->
+
+        <div id="cogs-detail-modal" class="cogs-detail-overlay" style="display:none" onclick="if(event.target===this)closeCogsDetailModal()">
+          <section class="cogs-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="cogs-detail-title">
+            <div class="cogs-heading"><div><h2 id="cogs-detail-title"><i class="fa-solid fa-list-check"></i> Detail Dokumen</h2><div id="cogs-detail-subtitle" class="cogs-info"></div></div><button class="cogs-btn gray" onclick="closeCogsDetailModal()" aria-label="Tutup detail"><i class="fa-solid fa-xmark"></i> Tutup</button></div>
+            <div id="cogs-detail-content" class="cogs-table-wrap"><p style="padding:20px">Memuat detail item…</p></div>
+          </section>
+        </div>
+
+        <div id="page-cogs-stok" class="role-page-content" style="display:none"><section class="cogs-shell">
+          <div class="cogs-heading"><h2><i class="fa-solid fa-boxes-stacked"></i> Data Persediaan Stok Barang</h2><button class="cogs-btn green" onclick="loadCogsStock()"><i class="fa-solid fa-rotate"></i> Muat Ulang</button></div>
+          <div class="cogs-info">Daftar barang dan sisa stok ditampilkan berdasarkan data resto yang login.</div><div id="cogs-stock-table" class="cogs-table-wrap"><p style="padding:20px">Memuat data stok…</p></div>
+        </section></div>
+        <div id="page-cogs-riwayat" class="role-page-content" style="display:none"><section class="cogs-shell">
+          <div class="cogs-heading"><h2><i class="fa-solid fa-gears"></i> Data Pemakaian Stok Barang (COGS)</h2><div class="cogs-actions"><button class="cogs-btn green" onclick="openCogsInput('COGS')"><i class="fa-solid fa-plus"></i> Data Baru</button><button class="cogs-btn gray" onclick="loadCogsHistory('COGS')">Refresh</button></div></div>
+          <div class="cogs-form-grid"><div class="cogs-field"><label>Tanggal Mulai</label><input type="date" id="cogs-start"></div><div class="cogs-field"><label>Tanggal Akhir</label><input type="date" id="cogs-end"></div></div><div id="cogs-history-table" class="cogs-table-wrap"><p style="padding:20px">Memuat riwayat COGS…</p></div>
+        </section></div>
+        <div id="page-cogs-order" class="role-page-content" style="display:none"><section class="cogs-shell">
+          <div class="cogs-heading"><h2><i class="fa-solid fa-truck-ramp-box"></i> UPDATE ORDERAN</h2><div class="cogs-actions"><button class="cogs-btn green" onclick="openCogsInput('ORDER')"><i class="fa-solid fa-plus"></i> Data Baru</button><button class="cogs-btn gray" onclick="loadCogsHistory('ORDER')">Refresh</button></div></div>
+          <div class="cogs-info">Qty orderan menambah stok akhir barang.</div><div id="cogs-order-table" class="cogs-table-wrap"><p style="padding:20px">Memuat riwayat orderan…</p></div>
+        </section></div>
+        <div id="page-cogs-input" class="role-page-content" style="display:none"><section class="cogs-shell">
+          <div class="cogs-heading"><h2 id="cogs-input-title">Input Pemakaian Stok Akhir (COGS)</h2><div class="cogs-actions"><button class="cogs-btn green" onclick="saveCogsEntry()">Simpan</button><button class="cogs-btn gray" onclick="switchCogsPage(cogsCurrentType==='ORDER'?'page-cogs-order':'page-cogs-riwayat',null)">Kembali</button></div></div>
+          <div class="cogs-form-grid"><div class="cogs-field"><label>No Dokumen</label><input id="cogs-docno" readonly></div><div class="cogs-field"><label>Tanggal</label><input id="cogs-date" type="date"></div><div class="cogs-field"><label>Keterangan</label><textarea id="cogs-note" placeholder="Keterangan (opsional)"></textarea></div><div class="cogs-field"><label>Tipe</label><input id="cogs-type-label" readonly></div></div>
+          <div class="cogs-info" id="cogs-input-help">Untuk COGS, isi <b>Stok Akhir</b> secara manual. Qty Terpakai dihitung otomatis: Sisa Stok − Stok Akhir. Untuk UPDATE ORDERAN, isi Qty Orderan.</div><div id="cogs-input-items" class="cogs-table-wrap"><p style="padding:20px">Memuat daftar barang…</p></div>
+        </section></div>
         <div id="page-user-checkin" class="role-page-content" style="display: none;">
           
           <div id="checkin_coming_soon_view" class="coming-soon-box" style="display: none;">
@@ -2481,6 +2578,29 @@
               <div class="admin-input-group"><label>9. Cek Stok Opname (Master)</label><input type="text" id="master_spv_cek_so" placeholder="https://docs.google.com/..."></div>
             </div>
           </div>
+        </div>
+
+        <!-- MASTER BARANG STOK CABANG: modul terpisah, tidak mengubah halaman lama -->
+        <div id="page-admin-update-barang" class="admin-page-content" style="display:none;">
+          <div class="admin-card-item" style="border:1px solid var(--border);margin-bottom:18px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+              <div><h3 style="font-size:1.2rem;font-weight:800;"><i class="fa-solid fa-box-open"></i> UPDATE BARANG</h3><p style="color:var(--text-muted);font-size:.85rem;margin-top:5px;">Kelola master barang untuk kebutuhan stok pada user cabang.</p></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="btn-primary" onclick="downloadMasterBarangTemplate()"><i class="fa-solid fa-download"></i> Template Excel</button><button type="button" class="btn-primary" onclick="document.getElementById('master-barang-file').click()"><i class="fa-solid fa-file-import"></i> Import Excel</button><button type="button" class="btn-primary" onclick="loadMasterBarangStok()"><i class="fa-solid fa-rotate"></i> Muat Ulang</button></div>
+            </div>
+            <input type="file" id="master-barang-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importMasterBarangExcel(event)">
+            <form id="master-barang-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+              <div class="admin-input-group"><label>Resto Tujuan</label><input id="mb-resto" required placeholder="Contoh: LAZATTO TEST" value="SEMUA CABANG"></div>
+              <div class="admin-input-group"><label>Kode Barang</label><input id="mb-kode" required placeholder="BRG001"></div>
+              <div class="admin-input-group"><label>Nama Barang</label><input id="mb-nama" required placeholder="Nama barang"></div>
+              <div class="admin-input-group"><label>Satuan Pakai</label><input id="mb-satuan" required placeholder="Pcs / Gram / ml"></div>
+              <div class="admin-input-group"><label>Satuan Order</label><input id="mb-satuan-order" placeholder="Dus / Pack / Kg"></div>
+              <div class="admin-input-group"><label>Produk</label><input id="mb-produk" placeholder="Logistik"></div>
+              <div class="admin-input-group"><label>Konversi</label><input id="mb-konversi" placeholder="Contoh: 1 dus = 12 pcs"></div>
+              <div class="admin-input-group"><label>Stok Awal</label><input id="mb-stok-awal" type="number" min="0" step="any" value="0" required></div>
+              <div style="display:flex;align-items:end;gap:8px;flex-wrap:wrap;"><button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Barang</button><button type="button" class="btn-primary" onclick="resetMasterBarangForm()">Bersihkan</button></div>
+            </form>
+          </div>
+          <div class="admin-card-item"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;"><h3 style="font-weight:800;">Daftar Master Barang</h3><input id="mb-search" placeholder="Cari kode, nama, atau resto…" oninput="renderMasterBarangTable()" style="max-width:320px;padding:10px;border:1px solid var(--border);border-radius:8px;"></div><div id="master-barang-table" style="overflow:auto;">Klik Muat Ulang untuk membaca data master.</div></div>
         </div>
 
         <!-- PAGE 4: STOK OPNAME UNTUK ADMIN -->
@@ -4829,6 +4949,7 @@
               <div class="nav-item" onclick="switchAdminNav('page-links', this)"><i class="fa-solid fa-link"></i><span>KELOLA LINK AREA & CABANG</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-spv-links', this)"><i class="fa-solid fa-user-tie"></i><span>KELOLA LINK SUPERVISOR</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-admin-stok-opname', this)"><i class="fa-solid fa-boxes-stacked"></i><span>STOK OPNAME</span></div>
+              <div class="nav-item" onclick="switchAdminNav('page-admin-update-barang', this)"><i class="fa-solid fa-box-open"></i><span>UPDATE BARANG</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-psd-links', this)"><i class="fa-solid fa-id-card-clip"></i><span>KELOLA LINK PSD</span></div>
             </div>
           </details>
@@ -4889,6 +5010,14 @@
             <div class="admin-nav-group-menu">
               <div class="nav-item" onclick="switchRoleNav('page-user-checkin', this)"><i class="fa-solid fa-camera"></i><span>CHECKIN KARYAWAN</span></div>
               <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
+            </div>
+          </details>
+          <details class="admin-nav-group branch-cogs-group">
+            <summary><i class="fa-solid fa-boxes-stacked"></i><span>COGS</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
+            <div class="admin-nav-group-menu">
+              <div class="nav-item" onclick="switchCogsPage('page-cogs-stok', this)"><i class="fa-solid fa-box"></i><span>STOK BARANG</span></div>
+              <div class="nav-item" onclick="switchCogsPage('page-cogs-riwayat', this)"><i class="fa-solid fa-clipboard-list"></i><span>COGS</span></div>
+              <div class="nav-item" onclick="switchCogsPage('page-cogs-order', this)"><i class="fa-solid fa-truck-ramp-box"></i><span>UPDATE ORDERAN</span></div>
             </div>
           </details>
         `;
@@ -7144,6 +7273,8 @@
         if (pageId === 'page-preview-user') {
           hideAdmRestoSubPage();
           hideAdminStokOpnameSubPage();
+        } else if (pageId === 'page-admin-update-barang') {
+          loadMasterBarangStok();
         } else if (pageId === 'page-admin-stok-opname') {
           loadAdminStokOpnameLinks();
         } else if (pageId === 'page-checkin-kasir-limit') {
@@ -7802,6 +7933,73 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
   })();
+
+    // COGS frontend; memerlukan action pendukung pada Google Apps Script.
+    let cogsCurrentType='COGS', cogsItems=[], cogsStocks=[], cogsEntryBusy=false;
+    const cogsEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const cogsNum=v=>Number(v)||0;
+    function cogsResto(){
+      // Login cabang menyimpan nama resto pada resto_user_name; jangan hanya mengandalkan key lama.
+      const keys=['resto_current_resto','resto_nama_cabang','currentResto','resto_user_name'];
+      for(const key of keys){const value=String(localStorage.getItem(key)||'').trim();if(value)return value;}
+      const username=String(localStorage.getItem('resto_current_user')||'').trim();
+      const users=globalDashboardData?.usersList||[];
+      const user=users.find(u=>String(u.username||u.user_id||u.id||'').trim().toLowerCase()===username.toLowerCase());
+      const fallback=user?.resto||user?.cabang||user?.nama_resto||user?.namaResto||user?.name||'';
+      return String(fallback||'').trim();
+    }
+    // UPDATE BARANG ADMIN - memakai endpoint master barang yang sudah tersedia di GAS utama.
+    let masterBarangRows = [];
+    function masterBarangAdminUser(){ return localStorage.getItem('resto_current_user') || ''; }
+    async function masterBarangRequest(action, extra={}) {
+      const r = await gasRequestJson({action, adminUser:masterBarangAdminUser(), ...extra}, {timeoutMs:30000,retries:1});
+      if (!r || r.status === 'error' || r.success === false) throw new Error(r?.message || 'Permintaan master barang gagal');
+      return r;
+    }
+    async function loadMasterBarangStok(){
+      const el=document.getElementById('master-barang-table'); if(!el)return; el.innerHTML='Memuat data barang…';
+      try { const r=await masterBarangRequest('getMasterBarangStok'); masterBarangRows=Array.isArray(r.items)?r.items:(Array.isArray(r.data?.items)?r.data.items:[]); renderMasterBarangTable(); }
+      catch(e){el.innerHTML='<p style="padding:14px;color:#b91c1c">Gagal memuat data: '+escapeMasterBarangHtml(String(e.message||e))+'</p>';}
+    }
+    function renderMasterBarangTable(){
+      const el=document.getElementById('master-barang-table'); if(!el)return; const q=(document.getElementById('mb-search')?.value||'').toLowerCase();
+      const rows=masterBarangRows.filter(x=>[x.resto,x.kode,x.nama,x.satuan,x.satuanOrder,x.produk].some(v=>String(v||'').toLowerCase().includes(q)));
+      if(!rows.length){el.innerHTML='<p style="padding:16px;color:var(--text-muted)">Belum ada data barang yang cocok.</p>';return;}
+      el.innerHTML='<table style="width:100%;border-collapse:collapse;min-width:850px"><thead><tr>'+['No','Resto','Kode','Nama Barang','Satuan Pakai','Satuan Order','Produk','Konversi','Stok Awal'].map(x=>'<th style="padding:10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap">'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.map((x,i)=>'<tr>'+[i+1,x.resto,x.kode,x.nama,x.satuan,x.satuanOrder,x.produk,x.konversi,x.stokAwal].map(v=>'<td style="padding:10px;border-bottom:1px solid var(--border)">'+escapeMasterBarangHtml(String(v??''))+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+    }
+    function escapeMasterBarangHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    function masterBarangFormItem(){return {resto:document.getElementById('mb-resto').value.trim(),kode:document.getElementById('mb-kode').value.trim(),nama:document.getElementById('mb-nama').value.trim(),satuan:document.getElementById('mb-satuan').value.trim(),satuanOrder:document.getElementById('mb-satuan-order').value.trim(),produk:document.getElementById('mb-produk').value.trim(),konversi:document.getElementById('mb-konversi').value.trim(),stokAwal:Number(document.getElementById('mb-stok-awal').value||0)};}
+    function resetMasterBarangForm(){document.getElementById('master-barang-form').reset();document.getElementById('mb-resto').value='SEMUA CABANG';document.getElementById('mb-stok-awal').value='0';}
+    document.addEventListener('DOMContentLoaded',()=>{const f=document.getElementById('master-barang-form');if(f)f.addEventListener('submit',async e=>{e.preventDefault();try{const r=await masterBarangRequest('saveMasterBarangStok',{item:masterBarangFormItem()});alert(r.message||'Barang tersimpan.');resetMasterBarangForm();await loadMasterBarangStok();}catch(err){alert('Gagal menyimpan barang: '+err.message);}});});
+    async function downloadMasterBarangTemplate(){try{await ensureXLSXLoaded();const rows=[{'Resto':'LAZATTO TEST','Kode Barang':'BRG001','Nama Barang':'Contoh Barang','Satuan':'Pcs','Satuan Order':'Dus','Produk':'Logistik','Konversi':'1 dus = 12 pcs','Stok Awal':0}];const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'MasterBarang');XLSX.writeFile(wb,'Template_Update_Barang.xlsx');}catch(e){alert(e.message||e);}}
+    async function importMasterBarangExcel(event){const input=event.target;const file=input.files?.[0];if(!file)return;try{await ensureXLSXLoaded();const data=await file.arrayBuffer();const wb=XLSX.read(data,{type:'array'});const sheet=wb.Sheets[wb.SheetNames[0]];const raw=XLSX.utils.sheet_to_json(sheet,{defval:''});if(!raw.length)throw new Error('File Excel tidak berisi data.');const norm=s=>String(s||'').trim().toLowerCase().replace(/[^a-z0-9]/g,'');const keyMap={resto:['resto','restotujuan','cabang'],kode:['kodebarang','kode','sku'],nama:['namabarang','nama'],satuan:['satuan','satuanpakai'],satuanOrder:['satuanorder','satuanpesan'],produk:['produk','kategori'],konversi:['konversi'],stokAwal:['stokawal','stok']};const items=raw.map((row,i)=>{const o={};for(const [target,aliases] of Object.entries(keyMap)){const k=Object.keys(row).find(k=>aliases.includes(norm(k)));o[target]=k!==undefined?row[k]:'';}o.resto=String(o.resto||'SEMUA CABANG').trim();o.kode=String(o.kode||'').trim();o.nama=String(o.nama||'').trim();o.satuan=String(o.satuan||'').trim();o.satuanOrder=String(o.satuanOrder||'').trim();o.produk=String(o.produk||'').trim();o.konversi=String(o.konversi||'').trim();o.stokAwal=Number(String(o.stokAwal||0).replace(',','.'));if(!o.kode||!o.nama||!o.satuan)throw new Error('Baris '+(i+2)+': Kode Barang, Nama Barang, dan Satuan wajib diisi.');if(!Number.isFinite(o.stokAwal)||o.stokAwal<0)throw new Error('Baris '+(i+2)+': Stok Awal tidak valid.');return o;});if(items.length>100)throw new Error('Maksimal 100 barang per proses import.');if(!confirm('Import '+items.length+' baris barang? Data dengan kombinasi resto + kode yang sama akan diperbarui.'))return;const r=await masterBarangRequest('importMasterBarangStok',{items});alert(r.message||('Berhasil import '+(r.saved||items.length)+' barang.'));await loadMasterBarangStok();}catch(e){alert('Import gagal: '+(e.message||e));}finally{input.value='';}}
+
+    async function cogsRequest(action,extra={}){const user=localStorage.getItem('resto_current_user')||'',resto=cogsResto();if(!resto)throw Error('Nama resto belum ditemukan pada sesi login. Logout lalu login kembali, atau periksa nama resto akun cabang.');const r=await gasRequestJson({action,username:user,resto,cabang:resto,...extra},{timeoutMs:25000,retries:1});if(r?.success===false||r?.status==='error')throw Error(r.message||('GAS menolak action '+action));return r?.data??r?.result??r;}
+    function switchCogsPage(id,el){stopCameraStream();closeAdminNavGroups();document.querySelectorAll('#app-navbar-items .nav-item').forEach(n=>n.classList.remove('active'));if(el)el.classList.add('active');document.querySelectorAll('.role-page-content').forEach(p=>p.style.display='none');const page=document.getElementById(id);if(page)page.style.display='block';if(id==='page-cogs-stok')loadCogsStock();if(id==='page-cogs-riwayat')loadCogsHistory('COGS');if(id==='page-cogs-order')loadCogsHistory('ORDER');}
+    function cogsArray(d){if(Array.isArray(d))return d;for(const k of ['items','barang','stocks','stok','records','riwayat','data'])if(Array.isArray(d?.[k]))return d[k];return [];}
+    async function loadCogsStock(){const el=document.getElementById('cogs-stock-table');if(!el)return;el.innerHTML='<p style="padding:20px">Memuat data stok…</p>';try{const d=await cogsRequest('getCogsStock');cogsStocks=cogsArray(d);if(!cogsStocks.length){el.innerHTML='<p style="padding:20px">Belum ada data barang, atau action getCogsStock belum tersedia pada GAS.</p>';return;}el.innerHTML=`<table class="cogs-table"><thead><tr><th>#</th><th>Kode</th><th>Nama Barang</th><th>Stn. Pakai</th><th>Stn. Order</th><th>Produk</th><th>Konversi</th><th>Σ Sisa Stok</th><th>Σ Qty Konversi</th></tr></thead><tbody>${cogsStocks.map((x,i)=>`<tr><td>${i+1}</td><td>${cogsEsc(x.kode||x.code||x.sku||'-')}</td><td class="left">${cogsEsc(x.namaBarang||x.nama_barang||x.nama||x.name||'-')}</td><td>${cogsEsc(x.satuanPakai||x.satuan_pakai||x.satuan||'-')}</td><td>${cogsEsc(x.satuanOrder||x.satuan_order||'-')}</td><td>${cogsEsc(x.produk||'logistik')}</td><td>${cogsEsc(x.konversi||'-')}</td><td><b>${cogsNum(x.sisaStok??x.sisa_stok??x.stok)} ${cogsEsc(x.satuanPakai||x.satuan||'')}</b></td><td>${cogsEsc(x.qtyKonversi||x.qty_konversi||'-')}</td></tr>`).join('')}</tbody></table>`;}catch(e){el.innerHTML=`<p style="padding:20px;color:#b91c1c">Gagal memuat stok: ${cogsEsc(e.message)}. Action getCogsStock harus tersedia di GAS.</p>`;}}
+    async function loadCogsHistory(type){const el=document.getElementById(type==='ORDER'?'cogs-order-table':'cogs-history-table');if(!el)return;el.innerHTML='<p style="padding:20px">Memuat riwayat…</p>';try{const d=await cogsRequest('getCogsHistory',{tipe:type,startDate:document.getElementById('cogs-start')?.value||'',endDate:document.getElementById('cogs-end')?.value||''}),rows=cogsArray(d);if(!rows.length){el.innerHTML='<p style="padding:20px">Belum ada riwayat, atau action getCogsHistory belum tersedia pada GAS.</p>';return;}el.innerHTML=`<table class="cogs-table"><thead><tr><th>#</th><th>Nomor</th><th>Tgl. COGS</th><th>Tgl. Input</th><th>Tipe</th><th>Σ Barang</th><th>Σ Total (Rp)</th><th>Posting</th><th>Status</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${i+1}</td><td><button type="button" class="cogs-doc-link" onclick="openCogsDocumentDetail('${cogsEsc(String(r.nomor||r.noDokumen||r.no_dokumen||'' )).replace(/'/g, '&#39;')}','${type}')">${cogsEsc(r.nomor||r.noDokumen||r.no_dokumen||'-')}</button></td><td>${cogsEsc(r.tanggal||r.tglCogs||r.tgl_cogs||'-')}</td><td>${cogsEsc(r.tglInput||r.tgl_input||'-')}</td><td>${cogsEsc(r.tipe||type)}</td><td>${cogsNum(r.totalBarang??r.jumlahBarang??r.total_barang)}</td><td>${cogsNum(r.total??r.totalRp??r.total_rp).toLocaleString('id-ID')}</td><td>${cogsEsc(r.posting||'Draft')}</td><td>${cogsEsc(r.status||'-')}</td></tr>`).join('')}</tbody></table>`;}catch(e){el.innerHTML=`<p style="padding:20px;color:#b91c1c">Gagal memuat riwayat: ${cogsEsc(e.message)}. Action getCogsHistory harus tersedia di GAS.</p>`;}}
+    function closeCogsDetailModal(){const m=document.getElementById('cogs-detail-modal');if(m)m.style.display='none';document.body.style.overflow='';}
+    async function openCogsDocumentDetail(nomor,type){
+      const modal=document.getElementById('cogs-detail-modal'),content=document.getElementById('cogs-detail-content');
+      if(!modal||!content)return;
+      modal.style.display='flex';document.body.style.overflow='hidden';
+      document.getElementById('cogs-detail-title').innerHTML='<i class="fa-solid fa-list-check"></i> Detail '+(type==='ORDER'?'Update Orderan':'COGS');
+      document.getElementById('cogs-detail-subtitle').textContent='Nomor dokumen: '+nomor;
+      content.innerHTML='<p style="padding:20px">Memuat rincian item dokumen…</p>';
+      try{
+        const raw=await cogsRequest('getCogsDocumentDetail',{nomor,tipe:type});
+        const items=cogsArray(raw), meta=raw?.header||raw?.meta||{};
+        if(!items.length){content.innerHTML='<p style="padding:20px;color:#64748b">Detail item tidak ditemukan untuk dokumen ini.</p>';return;}
+        const totalQty=items.reduce((a,x)=>a+cogsNum(x.qty),0);
+        content.innerHTML=`<div class="cogs-detail-summary"><div class="cogs-detail-stat"><small>Nomor Dokumen</small><strong>${cogsEsc(nomor)}</strong></div><div class="cogs-detail-stat"><small>Tipe</small><strong>${type==='ORDER'?'UPDATE ORDERAN':'COGS'}</strong></div><div class="cogs-detail-stat"><small>Total Item / Qty</small><strong>${items.length} item · ${totalQty.toLocaleString('id-ID')}</strong></div></div><div class="cogs-table-wrap"><table class="cogs-table"><thead><tr><th>#</th><th>Kode Barang</th><th>Nama Barang</th><th>Satuan</th><th>Stok Sebelum</th><th>${type==='ORDER'?'Qty Order':'Qty Terpakai'}</th>${type==='COGS'?'<th>Penjualan</th><th>Selisih (+/-)</th>':''}<th>Stok Sesudah</th></tr></thead><tbody>${items.map((x,i)=>`<tr><td>${i+1}</td><td>${cogsEsc(x.kode||'-')}</td><td class="left">${cogsEsc(x.namaBarang||x.nama_barang||'-')}</td><td>${cogsEsc(x.satuan||'-')}</td><td>${cogsNum(x.stokAwal??x.stokSebelum).toLocaleString('id-ID')}</td><td><b>${cogsNum(x.qty).toLocaleString('id-ID')}</b></td>${type==='COGS'?`<td>${cogsNum(x.penjualan).toLocaleString('id-ID')}</td><td style="font-weight:700;color:${cogsNum(x.selisih)>0?'#15803d':cogsNum(x.selisih)<0?'#dc2626':'#64748b'}">${cogsNum(x.selisih)>0?'+':''}${cogsNum(x.selisih).toLocaleString('id-ID')}</td>`:''}<td>${cogsNum(x.stokAkhir??x.stokSesudah).toLocaleString('id-ID')}</td></tr>`).join('')}</tbody></table></div>`;
+      }catch(e){content.innerHTML=`<p style="padding:20px;color:#b91c1c">Gagal memuat detail: ${cogsEsc(e.message||e)}. Pastikan action getCogsDocumentDetail tersedia pada GAS.</p>`;}
+    }
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCogsDetailModal();});
+    async function openCogsInput(type){cogsCurrentType=type;document.querySelectorAll('#app-navbar-items .nav-item').forEach(n=>n.classList.remove('active'));document.querySelectorAll('.role-page-content').forEach(p=>p.style.display='none');document.getElementById('page-cogs-input').style.display='block';document.getElementById('cogs-input-title').textContent=type==='ORDER'?'Input Update Orderan':'Input Pemakaian Stok Akhir (COGS)';document.getElementById('cogs-type-label').value=type==='ORDER'?'UPDATE ORDERAN':'COGS';document.getElementById('cogs-date').value=getTodayYMD();document.getElementById('cogs-docno').value=(type==='ORDER'?'ORD':'COG')+'-'+new Date().toISOString().replace(/\D/g,'').slice(0,14);const el=document.getElementById('cogs-input-items');el.innerHTML='<p style="padding:20px">Memuat daftar barang…</p>';try{cogsItems=cogsArray(await cogsRequest('getCogsStock'));if(!cogsItems.length){el.innerHTML='<p style="padding:20px">Daftar barang kosong atau action getCogsStock belum tersedia di GAS.</p>';return;}el.innerHTML=`<table class="cogs-table"><thead><tr><th>#</th><th>Kode Barang</th><th>Nama Barang</th><th>Satuan</th><th>Konversi</th><th>Sisa Stok</th><th>${type==='ORDER'?'Qty Orderan':'Stok Akhir (Input Manual)'}</th><th>${type==='ORDER'?'Estimasi Stok Akhir':'Terpakai (Otomatis)'}</th>${type==='COGS'?'<th>Penjualan (Input Manual)</th><th>Selisih (+/-)</th>':''}</tr></thead><tbody>${cogsItems.map((x,i)=>{const st=cogsNum(x.sisaStok??x.sisa_stok??x.stok);return `<tr data-cogs-row="${i}"><td>${i+1}</td><td>${cogsEsc(x.kode||x.code||x.sku||'-')}</td><td class="left">${cogsEsc(x.namaBarang||x.nama_barang||x.nama||x.name||'-')}</td><td>${cogsEsc(x.satuanPakai||x.satuan||'-')}</td><td>${cogsEsc(x.konversi||'-')}</td><td data-stock="${st}">${st}</td><td><input class="cogs-qty-input" type="number" min="0" max="${type==='ORDER'?'':' '+st}" step="any" value="${type==='ORDER'?'0':st}" data-qty="${i}" oninput="updateCogsPreview(${i})"></td><td><b id="cogs-preview-${i}">${type==='ORDER'?st:0}</b></td>${type==='COGS'?`<td><input class="cogs-qty-input" type="number" min="0" step="any" value="0" data-sales="${i}" oninput="updateCogsPreview(${i})"></td><td><b id="cogs-diff-${i}" class="cogs-diff">0</b></td>`:''}</tr>`}).join('')}</tbody></table>`;}catch(e){el.innerHTML=`<p style="padding:20px;color:#b91c1c">Gagal memuat daftar barang: ${cogsEsc(e.message)}</p>`;}}
+    function updateCogsPreview(i){const input=document.querySelector(`[data-qty="${i}"]`),row=document.querySelector(`[data-cogs-row="${i}"]`),out=document.getElementById(`cogs-preview-${i}`);if(!input||!row||!out)return;const st=cogsNum(row.querySelector('[data-stock]')?.dataset.stock),v=cogsNum(input.value);if(cogsCurrentType==='ORDER'){out.textContent=st+v;}else{if(v>st){input.setCustomValidity('Stok akhir tidak boleh lebih besar dari sisa stok ('+st+').');}else{input.setCustomValidity('');}const used=Math.max(0,st-v),sales=cogsNum(row.querySelector('[data-sales]')?.value),diff=sales-used;out.textContent=used;const diffEl=document.getElementById(`cogs-diff-${i}`);if(diffEl){diffEl.textContent=(diff>0?'+':'')+diff;diffEl.style.color=diff>0?'#15803d':diff<0?'#dc2626':'#64748b';}}}
+    async function saveCogsEntry(){if(cogsEntryBusy)return;const date=document.getElementById('cogs-date').value;if(!date){alert('Tanggal harus diisi.');return;}const allDetails=cogsItems.map((x,i)=>{const row=document.querySelector(`[data-cogs-row="${i}"]`),st=cogsNum(row?.querySelector('[data-stock]')?.dataset.stock),v=cogsNum(document.querySelector(`[data-qty="${i}"]`)?.value);if(cogsCurrentType==='ORDER')return {kode:x.kode||x.code||x.sku||'',namaBarang:x.namaBarang||x.nama_barang||x.nama||x.name||'',qty:v,stokAwal:st,satuan:x.satuanPakai||x.satuan||''};const akhir=v,used=st-akhir,sales=cogsNum(row?.querySelector('[data-sales]')?.value);return {kode:x.kode||x.code||x.sku||'',namaBarang:x.namaBarang||x.nama_barang||x.nama||x.name||'',qty:used,penjualan:sales,selisih:sales-used,stokAwal:st,stokAkhir:akhir,satuan:x.satuanPakai||x.satuan||''};});if(cogsCurrentType!=='ORDER'&&allDetails.some(x=>x.qty<0)){alert('Stok akhir tidak boleh lebih besar dari sisa stok.');return;}const details=allDetails.filter(x=>cogsCurrentType==='ORDER'?x.qty>0:(x.qty>0||x.penjualan>0));if(!details.length){alert(cogsCurrentType==='ORDER'?'Masukkan minimal satu Qty Orderan lebih dari 0.':'Isi minimal satu Stok Akhir berbeda dari sisa stok atau masukkan Penjualan.');return;}cogsEntryBusy=true;try{const r=await cogsRequest('saveCogsEntry',{tipe:cogsCurrentType,nomor:document.getElementById('cogs-docno').value,tanggal:date,keterangan:document.getElementById('cogs-note').value,details});alert(r.message||'Data berhasil dikirim ke GAS.');switchCogsPage(cogsCurrentType==='ORDER'?'page-cogs-order':'page-cogs-riwayat',null);}catch(e){alert('Gagal menyimpan: '+e.message+'. Action saveCogsEntry perlu ditambahkan ke GAS agar tersimpan permanen.');}finally{cogsEntryBusy=false;}}
+
   </script>
 
 </body>
