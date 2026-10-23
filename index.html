@@ -1265,10 +1265,32 @@
       .cogs-form-grid { grid-template-columns:1fr; padding:13px; gap:12px; }
       .cogs-table { min-width:780px; }
     }
-/* Menyembunyikan kolom Kode Barang (Kolom ke-2 pada tabel input COGS) */
-.cogs-table th:nth-child(2),
-.cogs-table td:nth-child(2) {
+/* Sembunyikan Kode Barang hanya pada tabel input COGS.
+   Jangan sembunyikan kolom Nomor Dokumen pada tabel riwayat COGS/Order
+   karena nomor tersebut digunakan untuk membuka detail barang yang di-update. */
+#cogs-input-items .cogs-table th:nth-child(2),
+#cogs-input-items .cogs-table td:nth-child(2) {
   display: none !important;
+}
+
+/* Nomor dokumen pada riwayat tampil sebagai tautan untuk membuka detail. */
+#cogs-history-table .cogs-doc-link,
+#cogs-order-table .cogs-doc-link {
+  border: 0;
+  padding: 4px 7px;
+  border-radius: 7px;
+  background: #eef2ff;
+  color: #4338ca;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+#cogs-history-table .cogs-doc-link:hover,
+#cogs-order-table .cogs-doc-link:hover {
+  background: #4338ca;
+  color: #fff;
+  text-decoration: underline;
 }
   </style>
 </head>
