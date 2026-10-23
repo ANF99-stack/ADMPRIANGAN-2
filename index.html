@@ -1265,7 +1265,11 @@
       .cogs-form-grid { grid-template-columns:1fr; padding:13px; gap:12px; }
       .cogs-table { min-width:780px; }
     }
-
+/* Menyembunyikan kolom Kode Barang (Kolom ke-2 pada tabel input COGS) */
+.cogs-table th:nth-child(2),
+.cogs-table td:nth-child(2) {
+  display: none !important;
+}
   </style>
 </head>
 <body>
