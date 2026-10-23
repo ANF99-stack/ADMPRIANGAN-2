@@ -464,6 +464,9 @@
     .admin-nav-group-menu.dropdown-floating {
       position: fixed;
       isolation: isolate;
+      display: block;
+      visibility: visible;
+      pointer-events: auto;
       -webkit-transform: translateZ(0);
       top: var(--nav-dropdown-top, 110px);
       left: var(--nav-dropdown-left, 12px);
@@ -5055,44 +5058,69 @@
       appNavbarItems.scrollLeft = 0;
     }
 
+    function restoreAdminNavMenu(group) {
+      if (!group) return;
+      const menu = group.__portedAdminNavMenu;
+      if (menu) {
+        menu.classList.remove('dropdown-floating');
+        menu.style.removeProperty('--nav-dropdown-left');
+        menu.style.removeProperty('--nav-dropdown-top');
+        menu.style.removeProperty('min-width');
+        group.appendChild(menu);
+        delete group.__portedAdminNavMenu;
+      }
+      group.removeAttribute('open');
+    }
+
     function closeAdminNavGroups(exceptGroup = null) {
       document.querySelectorAll('#app-navbar-items .admin-nav-group[open]').forEach(group => {
-        if (group !== exceptGroup) {
-          group.removeAttribute('open');
-          group.querySelector('.admin-nav-group-menu')?.classList.remove('dropdown-floating');
-        }
+        if (group !== exceptGroup) restoreAdminNavMenu(group);
       });
     }
 
     if (!window.__adminNavDropdownBound) {
+      // Portal submenu ke body agar tidak terpotong oleh overflow-x pada bar navigasi iOS.
       document.addEventListener('click', function(event) {
-        const group = event.target.closest('#app-navbar-items .admin-nav-group');
-        if (!group) {
-          closeAdminNavGroups();
+        const summary = event.target.closest('#app-navbar-items .admin-nav-group > summary');
+        if (summary) {
+          const group = summary.parentElement;
+          const wasOpen = group.hasAttribute('open');
+          closeAdminNavGroups(group);
+          if (wasOpen) {
+            restoreAdminNavMenu(group);
+            return;
+          }
+          group.setAttribute('open', '');
+          const menu = group.querySelector('.admin-nav-group-menu');
+          if (!menu) return;
+          const isHorizontalNav = document.getElementById('app-navbar-items')?.classList.contains('horizontal-scroll-nav');
+          if (isHorizontalNav) {
+            group.__portedAdminNavMenu = menu;
+            document.body.appendChild(menu);
+            menu.classList.add('dropdown-floating');
+            const rect = summary.getBoundingClientRect();
+            const menuWidth = Math.min(300, window.innerWidth - 24);
+            const left = Math.max(12, Math.min(rect.left, window.innerWidth - menuWidth - 12));
+            menu.style.setProperty('--nav-dropdown-left', left + 'px');
+            menu.style.setProperty('--nav-dropdown-top', Math.min(rect.bottom + 6, window.innerHeight - 100) + 'px');
+            menu.style.minWidth = menuWidth + 'px';
+          }
           return;
         }
 
-        if (event.target.closest('summary')) {
-          setTimeout(() => {
-            closeAdminNavGroups(group);
-            const menu = group.querySelector('.admin-nav-group-menu');
-            if (menu) {
-              const rect = group.querySelector('summary').getBoundingClientRect();
-              const isHorizontalNav = document.getElementById('app-navbar-items')?.classList.contains('horizontal-scroll-nav');
-              menu.classList.toggle('dropdown-floating', !!isHorizontalNav && group.hasAttribute('open'));
-              if (isHorizontalNav && group.hasAttribute('open')) {
-                const menuWidth = Math.min(300, window.innerWidth - 24);
-                const left = Math.max(12, Math.min(rect.left, window.innerWidth - menuWidth - 12));
-                menu.style.setProperty('--nav-dropdown-left', left + 'px');
-                menu.style.setProperty('--nav-dropdown-top', Math.min(rect.bottom + 6, window.innerHeight - 120) + 'px');
-                menu.style.minWidth = menuWidth + 'px';
-              } else if (menu) {
-                menu.style.removeProperty('min-width');
-              }
-            }
-          }, 0);
+        const clickedMenu = event.target.closest('.admin-nav-group-menu');
+        if (clickedMenu) {
+          const item = event.target.closest('.nav-item');
+          if (item) {
+            const owner = document.querySelector('#app-navbar-items .admin-nav-group[open]');
+            if (owner) setTimeout(() => restoreAdminNavMenu(owner), 0);
+          }
+          return;
         }
-      });
+        closeAdminNavGroups();
+      }, true);
+      window.addEventListener('resize', () => closeAdminNavGroups());
+      window.addEventListener('orientationchange', () => closeAdminNavGroups());
       window.__adminNavDropdownBound = true;
     }
 
