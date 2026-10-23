@@ -5083,6 +5083,9 @@
       document.addEventListener('click', function(event) {
         const summary = event.target.closest('#app-navbar-items .admin-nav-group > summary');
         if (summary) {
+          // Cegah perilaku default <details> agar tidak membalik status open
+          // setelah handler kita berjalan (masalah yang sering muncul di Safari iOS).
+          event.preventDefault();
           const group = summary.parentElement;
           const wasOpen = group.hasAttribute('open');
           closeAdminNavGroups(group);
@@ -5112,13 +5115,23 @@
         if (clickedMenu) {
           const item = event.target.closest('.nav-item');
           if (item) {
-            const owner = document.querySelector('#app-navbar-items .admin-nav-group[open]');
-            if (owner) setTimeout(() => restoreAdminNavMenu(owner), 0);
+            // Biarkan onclick item menjalankan perpindahan halaman terlebih dahulu,
+            // lalu tutup semua dropdown, termasuk menu yang dipindah ke document.body.
+            setTimeout(() => closeAdminNavGroups(), 0);
           }
           return;
         }
         closeAdminNavGroups();
       }, true);
+      // Fallback sentuhan Safari: area luar menutup dropdown setelah tap selesai.
+      document.addEventListener('touchend', function(event) {
+        const target = event.target;
+        if (target && target.closest && (
+          target.closest('#app-navbar-items .admin-nav-group > summary') ||
+          target.closest('.admin-nav-group-menu')
+        )) return;
+        setTimeout(() => closeAdminNavGroups(), 0);
+      }, { passive: true, capture: true });
       window.addEventListener('resize', () => closeAdminNavGroups());
       window.addEventListener('orientationchange', () => closeAdminNavGroups());
       window.__adminNavDropdownBound = true;
