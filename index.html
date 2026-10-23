@@ -5502,15 +5502,20 @@
     };
 
     async function gasRequestJson(payload, options = {}) {
-      const timeoutMs = Number(options.timeoutMs || 20000);
+      // GAS dapat lambat saat membaca banyak sheet; gunakan timeout yang dapat dikonfigurasi.
+      const timeoutMs = Number(options.timeoutMs || 45000);
       const retries = Number(options.retries ?? 2);
-      const retryDelayMs = Number(options.retryDelayMs || 900);
+      const retryDelayMs = Number(options.retryDelayMs || 1200);
 
       let lastError = null;
 
       for (let attempt = 0; attempt <= retries; attempt++) {
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        let timedOut = false;
+        const timer = setTimeout(() => {
+          timedOut = true;
+          controller.abort();
+        }, timeoutMs);
 
         try {
           const response = await fetch(GAS_API_URL, {
@@ -5527,18 +5532,19 @@
           try {
             result = JSON.parse(raw);
           } catch (parseError) {
-            throw new Error(`Respons GAS tidak valid (HTTP ${response.status}).`);
+            throw new Error(`Respons GAS tidak valid (HTTP ${response.status}). Periksa output Web App GAS.`);
           }
 
           if (!response.ok) {
-            throw new Error(result?.message || `HTTP ${response.status}`);
+            throw new Error(result?.message || `Permintaan GAS gagal (HTTP ${response.status}).`);
           }
 
           return result;
         } catch (err) {
-          lastError = err;
+          lastError = timedOut
+            ? new Error(`GAS tidak merespons dalam ${Math.round(timeoutMs / 1000)} detik.`)
+            : err;
           const isLastAttempt = attempt >= retries;
-
           if (isLastAttempt) break;
           await new Promise(resolve => setTimeout(resolve, retryDelayMs * (attempt + 1)));
         } finally {
@@ -5679,7 +5685,8 @@
         try {
           const result = await gasRequestJson(
             { action: 'getInitialData', includeCheckinPhotos: false },
-            { timeoutMs: 15000, retries: 0 }
+            // Beri waktu lebih panjang dan retry agar pemuatan awal tidak gagal hanya karena GAS lambat.
+            { timeoutMs: 45000, retries: 2, retryDelayMs: 1500 }
           );
           if (result?.status !== 'success') return false;
 
