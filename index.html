@@ -5746,6 +5746,27 @@
 
     let initialDataFetchPromise = null;
 
+    // Samakan lookup data coverage SPV untuk username yang berbeda huruf besar/kecil.
+    // GAS mengembalikan key spvLinksIndividual dalam huruf kecil, sedangkan UI memakai
+    // username asli dari daftar user. Tanpa alias ini, data tersimpan terlihat kosong.
+    function normalizeSpvIndividualLookupKeys(dataObj) {
+      if (!dataObj || typeof dataObj !== 'object') return dataObj;
+      const source = dataObj.spvLinksIndividual && typeof dataObj.spvLinksIndividual === 'object'
+        ? dataObj.spvLinksIndividual : {};
+      const normalized = { ...source };
+      Object.keys(source).forEach(key => {
+        const lowerKey = String(key || '').trim().toLowerCase();
+        if (lowerKey) normalized[lowerKey] = source[key];
+      });
+      (Array.isArray(dataObj.usersList) ? dataObj.usersList : []).forEach(user => {
+        const username = String(user && user.username || '').trim();
+        const lowerKey = username.toLowerCase();
+        if (username && normalized[lowerKey]) normalized[username] = normalized[lowerKey];
+      });
+      dataObj.spvLinksIndividual = normalized;
+      return dataObj;
+    }
+
     function restoreCachedDashboardData() {
       try {
         const raw = localStorage.getItem('resto_cached_data');
@@ -5758,6 +5779,7 @@
         if (!globalDashboardData.psdLinksMaster) globalDashboardData.psdLinksMaster = {};
         if (!globalDashboardData.checkinsList) globalDashboardData.checkinsList = [];
         if (!globalDashboardData.karyawanList) globalDashboardData.karyawanList = [];
+        normalizeSpvIndividualLookupKeys(globalDashboardData);
         return true;
       } catch (e) {
         localStorage.removeItem('resto_cached_data');
@@ -5800,6 +5822,7 @@
           if (!data.checkinKasirLimits) data.checkinKasirLimits = {};
           if (!Array.isArray(data.checkinsList)) data.checkinsList = [];
           if (!Array.isArray(data.karyawanList)) data.karyawanList = [];
+          normalizeSpvIndividualLookupKeys(data);
 
           globalDashboardData = data;
           localStorage.setItem('resto_checkin_feature_enabled', data.checkinEnabled ? 'true' : 'false');
@@ -6152,26 +6175,34 @@
     }
 
     function getAvailableRestoListFromDatabase() {
+      // Ambil nama outlet dari master user/data dashboard tanpa mengunci merek tertentu.
+      // Filter lama hanya menerima nama yang mengandung LAZATTO/NGEUMI sehingga dropdown
+      // bisa kosong ketika format nama resto berbeda.
       const branchObj = globalDashboardData.branchLinks || {};
       const usersList = globalDashboardData.usersList || [];
       const restoSet = new Set();
+      const addResto = value => {
+        const raw = String(value == null ? '' : value).trim();
+        if (!raw) return;
+        const formatted = formatRestoName(raw);
+        if (!formatted || /^(admin|administrator|supervisor|spv|psd|ae|account eksekutif)$/i.test(formatted)) return;
+        restoSet.add(formatted);
+      };
 
-      for (let k in branchObj) {
-        const formatted = formatRestoName(k);
-        if ((formatted.includes('LAZATTO') || formatted.includes('NGEUMI')) && !formatted.includes('OT')) {
-          restoSet.add(formatted);
-        }
-      }
+      // Nama outlet yang memang tercatat sebagai user cabang.
       usersList.forEach(u => {
-        if (u.role === 'user' && u.name) {
-          const formatted = formatRestoName(u.name);
-          if ((formatted.includes('LAZATTO') || formatted.includes('NGEUMI')) && !formatted.includes('OT')) {
-            restoSet.add(formatted);
-          }
-        }
+        const role = String(u.role || '').trim().toLowerCase();
+        if (role === 'user' || role === 'cabang' || role === 'branch') addResto(u.name || u.nama || u.resto_name || u.restoName);
       });
 
-      return Array.from(restoSet).filter(r => r.length > 0).sort();
+      // Fallback untuk struktur data dashboard yang menyimpan outlet pada key branchLinks.
+      Object.keys(branchObj).forEach(k => {
+        const matchingUser = usersList.find(u => String(u.username || u.user_id || u.id || '').trim().toLowerCase() === String(k).trim().toLowerCase());
+        if (matchingUser) addResto(matchingUser.name || matchingUser.nama || matchingUser.resto_name || matchingUser.restoName);
+        else if (/lazatto|ngeumi|resto|outlet|cabang/i.test(String(k))) addResto(k);
+      });
+
+      return Array.from(restoSet).filter(Boolean).sort((a, b) => a.localeCompare(b, 'id'));
     }
 
     function addSpvRestoItem(key, restoName = '', restoTimingData = null) {
@@ -6216,7 +6247,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 200px;">
             <label style="font-size: 0.75rem; font-weight: 800; color: #334155; display: block; margin-bottom: 4px;">PILIH OUTLET RESTO</label>
-            <select class="spv-resto-select-name-${key}" style="width:100%; padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-weight:800; font-size:0.85rem; background:#f8fafc; outline:none;" onchange="syncSpvRestoNamesText('${key}')">
+            <select class="spv-resto-select-name-${key}" style="width:100%; padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-weight:800; font-size:0.85rem; background:#f8fafc; outline:none;" onchange="syncSpvRestoNamesText('${key}'); window.saveSpvIndividualData('${key}', true)">
               ${optionsHtml}
             </select>
           </div>
@@ -6496,71 +6527,90 @@
     };
 
     window.saveSpvIndividualData = async function(targetUsername, silent = false) {
-      const currentUser = localStorage.getItem('resto_current_user');
-      
+      const currentUser = localStorage.getItem('resto_current_user') || '';
+      const container = document.getElementById(`spv_resto_timings_container_${targetUsername}`);
+      const cards = container ? Array.from(container.querySelectorAll('.spv-resto-single-item')) : [];
       const restoTimingsObj = {};
-      const selectNameEls = document.querySelectorAll(`.spv-resto-select-name-${targetUsername}`);
-      const typeEls = document.querySelectorAll(`.spv-resto-type-${targetUsername}`);
-      const s1Els = document.querySelectorAll(`.spv-resto-s1-${targetUsername}`);
-      const s2Els = document.querySelectorAll(`.spv-resto-s2-${targetUsername}`);
-      const s3Els = document.querySelectorAll(`.spv-resto-s3-${targetUsername}`);
-
       const restoNamesList = [];
 
-      selectNameEls.forEach((sel, idx) => {
-        const rName = sel.value ? formatRestoName(sel.value) : '';
-        if (rName) {
-          restoNamesList.push(rName);
-          const rType = typeEls[idx] ? typeEls[idx].value : '24jam';
-          const s1Val = s1Els[idx] ? s1Els[idx].value : (rType === 'reguler' ? '05:30' : '07:30');
-          const s2Val = s2Els[idx] ? s2Els[idx].value : (rType === 'reguler' ? '13:30' : '15:30');
-          const s3Val = rType === 'reguler' ? '' : (s3Els[idx] ? s3Els[idx].value : '23:30');
-
-          restoTimingsObj[rName] = {
-            type: rType,
-            s1: s1Val,
-            s2: s2Val,
-            s3: s3Val,
-            mid: 'MIDDLE'
-          };
-        }
+      // Baca nilai langsung dari setiap kartu, bukan selector class yang dibangun
+      // dari username. Ini mencegah username dengan karakter khusus membuat data terlewat.
+      cards.forEach(card => {
+        const sel = card.querySelector('select[class*="spv-resto-select-name-"]');
+        const typeEl = card.querySelector('select[class*="spv-resto-type-"]');
+        const s1El = card.querySelector('input[id^="spv_s1_"]');
+        const s2El = card.querySelector('input[id^="spv_s2_"]');
+        const s3El = card.querySelector('input[id^="spv_s3_"]');
+        const rName = sel && sel.value ? formatRestoName(sel.value) : '';
+        if (!rName) return;
+        if (restoNamesList.some(n => n.toLowerCase() === rName.toLowerCase())) return;
+        restoNamesList.push(rName);
+        const rType = typeEl ? typeEl.value : '24jam';
+        restoTimingsObj[rName] = {
+          type: rType,
+          s1: s1El ? s1El.value : (rType === 'reguler' ? '05:30' : '07:30'),
+          s2: s2El ? s2El.value : (rType === 'reguler' ? '13:30' : '15:30'),
+          s3: rType === 'reguler' ? '' : (s3El ? s3El.value : '23:30'),
+          mid: 'MIDDLE'
+        };
       });
 
-      let totalRestoVal = restoNamesList.length;
-      if (totalRestoVal > 10) totalRestoVal = 10;
+      if (restoNamesList.length > 10) {
+        alert('Maksimal 10 resto coverage per Supervisor.');
+        return;
+      }
+      if (!silent && cards.length > 0 && restoNamesList.length === 0) {
+        alert('Pilih minimal 1 outlet resto sebelum menyimpan coverage SPV.');
+        return;
+      }
 
-      const formattedRestoNames = restoNamesList.join(', ');
-
+      const totalEl = document.getElementById(`spv_indiv_total_resto_${targetUsername}`);
+      const namesEl = document.getElementById(`spv_indiv_resto_names_${targetUsername}`);
+      const baseEl = document.getElementById(`spv_indiv_base_omset_${targetUsername}`);
+      const cogsEl = document.getElementById(`spv_indiv_cogs_ngeumi_${targetUsername}`);
       const payload = {
-        action: "saveSpvIndividualData",
+        action: 'saveSpvIndividualData',
         adminUser: currentUser,
         targetUser: targetUsername,
         data: {
-          total_resto: totalRestoVal,
-          resto_names: formattedRestoNames,
+          total_resto: restoNamesList.length,
+          resto_names: restoNamesList.join(', '),
           resto_timings: restoTimingsObj,
-          base_omset: document.getElementById(`spv_indiv_base_omset_${targetUsername}`).value.trim(),
-          cogs_ngeumi: document.getElementById(`spv_indiv_cogs_ngeumi_${targetUsername}`)?.value.trim() || ''
+          base_omset: baseEl ? baseEl.value.trim() : '',
+          cogs_ngeumi: cogsEl ? cogsEl.value.trim() : ''
         }
       };
 
+      // Cerminkan pilihan terbaru pada UI sebelum request, lalu tetap konfirmasi dari server.
+      if (totalEl) totalEl.value = String(restoNamesList.length);
+      if (namesEl) namesEl.value = restoNamesList.join(', ');
       try {
         const res = await fetch(GAS_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          redirect: "follow",
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          redirect: 'follow',
           body: JSON.stringify(payload)
         });
         const result = await res.json();
-        if (!silent) alert(result.message);
-        if (result.status === "success" && !silent) {
-          fetchInitialDataFromGAS();
-        } else if (result.status !== "success" && silent) {
-          console.warn('Autosimpan pengaturan coverage SPV gagal:', result.message || 'Tidak ada detail dari server.');
+        if (result.status !== 'success') {
+          if (!silent) alert(result.message || 'Gagal menyimpan coverage SPV.');
+          else console.warn('Autosimpan coverage SPV gagal:', result.message || 'Tidak ada detail dari server.');
+          return;
+        }
+
+        if (!silent) {
+          alert(result.message || 'Coverage SPV berhasil disimpan.');
+          // Force refresh menghindari cache/throttle 12 detik mengembalikan data lama.
+          const refreshed = await fetchInitialDataFromGAS(() => {
+            renderAdminSpvIndividualList();
+            renderUserTable();
+            updateAdminStats();
+          }, { force: true, minIntervalMs: 0 });
+          if (!refreshed) alert('Data tersimpan di server, tetapi pemuatan ulang data belum berhasil. Silakan muat ulang halaman.');
         }
       } catch (err) {
-        if (!silent) alert("Gagal menyimpan data individual Supervisor!");
-        else console.warn('Autosimpan pengaturan coverage SPV gagal:', err);
+        console.error('Gagal menyimpan data individual Supervisor:', err);
+        if (!silent) alert('Gagal menyimpan data individual Supervisor. Periksa koneksi GAS lalu coba lagi.');
       }
     };
 
