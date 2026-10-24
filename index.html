@@ -1090,7 +1090,7 @@
       }
     }
   
-    /* ================= GROMING KASIR ================= */
+    \n    .cogs-spv-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.cogs-spv-tabs button{min-height:38px}.cogs-spv-tabs button.active{background:#dc2626;color:#fff;border-color:#dc2626}\n/* ================= GROMING KASIR ================= */
     .groming-kasir-toolbar{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:16px}
     .groming-kasir-field{min-width:190px;flex:1}
     .groming-kasir-field label{display:block;font-size:.75rem;font-weight:800;color:var(--text-muted);margin-bottom:5px}
@@ -1292,6 +1292,69 @@
   color: #fff;
   text-decoration: underline;
 }
+  
+/* Modern UI for SPV Controling COGS */
+#page-spv-controling-cogs .cogs-spv-tabs{
+  display:flex; flex-wrap:wrap; gap:10px; margin:18px 0 12px;
+}
+#page-spv-controling-cogs .cogs-spv-tabs .cogs-btn{
+  border-radius:12px; padding:11px 17px; font-weight:750;
+  border:1px solid #dbe3ef; background:#fff; color:#334155;
+  box-shadow:0 2px 5px rgba(15,23,42,.035); transition:all .18s ease;
+}
+#page-spv-controling-cogs .cogs-spv-tabs .cogs-btn:hover{
+  border-color:#f87171; transform:translateY(-1px);
+}
+#page-spv-controling-cogs .cogs-spv-tabs .cogs-btn.active{
+  color:#fff; border-color:#dc2626;
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  box-shadow:0 7px 16px rgba(220,38,38,.18);
+}
+#page-spv-controling-cogs .cogs-spv-tabs .cogs-btn.gray{background:#fff;color:#334155}
+#page-spv-controling-cogs .cogs-spv-tabs .cogs-btn.gray:hover{background:#fff7f7;color:#b91c1c}
+#page-spv-controling-cogs .cogs-filter-panel{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px;
+  padding:20px; border:1px solid #e5eaf2; border-radius:18px;
+  background:linear-gradient(145deg,#f8fafc,#f1f5f9);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+}
+#page-spv-controling-cogs .cogs-filter-field{display:flex;flex-direction:column;gap:8px;min-width:0}
+#page-spv-controling-cogs .cogs-filter-field label{
+  font-size:12px;font-weight:800;letter-spacing:.025em;color:#475569;
+}
+#page-spv-controling-cogs .cogs-filter-field select,
+#page-spv-controling-cogs .cogs-filter-field input{
+  width:100%;min-width:0;min-height:44px;padding:10px 13px;
+  border:1px solid #d7dfeb;border-radius:12px;background:#fff;color:#0f172a;
+  outline:none;box-shadow:0 1px 2px rgba(15,23,42,.025);
+  transition:border-color .15s,box-shadow .15s;
+}
+#page-spv-controling-cogs .cogs-filter-field select:focus,
+#page-spv-controling-cogs .cogs-filter-field input:focus{
+  border-color:#60a5fa;box-shadow:0 0 0 4px rgba(59,130,246,.12);
+}
+#page-spv-controling-cogs #spv-cogs-summary{
+  margin:16px 0;padding:13px 16px;border:1px solid #dbeafe;border-radius:13px;
+  background:linear-gradient(120deg,#eff6ff,#f8fbff);color:#1d4ed8;
+  font-size:13px;font-weight:650;
+}
+#page-spv-controling-cogs .cogs-shell{
+  border:1px solid #e8edf5;border-radius:24px;
+  box-shadow:0 18px 48px rgba(15,23,42,.07);
+}
+#page-spv-controling-cogs .cogs-table-wrap{
+  overflow:auto;border:1px solid #e8edf5;border-radius:15px;background:#fff;
+}
+#page-spv-controling-cogs .cogs-table thead th{
+  position:sticky;top:0;z-index:1;background:#f1f5f9;color:#334155;
+}
+@media(max-width:700px){
+  #page-spv-controling-cogs .cogs-filter-panel{grid-template-columns:1fr;padding:14px;gap:13px}
+  #page-spv-controling-cogs .cogs-spv-tabs{gap:7px}
+  #page-spv-controling-cogs .cogs-spv-tabs .cogs-btn{flex:1;padding:10px 9px;font-size:12px}
+  #page-spv-controling-cogs .cogs-shell{padding:14px;border-radius:18px}
+}
+
   </style>
 </head>
 <body>
@@ -1493,6 +1556,23 @@
         <div id="page-cogs-order" class="role-page-content" style="display:none"><section class="cogs-shell">
           <div class="cogs-heading"><h2><i class="fa-solid fa-truck-ramp-box"></i> UPDATE ORDERAN</h2><div class="cogs-actions"><button class="cogs-btn green" onclick="openCogsInput('ORDER')"><i class="fa-solid fa-plus"></i> Data Baru</button><button class="cogs-btn gray" onclick="loadCogsHistory('ORDER')">Refresh</button></div></div>
           <div class="cogs-info">Qty orderan menambah stok akhir barang.</div><div id="cogs-order-table" class="cogs-table-wrap"><p style="padding:20px">Memuat riwayat orderan…</p></div>
+        </section></div>
+        <div id="page-spv-controling-cogs" class="role-page-content" style="display:none; min-height:300px"><section class="cogs-shell">
+          <div class="cogs-heading"><h2><i class="fa-solid fa-chart-column"></i> CONTROLING COGS</h2><button class="cogs-btn green" onclick="loadSpvCogsMonitoring()"><i class="fa-solid fa-rotate"></i> Muat Ulang</button></div>
+          <div class="cogs-info">Monitoring read-only untuk cabang dalam coverage SPV. Data bersumber dari sheet COGS yang sudah ada.</div>
+          <div class="cogs-spv-tabs">
+            <button class="cogs-btn" onclick="switchSpvCogsTab('stok',this)">STOK BARANG</button>
+            <button class="cogs-btn gray" onclick="switchSpvCogsTab('history',this)">RIWAYAT COGS</button>
+            <button class="cogs-btn gray" onclick="switchSpvCogsTab('order',this)">RIWAYAT ORDERAN</button>
+          </div>
+          <div class="cogs-form-grid cogs-filter-panel">
+            <div class="cogs-field cogs-filter-field"><label><i class="fa-solid fa-store"></i> CABANG COVERAGE SPV</label><select id="spv-cogs-branch" onchange="renderSpvCogsMonitoring()"><option value="">Memuat coverage SPV…</option></select></div>
+            <div class="cogs-field cogs-filter-field"><label><i class="fa-regular fa-calendar"></i> TANGGAL MULAI (RIWAYAT)</label><input type="date" id="spv-cogs-start" onchange="loadSpvCogsMonitoring()"></div>
+            <div class="cogs-field cogs-filter-field"><label><i class="fa-regular fa-calendar-check"></i> TANGGAL AKHIR (RIWAYAT)</label><input type="date" id="spv-cogs-end" onchange="loadSpvCogsMonitoring()"></div>
+            <div class="cogs-field cogs-filter-field"><label><i class="fa-solid fa-magnifying-glass"></i> CARI BARANG / NOMOR DOKUMEN</label><input id="spv-cogs-search" placeholder="Ketik nama barang atau nomor…" oninput="renderSpvCogsMonitoring()"></div>
+          </div>
+          <div id="spv-cogs-summary" class="cogs-info">Memuat data monitoring…</div>
+          <div id="spv-cogs-table" class="cogs-table-wrap"><p style="padding:20px">Memuat data…</p></div>
         </section></div>
         <div id="page-cogs-input" class="role-page-content" style="display:none"><section class="cogs-shell">
           <div class="cogs-heading"><h2 id="cogs-input-title">Input Pemakaian Stok Akhir (COGS)</h2><div class="cogs-actions"><button class="cogs-btn green" onclick="saveCogsEntry()">Simpan</button><button class="cogs-btn gray" onclick="switchCogsPage(cogsCurrentType==='ORDER'?'page-cogs-order':'page-cogs-riwayat',null)">Kembali</button></div></div>
@@ -5030,6 +5110,7 @@
               <div class="nav-item" onclick="switchRoleNav('page-groming-karesto', this)"><i class="fa-solid fa-user-tie"></i><span>GROMING KARESTO</span></div>
             </div>
           </details>
+          <div class="nav-item" onclick="switchSpvCogsPage('page-spv-controling-cogs', this)"><i class="fa-solid fa-chart-column"></i><span>CONTROLING COGS</span></div>
         `;
       } else if (role === 'psd') {
         html = `
@@ -5191,7 +5272,7 @@
       closeAdminNavGroups();
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
       document.querySelectorAll('.role-page-content').forEach(page => page.style.display = 'none');
-      element.classList.add('active');
+      if (element) element.classList.add('active');
       
       const targetPage = document.getElementById(pageId);
       if (targetPage) targetPage.style.display = 'block';
@@ -8033,6 +8114,105 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
   })();
+
+    // CONTROLING COGS khusus SPV: hanya baca data cabang dalam coverage akun.
+    let spvCogsData={stocks:[],history:[],orders:[]}, spvCogsTab='stok', spvCogsLoading=false;
+    function switchSpvCogsPage(id,el){
+      // Halaman CONTROLING COGS awalnya berada di #user-view, yang disembunyikan
+      // ketika login sebagai SPV. Pindahkan ke container khusus supervisor dahulu.
+      const page=document.getElementById(id);
+      // Container sebenarnya memakai id="supervisor-view", bukan class="supervisor-view".
+      // Jika salah selector, halaman tetap berada di #user-view yang tersembunyi saat login SPV,
+      // sehingga area utama tampak kosong walaupun menu CONTROLING COGS aktif.
+      const supervisorView=document.getElementById('supervisor-view');
+      if(page && supervisorView && page.parentElement !== supervisorView){
+        supervisorView.appendChild(page);
+      }
+      // Jalankan navigasi utama setelah halaman berada pada container role yang benar.
+      try { switchRoleNav(id, el); }
+      catch(navError) {
+        try { stopCameraStream(); } catch(e) {}
+        try { closeAdminNavGroups(); } catch(e) {}
+        document.querySelectorAll('.role-page-content').forEach(p=>{p.style.display='none';});
+        if(el){ document.querySelectorAll('#app-navbar-items .nav-item').forEach(n=>n.classList.remove('active')); el.classList.add('active'); }
+      }
+      if(page){
+        page.style.setProperty('display','block','important');
+        page.style.setProperty('visibility','visible','important');
+        page.style.setProperty('opacity','1','important');
+      }
+      spvCogsTab='stok';
+      renderSpvCogsTabButtons();
+      loadSpvCogsMonitoring();
+    }
+    function switchSpvCogsTab(tab,el){spvCogsTab=tab;renderSpvCogsTabButtons();renderSpvCogsMonitoring();}
+    function renderSpvCogsTabButtons(){document.querySelectorAll('.cogs-spv-tabs button').forEach((b,i)=>{const t=['stok','history','order'][i];b.classList.toggle('active',t===spvCogsTab);b.classList.toggle('gray',t!==spvCogsTab);});}
+
+    function getSpvCogsCoverageFromDashboard(){
+      const currentUser=String(localStorage.getItem('resto_current_user')||'').trim();
+      const individual=globalDashboardData?.spvLinksIndividual||{};
+      let item=individual[currentUser];
+      if(!item){
+        const key=Object.keys(individual).find(k=>String(k).trim().toLowerCase()===currentUser.toLowerCase());
+        if(key)item=individual[key];
+      }
+      const raw=String(item?.resto_names||'').split(/[,;|]/).map(x=>String(x||'').trim()).filter(Boolean);
+      if(raw.length)return raw;
+      const users=globalDashboardData?.usersList||[];
+      const user=users.find(u=>String(u.username||u.user_id||u.id||'').trim().toLowerCase()===currentUser.toLowerCase());
+      const c=user?.coverage_restos||user?.coverage_resto||user?.coverageRestos||[];
+      const list=Array.isArray(c)?c:String(c||'').split(/[,;|]/);
+      return list.map(x=>String(typeof x==='object'?(x.resto||x.name||x.nama||''):x).trim()).filter(Boolean);
+    }
+    async function loadSpvCogsMonitoring(){
+      if(spvCogsLoading)return;spvCogsLoading=true;
+      const el=document.getElementById('spv-cogs-table');if(el)el.innerHTML='<p style="padding:20px">Memuat monitoring COGS…</p>';
+      try{
+        const username=localStorage.getItem('resto_current_user')||'';
+        const raw=await gasRequestJson({action:'getSpvCogsMonitoring',username,startDate:document.getElementById('spv-cogs-start')?.value||'',endDate:document.getElementById('spv-cogs-end')?.value||''},{timeoutMs:30000,retries:1});
+        if(!raw||raw.status==='error'||raw.success===false)throw new Error(raw?.message||'Gagal mengambil data');
+        spvCogsData={stocks:raw.stocks||[],history:raw.history||[],orders:raw.orders||[],branches:raw.branches||[]};
+        const sel=document.getElementById('spv-cogs-branch'),prev=sel?.value||'';
+        if(sel){
+          // Prioritaskan daftar coverage yang dikirim GAS; bila kosong, gunakan sumber coverage SPV
+          // yang sama dengan halaman SPV lain pada globalDashboardData.
+          const gasBranches=(spvCogsData.branches||[]).map(x=>String(x||'').trim()).filter(Boolean);
+          const dashboardBranches=getSpvCogsCoverageFromDashboard();
+          const sourceBranches=gasBranches.length?gasBranches:dashboardBranches;
+          const branches=[...new Set(sourceBranches)].sort((a,b)=>a.localeCompare(b,'id'));
+          sel.innerHTML='<option value="">Semua Cabang Coverage SPV ('+branches.length+')</option>'+
+            branches.map(x=>'<option value="'+cogsEsc(x)+'">'+cogsEsc(x)+'</option>').join('');
+          if(branches.includes(prev))sel.value=prev;
+          sel.disabled=branches.length===0;
+          if(!branches.length)sel.innerHTML='<option value="">Coverage SPV belum tersedia</option>';
+          // Batasi data yang dirender hanya ke cabang coverage user SPV ini.
+          spvCogsData.branches=branches;
+        }
+        renderSpvCogsMonitoring();
+      }catch(e){if(el)el.innerHTML='<p style="padding:20px;color:#b91c1c">Gagal memuat Controling COGS: '+cogsEsc(e.message||e)+'</p>';}
+      finally{spvCogsLoading=false;}
+    }
+    function renderSpvCogsMonitoring(){
+      const el=document.getElementById('spv-cogs-table'),sum=document.getElementById('spv-cogs-summary');if(!el)return;
+      const branch=document.getElementById('spv-cogs-branch')?.value||'',q=(document.getElementById('spv-cogs-search')?.value||'').toLowerCase();
+      let rows=spvCogsTab==='stok'?spvCogsData.stocks:spvCogsTab==='history'?spvCogsData.history:spvCogsData.orders;
+      rows=rows.filter(x=>(!branch||String(x.resto||'')===branch)&&(!q||Object.values(x).some(v=>String(v??'').toLowerCase().includes(q))));
+      if(sum)sum.textContent='Cabang dalam coverage: '+spvCogsData.branches.length+' · Data tampil: '+rows.length+' · Mode hanya monitoring';
+      if(!rows.length){el.innerHTML='<p style="padding:20px">Tidak ada data untuk filter yang dipilih.</p>';return;}
+      if(spvCogsTab==='stok'){
+        const cols=['Cabang','Kode Barang','Nama Barang','Satuan','Sisa Stok','Qty Konversi'];
+        el.innerHTML='<table class="cogs-table"><thead><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'+rows.map(x=>'<tr>'+[x.resto,x.kode,x.namaBarang||x.nama_barang||x.nama,x.satuanPakai||x.satuan,x.sisaStok,x.qtyKonversi].map(v=>'<td>'+cogsEsc(v??'-')+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+      } else {
+        const cols=['Cabang','Tanggal','Nomor Dokumen','Tipe','Jumlah Barang','Total (Rp)','Status','Keterangan'];
+        const typeTab=spvCogsTab==='order'?'ORDER':'COGS';
+        el.innerHTML='<table class="cogs-table"><thead><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'+rows.map(x=>{
+          const docNum=x.nomor||'-';
+          const typeVal=x.tipe||typeTab;
+          const docCell=docNum!=='-'?('<button type="button" class="cogs-doc-link" onclick="openCogsDocumentDetail(\''+cogsEsc(String(docNum)).replace(/'/g, '&#39;')+'\',\''+typeVal+'\')">'+cogsEsc(docNum)+'</button>'):'-';
+          return '<tr>'+[cogsEsc(x.resto??'-'), cogsEsc(x.tanggal??'-'), docCell, cogsEsc(x.tipe??typeTab), cogsEsc(x.totalBarang??'-'), cogsEsc(x.totalRp??'-'), cogsEsc(x.status??'-'), cogsEsc(x.keterangan??'-')].map(v=>v.startsWith('<button')?('<td>'+v+'</td>'):('<td>'+v+'</td>')).join('')+'</tr>';
+        }).join('')+'</tbody></table>';
+      }
+    }
 
     // COGS frontend; memerlukan action pendukung pada Google Apps Script.
     let cogsCurrentType='COGS', cogsItems=[], cogsStocks=[], cogsEntryBusy=false;
