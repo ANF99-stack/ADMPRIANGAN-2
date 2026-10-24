@@ -1538,12 +1538,7 @@
 
         <!-- PAGE 2: SIDEBAR PAGE - CHECKIN KARYAWAN REALTIME KAMERA -->
 
-        <div id="cogs-detail-modal" class="cogs-detail-overlay" style="display:none" onclick="if(event.target===this)closeCogsDetailModal()">
-          <section class="cogs-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="cogs-detail-title">
-            <div class="cogs-heading"><div><h2 id="cogs-detail-title"><i class="fa-solid fa-list-check"></i> Detail Dokumen</h2><div id="cogs-detail-subtitle" class="cogs-info"></div></div><button class="cogs-btn gray" onclick="closeCogsDetailModal()" aria-label="Tutup detail"><i class="fa-solid fa-xmark"></i> Tutup</button></div>
-            <div id="cogs-detail-content" class="cogs-table-wrap"><p style="padding:20px">Memuat detail item…</p></div>
-          </section>
-        </div>
+
 
         <div id="page-cogs-stok" class="role-page-content" style="display:none"><section class="cogs-shell">
           <div class="cogs-heading"><h2><i class="fa-solid fa-boxes-stacked"></i> Data Persediaan Stok Barang</h2><button class="cogs-btn green" onclick="loadCogsStock()"><i class="fa-solid fa-rotate"></i> Muat Ulang</button></div>
@@ -8258,7 +8253,8 @@
         el.innerHTML='<table class="cogs-table"><thead><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'+rows.map(x=>{
           const docNum=x.nomor||'-';
           const typeVal=x.tipe||typeTab;
-          const docCell=docNum!=='-'?('<button type="button" class="cogs-doc-link" onclick="openCogsDocumentDetail(\''+cogsEsc(String(docNum)).replace(/'/g, '&#39;')+'\',\''+typeVal+'\')">'+cogsEsc(docNum)+'</button>'):'-';
+          const selectedBranch=document.getElementById('spv-cogs-branch')?.value||'';
+          const docCell=docNum!=='-'?('<button type="button" class="cogs-doc-link" onclick="openCogsDocumentDetail(\''+cogsEsc(String(docNum)).replace(/'/g, '&#39;')+'\',\''+typeVal+'\',\''+cogsEsc(selectedBranch).replace(/'/g, '&#39;')+'\')">'+cogsEsc(docNum)+'</button>'):'-';
           return '<tr>'+[cogsEsc(x.resto??'-'), cogsEsc(x.tanggal??'-'), docCell, cogsEsc(x.tipe??typeTab), cogsEsc(x.totalBarang??'-'), cogsEsc(x.totalRp??'-'), cogsEsc(x.status??'-'), cogsEsc(x.keterangan??'-')].map(v=>v.startsWith('<button')?('<td>'+v+'</td>'):('<td>'+v+'</td>')).join('')+'</tr>';
         }).join('')+'</tbody></table>';
       }
@@ -8319,9 +8315,9 @@
     function switchCogsPage(id,el){stopCameraStream();closeAdminNavGroups();document.querySelectorAll('#app-navbar-items .nav-item').forEach(n=>n.classList.remove('active'));if(el)el.classList.add('active');document.querySelectorAll('.role-page-content').forEach(p=>p.style.display='none');const page=document.getElementById(id);if(page)page.style.display='block';if(id==='page-cogs-stok')loadCogsStock();if(id==='page-cogs-riwayat')loadCogsHistory('COGS');if(id==='page-cogs-order')loadCogsHistory('ORDER');}
     function cogsArray(d){if(Array.isArray(d))return d;for(const k of ['items','barang','stocks','stok','records','riwayat','data'])if(Array.isArray(d?.[k]))return d[k];return [];}
     async function loadCogsStock(){const el=document.getElementById('cogs-stock-table');if(!el)return;el.innerHTML='<p style="padding:20px">Memuat data stok…</p>';try{const d=await cogsRequest('getCogsStock');cogsStocks=cogsArray(d);if(!cogsStocks.length){const diag=d&&typeof d==='object'?`<br><small>Cabang: ${cogsEsc(d.resto||cogsResto())} · Baris master: ${cogsEsc(d.masterRows??'-')} · Cocok cabang: ${cogsEsc(d.masterMatches??'-')} · Ditambahkan: ${cogsEsc(d.inserted??'-')}</small>`:'';el.innerHTML=`<p style="padding:20px">${cogsEsc(d?.message||'Belum ada data stok yang cocok untuk cabang ini.')}${diag}</p>`;return;}el.innerHTML=`<table class="cogs-table"><thead><tr><th>#</th><th>Kode</th><th>Nama Barang</th><th>Stn. Pakai</th><th>Stn. Order</th><th>Produk</th><th>Konversi</th><th>Σ Sisa Stok</th><th>Σ Qty Konversi</th></tr></thead><tbody>${cogsStocks.map((x,i)=>`<tr><td>${i+1}</td><td>${cogsEsc(x.kode||x.code||x.sku||'-')}</td><td class="left">${cogsEsc(x.namaBarang||x.nama_barang||x.nama||x.name||'-')}</td><td>${cogsEsc(x.satuanPakai||x.satuan_pakai||x.satuan||'-')}</td><td>${cogsEsc(x.satuanOrder||x.satuan_order||'-')}</td><td>${cogsEsc(x.produk||'logistik')}</td><td>${cogsEsc(x.konversi||'-')}</td><td><b>${cogsNum(x.sisaStok??x.sisa_stok??x.stok)} ${cogsEsc(x.satuanPakai||x.satuan||'')}</b></td><td>${cogsEsc(x.qtyKonversi||x.qty_konversi||'-')}</td></tr>`).join('')}</tbody></table>`;}catch(e){el.innerHTML=`<p style="padding:20px;color:#b91c1c">Gagal memuat stok: ${cogsEsc(e.message)}. Periksa deployment GAS dan action getCogsStock.</p>`;}}
-    async function loadCogsHistory(type){const el=document.getElementById(type==='ORDER'?'cogs-order-table':'cogs-history-table');if(!el)return;el.innerHTML='<p style="padding:20px">Memuat riwayat…</p>';try{const d=await cogsRequest('getCogsHistory',{tipe:type,startDate:document.getElementById('cogs-start')?.value||'',endDate:document.getElementById('cogs-end')?.value||''}),rows=cogsArray(d);if(!rows.length){el.innerHTML='<p style="padding:20px">Belum ada riwayat, atau action getCogsHistory belum tersedia pada GAS.</p>';return;}el.innerHTML=`<table class="cogs-table"><thead><tr><th>#</th><th>Nomor</th><th>Tgl. COGS</th><th>Tgl. Input</th><th>Tipe</th><th>Σ Barang</th><th>Σ Total (Rp)</th><th>Posting</th><th>Status</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${i+1}</td><td><button type="button" class="cogs-doc-link" onclick="openCogsDocumentDetail('${cogsEsc(String(r.nomor||r.noDokumen||r.no_dokumen||'' )).replace(/'/g, '&#39;')}','${type}')">${cogsEsc(r.nomor||r.noDokumen||r.no_dokumen||'-')}</button></td><td>${cogsEsc(r.tanggal||r.tglCogs||r.tgl_cogs||'-')}</td><td>${cogsEsc(r.tglInput||r.tgl_input||'-')}</td><td>${cogsEsc(r.tipe||type)}</td><td>${cogsNum(r.totalBarang??r.jumlahBarang??r.total_barang)}</td><td>${cogsNum(r.total??r.totalRp??r.total_rp).toLocaleString('id-ID')}</td><td>${cogsEsc(r.posting||'Draft')}</td><td>${cogsEsc(r.status||'-')}</td></tr>`).join('')}</tbody></table>`;}catch(e){el.innerHTML=`<p style="padding:20px;color:#b91c1c">Gagal memuat riwayat: ${cogsEsc(e.message)}. Action getCogsHistory harus tersedia di GAS.</p>`;}}
+    async function loadCogsHistory(type){const el=document.getElementById(type==='ORDER'?'cogs-order-table':'cogs-history-table');if(!el)return;el.innerHTML='<p style="padding:20px">Memuat riwayat…</p>';try{const d=await cogsRequest('getCogsHistory',{tipe:type,startDate:document.getElementById('cogs-start')?.value||'',endDate:document.getElementById('cogs-end')?.value||''}),rows=cogsArray(d);if(!rows.length){el.innerHTML='<p style="padding:20px">Belum ada riwayat, atau action getCogsHistory belum tersedia pada GAS.</p>';return;}el.innerHTML=`<table class="cogs-table"><thead><tr><th>#</th><th>Nomor</th><th>Tgl. COGS</th><th>Tgl. Input</th><th>Tipe</th><th>Σ Barang</th><th>Σ Total (Rp)</th><th>Posting</th><th>Status</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${i+1}</td><td><button type="button" class="cogs-doc-link" onclick="openCogsDocumentDetail('${cogsEsc(String(r.nomor||r.noDokumen||r.no_dokumen||'' )).replace(/'/g, '&#39;')}','${type}','${cogsEsc(document.getElementById('spv-cogs-branch')?.value||'').replace(/'/g, '&#39;')}')">${cogsEsc(r.nomor||r.noDokumen||r.no_dokumen||'-')}</button></td><td>${cogsEsc(r.tanggal||r.tglCogs||r.tgl_cogs||'-')}</td><td>${cogsEsc(r.tglInput||r.tgl_input||'-')}</td><td>${cogsEsc(r.tipe||type)}</td><td>${cogsNum(r.totalBarang??r.jumlahBarang??r.total_barang)}</td><td>${cogsNum(r.total??r.totalRp??r.total_rp).toLocaleString('id-ID')}</td><td>${cogsEsc(r.posting||'Draft')}</td><td>${cogsEsc(r.status||'-')}</td></tr>`).join('')}</tbody></table>`;}catch(e){el.innerHTML=`<p style="padding:20px;color:#b91c1c">Gagal memuat riwayat: ${cogsEsc(e.message)}. Action getCogsHistory harus tersedia di GAS.</p>`;}}
     function closeCogsDetailModal(){const m=document.getElementById('cogs-detail-modal');if(m)m.style.display='none';document.body.style.overflow='';}
-    async function openCogsDocumentDetail(nomor,type){
+    async function openCogsDocumentDetail(nomor,type,detailResto=''){
       const modal=document.getElementById('cogs-detail-modal'),content=document.getElementById('cogs-detail-content');
       if(!modal||!content)return;
       modal.style.display='flex';document.body.style.overflow='hidden';
@@ -8329,7 +8325,7 @@
       document.getElementById('cogs-detail-subtitle').textContent='Nomor dokumen: '+nomor;
       content.innerHTML='<p style="padding:20px">Memuat rincian item dokumen…</p>';
       try{
-        const raw=await cogsRequest('getCogsDocumentDetail',{nomor,tipe:type});
+        const raw=await cogsRequest('getCogsDocumentDetail',{nomor,tipe:type,...(detailResto?{resto:detailResto,cabang:detailResto}:{})});
         const items=cogsArray(raw), meta=raw?.header||raw?.meta||{};
         if(!items.length){content.innerHTML='<p style="padding:20px;color:#64748b">Detail item tidak ditemukan untuk dokumen ini.</p>';return;}
         const totalQty=items.reduce((a,x)=>a+cogsNum(x.qty),0);
@@ -8342,6 +8338,15 @@
     async function saveCogsEntry(){if(cogsEntryBusy)return;const date=document.getElementById('cogs-date').value;if(!date){alert('Tanggal harus diisi.');return;}const allDetails=cogsItems.map((x,i)=>{const row=document.querySelector(`[data-cogs-row="${i}"]`),st=cogsNum(row?.querySelector('[data-stock]')?.dataset.stock),v=cogsNum(document.querySelector(`[data-qty="${i}"]`)?.value);if(cogsCurrentType==='ORDER')return {kode:x.kode||x.code||x.sku||'',namaBarang:x.namaBarang||x.nama_barang||x.nama||x.name||'',qty:v,stokAwal:st,satuan:x.satuanPakai||x.satuan||''};const akhir=v,used=st-akhir,sales=cogsNum(row?.querySelector('[data-sales]')?.value);return {kode:x.kode||x.code||x.sku||'',namaBarang:x.namaBarang||x.nama_barang||x.nama||x.name||'',qty:used,penjualan:sales,selisih:sales-used,stokAwal:st,stokAkhir:akhir,satuan:x.satuanPakai||x.satuan||''};});if(cogsCurrentType!=='ORDER'&&allDetails.some(x=>x.qty<0)){alert('Stok akhir tidak boleh lebih besar dari sisa stok.');return;}const details=allDetails.filter(x=>cogsCurrentType==='ORDER'?x.qty>0:(x.qty>0||x.penjualan>0));if(!details.length){alert(cogsCurrentType==='ORDER'?'Masukkan minimal satu Qty Orderan lebih dari 0.':'Isi minimal satu Stok Akhir berbeda dari sisa stok atau masukkan Penjualan.');return;}cogsEntryBusy=true;try{const r=await cogsRequest('saveCogsEntry',{tipe:cogsCurrentType,nomor:document.getElementById('cogs-docno').value,tanggal:date,keterangan:document.getElementById('cogs-note').value,details});alert(r.message||'Data berhasil dikirim ke GAS.');switchCogsPage(cogsCurrentType==='ORDER'?'page-cogs-order':'page-cogs-riwayat',null);}catch(e){alert('Gagal menyimpan: '+e.message+'. Action saveCogsEntry perlu ditambahkan ke GAS agar tersimpan permanen.');}finally{cogsEntryBusy=false;}}
 
   </script>
+
+
+  <!-- Global detail modal: kept outside hidden role-page containers so SPV can display it. -->
+  <div id="cogs-detail-modal" class="cogs-detail-overlay" style="display:none" onclick="if(event.target===this)closeCogsDetailModal()">
+          <section class="cogs-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="cogs-detail-title">
+            <div class="cogs-heading"><div><h2 id="cogs-detail-title"><i class="fa-solid fa-list-check"></i> Detail Dokumen</h2><div id="cogs-detail-subtitle" class="cogs-info"></div></div><button class="cogs-btn gray" onclick="closeCogsDetailModal()" aria-label="Tutup detail"><i class="fa-solid fa-xmark"></i> Tutup</button></div>
+            <div id="cogs-detail-content" class="cogs-table-wrap"><p style="padding:20px">Memuat detail item…</p></div>
+          </section>
+        </div>
 
 </body>
 </html>
