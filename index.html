@@ -4989,7 +4989,7 @@
 
     // OMSET AREA: data dibaca dari sheet sumber tanpa menulis/mengubah data spreadsheet.
     let omsetAreaRows = [], omsetAreaHeaders = [], omsetAreaPage = 1, omsetAreaSort = {key:'achievement',dir:'desc'}, omsetAreaLoaded = false, omsetAreaSummary = {actual:null,target:null}, omsetAreaAverageDays = 1;
-    const oaMoney = n => 'Rp' + (Number(n)||0).toLocaleString('id-ID');
+    const oaMoney = n => 'Rp' + Math.round(Number(n) || 0).toLocaleString('id-ID', { maximumFractionDigits: 0 });
     const oaNum = v => { if(typeof v==='number') return v; let s=String(v??'').trim().replace(/Rp/gi,'').replace(/\s/g,''); if(!s)return 0; if(s.includes(',')&&s.includes('.')) s=s.replace(/\./g,'').replace(',','.'); else if(s.includes(',')) s=s.replace(',','.'); else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,''); else if(/\.\d{3}$/.test(s))s=s.replace('.',''); return Number(s.replace(/[^\d.-]/g,''))||0; };
     const oaEsc = v => String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     function oaZone(r){const z=String(r.zone||'').toUpperCase(); if(z.includes('GREEN'))return 'GREEN';if(z.includes('YELLOW'))return 'YELLOW';if(z.includes('RED'))return 'RED';return z||'UNKNOWN';}
