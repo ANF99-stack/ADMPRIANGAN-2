@@ -16,6 +16,20 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
+    /* Layar transisi saat refresh: menutupi form login sampai sesi terakhir dipulihkan. */
+    #session-restore-screen{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#1e1b4b 0%,#dc2626 55%,#f97316 100%);opacity:1;visibility:visible;transition:opacity .28s ease,visibility .28s ease}
+    #session-restore-screen.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+    .session-restore-card{display:flex;flex-direction:column;align-items:center;text-align:center;color:#fff;animation:sessionRestoreRise .45s ease-out both}
+    .session-restore-mark{width:76px;height:76px;border-radius:24px;background:#fff;color:#dc2626;display:grid;place-items:center;font-size:2rem;font-weight:900;box-shadow:0 14px 36px #0003;margin-bottom:18px;animation:sessionRestorePulse 1.5s ease-in-out infinite}
+    .session-restore-title{font-size:1.05rem;font-weight:800;letter-spacing:.01em}
+    .session-restore-subtitle{font-size:.82rem;opacity:.85;margin-top:7px}
+    .session-restore-loader{display:flex;gap:6px;margin-top:20px}
+    .session-restore-loader span{width:7px;height:7px;border-radius:50%;background:#fff;animation:sessionRestoreDots .9s ease-in-out infinite}
+    .session-restore-loader span:nth-child(2){animation-delay:.15s}.session-restore-loader span:nth-child(3){animation-delay:.3s}
+    @keyframes sessionRestoreRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes sessionRestorePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+    @keyframes sessionRestoreDots{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-5px)}}
+    @media(prefers-reduced-motion:reduce){#session-restore-screen,.session-restore-card,.session-restore-mark,.session-restore-loader span{animation:none!important;transition:none!important}}
     :root {
       --lazatto-red: #dc2626;
       --lazatto-orange: #f97316;
@@ -1358,6 +1372,16 @@
   </style>
 </head>
 <body>
+  <div id="session-restore-screen" role="status" aria-live="polite">
+    <div class="session-restore-card">
+      <div class="session-restore-mark"><i class="fa-solid fa-bolt"></i></div>
+      <div class="session-restore-title">Menyiapkan sesi Anda</div>
+      <div class="session-restore-subtitle">Memulihkan halaman terakhir…</div>
+      <div class="session-restore-loader" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <script>try { if (!localStorage.getItem('resto_current_user')) { const el=document.getElementById('session-restore-screen'); if(el){el.classList.add('is-hidden');el.style.display='none';} } } catch(e) {}</script>
 
   <!-- ================= PAGE 1: LOGIN ================= -->
   <div id="login-section" class="login-wrapper">
@@ -5494,9 +5518,7 @@
           updateCheckinSwitchUI();
           renderOperasionalTable();
           renderKaryawanTable();
-          if (localStorage.getItem('resto_user_role') === 'admin') {
-            renderUserTable();
-          }
+          if (localStorage.getItem('resto_user_role') === 'admin') renderUserTable();
         });
       }
     }, 60000);
@@ -5628,9 +5650,15 @@
 
     window.onload = function() {
       setupOperasionalDateFilterLimits();
-
+      const restoreScreen = document.getElementById('session-restore-screen');
+      const finishSessionRestore = () => {
+        if (!restoreScreen) return;
+        restoreScreen.classList.add('is-hidden');
+        window.setTimeout(() => { if (restoreScreen) restoreScreen.style.display = 'none'; }, 350);
+      };
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) {
+        if (restoreScreen) { restoreScreen.style.display = 'flex'; restoreScreen.classList.remove('is-hidden'); }
         // Ambil halaman terakhir SEBELUM showDashboard membuka halaman default.
         // Jika diambil sesudahnya, navigasi default dapat menimpa halaman yang tersimpan.
         let savedLastPage = '';
@@ -5644,10 +5672,15 @@
         showDashboard(loggedUser);
         // Pulihkan halaman yang tersimpan setelah shell sesuai role dibuat.
         if (savedLastPage) restoreLastPage(loggedUser, savedLastPage);
+        // Sembunyikan animasi segera setelah shell dan halaman terakhir siap; tidak menunggu GAS.
+        requestAnimationFrame(() => requestAnimationFrame(finishSessionRestore));
         fetchInitialDataFromGAS(() => {
           const role = localStorage.getItem('resto_user_role') || 'user';
           applyDashboardDataToUI(loggedUser, role);
         }, { force: true });
+      } else {
+        // Pengunjung yang belum login tetap diarahkan ke halaman login seperti biasa.
+        finishSessionRestore();
       }
 
       const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 800));
