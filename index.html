@@ -5264,7 +5264,54 @@
       loadOmsetArea(true);
     }
 
+    function rememberLastPage(pageId) {
+      try {
+        const username = localStorage.getItem('resto_current_user') || '';
+        if (username && pageId) {
+          localStorage.setItem('resto_last_page_' + username.toLowerCase(), pageId);
+        }
+      } catch (e) {
+        console.warn('Tidak dapat menyimpan halaman terakhir:', e);
+      }
+    }
+
+    function restoreLastPage(username, savedPageId) {
+      try {
+        const role = String(localStorage.getItem('resto_user_role') || 'user').toLowerCase();
+        const pageId = savedPageId || localStorage.getItem('resto_last_page_' + String(username || '').toLowerCase());
+        if (!pageId) return;
+
+        const page = document.getElementById(pageId);
+        if (!page) return;
+
+        const sharedPageIds = [
+          'page-shared-operasional', 'page-check-karyawan',
+          'page-daftar-karyawan', 'page-groming-kasir', 'page-groming-karesto'
+        ];
+        let navElement = Array.from(document.querySelectorAll('#app-navbar-items .nav-item'))
+          .find(item => (item.getAttribute('onclick') || '').includes("'" + pageId + "'") ||
+                        (item.getAttribute('onclick') || '').includes('"' + pageId + '"')) || null;
+
+        if (role === 'admin') {
+          if (!page.classList.contains('admin-page-content') && !sharedPageIds.includes(pageId)) return;
+          switchAdminNav(pageId, navElement);
+        } else if (['supervisor', 'psd'].includes(role)) {
+          if (!page.classList.contains('role-page-content')) return;
+          switchRoleNav(pageId, navElement);
+        } else if (isAERole(role)) {
+          if (!document.getElementById('ae-view')?.contains(page)) return;
+          switchAENav(pageId, navElement);
+        } else {
+          if (!document.getElementById('user-view')?.contains(page)) return;
+          switchRoleNav(pageId, navElement);
+        }
+      } catch (e) {
+        console.warn('Gagal memulihkan halaman terakhir:', e);
+      }
+    }
+
     function switchRoleNav(pageId, element) {
+      rememberLastPage(pageId);
       stopCameraStream();
       closeAdminNavGroups();
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
@@ -5584,10 +5631,19 @@
 
       const loggedUser = localStorage.getItem('resto_current_user');
       if (loggedUser) {
+        // Ambil halaman terakhir SEBELUM showDashboard membuka halaman default.
+        // Jika diambil sesudahnya, navigasi default dapat menimpa halaman yang tersimpan.
+        let savedLastPage = '';
+        try {
+          savedLastPage = localStorage.getItem('resto_last_page_' + String(loggedUser).toLowerCase()) || '';
+        } catch (e) {}
+
         // Tampilkan cache terlebih dahulu supaya UI segera terbuka, lalu ambil data terbaru dari GAS.
         restoreCachedDashboardData();
         recordUserActivity(loggedUser);
         showDashboard(loggedUser);
+        // Pulihkan halaman yang tersimpan setelah shell sesuai role dibuat.
+        if (savedLastPage) restoreLastPage(loggedUser, savedLastPage);
         fetchInitialDataFromGAS(() => {
           const role = localStorage.getItem('resto_user_role') || 'user';
           applyDashboardDataToUI(loggedUser, role);
@@ -7429,10 +7485,28 @@
     }
 
     function switchAdminNav(pageId, element) {
+      rememberLastPage(pageId);
       stopCameraStream();
       closeAdminNavGroups();
+
+      // FIX BUG TUMPUKAN HALAMAN:
+      // Setiap perpindahan menu admin dimulai dengan menyembunyikan seluruh
+      // halaman bersama/terpisah. Setelah itu hanya halaman tujuan yang dibuka.
+      // Sebelumnya cabang Operasional dan Check Karyawan tidak menyembunyikan
+      // halaman Groming Kasir/Karesto yang dibuka sebelumnya.
+      [
+        'page-shared-operasional',
+        'page-check-karyawan',
+        'page-daftar-karyawan',
+        'page-groming-kasir',
+        'page-groming-karesto'
+      ].forEach(id => {
+        const page = document.getElementById(id);
+        if (page) page.style.display = 'none';
+      });
+
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
-      element.classList.add('active');
+      if (element) element.classList.add('active');
 
       if (pageId === 'page-shared-operasional') {
         document.getElementById('admin-view').style.display = 'none';
@@ -7894,6 +7968,7 @@
     }
 
     function switchAENav(pageId,el){
+      rememberLastPage(pageId);
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(x=>x.classList.remove('active'));
       document.querySelectorAll('#ae-view .role-page-content').forEach(x=>x.style.display='none');
       if(el)el.classList.add('active');
