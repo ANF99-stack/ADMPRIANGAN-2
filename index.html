@@ -5670,14 +5670,27 @@
         restoreCachedDashboardData();
         recordUserActivity(loggedUser);
         showDashboard(loggedUser);
-        // Pulihkan halaman yang tersimpan setelah shell sesuai role dibuat.
+        // Pulihkan halaman terakhir segera dari cache; jangan tampilkan login di belakang loader.
         if (savedLastPage) restoreLastPage(loggedUser, savedLastPage);
-        // Sembunyikan animasi segera setelah shell dan halaman terakhir siap; tidak menunggu GAS.
-        requestAnimationFrame(() => requestAnimationFrame(finishSessionRestore));
-        fetchInitialDataFromGAS(() => {
-          const role = localStorage.getItem('resto_user_role') || 'user';
-          applyDashboardDataToUI(loggedUser, role);
-        }, { force: true });
+
+        // Loader tetap tampil selama permintaan GAS berlangsung.
+        // Setelah GAS selesai (berhasil atau gagal setelah retry), render data terbaru jika ada,
+        // pulihkan lagi halaman terakhir agar tidak tergeser ke halaman default, lalu tutup loader.
+        (async () => {
+          try {
+            await fetchInitialDataFromGAS(() => {
+              const role = localStorage.getItem('resto_user_role') || 'user';
+              applyDashboardDataToUI(loggedUser, role);
+            }, { force: true });
+
+            if (savedLastPage) restoreLastPage(loggedUser, savedLastPage);
+          } catch (restoreError) {
+            console.error('Pemulihan sesi/GAS gagal:', restoreError);
+          } finally {
+            // Tunggu satu frame agar pembaruan UI dari data GAS sempat dirender.
+            requestAnimationFrame(() => requestAnimationFrame(finishSessionRestore));
+          }
+        })();
       } else {
         // Pengunjung yang belum login tetap diarahkan ke halaman login seperti biasa.
         finishSessionRestore();
