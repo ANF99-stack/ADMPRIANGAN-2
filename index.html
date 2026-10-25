@@ -2829,7 +2829,7 @@
                   Pengaturan dibuat <b>GLOBAL KHUSUS LAZATTO</b>, tidak perlu input satu per satu resto. Sistem memakai data resto Lazatto yang sudah ada untuk menentukan tipe <b>REGULER</b> atau <b>24 JAM</b>.
                 </p>
               </div>
-              <button onclick="saveCheckinKasirSchedules()" style="background:#92400e; color:white; border:none; padding:10px 18px; border-radius:10px; cursor:pointer; font-weight:800;">
+              <button onclick="window.handleSaveCheckinKasirSchedules()" style="background:#92400e; color:white; border:none; padding:10px 18px; border-radius:10px; cursor:pointer; font-weight:800;">
                 <i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan
               </button>
             </div>
@@ -2854,7 +2854,7 @@
                     <input id="kasir_global_reg_s1" type="time" value="06:00" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #cbd5e1; border-radius:9px; font-weight:800;">
                   </label>
                   <label style="font-size:.78rem; font-weight:800; color:#475569;">SHIFT 2
-                    <input id="kasir_global_reg_s2" type="time" value="14:00" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #cbd5e1; border-radius:9px; font-weight:800;">
+                    <input id="kasir_global_reg_s2" type="time" value="13:30" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #cbd5e1; border-radius:9px; font-weight:800;">
                   </label>
                 </div>
                 <div style="margin-top:10px; color:#64748b; font-size:.72rem;">Shift 3 tidak digunakan untuk resto reguler.</div>
@@ -2867,13 +2867,13 @@
                 </div>
                 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
                   <label style="font-size:.78rem; font-weight:800; color:#92400e;">SHIFT 1
-                    <input id="kasir_global_24_s1" type="time" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #fed7aa; border-radius:9px; font-weight:800;">
+                    <input id="kasir_global_24_s1" type="time" value="23:30" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #fed7aa; border-radius:9px; font-weight:800;">
                   </label>
                   <label style="font-size:.78rem; font-weight:800; color:#92400e;">SHIFT 2
-                    <input id="kasir_global_24_s2" type="time" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #fed7aa; border-radius:9px; font-weight:800;">
+                    <input id="kasir_global_24_s2" type="time" value="07:30" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #fed7aa; border-radius:9px; font-weight:800;">
                   </label>
                   <label style="font-size:.78rem; font-weight:800; color:#92400e;">SHIFT 3
-                    <input id="kasir_global_24_s3" type="time" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #fed7aa; border-radius:9px; font-weight:800;">
+                    <input id="kasir_global_24_s3" type="time" value="15:30" style="display:block; width:100%; margin-top:5px; padding:10px; border:1px solid #fed7aa; border-radius:9px; font-weight:800;">
                   </label>
                 </div>
                 <div style="margin-top:10px; color:#92400e; font-size:.72rem; font-weight:700;">Ketiga shift wajib diatur untuk resto 24 jam.</div>
@@ -4621,13 +4621,13 @@
       const cfg = schedules[is24Jam ? '24jam' : 'reguler'] || {};
 
       if (is24Jam) {
-        if (shift === 'SHIFT 1') return cfg.s1 || null;
-        if (shift === 'SHIFT 2') return cfg.s2 || null;
-        if (shift === 'SHIFT 3') return cfg.s3 || null;
+        if (shift === 'SHIFT 1') return cfg.s1 || '23:30';
+        if (shift === 'SHIFT 2') return cfg.s2 || '07:30';
+        if (shift === 'SHIFT 3') return cfg.s3 || '15:30';
         return null;
       }
       if (shift === 'SHIFT 1') return cfg.s1 || '06:00';
-      if (shift === 'SHIFT 2') return cfg.s2 || '14:00';
+      if (shift === 'SHIFT 2') return cfg.s2 || '13:30';
       return null;
     }
 
@@ -6489,10 +6489,10 @@
       const d24 = schedules['24jam'] || {};
       const el = id => document.getElementById(id);
       if (el('kasir_global_reg_s1')) el('kasir_global_reg_s1').value = reg.s1 || '06:00';
-      if (el('kasir_global_reg_s2')) el('kasir_global_reg_s2').value = reg.s2 || '14:00';
-      if (el('kasir_global_24_s1')) el('kasir_global_24_s1').value = d24.s1 || '';
-      if (el('kasir_global_24_s2')) el('kasir_global_24_s2').value = d24.s2 || '';
-      if (el('kasir_global_24_s3')) el('kasir_global_24_s3').value = d24.s3 || '';
+      if (el('kasir_global_reg_s2')) el('kasir_global_reg_s2').value = reg.s2 || '13:30';
+      if (el('kasir_global_24_s1')) el('kasir_global_24_s1').value = d24.s1 || '23:30';
+      if (el('kasir_global_24_s2')) el('kasir_global_24_s2').value = d24.s2 || '07:30';
+      if (el('kasir_global_24_s3')) el('kasir_global_24_s3').value = d24.s3 || '15:30';
     }
 
     function renderCheckinKasirSchedulePage() {
@@ -6508,7 +6508,7 @@
       const s3 = document.getElementById('kasir_global_24_s3')?.value || '';
       if (!regS1 || !regS2) { alert('Jam Shift 1 dan Shift 2 REGULER wajib diisi.'); return; }
       if (!s1 || !s2 || !s3) { alert('Jam Shift 1, Shift 2, dan Shift 3 untuk 24 JAM wajib diisi.'); return; }
-      const btn = document.querySelector('#page-checkin-kasir-limit button[onclick="saveCheckinKasirSchedules()"]');
+      const btn = document.querySelector('#page-checkin-kasir-limit button[onclick="window.handleSaveCheckinKasirSchedules()"]');
       const original = btn ? btn.innerHTML : '';
       if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Menyimpan...'; }
       try {
@@ -6529,6 +6529,14 @@
       } finally {
         if (btn) { btn.disabled = false; btn.innerHTML = original || '<i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan'; }
       }
+    }
+
+    // Export dari scope tempat fungsi penyimpanan benar-benar dideklarasikan.
+    // Bridge global di akhir file dapat memanggil fungsi ini dengan konsisten.
+    window.saveCheckinKasirSchedules = saveCheckinKasirSchedules;
+    window.handleSaveCheckinKasirSchedules = saveCheckinKasirSchedules;
+    function handleSaveCheckinKasirSchedules() {
+      return saveCheckinKasirSchedules();
     }
 
     function loadPsdMasterLinksForm() {
@@ -8458,5 +8466,16 @@
           </section>
         </div>
 
+<script>
+// Fallback bridge: supports legacy inline onclick handlers.
+if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
+  window.handleSaveCheckinKasirSchedules = function () {
+    if (typeof window.saveCheckinKasirSchedules === 'function') {
+      return window.saveCheckinKasirSchedules();
+    }
+    alert('Fungsi penyimpanan jadwal KASIR belum berhasil dimuat. Periksa error JavaScript sebelumnya.');
+  };
+}
+</script>
 </body>
 </html>
