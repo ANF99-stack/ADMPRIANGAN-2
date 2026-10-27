@@ -1370,6 +1370,32 @@
 }
 
   </style>
+
+<style id="modern-shift-confirm-styles">
+  .shift-confirm-overlay{position:fixed;inset:0;z-index:999999;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(10,18,32,.62);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);opacity:0;transition:opacity .2s ease}
+  .shift-confirm-overlay.is-open{display:flex;opacity:1}
+  .shift-confirm-modal{width:min(100%,440px);overflow:hidden;border:1px solid rgba(255,255,255,.5);border-radius:22px;background:var(--card-bg,#fff);color:var(--text-color,#172033);box-shadow:0 24px 80px rgba(0,0,0,.3);transform:translateY(12px) scale(.98);transition:transform .22s ease;font-family:inherit}
+  .shift-confirm-overlay.is-open .shift-confirm-modal{transform:translateY(0) scale(1)}
+  .shift-confirm-head{display:flex;align-items:center;gap:13px;padding:22px 24px 17px;border-bottom:1px solid rgba(127,127,127,.17)}
+  .shift-confirm-icon{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:15px;background:#fff2d8;color:#a85b00;font-size:23px}
+  .shift-confirm-title{margin:0;font-size:19px;font-weight:800;letter-spacing:-.3px}
+  .shift-confirm-subtitle{margin:4px 0 0;font-size:12px;opacity:.7}
+  .shift-confirm-body{padding:20px 24px 22px}
+  .shift-confirm-alert{padding:12px 14px;margin-bottom:17px;border:1px solid #f2d59b;border-radius:12px;background:rgba(245,158,11,.09);font-size:13px;line-height:1.5;color:inherit}
+  .shift-confirm-details{display:grid;gap:11px;margin:0}
+  .shift-confirm-detail{display:grid;grid-template-columns:82px minmax(0,1fr);gap:10px;font-size:13px;line-height:1.45}
+  .shift-confirm-detail dt{opacity:.65}
+  .shift-confirm-detail dd{margin:0;font-weight:700;overflow-wrap:anywhere}
+  .shift-confirm-shift{display:inline-flex;align-items:center;padding:5px 10px;border-radius:9px;background:rgba(37,99,235,.11);color:#2563eb;font-weight:800}
+  .shift-confirm-actions{display:flex;justify-content:flex-end;gap:10px;padding:0 24px 23px}
+  .shift-confirm-btn{border:0;border-radius:12px;padding:12px 18px;font:inherit;font-size:13px;font-weight:750;cursor:pointer;transition:transform .15s ease,filter .15s ease}
+  .shift-confirm-btn:hover{filter:brightness(.97);transform:translateY(-1px)}
+  .shift-confirm-cancel{background:rgba(127,127,127,.13);color:inherit}
+  .shift-confirm-save{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;box-shadow:0 5px 14px rgba(37,99,235,.24)}
+  @media(max-width:480px){.shift-confirm-overlay{padding:14px}.shift-confirm-modal{border-radius:18px}.shift-confirm-head{padding:19px 18px 15px}.shift-confirm-body{padding:17px 18px 19px}.shift-confirm-actions{padding:0 18px 18px}.shift-confirm-title{font-size:17px}.shift-confirm-detail{grid-template-columns:70px minmax(0,1fr)}}
+  @media(prefers-reduced-motion:reduce){.shift-confirm-overlay,.shift-confirm-modal{transition:none}}
+</style>
+
 </head>
 <body>
   <div id="session-restore-screen" role="status" aria-live="polite">
@@ -1641,6 +1667,7 @@
               <div class="input-group">
                 <label>SHIFTING / KETERANGAN ABSEN</label>
                 <select id="checkin_shifting" onchange="toggleKameraTimestamp()" required>
+                  <option value="" selected disabled>— PILIH SHIFT SESUAI JADWAL —</option>
                   <option value="SHIFT 1">SHIFT 1</option>
                   <option value="SHIFT 2">SHIFT 2</option>
                   <option value="SHIFT 3">SHIFT 3</option>
@@ -1650,13 +1677,16 @@
                   <option value="IZIN">IZIN</option>
                   <option value="CUTI">CUTI</option>
                 </select>
+                <div style="margin-top:8px;padding:10px 12px;border:1px solid #fcd34d;background:#fffbeb;color:#92400e;border-radius:10px;font-size:.78rem;line-height:1.5;font-weight:600;">
+                  <i class="fa-solid fa-triangle-exclamation"></i> Pilih shift sesuai jadwal kerja. Shift tidak dipilih otomatis agar tidak salah tekan. Sebelum data disimpan, sistem akan meminta konfirmasi; jika salah, pilih <b>Batal</b> lalu ubah shift di formulir.
+                </div>
               </div>
               <div class="input-group">
                 <label>CATATAN</label>
                 <textarea id="checkin_catatan" rows="3" placeholder="Tambahkan catatan jika diperlukan (opsional)" style="resize:vertical;"></textarea>
               </div>
 
-              <div id="group_kamera_timestamp" class="input-group">
+              <div id="group_kamera_timestamp" class="input-group" style="display:none;">
                 <label>KAMERA TIMESTAMP (PENGAMBILAN FOTO LIVE)</label>
                 <div class="camera-box-wrapper">
                   <video id="camera_video" class="camera-video" autoplay playsinline></video>
@@ -3465,7 +3495,8 @@
     }
 
     function isPhotoRequiredForCurrentCheckin() {
-      const shift = document.getElementById('checkin_shifting')?.value || 'SHIFT 1';
+      const shift = document.getElementById('checkin_shifting')?.value || '';
+      if (!shift) return false; // Belum memilih shift: minta pilihan dahulu, bukan memaksa foto.
       return !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(String(shift).toUpperCase());
     }
 
@@ -3767,7 +3798,7 @@
 
       const shift = document.getElementById('checkin_shifting').value;
       const groupFoto = document.getElementById('group_kamera_timestamp');
-      if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) {
+      if (!shift || ['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) {
         groupFoto.style.display = 'none';
         stopCameraStream();
         capturedSnapDataUrl = null;
@@ -3804,6 +3835,12 @@
       const nama = document.getElementById('checkin_nama').value.trim();
       const shifting = document.getElementById('checkin_shifting').value;
       const catatan = document.getElementById('checkin_catatan')?.value.trim() || '';
+
+      if (!shifting) {
+        alert('Pilih SHIFT / KETERANGAN ABSEN sesuai jadwal kerja terlebih dahulu.');
+        document.getElementById('checkin_shifting')?.focus();
+        return;
+      }
 
       if (!nama) {
         alert('NIK Karyawan tidak ditemukan di database. Pastikan NIK terdaftar!');
@@ -3842,6 +3879,19 @@
           alert('Ukuran foto masih melebihi batas aman Spreadsheet. Silakan ambil foto ulang.');
           return;
         }
+      }
+
+      // Konfirmasi wajib sebelum menyimpan. Jika shift keliru, pengguna bisa
+      // membatalkan dialog, mengganti pilihan di formulir, lalu mengirim ulang.
+      const shiftConfirmed = await showModernShiftConfirm({
+        nama,
+        resto: formattedRestoName,
+        shift: shifting,
+        waktu: `${formatWIBTime(Date.now())} WIB`
+      });
+      if (!shiftConfirmed) {
+        document.getElementById('checkin_shifting')?.focus();
+        return;
       }
 
       const nowMs = Date.now();
@@ -3906,6 +3956,10 @@
           // Untuk karyawan berikutnya, ganti NIK di kolom input.
           const catatanEl = document.getElementById('checkin_catatan');
           if (catatanEl) catatanEl.value = '';
+          // Kosongkan pilihan shift setelah berhasil agar input berikutnya
+          // tidak mewarisi shift karyawan sebelumnya.
+          const shiftSelect = document.getElementById('checkin_shifting');
+          if (shiftSelect) shiftSelect.value = '';
           capturedSnapDataUrl = null;
           updateAutoDateTimeInput();
           toggleKameraTimestamp();
@@ -8514,5 +8568,51 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
   };
 }
 </script>
+
+<div class="shift-confirm-overlay" id="modernShiftConfirmOverlay" role="presentation" aria-hidden="true">
+  <section class="shift-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="shiftConfirmTitle" aria-describedby="shiftConfirmDescription">
+    <div class="shift-confirm-head">
+      <div class="shift-confirm-icon" aria-hidden="true">⚠</div>
+      <div><h2 class="shift-confirm-title" id="shiftConfirmTitle">Konfirmasi Check-in</h2><p class="shift-confirm-subtitle">Pastikan pilihan shift sudah benar</p></div>
+    </div>
+    <div class="shift-confirm-body">
+      <div class="shift-confirm-alert" id="shiftConfirmDescription">Periksa kembali data di bawah sebelum menyimpan. Jika shift salah, pilih “Perbaiki Shift”.</div>
+      <dl class="shift-confirm-details">
+        <div class="shift-confirm-detail"><dt>Nama</dt><dd id="shiftConfirmName"></dd></div>
+        <div class="shift-confirm-detail"><dt>Resto</dt><dd id="shiftConfirmResto"></dd></div>
+        <div class="shift-confirm-detail"><dt>Pilihan</dt><dd><span class="shift-confirm-shift" id="shiftConfirmShift"></span></dd></div>
+        <div class="shift-confirm-detail"><dt>Waktu</dt><dd id="shiftConfirmTime"></dd></div>
+      </dl>
+    </div>
+    <div class="shift-confirm-actions">
+      <button type="button" class="shift-confirm-btn shift-confirm-cancel" id="shiftConfirmCancel">Perbaiki Shift</button>
+      <button type="button" class="shift-confirm-btn shift-confirm-save" id="shiftConfirmSave">Ya, Simpan</button>
+    </div>
+  </section>
+</div>
+<script id="modern-shift-confirm-script">
+(function(){
+  window.showModernShiftConfirm = function(data){
+    return new Promise(function(resolve){
+      const overlay=document.getElementById('modernShiftConfirmOverlay');
+      if(!overlay){resolve(window.confirm('Pastikan shift '+data.shift+' sesuai jadwal kerja?'));return;}
+      document.getElementById('shiftConfirmName').textContent=data.nama||'-';
+      document.getElementById('shiftConfirmResto').textContent=data.resto||'-';
+      document.getElementById('shiftConfirmShift').textContent=data.shift||'-';
+      document.getElementById('shiftConfirmTime').textContent=data.waktu||'-';
+      const cancel=document.getElementById('shiftConfirmCancel');
+      const save=document.getElementById('shiftConfirmSave');
+      let settled=false;
+      function finish(value){if(settled)return;settled=true;overlay.classList.remove('is-open');overlay.setAttribute('aria-hidden','true');document.removeEventListener('keydown',onKey);overlay.removeEventListener('click',onBackdrop);cancel.removeEventListener('click',onCancel);save.removeEventListener('click',onSave);setTimeout(function(){overlay.style.display='none';resolve(value);},180);}
+      function onCancel(){finish(false)} function onSave(){finish(true)}
+      function onKey(e){if(e.key==='Escape'){e.preventDefault();finish(false)}}
+      function onBackdrop(e){if(e.target===overlay)finish(false)}
+      cancel.addEventListener('click',onCancel);save.addEventListener('click',onSave);document.addEventListener('keydown',onKey);overlay.addEventListener('click',onBackdrop);
+      overlay.style.display='flex';overlay.setAttribute('aria-hidden','false');requestAnimationFrame(function(){overlay.classList.add('is-open');save.focus();});
+    });
+  };
+})();
+</script>
+
 </body>
 </html>
