@@ -1370,32 +1370,6 @@
 }
 
   </style>
-
-<style id="modern-shift-confirm-styles">
-  .shift-confirm-overlay{position:fixed;inset:0;z-index:999999;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(10,18,32,.62);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);opacity:0;transition:opacity .2s ease}
-  .shift-confirm-overlay.is-open{display:flex;opacity:1}
-  .shift-confirm-modal{width:min(100%,440px);overflow:hidden;border:1px solid rgba(255,255,255,.5);border-radius:22px;background:var(--card-bg,#fff);color:var(--text-color,#172033);box-shadow:0 24px 80px rgba(0,0,0,.3);transform:translateY(12px) scale(.98);transition:transform .22s ease;font-family:inherit}
-  .shift-confirm-overlay.is-open .shift-confirm-modal{transform:translateY(0) scale(1)}
-  .shift-confirm-head{display:flex;align-items:center;gap:13px;padding:22px 24px 17px;border-bottom:1px solid rgba(127,127,127,.17)}
-  .shift-confirm-icon{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:15px;background:#fff2d8;color:#a85b00;font-size:23px}
-  .shift-confirm-title{margin:0;font-size:19px;font-weight:800;letter-spacing:-.3px}
-  .shift-confirm-subtitle{margin:4px 0 0;font-size:12px;opacity:.7}
-  .shift-confirm-body{padding:20px 24px 22px}
-  .shift-confirm-alert{padding:12px 14px;margin-bottom:17px;border:1px solid #f2d59b;border-radius:12px;background:rgba(245,158,11,.09);font-size:13px;line-height:1.5;color:inherit}
-  .shift-confirm-details{display:grid;gap:11px;margin:0}
-  .shift-confirm-detail{display:grid;grid-template-columns:82px minmax(0,1fr);gap:10px;font-size:13px;line-height:1.45}
-  .shift-confirm-detail dt{opacity:.65}
-  .shift-confirm-detail dd{margin:0;font-weight:700;overflow-wrap:anywhere}
-  .shift-confirm-shift{display:inline-flex;align-items:center;padding:5px 10px;border-radius:9px;background:rgba(37,99,235,.11);color:#2563eb;font-weight:800}
-  .shift-confirm-actions{display:flex;justify-content:flex-end;gap:10px;padding:0 24px 23px}
-  .shift-confirm-btn{border:0;border-radius:12px;padding:12px 18px;font:inherit;font-size:13px;font-weight:750;cursor:pointer;transition:transform .15s ease,filter .15s ease}
-  .shift-confirm-btn:hover{filter:brightness(.97);transform:translateY(-1px)}
-  .shift-confirm-cancel{background:rgba(127,127,127,.13);color:inherit}
-  .shift-confirm-save{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;box-shadow:0 5px 14px rgba(37,99,235,.24)}
-  @media(max-width:480px){.shift-confirm-overlay{padding:14px}.shift-confirm-modal{border-radius:18px}.shift-confirm-head{padding:19px 18px 15px}.shift-confirm-body{padding:17px 18px 19px}.shift-confirm-actions{padding:0 18px 18px}.shift-confirm-title{font-size:17px}.shift-confirm-detail{grid-template-columns:70px minmax(0,1fr)}}
-  @media(prefers-reduced-motion:reduce){.shift-confirm-overlay,.shift-confirm-modal{transition:none}}
-</style>
-
 </head>
 <body>
   <div id="session-restore-screen" role="status" aria-live="polite">
@@ -1667,7 +1641,6 @@
               <div class="input-group">
                 <label>SHIFTING / KETERANGAN ABSEN</label>
                 <select id="checkin_shifting" onchange="toggleKameraTimestamp()" required>
-                  <option value="" selected disabled>— PILIH SHIFT SESUAI JADWAL —</option>
                   <option value="SHIFT 1">SHIFT 1</option>
                   <option value="SHIFT 2">SHIFT 2</option>
                   <option value="SHIFT 3">SHIFT 3</option>
@@ -1677,16 +1650,13 @@
                   <option value="IZIN">IZIN</option>
                   <option value="CUTI">CUTI</option>
                 </select>
-                <div style="margin-top:8px;padding:10px 12px;border:1px solid #fcd34d;background:#fffbeb;color:#92400e;border-radius:10px;font-size:.78rem;line-height:1.5;font-weight:600;">
-                  <i class="fa-solid fa-triangle-exclamation"></i> Pilih shift sesuai jadwal kerja. Shift tidak dipilih otomatis agar tidak salah tekan. Sebelum data disimpan, sistem akan meminta konfirmasi; jika salah, pilih <b>Batal</b> lalu ubah shift di formulir.
-                </div>
               </div>
               <div class="input-group">
                 <label>CATATAN</label>
                 <textarea id="checkin_catatan" rows="3" placeholder="Tambahkan catatan jika diperlukan (opsional)" style="resize:vertical;"></textarea>
               </div>
 
-              <div id="group_kamera_timestamp" class="input-group" style="display:none;">
+              <div id="group_kamera_timestamp" class="input-group">
                 <label>KAMERA TIMESTAMP (PENGAMBILAN FOTO LIVE)</label>
                 <div class="camera-box-wrapper">
                   <video id="camera_video" class="camera-video" autoplay playsinline></video>
@@ -3495,8 +3465,7 @@
     }
 
     function isPhotoRequiredForCurrentCheckin() {
-      const shift = document.getElementById('checkin_shifting')?.value || '';
-      if (!shift) return false; // Belum memilih shift: minta pilihan dahulu, bukan memaksa foto.
+      const shift = document.getElementById('checkin_shifting')?.value || 'SHIFT 1';
       return !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(String(shift).toUpperCase());
     }
 
@@ -3798,7 +3767,7 @@
 
       const shift = document.getElementById('checkin_shifting').value;
       const groupFoto = document.getElementById('group_kamera_timestamp');
-      if (!shift || ['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) {
+      if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) {
         groupFoto.style.display = 'none';
         stopCameraStream();
         capturedSnapDataUrl = null;
@@ -3835,12 +3804,6 @@
       const nama = document.getElementById('checkin_nama').value.trim();
       const shifting = document.getElementById('checkin_shifting').value;
       const catatan = document.getElementById('checkin_catatan')?.value.trim() || '';
-
-      if (!shifting) {
-        alert('Pilih SHIFT / KETERANGAN ABSEN sesuai jadwal kerja terlebih dahulu.');
-        document.getElementById('checkin_shifting')?.focus();
-        return;
-      }
 
       if (!nama) {
         alert('NIK Karyawan tidak ditemukan di database. Pastikan NIK terdaftar!');
@@ -3879,19 +3842,6 @@
           alert('Ukuran foto masih melebihi batas aman Spreadsheet. Silakan ambil foto ulang.');
           return;
         }
-      }
-
-      // Konfirmasi wajib sebelum menyimpan. Jika shift keliru, pengguna bisa
-      // membatalkan dialog, mengganti pilihan di formulir, lalu mengirim ulang.
-      const shiftConfirmed = await showModernShiftConfirm({
-        nama,
-        resto: formattedRestoName,
-        shift: shifting,
-        waktu: `${formatWIBTime(Date.now())} WIB`
-      });
-      if (!shiftConfirmed) {
-        document.getElementById('checkin_shifting')?.focus();
-        return;
       }
 
       const nowMs = Date.now();
@@ -3956,10 +3906,6 @@
           // Untuk karyawan berikutnya, ganti NIK di kolom input.
           const catatanEl = document.getElementById('checkin_catatan');
           if (catatanEl) catatanEl.value = '';
-          // Kosongkan pilihan shift setelah berhasil agar input berikutnya
-          // tidak mewarisi shift karyawan sebelumnya.
-          const shiftSelect = document.getElementById('checkin_shifting');
-          if (shiftSelect) shiftSelect.value = '';
           capturedSnapDataUrl = null;
           updateAutoDateTimeInput();
           toggleKameraTimestamp();
@@ -8462,18 +8408,28 @@
       // resto_user_name adalah nama orang (contoh: AHMAD NUR FIQIH), bukan nama cabang.
       // Jangan pernah mengirim nama display user sebagai filter Resto ke GAS.
       const username=String(localStorage.getItem('resto_current_user')||'').trim();
-      const users=globalDashboardData?.usersList||[];
+      const role=String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase();
+      const users=Array.isArray(globalDashboardData?.usersList)?globalDashboardData.usersList:[];
       const user=users.find(u=>String(u.username||u.user_id||u.id||'').trim().toLowerCase()===username.toLowerCase());
-      const fallback=user?.resto||user?.cabang||user?.nama_resto||user?.namaResto||user?.branch||user?.branchName||'';
+
+      // Beberapa versi database Users menyimpan nama outlet pada kolom name/nama,
+      // sedangkan versi lain memakai kolom resto/cabang. Dukung keduanya.
+      const branchRole=['user','cabang','branch'].includes(role);
+      const fallback=user?.resto||user?.cabang||user?.nama_resto||user?.namaResto||user?.nama_cabang||user?.namaCabang||user?.branch||user?.branchName||user?.outlet||user?.outletName||user?.resto_name||user?.restoName||(branchRole?(user?.name||user?.nama||''):'');
       if(String(fallback||'').trim()) return String(fallback).trim();
 
-      // Legacy keys may contain actual branch name; ignore values that equal display name/username.
+      // Legacy keys may contain actual branch name; ignore values that equal username.
       const displayName=String(localStorage.getItem('resto_user_name')||'').trim();
       const legacyKeys=['resto_current_resto','resto_nama_cabang','currentResto'];
       for(const key of legacyKeys){
         const value=String(localStorage.getItem(key)||'').trim();
-        if(value && value.toLowerCase()!==displayName.toLowerCase() && value.toLowerCase()!==username.toLowerCase()) return value;
+        if(value && value.toLowerCase()!==username.toLowerCase()) return value;
       }
+
+      // Untuk akun outlet/cabang, nama yang tampil di header login adalah nama outlet
+      // pada versi GAS yang mengirim result.data.name sebagai nama resto.
+      // Batasi fallback ini ke role cabang agar admin/SPV tidak salah menjadi filter stok.
+      if(branchRole && displayName && displayName.toLowerCase()!==username.toLowerCase()) return displayName;
       return '';
     }
     // UPDATE BARANG ADMIN - memakai endpoint master barang yang sudah tersedia di GAS utama.
@@ -8509,14 +8465,42 @@
       if (!resto && action !== 'getCogsDocumentDetail') throw Error('Nama cabang belum ditemukan pada sesi login. Periksa mapping cabang akun pada data Users.');
       const r = await gasRequestJson({ action, username: user, ...(resto?{resto,cabang:resto}:{}), ...extra }, { timeoutMs: 25000, retries: 1 });
       if (r?.success === false || r?.status === 'error') throw Error(r.message || ('GAS menolak action ' + action));
-      // Pertahankan respons lengkap khusus detail agar diagnostik GAS tidak terbuang.
-      if (action === 'getCogsStock' || action === 'getCogsDocumentDetail') return r;
+      // GAS/transport dapat membungkus respons satu atau beberapa kali: {data:{status, data:[...]}}.
+      // Buka wrapper hanya bila payload di dalamnya jelas merupakan respons action.
+      if (action === 'getCogsStock' || action === 'getCogsHistory' || action === 'getCogsDocumentDetail') {
+        let payload = r;
+        for (let i = 0; i < 3; i++) {
+          if (!payload || typeof payload !== 'object' || Array.isArray(payload)) break;
+          const nested = payload.data ?? payload.result ?? payload.payload;
+          if (!nested || typeof nested !== 'object' || Array.isArray(nested)) break;
+          const looksLikeActionResponse = Array.isArray(nested.data) || Array.isArray(nested.items) || Array.isArray(nested.records) || Array.isArray(nested.riwayat) || nested.status || nested.success !== undefined || nested.message || nested.total !== undefined;
+          if (!looksLikeActionResponse) break;
+          payload = nested;
+        }
+        return payload;
+      }
       return r?.data ?? r?.result ?? r;
     }
     function switchCogsPage(id,el){stopCameraStream();closeAdminNavGroups();document.querySelectorAll('#app-navbar-items .nav-item').forEach(n=>n.classList.remove('active'));if(el)el.classList.add('active');document.querySelectorAll('.role-page-content').forEach(p=>p.style.display='none');const page=document.getElementById(id);if(page)page.style.display='block';if(id==='page-cogs-stok')loadCogsStock();if(id==='page-cogs-riwayat')loadCogsHistory('COGS');if(id==='page-cogs-order')loadCogsHistory('ORDER');}
-    function cogsArray(d){if(Array.isArray(d))return d;for(const k of ['items','barang','stocks','stok','records','riwayat','data'])if(Array.isArray(d?.[k]))return d[k];return [];}
+    function cogsArray(d, depth=0){
+      if(Array.isArray(d))return d;
+      if(depth>6||d==null)return [];
+      if(typeof d==='string'){
+        const s=d.trim();
+        if((s.startsWith('{')&&s.endsWith('}'))||(s.startsWith('[')&&s.endsWith(']'))){try{return cogsArray(JSON.parse(s),depth+1)}catch(_){return []}}
+        return [];
+      }
+      if(typeof d!=='object')return [];
+      for(const k of ['items','barang','stocks','stok','records','riwayat','rows','results','transactions','transaksi','data']){
+        if(Array.isArray(d[k]))return d[k];
+      }
+      for(const k of ['result','payload','response','body','output','data','content']){
+        if(d[k]!==undefined){const rows=cogsArray(d[k],depth+1);if(rows.length)return rows;}
+      }
+      return [];
+    }
     async function loadCogsStock(){const el=document.getElementById('cogs-stock-table');if(!el)return;el.innerHTML='<p style="padding:20px">Memuat data stok…</p>';try{const d=await cogsRequest('getCogsStock');cogsStocks=cogsArray(d);if(!cogsStocks.length){const diag=d&&typeof d==='object'?`<br><small>Cabang: ${cogsEsc(d.resto||cogsResto())} · Baris master: ${cogsEsc(d.masterRows??'-')} · Cocok cabang: ${cogsEsc(d.masterMatches??'-')} · Ditambahkan: ${cogsEsc(d.inserted??'-')}</small>`:'';el.innerHTML=`<p style="padding:20px">${cogsEsc(d?.message||'Belum ada data stok yang cocok untuk cabang ini.')}${diag}</p>`;return;}el.innerHTML=`<table class="cogs-table"><thead><tr><th>#</th><th>Kode</th><th>Nama Barang</th><th>Stn. Pakai</th><th>Stn. Order</th><th>Produk</th><th>Konversi</th><th>Σ Sisa Stok</th><th>Σ Qty Konversi</th></tr></thead><tbody>${cogsStocks.map((x,i)=>`<tr><td>${i+1}</td><td>${cogsEsc(x.kode||x.code||x.sku||'-')}</td><td class="left">${cogsEsc(x.namaBarang||x.nama_barang||x.nama||x.name||'-')}</td><td>${cogsEsc(x.satuanPakai||x.satuan_pakai||x.satuan||'-')}</td><td>${cogsEsc(x.satuanOrder||x.satuan_order||'-')}</td><td>${cogsEsc(x.produk||'logistik')}</td><td>${cogsEsc(x.konversi||'-')}</td><td><b>${cogsNum(x.sisaStok??x.sisa_stok??x.stok)} ${cogsEsc(x.satuanPakai||x.satuan||'')}</b></td><td>${cogsEsc(x.qtyKonversi||x.qty_konversi||'-')}</td></tr>`).join('')}</tbody></table>`;}catch(e){el.innerHTML=`<p style="padding:20px;color:#b91c1c">Gagal memuat stok: ${cogsEsc(e.message)}. Periksa deployment GAS dan action getCogsStock.</p>`;}}
-    async function loadCogsHistory(type){const el=document.getElementById(type==='ORDER'?'cogs-order-table':'cogs-history-table');if(!el)return;el.innerHTML='<p style="padding:20px">Memuat riwayat…</p>';try{const d=await cogsRequest('getCogsHistory',{tipe:type,startDate:document.getElementById('cogs-start')?.value||'',endDate:document.getElementById('cogs-end')?.value||''}),rows=cogsArray(d);if(!rows.length){el.innerHTML='<p style="padding:20px">Belum ada riwayat, atau action getCogsHistory belum tersedia pada GAS.</p>';return;}el.innerHTML=`<table class="cogs-table"><thead><tr><th>#</th><th>Nomor</th><th>Tgl. COGS</th><th>Tgl. Input</th><th>Tipe</th><th>Σ Barang</th><th>Σ Total (Rp)</th><th>Posting</th><th>Status</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${i+1}</td><td><button type="button" class="cogs-doc-link" onclick="openCogsDocumentDetail('${cogsEsc(String(r.nomor||r.noDokumen||r.no_dokumen||'' )).replace(/'/g, '&#39;')}','${type}','${cogsEsc(document.getElementById('spv-cogs-branch')?.value||'').replace(/'/g, '&#39;')}')">${cogsEsc(r.nomor||r.noDokumen||r.no_dokumen||'-')}</button></td><td>${cogsEsc(r.tanggal||r.tglCogs||r.tgl_cogs||'-')}</td><td>${cogsEsc(r.tglInput||r.tgl_input||'-')}</td><td>${cogsEsc(r.tipe||type)}</td><td>${cogsNum(r.totalBarang??r.jumlahBarang??r.total_barang)}</td><td>${cogsNum(r.total??r.totalRp??r.total_rp).toLocaleString('id-ID')}</td><td>${cogsEsc(r.posting||'Draft')}</td><td>${cogsEsc(r.status||'-')}</td></tr>`).join('')}</tbody></table>`;}catch(e){el.innerHTML=`<p style="padding:20px;color:#b91c1c">Gagal memuat riwayat: ${cogsEsc(e.message)}. Action getCogsHistory harus tersedia di GAS.</p>`;}}
+    async function loadCogsHistory(type){const el=document.getElementById(type==='ORDER'?'cogs-order-table':'cogs-history-table');if(!el)return;el.innerHTML='<p style="padding:20px">Memuat riwayat…</p>';try{const startDate=document.getElementById('cogs-start')?.value||'',endDate=document.getElementById('cogs-end')?.value||'';const branch=cogsResto();const d=await cogsRequest('getCogsHistory',{tipe:type,startDate,endDate}),rows=cogsArray(d);if(!rows.length){const detail={action:'getCogsHistory',tipe:type,cabang:branch,tanggalMulai:startDate||'(semua)',tanggalAkhir:endDate||'(semua)',statusGAS:d?.status||'-',successGAS:d?.success??'-',pesanGAS:d?.message||'GAS merespons tanpa pesan error.',jumlah:rows.length,totalGAS:d?.total??'-',restoDariGAS:d?.resto||'-',tipeDariGAS:d?.tipe||'-',kunciRespons:d&&typeof d==='object'?Object.keys(d):typeof d,contohRespons:JSON.stringify(d).slice(0,2500)};el.innerHTML=`<div style="padding:20px;color:#64748b"><p style="margin:0 0 8px">Belum ada riwayat ${type==='ORDER'?'orderan':'COGS'} untuk cabang <b>${cogsEsc(branch||'belum teridentifikasi')}</b> pada rentang tanggal yang dipilih.</p><details><summary style="cursor:pointer;color:#2563eb">Diagnostik koneksi GAS</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;max-height:220px;overflow:auto;background:#f8fafc;padding:12px;border-radius:8px">${cogsEsc(JSON.stringify(detail,null,2))}</pre></details></div>`;return;}el.innerHTML=`<table class="cogs-table"><thead><tr><th>#</th><th>Nomor</th><th>Tgl. COGS</th><th>Tgl. Input</th><th>Tipe</th><th>Σ Barang</th><th>Σ Total (Rp)</th><th>Posting</th><th>Status</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${i+1}</td><td><button type="button" class="cogs-doc-link" onclick="openCogsDocumentDetail('${cogsEsc(String(r.nomor||r.noDokumen||r.no_dokumen||'')).replace(/'/g, '&#39;')}','${type}','${cogsEsc(String(r.resto||branch||'')).replace(/'/g, '&#39;')}')">${cogsEsc(r.nomor||r.noDokumen||r.no_dokumen||'-')}</button></td><td>${cogsEsc(r.tanggal||r.tglCogs||r.tgl_cogs||'-')}</td><td>${cogsEsc(r.tglInput||r.tgl_input||'-')}</td><td>${cogsEsc(r.tipe||type)}</td><td>${cogsNum(r.totalBarang??r.jumlahBarang??r.total_barang)}</td><td>${cogsNum(r.totalRp??r.total??r.total_rp).toLocaleString('id-ID')}</td><td>${cogsEsc(r.posting||'Draft')}</td><td>${cogsEsc(r.status||'-')}</td></tr>`).join('')}</tbody></table>`;}catch(e){el.innerHTML=`<div style="padding:20px;color:#b91c1c"><p>Gagal memuat riwayat: ${cogsEsc(e.message)}</p><small>Pastikan deployment GAS terbaru sudah dipublikasikan dan action getCogsHistory tersedia.</small></div>`;}}
     function closeCogsDetailModal(){const m=document.getElementById('cogs-detail-modal');if(m)m.style.display='none';document.body.style.overflow='';}
     async function openCogsDocumentDetail(nomor,type,detailResto=''){
       const modal=document.getElementById('cogs-detail-modal'),content=document.getElementById('cogs-detail-content');
@@ -8568,51 +8552,5 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
   };
 }
 </script>
-
-<div class="shift-confirm-overlay" id="modernShiftConfirmOverlay" role="presentation" aria-hidden="true">
-  <section class="shift-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="shiftConfirmTitle" aria-describedby="shiftConfirmDescription">
-    <div class="shift-confirm-head">
-      <div class="shift-confirm-icon" aria-hidden="true">⚠</div>
-      <div><h2 class="shift-confirm-title" id="shiftConfirmTitle">Konfirmasi Check-in</h2><p class="shift-confirm-subtitle">Pastikan pilihan shift sudah benar</p></div>
-    </div>
-    <div class="shift-confirm-body">
-      <div class="shift-confirm-alert" id="shiftConfirmDescription">Periksa kembali data di bawah sebelum menyimpan. Jika shift salah, pilih “Perbaiki Shift”.</div>
-      <dl class="shift-confirm-details">
-        <div class="shift-confirm-detail"><dt>Nama</dt><dd id="shiftConfirmName"></dd></div>
-        <div class="shift-confirm-detail"><dt>Resto</dt><dd id="shiftConfirmResto"></dd></div>
-        <div class="shift-confirm-detail"><dt>Pilihan</dt><dd><span class="shift-confirm-shift" id="shiftConfirmShift"></span></dd></div>
-        <div class="shift-confirm-detail"><dt>Waktu</dt><dd id="shiftConfirmTime"></dd></div>
-      </dl>
-    </div>
-    <div class="shift-confirm-actions">
-      <button type="button" class="shift-confirm-btn shift-confirm-cancel" id="shiftConfirmCancel">Perbaiki Shift</button>
-      <button type="button" class="shift-confirm-btn shift-confirm-save" id="shiftConfirmSave">Ya, Simpan</button>
-    </div>
-  </section>
-</div>
-<script id="modern-shift-confirm-script">
-(function(){
-  window.showModernShiftConfirm = function(data){
-    return new Promise(function(resolve){
-      const overlay=document.getElementById('modernShiftConfirmOverlay');
-      if(!overlay){resolve(window.confirm('Pastikan shift '+data.shift+' sesuai jadwal kerja?'));return;}
-      document.getElementById('shiftConfirmName').textContent=data.nama||'-';
-      document.getElementById('shiftConfirmResto').textContent=data.resto||'-';
-      document.getElementById('shiftConfirmShift').textContent=data.shift||'-';
-      document.getElementById('shiftConfirmTime').textContent=data.waktu||'-';
-      const cancel=document.getElementById('shiftConfirmCancel');
-      const save=document.getElementById('shiftConfirmSave');
-      let settled=false;
-      function finish(value){if(settled)return;settled=true;overlay.classList.remove('is-open');overlay.setAttribute('aria-hidden','true');document.removeEventListener('keydown',onKey);overlay.removeEventListener('click',onBackdrop);cancel.removeEventListener('click',onCancel);save.removeEventListener('click',onSave);setTimeout(function(){overlay.style.display='none';resolve(value);},180);}
-      function onCancel(){finish(false)} function onSave(){finish(true)}
-      function onKey(e){if(e.key==='Escape'){e.preventDefault();finish(false)}}
-      function onBackdrop(e){if(e.target===overlay)finish(false)}
-      cancel.addEventListener('click',onCancel);save.addEventListener('click',onSave);document.addEventListener('keydown',onKey);overlay.addEventListener('click',onBackdrop);
-      overlay.style.display='flex';overlay.setAttribute('aria-hidden','false');requestAnimationFrame(function(){overlay.classList.add('is-open');save.focus();});
-    });
-  };
-})();
-</script>
-
 </body>
 </html>
