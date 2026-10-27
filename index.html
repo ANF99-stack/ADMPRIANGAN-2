@@ -8292,7 +8292,7 @@
   })();
 
     // CONTROLING COGS khusus SPV: hanya baca data cabang dalam coverage akun.
-    let spvCogsData={stocks:[],history:[],orders:[]}, spvCogsTab='stok', spvCogsLoading=false;
+    let spvCogsData={stocks:[],history:[],orders:[],branches:[]}, spvCogsTab='stok', spvCogsLoading=false;
     function switchSpvCogsPage(id,el){
       // Halaman CONTROLING COGS awalnya berada di #user-view, yang disembunyikan
       // ketika login sebagai SPV. Pindahkan ke container khusus supervisor dahulu.
@@ -8371,9 +8371,13 @@
     function renderSpvCogsMonitoring(){
       const el=document.getElementById('spv-cogs-table'),sum=document.getElementById('spv-cogs-summary');if(!el)return;
       const branch=document.getElementById('spv-cogs-branch')?.value||'',q=(document.getElementById('spv-cogs-search')?.value||'').toLowerCase();
-      let rows=spvCogsTab==='stok'?spvCogsData.stocks:spvCogsTab==='history'?spvCogsData.history:spvCogsData.orders;
+      // Normalisasi untuk mencegah TypeError .length/.filter ketika respons GAS belum lengkap.
+      spvCogsData=spvCogsData||{};
+      const safeRows=value=>Array.isArray(value)?value:[];
+      const safeBranches=safeRows(spvCogsData.branches);
+      let rows=spvCogsTab==='stok'?safeRows(spvCogsData.stocks):spvCogsTab==='history'?safeRows(spvCogsData.history):safeRows(spvCogsData.orders);
       rows=rows.filter(x=>(!branch||String(x.resto||'')===branch)&&(!q||Object.values(x).some(v=>String(v??'').toLowerCase().includes(q))));
-      if(sum)sum.textContent='Cabang dalam coverage: '+spvCogsData.branches.length+' · Data tampil: '+rows.length+' · Mode hanya monitoring';
+      if(sum)sum.textContent='Cabang dalam coverage: '+safeBranches.length+' · Data tampil: '+rows.length+' · Mode hanya monitoring';
       if(!rows.length){el.innerHTML='<p style="padding:20px">Tidak ada data untuk filter yang dipilih.</p>';return;}
       if(spvCogsTab==='stok'){
         const cols=['Cabang','Kode Barang','Nama Barang','Satuan','Sisa Stok','Qty Konversi'];
@@ -8384,8 +8388,9 @@
         el.innerHTML='<table class="cogs-table"><thead><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'+rows.map(x=>{
           const docNum=x.nomor||'-';
           const typeVal=x.tipe||typeTab;
-          const selectedBranch=document.getElementById('spv-cogs-branch')?.value||'';
-          const docCell=docNum!=='-'?('<button type="button" class="cogs-doc-link" onclick="openCogsDocumentDetail(\''+cogsEsc(String(docNum)).replace(/'/g, '&#39;')+'\',\''+typeVal+'\',\''+cogsEsc(selectedBranch).replace(/'/g, '&#39;')+'\')">'+cogsEsc(docNum)+'</button>'):'-';
+          // Selalu kirim cabang milik baris dokumen, bukan filter dropdown yang bisa kosong.
+          const rowBranch=String(x.resto||'').trim();
+          const docCell=docNum!=='-'?('<button type="button" class="cogs-doc-link" onclick="openCogsDocumentDetail(\''+cogsEsc(String(docNum)).replace(/'/g, '&#39;')+'\',\''+typeVal+'\',\''+cogsEsc(rowBranch).replace(/'/g, '&#39;')+'\')">'+cogsEsc(docNum)+'</button>'):'-';
           return '<tr>'+[cogsEsc(x.resto??'-'), cogsEsc(x.tanggal??'-'), docCell, cogsEsc(x.tipe??typeTab), cogsEsc(x.totalBarang??'-'), cogsEsc(x.totalRp??'-'), cogsEsc(x.status??'-'), cogsEsc(x.keterangan??'-')].map(v=>v.startsWith('<button')?('<td>'+v+'</td>'):('<td>'+v+'</td>')).join('')+'</tr>';
         }).join('')+'</tbody></table>';
       }
@@ -8395,26 +8400,27 @@
     let cogsCurrentType='COGS', cogsItems=[], cogsStocks=[], cogsEntryBusy=false;
     const cogsEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const cogsNum=v=>Number(v)||0;
-    function cogsResto(){
-      // Prioritaskan nama cabang dari sesi login saat ini. Key lama dapat tertinggal
-      // di browser setelah berpindah akun/cabang dan menyebabkan stok cabang lain kosong.
-      const sessionName=String(localStorage.getItem('resto_user_name')||'').trim();
-      if(sessionName) return sessionName;
+    function cogsResto(explicitResto=''){
+      // Untuk detail riwayat, cabang dari baris yang diklik harus menang.
+      const explicit=String(explicitResto||'').trim();
+      if(explicit) return explicit;
 
-      // Fallback hanya untuk sesi lama yang belum memiliki nama cabang.
+      // resto_user_name adalah nama orang (contoh: AHMAD NUR FIQIH), bukan nama cabang.
+      // Jangan pernah mengirim nama display user sebagai filter Resto ke GAS.
       const username=String(localStorage.getItem('resto_current_user')||'').trim();
       const users=globalDashboardData?.usersList||[];
       const user=users.find(u=>String(u.username||u.user_id||u.id||'').trim().toLowerCase()===username.toLowerCase());
-      const fallback=user?.resto||user?.cabang||user?.nama_resto||user?.namaResto||user?.name||'';
+      const fallback=user?.resto||user?.cabang||user?.nama_resto||user?.namaResto||user?.branch||user?.branchName||'';
       if(String(fallback||'').trim()) return String(fallback).trim();
 
-      // Key lama dipakai paling akhir agar tidak mengalahkan identitas login terbaru.
+      // Legacy keys may contain actual branch name; ignore values that equal display name/username.
+      const displayName=String(localStorage.getItem('resto_user_name')||'').trim();
       const legacyKeys=['resto_current_resto','resto_nama_cabang','currentResto'];
       for(const key of legacyKeys){
         const value=String(localStorage.getItem(key)||'').trim();
-        if(value) return value;
+        if(value && value.toLowerCase()!==displayName.toLowerCase() && value.toLowerCase()!==username.toLowerCase()) return value;
       }
-      return username;
+      return '';
     }
     // UPDATE BARANG ADMIN - memakai endpoint master barang yang sudah tersedia di GAS utama.
     let masterBarangRows = [];
@@ -8442,7 +8448,17 @@
     async function downloadMasterBarangTemplate(){try{await ensureXLSXLoaded();const rows=[{'Resto':'LAZATTO TEST','Kode Barang':'BRG001','Nama Barang':'Contoh Barang','Satuan':'Pcs','Satuan Order':'Dus','Produk':'Logistik','Konversi':'1 dus = 12 pcs','Stok Awal':0}];const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'MasterBarang');XLSX.writeFile(wb,'Template_Update_Barang.xlsx');}catch(e){alert(e.message||e);}}
     async function importMasterBarangExcel(event){const input=event.target;const file=input.files?.[0];if(!file)return;try{await ensureXLSXLoaded();const data=await file.arrayBuffer();const wb=XLSX.read(data,{type:'array'});const sheet=wb.Sheets[wb.SheetNames[0]];const raw=XLSX.utils.sheet_to_json(sheet,{defval:''});if(!raw.length)throw new Error('File Excel tidak berisi data.');const norm=s=>String(s||'').trim().toLowerCase().replace(/[^a-z0-9]/g,'');const keyMap={resto:['resto','restotujuan','cabang'],kode:['kodebarang','kode','sku'],nama:['namabarang','nama'],satuan:['satuan','satuanpakai'],satuanOrder:['satuanorder','satuanpesan'],produk:['produk','kategori'],konversi:['konversi'],stokAwal:['stokawal','stok']};const items=raw.map((row,i)=>{const o={};for(const [target,aliases] of Object.entries(keyMap)){const k=Object.keys(row).find(k=>aliases.includes(norm(k)));o[target]=k!==undefined?row[k]:'';}o.resto=String(o.resto||'SEMUA CABANG').trim();o.kode=String(o.kode||'').trim();o.nama=String(o.nama||'').trim();o.satuan=String(o.satuan||'').trim();o.satuanOrder=String(o.satuanOrder||'').trim();o.produk=String(o.produk||'').trim();o.konversi=String(o.konversi||'').trim();o.stokAwal=Number(String(o.stokAwal||0).replace(',','.'));if(!o.kode||!o.nama||!o.satuan)throw new Error('Baris '+(i+2)+': Kode Barang, Nama Barang, dan Satuan wajib diisi.');if(!Number.isFinite(o.stokAwal)||o.stokAwal<0)throw new Error('Baris '+(i+2)+': Stok Awal tidak valid.');return o;});if(items.length>100)throw new Error('Maksimal 100 barang per proses import.');if(!confirm('Import '+items.length+' baris barang? Data dengan kombinasi resto + kode yang sama akan diperbarui.'))return;const r=await masterBarangRequest('importMasterBarangStok',{items});alert(r.message||('Berhasil import '+(r.saved||items.length)+' barang.'));await loadMasterBarangStok();}catch(e){alert('Import gagal: '+(e.message||e));}finally{input.value='';}}
 
-    async function cogsRequest(action,extra={}){const user=localStorage.getItem('resto_current_user')||'',resto=cogsResto();if(!resto)throw Error('Nama resto belum ditemukan pada sesi login. Logout lalu login kembali, atau periksa nama resto akun cabang.');const r=await gasRequestJson({action,username:user,resto,cabang:resto,...extra},{timeoutMs:25000,retries:1});if(r?.success===false||r?.status==='error')throw Error(r.message||('GAS menolak action '+action));return action==='getCogsStock'?r:(r?.data??r?.result??r);}
+    async function cogsRequest(action, extra = {}) {
+      const user = localStorage.getItem('resto_current_user') || '';
+      const requestedResto=String(extra?.resto||extra?.cabang||'').trim();
+      const resto = cogsResto(requestedResto);
+      if (!resto && action !== 'getCogsDocumentDetail') throw Error('Nama cabang belum ditemukan pada sesi login. Periksa mapping cabang akun pada data Users.');
+      const r = await gasRequestJson({ action, username: user, ...(resto?{resto,cabang:resto}:{}), ...extra }, { timeoutMs: 25000, retries: 1 });
+      if (r?.success === false || r?.status === 'error') throw Error(r.message || ('GAS menolak action ' + action));
+      // Pertahankan respons lengkap khusus detail agar diagnostik GAS tidak terbuang.
+      if (action === 'getCogsStock' || action === 'getCogsDocumentDetail') return r;
+      return r?.data ?? r?.result ?? r;
+    }
     function switchCogsPage(id,el){stopCameraStream();closeAdminNavGroups();document.querySelectorAll('#app-navbar-items .nav-item').forEach(n=>n.classList.remove('active'));if(el)el.classList.add('active');document.querySelectorAll('.role-page-content').forEach(p=>p.style.display='none');const page=document.getElementById(id);if(page)page.style.display='block';if(id==='page-cogs-stok')loadCogsStock();if(id==='page-cogs-riwayat')loadCogsHistory('COGS');if(id==='page-cogs-order')loadCogsHistory('ORDER');}
     function cogsArray(d){if(Array.isArray(d))return d;for(const k of ['items','barang','stocks','stok','records','riwayat','data'])if(Array.isArray(d?.[k]))return d[k];return [];}
     async function loadCogsStock(){const el=document.getElementById('cogs-stock-table');if(!el)return;el.innerHTML='<p style="padding:20px">Memuat data stok…</p>';try{const d=await cogsRequest('getCogsStock');cogsStocks=cogsArray(d);if(!cogsStocks.length){const diag=d&&typeof d==='object'?`<br><small>Cabang: ${cogsEsc(d.resto||cogsResto())} · Baris master: ${cogsEsc(d.masterRows??'-')} · Cocok cabang: ${cogsEsc(d.masterMatches??'-')} · Ditambahkan: ${cogsEsc(d.inserted??'-')}</small>`:'';el.innerHTML=`<p style="padding:20px">${cogsEsc(d?.message||'Belum ada data stok yang cocok untuk cabang ini.')}${diag}</p>`;return;}el.innerHTML=`<table class="cogs-table"><thead><tr><th>#</th><th>Kode</th><th>Nama Barang</th><th>Stn. Pakai</th><th>Stn. Order</th><th>Produk</th><th>Konversi</th><th>Σ Sisa Stok</th><th>Σ Qty Konversi</th></tr></thead><tbody>${cogsStocks.map((x,i)=>`<tr><td>${i+1}</td><td>${cogsEsc(x.kode||x.code||x.sku||'-')}</td><td class="left">${cogsEsc(x.namaBarang||x.nama_barang||x.nama||x.name||'-')}</td><td>${cogsEsc(x.satuanPakai||x.satuan_pakai||x.satuan||'-')}</td><td>${cogsEsc(x.satuanOrder||x.satuan_order||'-')}</td><td>${cogsEsc(x.produk||'logistik')}</td><td>${cogsEsc(x.konversi||'-')}</td><td><b>${cogsNum(x.sisaStok??x.sisa_stok??x.stok)} ${cogsEsc(x.satuanPakai||x.satuan||'')}</b></td><td>${cogsEsc(x.qtyKonversi||x.qty_konversi||'-')}</td></tr>`).join('')}</tbody></table>`;}catch(e){el.innerHTML=`<p style="padding:20px;color:#b91c1c">Gagal memuat stok: ${cogsEsc(e.message)}. Periksa deployment GAS dan action getCogsStock.</p>`;}}
@@ -8458,7 +8474,15 @@
       try{
         const raw=await cogsRequest('getCogsDocumentDetail',{nomor,tipe:type,...(detailResto?{resto:detailResto,cabang:detailResto}:{})});
         const items=cogsArray(raw), meta=raw?.header||raw?.meta||{};
-        if(!items.length){content.innerHTML='<p style="padding:20px;color:#64748b">Detail item tidak ditemukan untuk dokumen ini.</p>';return;}
+        if(!items.length){
+          content.innerHTML=`<div style="padding:20px;color:#64748b">
+            <p>Detail item tidak ditemukan untuk dokumen ini.</p>
+            <details style="margin-top:12px"><summary style="cursor:pointer;color:#2563eb">Lihat diagnostik</summary>
+              <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;max-height:260px;overflow:auto;background:#f8fafc;padding:12px;border-radius:8px">${cogsEsc(JSON.stringify({nomorDiminta:nomor,tipeDiminta:type,restoSesi:cogsResto(),restoDetail:detailResto||'',responsGAS:raw},null,2))}</pre>
+            </details>
+          </div>`;
+          return;
+        }
         const totalQty=items.reduce((a,x)=>a+cogsNum(x.qty),0);
         content.innerHTML=`<div class="cogs-detail-summary"><div class="cogs-detail-stat"><small>Nomor Dokumen</small><strong>${cogsEsc(nomor)}</strong></div><div class="cogs-detail-stat"><small>Tipe</small><strong>${type==='ORDER'?'UPDATE ORDERAN':'COGS'}</strong></div><div class="cogs-detail-stat"><small>Total Item / Qty</small><strong>${items.length} item · ${totalQty.toLocaleString('id-ID')}</strong></div></div><div class="cogs-table-wrap"><table class="cogs-table"><thead><tr><th>#</th><th>Kode Barang</th><th>Nama Barang</th><th>Satuan</th><th>Stok Sebelum</th><th>${type==='ORDER'?'Qty Order':'Qty Terpakai'}</th>${type==='COGS'?'<th>Penjualan</th><th>Selisih (+/-)</th>':''}<th>Stok Sesudah</th></tr></thead><tbody>${items.map((x,i)=>`<tr><td>${i+1}</td><td>${cogsEsc(x.kode||'-')}</td><td class="left">${cogsEsc(x.namaBarang||x.nama_barang||'-')}</td><td>${cogsEsc(x.satuan||'-')}</td><td>${cogsNum(x.stokAwal??x.stokSebelum).toLocaleString('id-ID')}</td><td><b>${cogsNum(x.qty).toLocaleString('id-ID')}</b></td>${type==='COGS'?`<td>${cogsNum(x.penjualan).toLocaleString('id-ID')}</td><td style="font-weight:700;color:${cogsNum(x.selisih)>0?'#15803d':cogsNum(x.selisih)<0?'#dc2626':'#64748b'}">${cogsNum(x.selisih)>0?'+':''}${cogsNum(x.selisih).toLocaleString('id-ID')}</td>`:''}<td>${cogsNum(x.stokAkhir??x.stokSesudah).toLocaleString('id-ID')}</td></tr>`).join('')}</tbody></table></div>`;
       }catch(e){content.innerHTML=`<p style="padding:20px;color:#b91c1c">Gagal memuat detail: ${cogsEsc(e.message||e)}. Pastikan action getCogsDocumentDetail tersedia pada GAS.</p>`;}
