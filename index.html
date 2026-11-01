@@ -2735,8 +2735,8 @@
           <div class="admin-card-item" style="border: 2px solid #c7d2fe; background: #f5f3ff; margin-bottom: 24px;">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
               <div>
-                <h4 style="font-size: 1rem; font-weight: 800; color: #4338ca;"><i class="fa-solid fa-globe"></i> Master Link Supervisor (Global)</h4>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">Link ini akan dipakai bersama oleh seluruh user Supervisor</p>
+                <h4 style="font-size: 1rem; font-weight: 800; color: #4338ca;"><i class="fa-solid fa-globe"></i> Link Master Global Supervisor</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Hanya Input SO dan Cek Stok Opname yang digunakan bersama oleh seluruh SPV. Link lainnya diatur pada kartu masing-masing SPV.</p>
               </div>
               <button onclick="saveSpvLinksMaster()" style="background: #4338ca; color: white; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700;">
                 <i class="fa-solid fa-floppy-disk"></i> Simpan Master SPV
@@ -2744,15 +2744,8 @@
             </div>
 
             <div class="admin-input-grid">
-              <div class="admin-input-group"><label>1. Check COGS Pekanan (Master)</label><input type="text" id="master_spv_cogs" placeholder="https://docs.google.com/..."></div>
-              <div class="admin-input-group"><label>2. Omset Area (Master)</label><input type="text" id="master_spv_omset_area" placeholder="https://docs.google.com/..."></div>
-              <div class="admin-input-group"><label>3. Form Ganti Minyak (Master)</label><input type="text" id="master_spv_ganti_minyak" placeholder="https://docs.google.com/..."></div>
-              <div class="admin-input-group"><label>4. KPH (Master)</label><input type="text" id="master_spv_kph" placeholder="https://docs.google.com/..."></div>
-              <div class="admin-input-group"><label>5. Tracking Expense (Master)</label><input type="text" id="master_spv_expense" placeholder="https://docs.google.com/..."></div>
-              <div class="admin-input-group"><label>6. Form Setor Uang (Master)</label><input type="text" id="master_spv_setor" placeholder="https://docs.google.com/..."></div>
-              <div class="admin-input-group"><label>7. Laporan Penjualan (Master)</label><input type="text" id="master_spv_penjualan" placeholder="https://docs.google.com/..."></div>
-              <div class="admin-input-group"><label>8. Input SO (Master)</label><input type="text" id="master_spv_input_so" placeholder="https://docs.google.com/..."></div>
-              <div class="admin-input-group"><label>9. Cek Stok Opname (Master)</label><input type="text" id="master_spv_cek_so" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>1. Input SO (Master — Global)</label><input type="text" id="master_spv_input_so" placeholder="https://docs.google.com/..."></div>
+              <div class="admin-input-group"><label>2. Cek Stok Opname (Master — Global)</label><input type="text" id="master_spv_cek_so" placeholder="https://docs.google.com/..."></div>
             </div>
           </div>
         </div>
@@ -6021,17 +6014,16 @@
         updateAdminStats();
       } else if (userRole === 'supervisor') {
         const spvMaster = globalDashboardData.spvLinksMaster || {};
-        document.getElementById('btn_spv_cogs').href = spvMaster.cogs_pekanan || '#';
-        document.getElementById('btn_spv_omset_area').href = spvMaster.omset_area || '#';
-        document.getElementById('btn_spv_ganti_minyak').href = spvMaster.ganti_minyak || '#';
-        document.getElementById('btn_spv_kph').href = spvMaster.kph || '#';
-        document.getElementById('btn_spv_expense').href = spvMaster.expense || '#';
-        document.getElementById('btn_spv_setor').href = spvMaster.setor || '#';
-        document.getElementById('btn_spv_penjualan').href = spvMaster.penjualan || '#';
+        const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[username] || {};
+        document.getElementById('btn_spv_cogs').href = spvIndiv.cogs_pekanan || '#';
+        document.getElementById('btn_spv_omset_area').href = spvIndiv.omset_area || '#';
+        document.getElementById('btn_spv_ganti_minyak').href = spvIndiv.ganti_minyak || '#';
+        document.getElementById('btn_spv_kph').href = spvIndiv.kph || '#';
+        document.getElementById('btn_spv_expense').href = spvIndiv.expense || '#';
+        document.getElementById('btn_spv_setor').href = spvIndiv.setor || '#';
+        document.getElementById('btn_spv_penjualan').href = spvIndiv.penjualan || '#';
         document.getElementById('btn_spv_input_so').href = spvMaster.input_so || '#';
         document.getElementById('btn_spv_cek_so').href = spvMaster.cek_so || '#';
-
-        const spvIndiv = (globalDashboardData.spvLinksIndividual || {})[username] || {};
         document.getElementById('btn_spv_base_omset').href = spvIndiv.base_omset || '#';
         const cogsNgeumiCard = document.getElementById('spv-cogs-ngeumi-card');
         const cogsNgeumiBtn = document.getElementById('btn_spv_cogs_ngeumi');
@@ -6215,13 +6207,6 @@
         action: "saveSpvLinksMaster",
         adminUser: currentUser,
         links: {
-          cogs_pekanan: m.cogs_pekanan || '',
-          omset_area: m.omset_area || '',
-          ganti_minyak: m.ganti_minyak || '',
-          kph: m.kph || '',
-          expense: m.expense || '',
-          setor: m.setor || '',
-          penjualan: m.penjualan || '',
           input_so: document.getElementById('admin_stok_input_so')?.value.trim() || '',
           cek_so: document.getElementById('admin_stok_cek_so')?.value.trim() || ''
         }
@@ -6274,13 +6259,6 @@
 
     function loadSpvMasterLinksForm() {
       const m = globalDashboardData.spvLinksMaster || {};
-      document.getElementById('master_spv_cogs').value = m.cogs_pekanan || '';
-      document.getElementById('master_spv_omset_area').value = m.omset_area || '';
-      document.getElementById('master_spv_ganti_minyak').value = m.ganti_minyak || '';
-      document.getElementById('master_spv_kph').value = m.kph || '';
-      document.getElementById('master_spv_expense').value = m.expense || '';
-      document.getElementById('master_spv_setor').value = m.setor || '';
-      document.getElementById('master_spv_penjualan').value = m.penjualan || '';
       document.getElementById('master_spv_input_so').value = m.input_so || '';
       document.getElementById('master_spv_cek_so').value = m.cek_so || '';
     }
@@ -6528,6 +6506,18 @@
                 <label style="color:#4338ca;">Track COGS Ngeumi (Individual SPV)</label>
                 <input type="text" id="spv_indiv_cogs_ngeumi_${key}" value="${data.cogs_ngeumi || ''}" placeholder="https://docs.google.com/...">
               </div>
+              <div style="grid-column:1/-1;border-top:1px solid var(--border);padding-top:14px;margin-top:4px;">
+                <div style="font-weight:800;color:#4338ca;margin-bottom:10px;"><i class="fa-solid fa-link"></i> LINK SPREADSHEET KHUSUS SPV INI</div>
+                <div class="admin-input-grid">
+                  <div class="admin-input-group"><label>Check COGS Pekanan</label><input type="text" id="spv_indiv_cogs_pekanan_${key}" value="${data.cogs_pekanan || ''}" placeholder="https://docs.google.com/..."></div>
+                  <div class="admin-input-group"><label>Omset Area</label><input type="text" id="spv_indiv_omset_area_${key}" value="${data.omset_area || ''}" placeholder="https://docs.google.com/..."></div>
+                  <div class="admin-input-group"><label>Form Ganti Minyak</label><input type="text" id="spv_indiv_ganti_minyak_${key}" value="${data.ganti_minyak || ''}" placeholder="https://docs.google.com/..."></div>
+                  <div class="admin-input-group"><label>KPH</label><input type="text" id="spv_indiv_kph_${key}" value="${data.kph || ''}" placeholder="https://docs.google.com/..."></div>
+                  <div class="admin-input-group"><label>Tracking Expense</label><input type="text" id="spv_indiv_expense_${key}" value="${data.expense || ''}" placeholder="https://docs.google.com/..."></div>
+                  <div class="admin-input-group"><label>Form Setor Uang</label><input type="text" id="spv_indiv_setor_${key}" value="${data.setor || ''}" placeholder="https://docs.google.com/..."></div>
+                  <div class="admin-input-group"><label>Laporan Penjualan</label><input type="text" id="spv_indiv_penjualan_${key}" value="${data.penjualan || ''}" placeholder="https://docs.google.com/..."></div>
+                </div>
+              </div>
             </div>
           </div>
         `;
@@ -6645,13 +6635,6 @@
         action: "saveSpvLinksMaster",
         adminUser: currentUser,
         links: {
-          cogs_pekanan: document.getElementById('master_spv_cogs').value.trim(),
-          omset_area: document.getElementById('master_spv_omset_area').value.trim(),
-          ganti_minyak: document.getElementById('master_spv_ganti_minyak').value.trim(),
-          kph: document.getElementById('master_spv_kph').value.trim(),
-          expense: document.getElementById('master_spv_expense').value.trim(),
-          setor: document.getElementById('master_spv_setor').value.trim(),
-          penjualan: document.getElementById('master_spv_penjualan').value.trim(),
           input_so: document.getElementById('master_spv_input_so').value.trim(),
           cek_so: document.getElementById('master_spv_cek_so').value.trim()
         }
@@ -6725,7 +6708,14 @@
           resto_names: restoNamesList.join(', '),
           resto_timings: restoTimingsObj,
           base_omset: baseEl ? baseEl.value.trim() : '',
-          cogs_ngeumi: cogsEl ? cogsEl.value.trim() : ''
+          cogs_ngeumi: cogsEl ? cogsEl.value.trim() : '',
+          cogs_pekanan: document.getElementById(`spv_indiv_cogs_pekanan_${targetUsername}`)?.value.trim() || '',
+          omset_area: document.getElementById(`spv_indiv_omset_area_${targetUsername}`)?.value.trim() || '',
+          ganti_minyak: document.getElementById(`spv_indiv_ganti_minyak_${targetUsername}`)?.value.trim() || '',
+          kph: document.getElementById(`spv_indiv_kph_${targetUsername}`)?.value.trim() || '',
+          expense: document.getElementById(`spv_indiv_expense_${targetUsername}`)?.value.trim() || '',
+          setor: document.getElementById(`spv_indiv_setor_${targetUsername}`)?.value.trim() || '',
+          penjualan: document.getElementById(`spv_indiv_penjualan_${targetUsername}`)?.value.trim() || ''
         }
       };
 
