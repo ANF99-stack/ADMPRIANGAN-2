@@ -7703,7 +7703,10 @@
           <div class="admin-card-item branch-card" id="card_branch_${key}" data-name="${formattedBranchName}">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
               <span style="font-weight: 800; font-size: 0.95rem;"><i class="fa-solid fa-store" style="color:var(--lazatto-red); margin-right:6px;"></i> ${formattedBranchName} (${key})</span>
-              <button onclick="updateUserLinks('${key}')" style="background: var(--lazatto-red); color: white; border: none; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700;">Simpan Link</button>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button onclick="updateUserLinks('${key}')" style="background: var(--lazatto-red); color: white; border: none; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700;"><i class="fa-solid fa-floppy-disk"></i> Simpan Link</button>
+                <button onclick="resetUserLinks('${key}')" style="background:#fff1f2;color:#be123c;border:1px solid #fecdd3;padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:700;"><i class="fa-solid fa-rotate-left"></i> Reset Link</button>
+              </div>
             </div>
             <div class="admin-input-grid">
               <div class="admin-input-group"><label>1. Omset Harian</label><input type="text" id="link_omset_${key}" value="${l.omset || ''}"></div>
@@ -7874,6 +7877,50 @@
         }
       } catch (err) {
         alert("Gagal memperbarui link ke server GAS!");
+      }
+    };
+
+    // Menghapus seluruh URL spreadsheet milik outlet terpilih melalui action
+    // saveBranchLinks yang sama, dengan semua nilai link dikirim sebagai string kosong.
+    window.resetUserLinks = async function(targetUsername) {
+      const branchName = formatRestoName(targetUsername);
+      if (!confirm(`Reset seluruh link Spreadsheet untuk ${branchName}?\\nSemua link yang tersimpan pada outlet ini akan dikosongkan.`)) return;
+
+      const currentUser = localStorage.getItem('resto_current_user');
+      const emptyLinks = {
+        omset: '',
+        outlet: '',
+        expense: '',
+        ganti_minyak: '',
+        kph: '',
+        setor: ''
+      };
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow",
+          body: JSON.stringify({
+            action: "saveBranchLinks",
+            adminUser: currentUser,
+            targetUser: targetUsername,
+            links: emptyLinks
+          })
+        });
+        const result = await res.json();
+        if (result.status === "success") {
+          Object.entries(emptyLinks).forEach(([field]) => {
+            const input = document.getElementById(`link_${field}_${targetUsername}`);
+            if (input) input.value = '';
+          });
+          alert(result.message || `Seluruh link ${branchName} berhasil di-reset.`);
+          fetchInitialDataFromGAS();
+        } else {
+          alert(result.message || 'Gagal mereset link outlet.');
+        }
+      } catch (err) {
+        alert("Gagal mereset link ke server GAS: " + (err.message || err));
       }
     };
 
