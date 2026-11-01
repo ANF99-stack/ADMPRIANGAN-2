@@ -3014,7 +3014,7 @@
 
       <section id="page-omset-area" class="admin-page-content oa-wrap" style="display:none">
         <div class="oa-hero"><div><h2 class="oa-title"><i class="fa-solid fa-chart-column" style="color:#e11d2e"></i> OMSET AREA</h2><p class="oa-subtitle">Monitoring pencapaian omset dan performa seluruh outlet</p></div><div class="oa-actions" style="display:flex;gap:8px;flex-wrap:wrap"><button class="oa-btn" onclick="loadOmsetArea(true)"><i class="fa-solid fa-rotate"></i> Refresh</button><button class="oa-btn export" onclick="exportOmsetAreaExcel()"><i class="fa-solid fa-file-excel"></i> Export Excel</button></div></div>
-        <div class="oa-filter"><div class="oa-field"><label>PERIODE DATA</label><select id="oa-period" onchange="renderOmsetArea()"><option value="current">Data terbaru dari sheet OMSET</option></select></div><div class="oa-field"><label>ZONA</label><select id="oa-zone" onchange="renderOmsetArea()"><option value="ALL">Semua Zona</option><option value="GREEN">Green Zone</option><option value="YELLOW">Yellow Zone</option><option value="RED">Red Zone</option></select></div><div class="oa-field"><label>SPV</label><select id="oa-spv" onchange="renderOmsetArea()"><option value="ALL">Semua SPV</option></select></div><div class="oa-field"><label>CARI OUTLET / ID CABANG</label><input id="oa-search" placeholder="Ketik nama outlet atau ID..." oninput="renderOmsetArea()"></div><button class="oa-btn primary" onclick="renderOmsetArea()"><i class="fa-solid fa-filter"></i> Terapkan</button></div>
+        <div class="oa-filter"><div class="oa-field"><label>PERIODE DATA</label><select id="oa-period" onchange="changeOmsetAreaPeriod()"><option value="OMSET">OMSET (Lazatto)</option><option value="OMSET NGEUMI">OMSET NGEUMI</option></select></div><div class="oa-field"><label>ZONA</label><select id="oa-zone" onchange="renderOmsetArea()"><option value="ALL">Semua Zona</option><option value="GREEN">Green Zone</option><option value="YELLOW">Yellow Zone</option><option value="RED">Red Zone</option></select></div><div class="oa-field"><label>SPV</label><select id="oa-spv" onchange="renderOmsetArea()"><option value="ALL">Semua SPV</option></select></div><div class="oa-field"><label>CARI OUTLET / ID CABANG</label><input id="oa-search" placeholder="Ketik nama outlet atau ID..." oninput="renderOmsetArea()"></div><button class="oa-btn primary" onclick="renderOmsetArea()"><i class="fa-solid fa-filter"></i> Terapkan</button></div>
         <div id="oa-status" class="oa-status" style="margin-bottom:14px">Memuat data OMSET dari server...</div>
         <div class="oa-kpis"><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-coins" style="color:#e11d2e"></i> TOTAL OMSET AREA</div><div id="oa-total-omset" class="oa-kpi-value">Rp0</div><div class="oa-kpi-note">Sesuai filter outlet dan SPV</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-bullseye" style="color:#f59e0b"></i> TOTAL TARGET</div><div id="oa-total-target" class="oa-kpi-value">Rp0</div><div class="oa-kpi-note">Target area dari ringkasan sheet OMSET</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-trophy" style="color:#10b981"></i> ACHIEVEMENT AREA</div><div id="oa-achievement" class="oa-kpi-value">0%</div><div class="oa-kpi-note">Actual area ÷ target area dari sheet OMSET</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-store" style="color:#6366f1"></i> TOTAL OUTLET</div><div id="oa-outlet-count" class="oa-kpi-value">0</div><div class="oa-kpi-note">Outlet yang sesuai filter</div></div></div>
         <div class="oa-panels"><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-chart-pie"></i> Komposisi Zona Outlet</h3><div id="oa-zone-chart"></div></div><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-people-group"></i> Pencapaian per SPV</h3><div id="oa-spv-chart"></div></div><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-ranking-star"></i> Top 5 Outlet berdasarkan Omset</h3><div id="oa-top-outlet-chart"></div></div></div>
@@ -5046,28 +5046,46 @@
     }
 
     // OMSET AREA: data dibaca dari sheet sumber tanpa menulis/mengubah data spreadsheet.
-    let omsetAreaRows = [], omsetAreaHeaders = [], omsetAreaPage = 1, omsetAreaSort = {key:'achievement',dir:'desc'}, omsetAreaLoaded = false, omsetAreaSummary = {actual:null,target:null}, omsetAreaAverageDays = 1;
+    let omsetAreaRows = [], omsetAreaHeaders = [], omsetAreaPage = 1, omsetAreaSort = {key:'achievement',dir:'desc'}, omsetAreaLoaded = false, omsetAreaLoadedSource = '', omsetAreaSourceSheet = 'OMSET', omsetAreaSummary = {actual:null,target:null}, omsetAreaAverageDays = 1, omsetAreaZoneHeader = 'ZONA';
     const oaMoney = n => 'Rp' + Math.round(Number(n) || 0).toLocaleString('id-ID', { maximumFractionDigits: 0 });
     const oaNum = v => { if(typeof v==='number') return v; let s=String(v??'').trim().replace(/Rp/gi,'').replace(/\s/g,''); if(!s)return 0; if(s.includes(',')&&s.includes('.')) s=s.replace(/\./g,'').replace(',','.'); else if(s.includes(',')) s=s.replace(',','.'); else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,''); else if(/\.\d{3}$/.test(s))s=s.replace('.',''); return Number(s.replace(/[^\d.-]/g,''))||0; };
     const oaEsc = v => String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     function oaZone(r){const z=String(r.zone||'').toUpperCase(); if(z.includes('GREEN'))return 'GREEN';if(z.includes('YELLOW'))return 'YELLOW';if(z.includes('RED'))return 'RED';return z||'UNKNOWN';}
     function oaBadge(z){const k=String(z).toUpperCase();return `<span class="oa-zone ${k.includes('GREEN')?'oa-green':k.includes('YELLOW')?'oa-yellow':k.includes('RED')?'oa-red':''}">${oaEsc(z||'-')}</span>`;}
+    async function changeOmsetAreaPeriod(){
+      const selected=document.getElementById('oa-period')?.value||'OMSET';
+      if(selected===omsetAreaSourceSheet&&omsetAreaLoaded){renderOmsetArea();return;}
+      omsetAreaSourceSheet=selected;omsetAreaLoaded=false;omsetAreaPage=1;
+      await loadOmsetArea(true);
+    }
     async function loadOmsetArea(force){
       const status=document.getElementById('oa-status');if(!status)return;
-      if(omsetAreaLoaded&&!force){renderOmsetArea();return;}
-      status.textContent='Mengambil data dari sheet OMSET…';
-      try{const res=await gasRequestJson({action:'getOmsetAreaData'});if(res.status!=='success')throw new Error(res.message||'Gagal membaca data OMSET');
-        omsetAreaHeaders=res.headers||[];omsetAreaSummary={actual:res.areaActual==null?null:oaNum(res.areaActual),target:res.areaTarget==null?null:oaNum(res.areaTarget)};
-        // Pada sheet OMSET, tanggal "TANGGAL NOW" adalah tanggal berjalan, sementara
-        // omset snapshot mencakup hari yang sudah selesai. Contoh 16/10 berarti dibagi 15 hari.
+      const source=document.getElementById('oa-period')?.value||'OMSET';
+      omsetAreaSourceSheet=source;
+      if(omsetAreaLoaded&&omsetAreaLoadedSource===source&&!force){renderOmsetArea();return;}
+      status.textContent=`Mengambil data dari sheet ${source}…`;
+      try{
+        const action=source==='OMSET NGEUMI'?'getOmsetNgeumiData':'getOmsetAreaData';
+        const res=await gasRequestJson({action});
+        if(res.status!=='success')throw new Error(res.message||`Gagal membaca data ${source}`);
+        omsetAreaHeaders=res.headers||[];
+        omsetAreaSummary={actual:res.areaActual==null?null:oaNum(res.areaActual),target:res.areaTarget==null?null:oaNum(res.areaTarget)};
         const snapMatch=String(res.snapshotDate||'').match(/(\\d{1,2})[\\/.-](\\d{1,2})[\\/.-](\\d{4})/);
         const snapDay=snapMatch?Number(snapMatch[1]):new Date().getDate();
         omsetAreaAverageDays=Math.max(1,snapDay-1);
-        omsetAreaRows=(res.rows||[]).map((r,i)=>({...r,_index:i+1,omset:oaNum(r.omset),avgOmsetPerResto:Math.round(oaNum(r.omset)/omsetAreaAverageDays),target:oaNum(r.target),exp:oaNum(r.exp),achievement:oaNum(r.achievement),zone:oaZone(r)}));
+        omsetAreaZoneHeader=res.zoneHeader|| (source==='OMSET NGEUMI'?'ZONA NOVEMBER':'ZONA JUNI');
+        omsetAreaRows=(res.rows||[]).map((r,i)=>({...r,_index:i+1,omset:oaNum(r.omset),
+          avgOmsetPerResto:r.avgOmsetPerResto!=null?oaNum(r.avgOmsetPerResto):Math.round(oaNum(r.omset)/omsetAreaAverageDays),
+          target:oaNum(r.target),exp:oaNum(r.exp),achievement:oaNum(r.achievement),zone:oaZone(r)}));
         const spvs=[...new Set(omsetAreaRows.map(r=>r.spv).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));
-        const spvEl=document.getElementById('oa-spv'),old=spvEl.value||'ALL';spvEl.innerHTML='<option value="ALL">Semua SPV</option>'+spvs.map(x=>`<option value="${oaEsc(x)}">${oaEsc(x)}</option>`).join('');spvEl.value=spvs.includes(old)?old:'ALL';
-        status.textContent=`Data terbaru berhasil diambil: ${omsetAreaRows.length} outlet · Sumber: sheet OMSET${res.snapshotDate?' · Tanggal data: '+res.snapshotDate:''}${res.fetchedAt?' · Diperbarui: '+new Date(res.fetchedAt).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''}. Data sumber tidak diubah.`;omsetAreaLoaded=true;omsetAreaPage=1;renderOmsetArea();
-      }catch(e){status.textContent='Gagal memuat data OMSET: '+e.message+'. Pastikan fungsi GAS terbaru sudah dipasang dan sheet bernama OMSET tersedia.';}
+        const spvEl=document.getElementById('oa-spv'),old=spvEl.value||'ALL';
+        spvEl.innerHTML='<option value="ALL">Semua SPV</option>'+spvs.map(x=>`<option value="${oaEsc(x)}">${oaEsc(x)}</option>`).join('');
+        spvEl.value=spvs.includes(old)?old:'ALL';
+        status.textContent=`Data berhasil diambil: ${omsetAreaRows.length} outlet · Sumber: sheet ${source}${res.snapshotDate?' · Tanggal data: '+res.snapshotDate:''}${res.fetchedAt?' · Diperbarui: '+new Date(res.fetchedAt).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''}. Data sumber tidak diubah.`;
+        omsetAreaLoaded=true;omsetAreaLoadedSource=source;omsetAreaPage=1;renderOmsetArea();
+      }catch(e){
+        omsetAreaLoaded=false;status.textContent=`Gagal memuat data ${source}: ${e.message}. Periksa fungsi GAS dan pastikan sheet ${source} tersedia.`;
+      }
     }
     function getFilteredOmsetArea(){const zone=document.getElementById('oa-zone')?.value||'ALL',spv=document.getElementById('oa-spv')?.value||'ALL',q=(document.getElementById('oa-search')?.value||'').trim().toLowerCase();return omsetAreaRows.filter(r=>(zone==='ALL'||r.zone===zone)&&(spv==='ALL'||r.spv===spv)&&(!q||[r.branchId,r.spv,r.outlet].some(v=>String(v||'').toLowerCase().includes(q))));}
     function renderOmsetArea(){
@@ -5101,7 +5119,7 @@
       // Tabel lebar penuh; record error formula (#REF!) tidak ditampilkan.
       const sortKey=omsetAreaSort.key;rows.sort((a,b)=>{let x=a[sortKey],y=b[sortKey];if(typeof x==='number'&&typeof y==='number')return (x-y)*omsetAreaSort.dir;return String(x||'').localeCompare(String(y||''),'id')*omsetAreaSort.dir;});
       const pageSize=15,totalPages=Math.max(1,Math.ceil(rows.length/pageSize));omsetAreaPage=Math.min(omsetAreaPage,totalPages);const visible=rows.slice((omsetAreaPage-1)*pageSize,omsetAreaPage*pageSize);
-      const cols=[['no','NO'],['outlet','NAMA OUTLET'],['omset','OMSET'],['avgOmsetPerResto','RATA RATA OMSET'],['target','TARGET'],['exp','EXP'],['achievement','ACHIVMENT'],['zone','ZONA JUNI']];
+      const cols=[['no','NO'],['outlet','NAMA OUTLET'],['omset','OMSET'],['avgOmsetPerResto','RATA RATA OMSET'],['target','TARGET'],['exp','EXP'],['achievement','ACHIVMENT'],['zone',omsetAreaZoneHeader]];
       document.getElementById('oa-table-count').textContent=`${rows.length} outlet`;
       const avg = key => rows.length ? rows.reduce((total, r) => total + (Number(r[key]) || 0), 0) / rows.length : 0;
       const avgOmsetTable = avg('omset'), avgDailyOmsetTable = avg('avgOmsetPerResto'), avgTargetTable = avg('target'), avgExpTable = avg('exp'), avgAchievementTable = avg('achievement');
@@ -5110,7 +5128,7 @@
     }
     function sortOmsetArea(key){if(omsetAreaSort.key===key)omsetAreaSort.dir*=-1;else omsetAreaSort={key,dir:1};omsetAreaPage=1;renderOmsetArea();}
     function changeOmsetAreaPage(delta){const n=Math.max(1,Math.ceil(getFilteredOmsetArea().length/15));omsetAreaPage=Math.max(1,Math.min(n,omsetAreaPage+delta));renderOmsetArea();}
-    function exportOmsetAreaExcel(){const rows=getFilteredOmsetArea();const headers=['NO','ID CABANG','SPV','NAMA OUTLET','OMSET','RATA RATA OMSET','TARGET','EXP','ACHIVMENT','ZONA JUNI'];const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const average=key=>rows.length?rows.reduce((sum,r)=>sum+(Number(r[key])||0),0)/rows.length:0;const lines=[headers,...rows.map((r,i)=>[r.no||i+1,r.branchId,r.spv,r.outlet,r.omset,r.avgOmsetPerResto??Math.round((Number(r.omset)||0)/omsetAreaAverageDays),r.target,r.expDisplay||r.exp,r.achievementDisplay||r.achievement,r.zone]),['','RATA-RATA','','('+rows.length+' OUTLET)',average('omset'),average('avgOmsetPerResto'),average('target'),average('exp'),average('achievement'),'']].map(row=>row.map(esc).join(';'));const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='OMSET_AREA_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}
+    function exportOmsetAreaExcel(){const rows=getFilteredOmsetArea();const headers=['NO','ID CABANG','SPV','NAMA OUTLET','OMSET','RATA RATA OMSET','TARGET','EXP','ACHIVMENT',omsetAreaZoneHeader];const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const average=key=>rows.length?rows.reduce((sum,r)=>sum+(Number(r[key])||0),0)/rows.length:0;const lines=[headers,...rows.map((r,i)=>[r.no||i+1,r.branchId,r.spv,r.outlet,r.omset,r.avgOmsetPerResto??Math.round((Number(r.omset)||0)/omsetAreaAverageDays),r.target,r.expDisplay||r.exp,r.achievementDisplay||r.achievement,r.zone]),['','RATA-RATA','','('+rows.length+' OUTLET)',average('omset'),average('avgOmsetPerResto'),average('target'),average('exp'),average('achievement'),'']].map(row=>row.map(esc).join(';'));const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='OMSET_AREA_'+omsetAreaSourceSheet.replace(/[^A-Z0-9]+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}
 
     function setupNavbarForRole(role) {
       let html = '';
