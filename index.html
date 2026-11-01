@@ -2720,7 +2720,12 @@
 
           <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <h4 style="font-size: 1rem; font-weight: 800;"><i class="fa-solid fa-store"></i> Link Spreadsheet Cabang Outlet</h4>
-            <input type="text" id="search-branch" onkeyup="filterBranches()" placeholder="Cari nama outlet cabang..." style="padding: 10px 16px; border: 1.5px solid var(--border); border-radius: 12px; width: 100%; max-width: 300px; font-size: 0.88rem; outline:none;">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;width:100%;max-width:620px;">
+              <select id="filter-branch-spv" onchange="filterBranches()" aria-label="Filter berdasarkan SPV" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;min-width:210px;flex:1;font-size:.88rem;outline:none;background:#fff;">
+                <option value="ALL">Semua SPV</option>
+              </select>
+              <input type="text" id="search-branch" oninput="filterBranches()" placeholder="Cari nama outlet cabang..." style="padding: 10px 16px; border: 1.5px solid var(--border); border-radius: 12px; width: 100%; max-width: 300px; flex:1; font-size: 0.88rem; outline:none;">
+            </div>
           </div>
           <div id="admin-links-list"></div>
         </div>
@@ -7691,16 +7696,80 @@
       document.getElementById('stat-total-links').textContent = (count * 6) + spvCount + 20;
     }
 
+    function normalizeBranchSpvName(value) {
+      return formatRestoName(String(value || '').trim())
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    function getBranchSpvAssignments(branchKey, branchData = {}) {
+      const individual = globalDashboardData.spvLinksIndividual || {};
+      const users = Array.isArray(globalDashboardData.usersList) ? globalDashboardData.usersList : [];
+      const keyNorm = String(branchKey || '').trim().toLowerCase();
+
+      // branchLinks memakai KEY/ID akun cabang, sedangkan coverage SPV menyimpan
+      // NAMA RESTO. Cari akun cabang berdasarkan key lalu kumpulkan semua alias nama.
+      const branchUser = users.find(u => {
+        const ids = [u.username, u.user_id, u.userId, u.id, u.cabang_id, u.kode_cabang, u.branch_id]
+          .map(v => String(v || '').trim().toLowerCase()).filter(Boolean);
+        return ids.includes(keyNorm);
+      });
+
+      const aliases = [
+        branchKey,
+        branchUser?.name, branchUser?.nama, branchUser?.resto, branchUser?.cabang,
+        branchUser?.resto_name, branchUser?.restoName, branchUser?.nama_resto,
+        branchUser?.namaResto, branchUser?.branch_name, branchUser?.branchName,
+        branchUser?.outlet_name, branchUser?.outletName,
+        branchData?.name, branchData?.nama, branchData?.resto, branchData?.cabang,
+        branchData?.resto_name, branchData?.restoName, branchData?.nama_resto
+      ].map(normalizeBranchSpvName).filter(Boolean);
+
+      const usersSpv = users.filter(u => String(u.role || '').trim().toLowerCase() === 'supervisor');
+      return usersSpv.filter(u => {
+        const username = String(u.username || '').trim();
+        const dataKey = Object.keys(individual).find(k => String(k).trim().toLowerCase() === username.toLowerCase());
+        const data = (dataKey ? individual[dataKey] : null) || {};
+        const raw = data.resto_names || data.coverage_restos || data.coverage_resto || data.coverageRestos ||
+          u.resto_names || u.coverage_restos || u.coverage_resto || u.coverageRestos || '';
+        const values = Array.isArray(raw) ? raw : String(raw || '').split(/[,;|]/);
+        const coverageNames = values.map(x => normalizeBranchSpvName(
+          typeof x === 'object' ? (x.resto || x.name || x.nama || x.resto_name || x.restoName || '') : x
+        )).filter(Boolean);
+        return aliases.some(alias => coverageNames.includes(alias));
+      }).map(u => String(u.username || '').trim()).filter(Boolean);
+    }
+
+    function populateBranchSpvFilter() {
+      const select = document.getElementById('filter-branch-spv');
+      if (!select) return;
+      const previous = select.value || 'ALL';
+      const spvs = (globalDashboardData.usersList || [])
+        .filter(u => String(u.role || '').toLowerCase() === 'supervisor')
+        .sort((a,b) => String(a.name || a.username).localeCompare(String(b.name || b.username), 'id'));
+      select.innerHTML = '<option value="ALL">Semua SPV</option>' +
+        spvs.map(u => {
+          const username = String(u.username || '').trim();
+          const label = String(u.name || username).trim();
+          return `<option value="${escapeHtml(username)}">${escapeHtml(label)} (${escapeHtml(username)})</option>`;
+        }).join('');
+      if (spvs.some(u => String(u.username || '').trim() === previous)) select.value = previous;
+      else select.value = 'ALL';
+    }
+
     function renderAdminLinksList() {
       const branches = globalDashboardData.branchLinks || {};
       const container = document.getElementById('admin-links-list');
       let html = '';
+      populateBranchSpvFilter();
 
       for (let key in branches) {
         const l = branches[key] || {};
         const formattedBranchName = formatRestoName(key);
+        const assignedSpvs = getBranchSpvAssignments(key, l);
+        const spvAttr = assignedSpvs.map(x => x.toLowerCase()).join('|');
         html += `
-          <div class="admin-card-item branch-card" id="card_branch_${key}" data-name="${formattedBranchName}">
+          <div class="admin-card-item branch-card" id="card_branch_${key}" data-name="${escapeHtml(formattedBranchName).toLowerCase()}" data-spv="${escapeHtml(spvAttr)}">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
               <span style="font-weight: 800; font-size: 0.95rem;"><i class="fa-solid fa-store" style="color:var(--lazatto-red); margin-right:6px;"></i> ${formattedBranchName} (${key})</span>
               <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -7720,6 +7789,7 @@
         `;
       }
       container.innerHTML = html;
+      filterBranches();
     }
 
     function renderUserTable() {
@@ -7925,11 +7995,15 @@
     };
 
     function filterBranches() {
-      const query = document.getElementById('search-branch').value.toLowerCase();
+      const query = String(document.getElementById('search-branch')?.value || '').trim().toLowerCase();
+      const selectedSpv = String(document.getElementById('filter-branch-spv')?.value || 'ALL').trim().toLowerCase();
       const cards = document.querySelectorAll('.branch-card');
       cards.forEach(card => {
-        const name = card.getAttribute('data-name').toLowerCase();
-        card.style.display = name.includes(query) ? 'block' : 'none';
+        const name = String(card.getAttribute('data-name') || '').toLowerCase();
+        const assigned = String(card.getAttribute('data-spv') || '').toLowerCase().split('|').filter(Boolean);
+        const matchesName = !query || name.includes(query);
+        const matchesSpv = selectedSpv === 'all' || assigned.includes(selectedSpv);
+        card.style.display = matchesName && matchesSpv ? 'block' : 'none';
       });
     }
 
