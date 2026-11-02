@@ -1370,6 +1370,50 @@
 }
 
   
+
+/* ===== Modern Kas Futsal dashboards for SPV, PSD and PIC ===== */
+.kf-modern-dashboard{max-width:1320px;margin:0 auto;padding:24px clamp(12px,2.5vw,28px) 36px;}
+.kf-modern-dashboard .kf-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:clamp(22px,3vw,34px);border-radius:24px;background:linear-gradient(115deg,#251b4b 0%,#d9232e 52%,#ff7414 100%);color:#fff;box-shadow:0 15px 34px rgba(170,42,48,.14);margin-bottom:22px;}
+.kf-modern-dashboard .kf-eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:.72rem;font-weight:800;letter-spacing:.12em;opacity:.85;margin-bottom:10px;}
+.kf-modern-dashboard .kf-hero h2{font-size:clamp(1.45rem,2.4vw,2rem);letter-spacing:-.04em;margin:0 0 8px;color:#fff;}
+.kf-modern-dashboard .kf-hero p{margin:0;max-width:700px;line-height:1.65;font-size:.92rem;color:#fff;opacity:.93;}
+.kf-modern-dashboard .kf-access{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:999px;padding:9px 14px;font-size:.72rem;font-weight:800;letter-spacing:.035em;}
+.kf-modern-dashboard .kf-readonly{background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.28);color:#fff;}
+.kf-modern-dashboard .kf-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:18px;}
+.kf-modern-dashboard .kf-metric{display:flex;align-items:center;gap:15px;padding:22px;border:1px solid #e5eaf2;border-radius:20px;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 5px 16px rgba(15,23,42,.04);min-width:0;}
+.kf-modern-dashboard .kf-icon{width:52px;height:52px;flex:0 0 52px;border-radius:16px;display:grid;place-items:center;font-size:1.25rem;}
+.kf-modern-dashboard .kf-green{background:#dcfce7;color:#15803d}.kf-modern-dashboard .kf-blue{background:#dbeafe;color:#2563eb}.kf-modern-dashboard .kf-red{background:#fee2e2;color:#dc2626}
+.kf-modern-dashboard .kf-metric small{display:block;color:#64748b;font-size:.8rem;font-weight:650;margin-bottom:5px;}
+.kf-modern-dashboard .kf-metric strong{display:block;color:#111827;font-size:clamp(1.25rem,2vw,1.65rem);font-weight:850;letter-spacing:-.035em;overflow-wrap:anywhere;}
+.kf-modern-dashboard .kf-panel{border:1px solid #e5eaf2;border-radius:20px;background:#fff;padding:22px;box-shadow:0 5px 16px rgba(15,23,42,.04);}
+.kf-modern-dashboard .kf-panel header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.kf-modern-dashboard .kf-panel h3{margin:0;color:#172033;font-size:1rem;font-weight:850;letter-spacing:-.02em;}
+.kf-modern-dashboard .kf-panel header p{margin:5px 0 0;color:#64748b;font-size:.8rem;}
+.kf-modern-dashboard .kf-table-wrap{overflow:auto;border-radius:12px;}
+.kf-modern-dashboard .kf-table-wrap table{width:100%;min-width:650px;border-collapse:separate;border-spacing:0;font-size:.86rem;}
+.kf-modern-dashboard .kf-table-wrap th{padding:13px 14px;text-align:left;background:#f4f7fb;color:#64748b;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+.kf-modern-dashboard .kf-table-wrap th:first-child{border-radius:10px 0 0 10px}.kf-modern-dashboard .kf-table-wrap th:last-child{border-radius:0 10px 10px 0}
+.kf-modern-dashboard .kf-table-wrap td{padding:14px;border-bottom:1px solid #edf1f6;color:#334155;white-space:nowrap;}
+.kf-modern-dashboard .kf-table-wrap tbody tr:hover td{background:#f9fbff}
+@media(max-width:760px){.kf-modern-dashboard .kf-metrics{grid-template-columns:1fr}.kf-modern-dashboard .kf-metric{padding:17px;border-radius:16px}.kf-modern-dashboard .kf-hero{border-radius:18px;flex-direction:column}.kf-modern-dashboard .kf-panel{padding:16px;border-radius:16px}.kf-modern-dashboard{padding:14px 10px 26px}}
+
+
+/* Polishing legacy SPV Kas Futsal structure to match the modern dashboards */
+#page-spv-kas-futsal .user-banner{border-radius:24px!important;overflow:hidden;box-shadow:0 15px 34px rgba(170,42,48,.14);margin-bottom:22px!important;}
+#page-spv-kas-futsal .user-banner h2{font-size:clamp(1.45rem,2.4vw,2rem);letter-spacing:-.04em;margin-bottom:8px;}
+#page-spv-kas-futsal .user-banner p{max-width:700px;line-height:1.65;font-size:.92rem;}
+#page-spv-kas-futsal .grid-container{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important;margin:0 0 18px!important;}
+#page-spv-kas-futsal .stat-card{border:1px solid #e5eaf2!important;border-radius:20px!important;background:linear-gradient(180deg,#fff,#fbfdff)!important;box-shadow:0 5px 16px rgba(15,23,42,.04)!important;padding:22px!important;min-width:0;}
+#page-spv-kas-futsal .stat-num{font-size:clamp(1.25rem,2vw,1.65rem)!important;font-weight:850!important;letter-spacing:-.035em;overflow-wrap:anywhere;}
+#page-spv-kas-futsal .card{border:1px solid #e5eaf2!important;border-radius:20px!important;background:#fff!important;box-shadow:0 5px 16px rgba(15,23,42,.04)!important;padding:22px!important;}
+#page-spv-kas-futsal #kf-spv-history table{width:100%;min-width:650px;border-collapse:separate;border-spacing:0;font-size:.86rem;}
+#page-spv-kas-futsal #kf-spv-history{overflow:auto;border-radius:12px;}
+#page-spv-kas-futsal #kf-spv-history th{padding:13px 14px;text-align:left;background:#f4f7fb;color:#64748b;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+#page-spv-kas-futsal #kf-spv-history td{padding:14px;border-bottom:1px solid #edf1f6;color:#334155;white-space:nowrap;}
+#page-spv-kas-futsal #kf-spv-form input,#page-spv-kas-futsal #kf-spv-form select{min-height:46px;border:1px solid #dbe3ee!important;border-radius:12px!important;padding:10px 12px!important;background:#f8fafc!important;box-sizing:border-box;}
+#page-spv-kas-futsal #kf-spv-form button{min-height:46px;border-radius:13px!important;font-weight:800;}
+@media(max-width:760px){#page-spv-kas-futsal .grid-container{grid-template-columns:1fr!important;}#page-spv-kas-futsal .stat-card,#page-spv-kas-futsal .card{padding:16px!important;border-radius:16px!important;}}
+
 /* ===== Modern Kas Futsal Admin page ===== */
 #page-admin-kas-futsal { max-width: 1240px; margin: 0 auto; padding: 28px 22px 42px; }
 #page-admin-kas-futsal .user-banner { border-radius: 24px; overflow:hidden; box-shadow:0 14px 32px rgba(30,41,59,.10); margin-bottom:22px; }
@@ -1959,7 +2003,7 @@
       </div>
 
 
-        <div id="page-spv-kas-futsal" class="role-page-content" style="display:none">
+        <div id="page-spv-kas-futsal" class="role-page-content kf-modern-dashboard" style="display:none">
           <div class="user-banner"><div class="banner-header"><div><h2>Dashboard Kas Futsal</h2><p>Dashboard monitoring kas futsal. SPV yang ditunjuk dapat melakukan input kas masuk dan kas keluar; SPV lainnya hanya dapat melihat.</p></div><span id="kf-spv-access-badge" class="status-pill">VIEW ONLY</span></div></div>
           <div class="grid-container" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:16px 0">
             <div class="stat-card"><div class="stat-icon" style="background:#dcfce7;color:#15803d"><i class="fa-solid fa-wallet"></i></div><div><div class="stat-label">Saldo Kas</div><div class="stat-num" id="kf-spv-balance">Rp0</div></div></div>
@@ -2153,6 +2197,13 @@
         </div>
 
       </div>
+
+
+        <div id="page-user-kas-futsal" class="role-page-content kf-modern-dashboard" style="display:none">
+          <section class="kf-hero"><div><span class="kf-eyebrow"><i class="fa-solid fa-futbol"></i> MONITORING KAS</span><h2>Dashboard Kas Futsal</h2><p>Dashboard monitoring kas futsal. Akun PIC hanya dapat melihat saldo dan riwayat transaksi.</p></div><span class="kf-access kf-readonly">VIEW ONLY</span></section>
+          <div class="kf-metrics"><article class="kf-metric"><span class="kf-icon kf-green"><i class="fa-solid fa-wallet"></i></span><div><small>Saldo Kas</small><strong id="kf-pic-balance">Rp0</strong></div></article><article class="kf-metric"><span class="kf-icon kf-blue"><i class="fa-solid fa-arrow-down"></i></span><div><small>Total Kas Masuk</small><strong id="kf-pic-in">Rp0</strong></div></article><article class="kf-metric"><span class="kf-icon kf-red"><i class="fa-solid fa-arrow-up"></i></span><div><small>Total Kas Keluar</small><strong id="kf-pic-out">Rp0</strong></div></article></div>
+          <section class="kf-panel"><header><div><h3>Riwayat Kas Futsal</h3><p>Daftar transaksi yang tercatat</p></div><span class="kf-access kf-readonly">Mode lihat saja</span></header><div id="kf-pic-history" class="kf-table-wrap"></div></section>
+        </div>
 
       <!-- ================= SHARED PAGE: OPERASIONAL RESTO (SPV, PSD, ADMIN) ================= -->
       <div id="page-shared-operasional" class="role-page-content" style="display: none;">
@@ -5227,6 +5278,20 @@
     document.getElementById('kf-spv-form')?.addEventListener('submit',function(e){e.preventDefault();const p=kfPage(),owner=kfUser();if(!p||p.owner.toLowerCase()!==owner.toLowerCase()){alert('Akun ini hanya memiliki akses lihat saja.');return;}const amount=Number(document.getElementById('kf-spv-amount').value);if(!Number.isFinite(amount)||amount<=0){alert('Nominal harus lebih dari 0');return;}const d=kfLoad();d.transactions.push({id:'tx_'+Date.now(),pageId:p.id,owner,date:document.getElementById('kf-spv-date').value,type:document.getElementById('kf-spv-type').value,amount,desc:document.getElementById('kf-spv-desc').value.trim()});kfSave(d);this.reset();document.getElementById('kf-spv-date').value=new Date().toISOString().slice(0,10);renderKasFutsalSpv();});
     function renderKasFutsalSpv(){const p=kfPage(),d=kfLoad(),owner=kfUser(),canInput=!!p&&p.owner.toLowerCase()===owner.toLowerCase();const tx=d.transactions.filter(t=>!p||t.pageId===p.id);const incoming=tx.filter(t=>t.type==='MASUK').reduce((s,t)=>s+t.amount,0),outgoing=tx.filter(t=>t.type==='KELUAR').reduce((s,t)=>s+t.amount,0);const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};set('kf-spv-balance',kfMoney(incoming-outgoing));set('kf-spv-in',kfMoney(incoming));set('kf-spv-out',kfMoney(outgoing));set('kf-spv-access-badge',canInput?'PENGELOLA · INPUT AKTIF':'VIEW ONLY');set('kf-spv-view-label',canInput?'SPV Pengelola':'Mode lihat saja');const panel=document.getElementById('kf-spv-input-panel');if(panel)panel.style.display=canInput?'block':'none';const hist=document.getElementById('kf-spv-history');if(hist)hist.innerHTML=tx.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th>Tanggal</th><th>SPV</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th></tr></thead><tbody>${tx.slice().reverse().map(t=>`<tr><td>${kfEsc(t.date)}</td><td>${kfEsc(t.owner)}</td><td>${kfEsc(t.desc)}</td><td>${t.type==='MASUK'?'Kas Masuk':'Kas Keluar'}</td><td>${kfMoney(t.amount)}</td></tr>`).join('')}</tbody></table>`:'<p>Belum ada transaksi kas futsal.</p>';if(!p&&hist)hist.innerHTML='<p>Halaman Kas Futsal belum dibuat oleh Admin.</p>';}
 
+
+    function renderKasFutsalReadonly(prefix){
+      const p=kfPage(),d=kfLoad(),tx=d.transactions.filter(t=>!p||t.pageId===p.id);
+      const incoming=tx.filter(t=>t.type==='MASUK').reduce((sum,t)=>sum+(Number(t.amount)||0),0);
+      const outgoing=tx.filter(t=>t.type==='KELUAR').reduce((sum,t)=>sum+(Number(t.amount)||0),0);
+      const put=(suffix,value)=>{const el=document.getElementById('kf-'+prefix+'-'+suffix);if(el)el.textContent=value;};
+      put('balance',kfMoney(incoming-outgoing));put('in',kfMoney(incoming));put('out',kfMoney(outgoing));
+      const hist=document.getElementById('kf-'+prefix+'-history');
+      if(!hist)return;
+      hist.innerHTML=tx.length?`<table><thead><tr><th>Tanggal</th><th>SPV</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th></tr></thead><tbody>${tx.slice().reverse().map(t=>`<tr><td>${kfEsc(t.date)}</td><td>${kfEsc(t.owner)}</td><td>${kfEsc(t.desc)}</td><td>${t.type==='MASUK'?'Kas Masuk':'Kas Keluar'}</td><td>${kfMoney(t.amount)}</td></tr>`).join('')}</tbody></table>`:'<p style="padding:12px;color:#64748b">Belum ada transaksi kas futsal.</p>';
+      if(!p)hist.innerHTML='<p style="padding:12px;color:#64748b">Halaman Kas Futsal belum dibuat oleh Admin.</p>';
+    }
+    function renderKasFutsalPic(){renderKasFutsalReadonly('pic');}
+
     function setupNavbarForRole(role) {
       let html = '';
 
@@ -5328,6 +5393,7 @@
               <div class="nav-item" onclick="switchCogsPage('page-cogs-order', this)"><i class="fa-solid fa-truck-ramp-box"></i><span>UPDATE ORDERAN</span></div>
             </div>
           </details>
+          <div class="nav-item" onclick="switchRoleNav('page-user-kas-futsal', this); renderKasFutsalPic()"><i class="fa-solid fa-futbol"></i><span>KAS FUTSAL</span></div>
         `;
       }
 
@@ -5496,6 +5562,7 @@
       const targetPage = document.getElementById(pageId);
       if (targetPage) targetPage.style.display = 'block';
       if (pageId === 'page-spv-kas-futsal') renderKasFutsalSpv();
+      if (pageId === 'page-user-kas-futsal') renderKasFutsalPic();
 
       if (pageId === 'page-check-karyawan') {
         // Saat halaman dibuka, filter tanggal langsung ke hari ini.
@@ -7711,6 +7778,8 @@
 
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
       if (element) element.classList.add('active');
+      // Pastikan page SPV/PIC/PSD yang sebelumnya terbuka tidak ikut tertampil pada area Admin.
+      document.querySelectorAll('.role-page-content').forEach(page => page.style.display = 'none');
 
       if (pageId === 'page-admin-kas-futsal') {
         // Halaman Kas Futsal Admin berdiri sendiri: sembunyikan dashboard utama,
@@ -7792,7 +7861,7 @@
         document.getElementById(pageId).style.display = 'block';
         // Sembunyikan kartu statistik global hanya pada halaman OMSET AREA agar tampil lebih bersih.
         const adminStatsGrid = document.querySelector('#admin-view > .admin-stats-grid');
-        if (adminStatsGrid) adminStatsGrid.style.display = pageId === 'page-omset-area' ? 'none' : '';
+        if (adminStatsGrid) adminStatsGrid.style.display = pageId === 'page-omset-area' ? 'none' : 'grid';
 
         if (pageId === 'page-preview-user') {
           hideAdmRestoSubPage();
