@@ -8606,10 +8606,20 @@
 
     const AE_POS_GAS_URL = "https://script.google.com/macros/s/AKfycbwso6ypbHe9fbHaab7E1dN9oDXvPCjgxuDhQ5fo3JXu2qq3X4f4Gyn41H1QyXuBFEILUQ/exec";
     
+    function getAERequestContext(){
+      const username=String(localStorage.getItem('resto_current_user')||'').trim();
+      const storedRole=String(localStorage.getItem('resto_user_role')||'ae').trim();
+      const compact=storedRole.toLowerCase().replace(/[^a-z0-9]/g,'');
+      const role=(compact==='ae'||compact.includes('accountexecutive')||compact.includes('accounteksekutif')||compact.includes('acounteksekutif'))?'ae':storedRole;
+      return {userId:username,username:username,requester:username,role:role,userRole:role};
+    }
     async function aeApi(payload) {
+      // Seluruh request dari workspace AE membawa identitas sesi. Backend POS
+      // mengambil coverage dari database ADM berdasarkan username ini, bukan dari browser.
+      const requestPayload=Object.assign({},payload||{},getAERequestContext());
       const response = await fetch(AE_POS_GAS_URL, {
         method: "POST", headers: {"Content-Type":"text/plain;charset=utf-8"},
-        cache:"no-store", body:JSON.stringify(payload)
+        cache:"no-store", body:JSON.stringify(requestPayload)
       });
       const raw = await response.text();
       let data; try { data=JSON.parse(raw); } catch(e) { throw new Error("Respons Web Apps POS tidak valid. Periksa deployment GAS."); }
@@ -8626,6 +8636,8 @@
       try {
         const [metrics,ordersRes]=await Promise.all([aeApi({action:'getAEMetrics'}),aeApi({action:'getBigOrders'})]);
         aeLiveMetricsCache=metrics;
+        // Endpoint metrics sudah mengembalikan akun POS yang dibatasi pada coverage AE login.
+        aeLiveAccountsCache=Array.isArray(metrics.accounts)?metrics.accounts:[];
         await loadAEPosAccountsForDashboard();
         renderAESelectedAccountTurnover();
         const orders=ordersRes.orders||metrics.bigOrders||[];
@@ -8676,16 +8688,21 @@
       }catch(e){console.warn('Daftar resto AE:',e)}
       return [...new Set(values.map(x=>String(typeof x==='string'?x:(x?.resto||x?.namaResto||x?.branch||x?.nama_cabang||x?.name||x?.nama||'')).trim()).filter(Boolean).filter(x=>!/\bOT\b/i.test(x)))].sort((a,b)=>a.localeCompare(b,'id'));
     }
-    function populateAEPosRestos(){
+    async function populateAEPosRestos(){
       const el=document.getElementById('ae-pos-resto');if(!el)return;
       const previous=el.value;
-      // Gunakan sumber database resto aplikasi yang sama dengan halaman operasional/mutasi,
-      // bukan daftar resto statis atau daftar yang diketik manual.
-      const names=getAERestoNames();
-      el.innerHTML='<option value="">'+(names.length?'Pilih resto':'Data resto belum tersedia')+'</option>'+
-        names.map(n=>`<option value="${aeEsc(n)}">${aeEsc(n)}</option>`).join('');
-      if(previous&&names.includes(previous))el.value=previous;
-      el.dataset.source=names.length?'database-aplikasi':'database-belum-termuat';
+      el.innerHTML='<option value="">Memuat coverage AE...</option>';
+      try{
+        const result=await aeApi({action:'getAECoverage'});
+        const names=[...new Set((result.coverage||[]).map(x=>String(x||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));
+        el.innerHTML='<option value="">'+(names.length?'Pilih resto dalam coverage Anda':'Coverage AE belum diatur Admin')+'</option>'+
+          names.map(n=>`<option value="${aeEsc(n)}">${aeEsc(n)}</option>`).join('');
+        if(previous&&names.includes(previous))el.value=previous;
+        el.dataset.source='coverage-ae-server';
+      }catch(e){
+        console.error('Coverage akun POS AE gagal dimuat:',e);
+        el.innerHTML='<option value="">Gagal memuat coverage AE</option>';
+      }
     }
     async function loadAEPosAccountsForDashboard(){
       const wrap=document.getElementById('ae-live-pos-cards');if(!wrap)return;
@@ -8766,24 +8783,20 @@
         wrap.innerHTML='<table class="ae-table"><thead><tr><th>Tanggal</th><th>Sumber</th><th>Resto</th><th>Keterangan</th><th>Omset</th></tr></thead><tbody>'+(rows.length?rows.map(x=>`<tr><td>${aeEsc(String(x.date||'').slice(0,10)||'-')}</td><td>${aeEsc(x.source)}</td><td>${aeEsc(x.resto||'-')}</td><td>${aeEsc(x.description||'-')}</td><td>${aeMoney(x.amount)}</td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#64748b">Belum ada riwayat untuk filter ini.</td></tr>')+'</tbody></table>';
       }catch(e){wrap.innerHTML=`<p class="ae-muted" style="padding:12px">Gagal memuat riwayat POS: ${aeEsc(e.message)}</p>`}
     }
-    function populateAEBigOrderRestos(){
+    async function populateAEBigOrderRestos(){
       const el=document.getElementById('ae-big-restos'); if(!el) return;
-      let names=[];
-      try {
-        if(typeof getAvailableRestoListFromDatabase==='function') names=getAvailableRestoListFromDatabase()||[];
-        if(!Array.isArray(names)||!names.length){
-          const d=(typeof globalDashboardData!=='undefined'&&globalDashboardData)||{};
-          const candidates=[d.branchLinks,d.usersList,d.restoList,d.restosList,d.karyawanList];
-          for(const list of candidates){
-            if(!Array.isArray(list)) continue;
-            names=names.concat(list.map(x=>typeof x==='string'?x:(x.resto||x.namaResto||x.branch||x.nama_cabang||x.name||'')));
-          }
-        }
-      } catch(e) { console.warn('Daftar resto AE:',e); }
-      names=[...new Set(names.map(x=>String(x||'').trim()).filter(x=>x && !/\bOT\b/i.test(x)))].sort((a,b)=>a.localeCompare(b,'id'));
-      if(!names.length) names=['Lazatto','Lazatto Ngeumi'];
       const selected=new Set(Array.from(el.selectedOptions||[]).map(o=>o.value));
-      el.innerHTML=names.map(n=>`<option value="${aeEsc(n)}" ${selected.has(n)?'selected':''}>${aeEsc(n)}</option>`).join('');
+      el.innerHTML='<option disabled>Memuat coverage AE...</option>';
+      try{
+        const result=await aeApi({action:'getAECoverage'});
+        const coverage=Array.isArray(result.coverage)?result.coverage:[];
+        const names=[...new Set(coverage.map(x=>String(x||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));
+        if(!names.length){el.innerHTML='<option disabled>Coverage AE belum diatur oleh Admin</option>';return;}
+        el.innerHTML=names.map(n=>`<option value="${aeEsc(n)}" ${selected.has(n)?'selected':''}>${aeEsc(n)}</option>`).join('');
+      }catch(e){
+        console.error('Coverage Big Order AE gagal dimuat:',e);
+        el.innerHTML='<option disabled>Gagal memuat coverage AE</option>';
+      }
     }
     window.aeCurrentBrand='LAZATTO';
     function makeAESku(brand,name){
