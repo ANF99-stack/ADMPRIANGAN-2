@@ -1453,6 +1453,19 @@
 @keyframes shiftConfirmFade{from{opacity:0}to{opacity:1}}@keyframes shiftConfirmPop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.shift-confirm-overlay.show,.shift-confirm-modal{animation:none}}
 </style>
+<style id="modern-notification-popup-style">
+.kf-notify-backdrop{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(15,23,42,.48);backdrop-filter:blur(5px);animation:kfNotifyFade .16s ease}
+.kf-notify-card{width:min(420px,100%);background:#fff;border:1px solid #e5eaf2;border-radius:24px;box-shadow:0 24px 80px rgba(15,23,42,.25);padding:28px 26px 22px;text-align:center;animation:kfNotifyPop .2s ease}
+.kf-notify-icon{width:72px;height:72px;border-radius:50%;margin:0 auto 16px;display:grid;place-items:center;background:#dcfce7;color:#15803d;border:6px solid #f0fdf4;font-size:34px;font-weight:900}
+.kf-notify-icon.kf-notify-error{background:#fee2e2;color:#dc2626;border-color:#fff1f2}
+.kf-notify-icon.kf-notify-warn{background:#fef3c7;color:#b45309;border-color:#fffbeb}
+.kf-notify-title{font-size:20px;font-weight:800;color:#0f172a;margin:0 0 8px}
+.kf-notify-message{font-size:14px;line-height:1.65;color:#475569;white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 22px}
+.kf-notify-ok{width:100%;border:0;border-radius:13px;padding:12px 18px;color:#fff;background:linear-gradient(110deg,#e5242b,#ff7417);font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(229,36,43,.2);transition:transform .15s,filter .15s}
+.kf-notify-ok:hover{filter:brightness(1.04);transform:translateY(-1px)}
+@keyframes kfNotifyFade{from{opacity:0}to{opacity:1}}@keyframes kfNotifyPop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:480px){.kf-notify-card{padding:24px 20px 18px;border-radius:20px}.kf-notify-icon{width:64px;height:64px;font-size:30px}}
+</style>
 </head>
 <body>
   <div id="session-restore-screen" role="status" aria-live="polite">
@@ -5244,52 +5257,84 @@
     function exportOmsetAreaExcel(){const rows=getFilteredOmsetArea();const headers=['NO','ID CABANG','SPV','NAMA OUTLET','OMSET','RATA RATA OMSET','TARGET','EXP','ACHIVMENT',omsetAreaZoneHeader];const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const average=key=>rows.length?rows.reduce((sum,r)=>sum+(Number(r[key])||0),0)/rows.length:0;const lines=[headers,...rows.map((r,i)=>[r.no||i+1,r.branchId,r.spv,r.outlet,r.omset,r.avgOmsetPerResto??Math.round((Number(r.omset)||0)/omsetAreaAverageDays),r.target,r.expDisplay||r.exp,r.achievementDisplay||r.achievement,r.zone]),['','RATA-RATA','','('+rows.length+' OUTLET)',average('omset'),average('avgOmsetPerResto'),average('target'),average('exp'),average('achievement'),'']].map(row=>row.map(esc).join(';'));const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='OMSET_AREA_'+omsetAreaSourceSheet.replace(/[^A-Z0-9]+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}
 
 
-    // ===== KAS FUTSAL FRONTEND PREVIEW (belum terhubung ke GAS) =====
-    const KF_STORAGE_KEY = 'preview_kas_futsal_v1';
-    function kfLoad(){ try{return JSON.parse(localStorage.getItem(KF_STORAGE_KEY)||'{"pages":[],"transactions":[]}');}catch(e){return {pages:[],transactions:[]};} }
-    function kfSave(data){ localStorage.setItem(KF_STORAGE_KEY,JSON.stringify(data)); }
+
+
+
+    // ===== KAS FUTSAL: TERHUBUNG KE GOOGLE APPS SCRIPT =====
+    const KF_STORAGE_KEY = 'preview_kas_futsal_v1'; // fallback preview only
     function kfEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
     function kfMoney(v){return 'Rp'+(Number(v)||0).toLocaleString('id-ID');}
-    function kfUser(){return String(localStorage.getItem('resto_current_user')||localStorage.getItem('resto_user_name')||'spv_a').trim();}
-    function kfPage(){const d=kfLoad();return d.pages[0]||null;}
+    // Notifikasi global modern: popup modal dengan ikon checklist untuk status sukses.
+    (function installModernAlert(){
+      const nativeAlert=window.alert.bind(window);
+      window.alert=function(message){
+        const msg=String(message??'');
+        // Jika belum ada DOM/modal yang bisa dibuat, fallback aman ke alert bawaan.
+        if(!document.body){nativeAlert(msg);return;}
+        const lower=msg.toLowerCase();
+        const isError=/(gagal|error|bermasalah|tidak diizinkan|tidak ditemukan|tidak dapat|belum dapat)/.test(lower);
+        const isWarn=/(wajib|mohon|silakan|pilih |pastikan|konfirmasi|valid|belum)/.test(lower)&&!isError;
+        const kind=isError?'error':(isWarn?'warn':'success');
+        const icon=kind==='success'?'✓':(kind==='error'?'✕':'!');
+        const title=kind==='success'?'Berhasil':(kind==='error'?'Terjadi Kesalahan':'Perhatian');
+        const backdrop=document.createElement('div');backdrop.className='kf-notify-backdrop';backdrop.setAttribute('role','presentation');
+        const card=document.createElement('section');card.className='kf-notify-card';card.setAttribute('role','alertdialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-labelledby','kf-notify-title');
+        const symbol=document.createElement('div');symbol.className='kf-notify-icon'+(kind==='error'?' kf-notify-error':kind==='warn'?' kf-notify-warn':'');symbol.textContent=icon;
+        const heading=document.createElement('h2');heading.className='kf-notify-title';heading.id='kf-notify-title';heading.textContent=title;
+        const text=document.createElement('p');text.className='kf-notify-message';text.textContent=msg;
+        const button=document.createElement('button');button.type='button';button.className='kf-notify-ok';button.textContent='Oke, Mengerti';
+        card.append(symbol,heading,text,button);backdrop.appendChild(card);document.body.appendChild(backdrop);
+        return new Promise(resolve=>{const close=()=>{backdrop.remove();resolve();};button.addEventListener('click',close);backdrop.addEventListener('click',e=>{if(e.target===backdrop)close();});const esc=e=>{if(e.key==='Escape'){close();document.removeEventListener('keydown',esc);}};document.addEventListener('keydown',esc);button.focus();});
+      };
+    })();
+    function kfUser(){return String(localStorage.getItem('resto_current_user')||localStorage.getItem('resto_user_name')||'').trim();}
+    function kfRole(){return String(localStorage.getItem('resto_current_role')||localStorage.getItem('resto_user_role')||'').trim().toLowerCase();}
+    async function kfApi(action, data={}){
+      const response=await fetch(GAS_API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',body:JSON.stringify({action,...data})});
+      const result=await response.json();
+      if(!result||result.status==='error')throw new Error(result?.message||'Gagal memproses Kas Futsal.');
+      return result;
+    }
+    let kfPagesCache=[], kfTxCache=[], kfDashboardCache=null;
+    function kfNormalizePage(p){return {id:p.pageId||p.id,title:p.pageName||p.title,owner:p.ownerUsername||p.owner};}
+    function kfNormalizeTx(t,p){return {id:t.transactionId||t.id,pageId:t.pageId||p?.id,owner:t.createdBy||p?.owner||'',date:t.tanggal||t.date,type:String(t.type||'').toUpperCase(),amount:Number(t.amount)||0,desc:t.description||t.desc||''};}
+    async function kfRefreshPages(){
+      const result=await kfApi('getKasFutsalPages',{username:kfUser(),adminUser:kfUser()});
+      kfPagesCache=(result.pages||[]).map(kfNormalizePage);
+      return kfPagesCache;
+    }
+    async function kfGetDashboard(page){
+      if(!page)return null;
+      const result=await kfApi('getKasFutsalDashboard',{username:kfUser(),pageId:page.id});
+      return {page:kfNormalizePage(result.page||page),transactions:(result.transactions||[]).map(t=>kfNormalizeTx(t,page)),balance:Number(result.balance)||0,totalIn:Number(result.totalIn)||0,totalOut:Number(result.totalOut)||0,canInput:!!result.canInput,canManage:!!result.canManage};
+    }
     function kfPopulateSpvDropdown(){
-      const select=document.getElementById('kf-admin-owner'); if(!select)return;
-      const users=(globalDashboardData&&Array.isArray(globalDashboardData.usersList)?globalDashboardData.usersList:[])
-        .filter(u=>String(u.role||'').toLowerCase()==='supervisor')
-        .sort((a,b)=>String(a.name||a.username).localeCompare(String(b.name||b.username)));
-      const prior=select.value;
-      select.innerHTML='<option value="">-- Pilih SPV Pengelola --</option>'+users.map(u=>`<option value="${kfEsc(u.username)}">${kfEsc(u.name||u.username)} · ${kfEsc(u.username)}</option>`).join('');
-      if(prior&&users.some(u=>String(u.username)===prior))select.value=prior;
-      if(!users.length)select.innerHTML='<option value="">User Supervisor belum tersedia</option>';
+      const select=document.getElementById('kf-admin-owner');if(!select)return;
+      const users=(globalDashboardData&&Array.isArray(globalDashboardData.usersList)?globalDashboardData.usersList:[]).filter(u=>['supervisor','spv'].includes(String(u.role||'').toLowerCase())).sort((a,b)=>String(a.name||a.username).localeCompare(String(b.name||b.username)));
+      const prior=select.value;select.innerHTML='<option value="">-- Pilih SPV Pengelola --</option>'+users.map(u=>`<option value="${kfEsc(u.username)}">${kfEsc(u.name||u.username)} · ${kfEsc(u.username)}</option>`).join('');if(prior&&users.some(u=>String(u.username)===prior))select.value=prior;if(!users.length)select.innerHTML='<option value="">User Supervisor belum tersedia</option>';
     }
-    function renderKasFutsalAdmin(){
-      kfPopulateSpvDropdown();
-      const d=kfLoad(), list=document.getElementById('kf-admin-pages-list'), history=document.getElementById('kf-admin-history');
-      if(!list||!history)return;
-      list.innerHTML=d.pages.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;padding:10px">Nama Halaman</th><th style="text-align:left;padding:10px">SPV Pengelola</th><th style="text-align:left;padding:10px">Aksi</th></tr></thead><tbody>${d.pages.map((p,i)=>`<tr><td style="padding:10px;border-top:1px solid var(--border)">${kfEsc(p.title)}</td><td style="padding:10px;border-top:1px solid var(--border)">${kfEsc(p.owner)}</td><td style="padding:10px;border-top:1px solid var(--border)"><button onclick="kfAdminDeletePage(${i})">Hapus Halaman</button></td></tr>`).join('')}</tbody></table>`:'<p>Belum ada halaman. Buat halaman baru di form di atas.</p>';
-      const tx=d.transactions.slice().reverse();
-      history.innerHTML=tx.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th>Tanggal</th><th>SPV</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th><th>Aksi Admin</th></tr></thead><tbody>${tx.map(t=>`<tr><td>${kfEsc(t.date)}</td><td>${kfEsc(t.owner)}</td><td>${kfEsc(t.desc)}</td><td>${kfEsc(t.type)}</td><td>${kfMoney(t.amount)}</td><td><button onclick="kfAdminEdit(${kfEsc(JSON.stringify(t.id))})">Edit</button> <button onclick="kfAdminDelete(${kfEsc(JSON.stringify(t.id))})">Hapus</button></td></tr>`).join('')}</tbody></table>`:'<p>Belum ada transaksi.</p>';
+    async function renderKasFutsalAdmin(){
+      kfPopulateSpvDropdown();const list=document.getElementById('kf-admin-pages-list'),history=document.getElementById('kf-admin-history');if(!list||!history)return;
+      list.innerHTML='<p>Memuat halaman dari database…</p>';history.innerHTML='<p>Memuat transaksi…</p>';
+      try{await kfRefreshPages();const dashboards=await Promise.all(kfPagesCache.map(p=>kfGetDashboard(p)));kfDashboardCache=dashboards;kfTxCache=dashboards.flatMap(d=>d?.transactions||[]);
+        list.innerHTML=kfPagesCache.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;padding:10px">Nama Halaman</th><th style="text-align:left;padding:10px">SPV Pengelola</th><th style="text-align:left;padding:10px">Aksi</th></tr></thead><tbody>${kfPagesCache.map((p,i)=>`<tr><td style="padding:10px;border-top:1px solid var(--border)">${kfEsc(p.title)}</td><td style="padding:10px;border-top:1px solid var(--border)">${kfEsc(p.owner)}</td><td style="padding:10px;border-top:1px solid var(--border)"><button onclick="kfAdminDeletePage('${kfEsc(p.id)}')" disabled title="Penghapusan halaman belum disediakan backend">Hapus Halaman</button></td></tr>`).join('')}</tbody></table>`:'<p>Belum ada halaman. Buat halaman baru di form di atas.</p>';
+        const tx=kfTxCache.slice().reverse();history.innerHTML=tx.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th>Tanggal</th><th>SPV</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th><th>Aksi Admin</th></tr></thead><tbody>${tx.map(t=>`<tr><td>${kfEsc(t.date)}</td><td>${kfEsc(t.owner)}</td><td>${kfEsc(t.desc)}</td><td>${kfEsc(t.type)}</td><td>${kfMoney(t.amount)}</td><td><button onclick="kfAdminEdit('${kfEsc(t.id)}')">Edit</button> <button onclick="kfAdminDelete('${kfEsc(t.id)}')">Hapus</button></td></tr>`).join('')}</tbody></table>`:'<p>Belum ada transaksi.</p>';
+      }catch(e){list.innerHTML=`<p style="color:#b91c1c">Gagal memuat halaman: ${kfEsc(e.message)}. Pastikan GAS telah diterapkan (deploy) dengan action Kas Futsal terbaru.</p>`;history.innerHTML='<p>Data transaksi belum dapat dimuat.</p>';}
     }
-    function kfAdminDeletePage(i){if(!confirm('Hapus halaman Kas Futsal ini?'))return;const d=kfLoad();d.pages.splice(i,1);kfSave(d);renderKasFutsalAdmin();}
-    function kfAdminDelete(id){if(!confirm('Hapus transaksi ini?'))return;const d=kfLoad();d.transactions=d.transactions.filter(t=>t.id!==id);kfSave(d);renderKasFutsalAdmin();renderKasFutsalSpv();}
-    function kfAdminEdit(id){const d=kfLoad(),t=d.transactions.find(x=>x.id===id);if(!t)return;const amount=prompt('Nominal transaksi (Rp):',t.amount);if(amount===null)return;const desc=prompt('Keterangan:',t.desc);if(desc===null)return;const n=Number(amount);if(!Number.isFinite(n)||n<=0){alert('Nominal harus lebih dari 0');return;}t.amount=n;t.desc=desc.trim();kfSave(d);renderKasFutsalAdmin();renderKasFutsalSpv();}
-    document.getElementById('kf-admin-page-form')?.addEventListener('submit',function(e){e.preventDefault();const title=document.getElementById('kf-admin-title').value.trim(),owner=document.getElementById('kf-admin-owner').value.trim();if(!title||!owner)return;const d=kfLoad();const existing=d.pages.find(p=>p.owner.toLowerCase()===owner.toLowerCase());if(existing){existing.title=title;}else d.pages.push({id:'kf_'+Date.now(),title,owner});kfSave(d);this.reset();renderKasFutsalAdmin();alert('Halaman Kas Futsal tersimpan pada preview frontend.');});
+    async function kfAdminDeletePage(id){alert('Action hapus halaman belum tersedia pada backend GAS. Halaman tidak dihapus agar data transaksi aman.');}
+    async function kfAdminDelete(id){if(!confirm('Hapus transaksi ini?'))return;try{await kfApi('adminDeleteKasFutsalTransaction',{adminUser:kfUser(),transactionId:id});await renderKasFutsalAdmin();await renderKasFutsalSpv();alert('Transaksi berhasil dihapus.');}catch(e){alert(e.message);}}
+    async function kfAdminEdit(id){const t=kfTxCache.find(x=>x.id===id);if(!t)return;const amount=prompt('Nominal transaksi (Rp):',t.amount);if(amount===null)return;const desc=prompt('Keterangan:',t.desc);if(desc===null)return;const n=Number(amount);if(!Number.isFinite(n)||n<=0){alert('Nominal harus lebih dari 0');return;}try{await kfApi('adminEditKasFutsalTransaction',{adminUser:kfUser(),transactionId:id,transaction:{amount:n,description:desc.trim(),tanggal:t.date,type:t.type}});await renderKasFutsalAdmin();alert('Transaksi berhasil diperbarui.');}catch(e){alert(e.message);}}
+    document.getElementById('kf-admin-page-form')?.addEventListener('submit',async function(e){e.preventDefault();const title=document.getElementById('kf-admin-title').value.trim(),owner=document.getElementById('kf-admin-owner').value.trim();if(!title||!owner){alert('Nama halaman dan SPV wajib dipilih.');return;}try{const result=await kfApi('createKasFutsalPage',{adminUser:kfUser(),pageName:title,ownerUsername:owner});this.reset();await renderKasFutsalAdmin();alert(result.message||'Halaman Kas Futsal tersimpan ke Google Sheets.');}catch(err){alert(err.message);}});
     document.getElementById('kf-spv-date')&&(document.getElementById('kf-spv-date').value=new Date().toISOString().slice(0,10));
-    document.getElementById('kf-spv-form')?.addEventListener('submit',function(e){e.preventDefault();const p=kfPage(),owner=kfUser();if(!p||p.owner.toLowerCase()!==owner.toLowerCase()){alert('Akun ini hanya memiliki akses lihat saja.');return;}const amount=Number(document.getElementById('kf-spv-amount').value);if(!Number.isFinite(amount)||amount<=0){alert('Nominal harus lebih dari 0');return;}const d=kfLoad();d.transactions.push({id:'tx_'+Date.now(),pageId:p.id,owner,date:document.getElementById('kf-spv-date').value,type:document.getElementById('kf-spv-type').value,amount,desc:document.getElementById('kf-spv-desc').value.trim()});kfSave(d);this.reset();document.getElementById('kf-spv-date').value=new Date().toISOString().slice(0,10);renderKasFutsalSpv();});
-    function renderKasFutsalSpv(){const p=kfPage(),d=kfLoad(),owner=kfUser(),canInput=!!p&&p.owner.toLowerCase()===owner.toLowerCase();const tx=d.transactions.filter(t=>!p||t.pageId===p.id);const incoming=tx.filter(t=>t.type==='MASUK').reduce((s,t)=>s+t.amount,0),outgoing=tx.filter(t=>t.type==='KELUAR').reduce((s,t)=>s+t.amount,0);const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};set('kf-spv-balance',kfMoney(incoming-outgoing));set('kf-spv-in',kfMoney(incoming));set('kf-spv-out',kfMoney(outgoing));set('kf-spv-access-badge',canInput?'PENGELOLA · INPUT AKTIF':'VIEW ONLY');set('kf-spv-view-label',canInput?'SPV Pengelola':'Mode lihat saja');const panel=document.getElementById('kf-spv-input-panel');if(panel)panel.style.display=canInput?'block':'none';const hist=document.getElementById('kf-spv-history');if(hist)hist.innerHTML=tx.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th>Tanggal</th><th>SPV</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th></tr></thead><tbody>${tx.slice().reverse().map(t=>`<tr><td>${kfEsc(t.date)}</td><td>${kfEsc(t.owner)}</td><td>${kfEsc(t.desc)}</td><td>${t.type==='MASUK'?'Kas Masuk':'Kas Keluar'}</td><td>${kfMoney(t.amount)}</td></tr>`).join('')}</tbody></table>`:'<p>Belum ada transaksi kas futsal.</p>';if(!p&&hist)hist.innerHTML='<p>Halaman Kas Futsal belum dibuat oleh Admin.</p>';}
-
-
-    function renderKasFutsalReadonly(prefix){
-      const p=kfPage(),d=kfLoad(),tx=d.transactions.filter(t=>!p||t.pageId===p.id);
-      const incoming=tx.filter(t=>t.type==='MASUK').reduce((sum,t)=>sum+(Number(t.amount)||0),0);
-      const outgoing=tx.filter(t=>t.type==='KELUAR').reduce((sum,t)=>sum+(Number(t.amount)||0),0);
-      const put=(suffix,value)=>{const el=document.getElementById('kf-'+prefix+'-'+suffix);if(el)el.textContent=value;};
-      put('balance',kfMoney(incoming-outgoing));put('in',kfMoney(incoming));put('out',kfMoney(outgoing));
-      const hist=document.getElementById('kf-'+prefix+'-history');
-      if(!hist)return;
-      hist.innerHTML=tx.length?`<table><thead><tr><th>Tanggal</th><th>SPV</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th></tr></thead><tbody>${tx.slice().reverse().map(t=>`<tr><td>${kfEsc(t.date)}</td><td>${kfEsc(t.owner)}</td><td>${kfEsc(t.desc)}</td><td>${t.type==='MASUK'?'Kas Masuk':'Kas Keluar'}</td><td>${kfMoney(t.amount)}</td></tr>`).join('')}</tbody></table>`:'<p style="padding:12px;color:#64748b">Belum ada transaksi kas futsal.</p>';
-      if(!p)hist.innerHTML='<p style="padding:12px;color:#64748b">Halaman Kas Futsal belum dibuat oleh Admin.</p>';
+    document.getElementById('kf-spv-form')?.addEventListener('submit',async function(e){e.preventDefault();const p=window.kfCurrentPage;if(!p||!window.kfCurrentDashboard?.canInput){alert('Akun ini hanya memiliki akses lihat saja.');return;}const amount=Number(document.getElementById('kf-spv-amount').value),date=document.getElementById('kf-spv-date').value,type=document.getElementById('kf-spv-type').value,desc=document.getElementById('kf-spv-desc').value.trim();if(!Number.isFinite(amount)||amount<=0||!date||!desc){alert('Tanggal, nominal valid, dan keterangan wajib diisi.');return;}try{await kfApi('saveKasFutsalTransaction',{username:kfUser(),transaction:{pageId:p.id,tanggal:date,type,amount,description:desc}});this.reset();document.getElementById('kf-spv-date').value=new Date().toISOString().slice(0,10);await renderKasFutsalSpv();alert('Transaksi berhasil disimpan.');}catch(err){alert(err.message);}});
+    async function renderKasFutsalSpv(){
+      const badge=document.getElementById('kf-spv-access-badge'),hist=document.getElementById('kf-spv-history'),panel=document.getElementById('kf-spv-input-panel');if(hist)hist.innerHTML='<p>Memuat dashboard kas…</p>';
+      try{const pages=await kfRefreshPages(),owner=kfUser(),p=pages.find(x=>String(x.owner).toLowerCase()===owner.toLowerCase())||pages[0]||null;window.kfCurrentPage=p||null;const d=p?await kfGetDashboard(p):null;window.kfCurrentDashboard=d;
+        const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};set('kf-spv-balance',kfMoney(d?.balance||0));set('kf-spv-in',kfMoney(d?.totalIn||0));set('kf-spv-out',kfMoney(d?.totalOut||0));const canInput=!!d?.canInput;set('kf-spv-access-badge',canInput?'PENGELOLA · INPUT AKTIF':'VIEW ONLY');set('kf-spv-view-label',canInput?'SPV Pengelola':'Mode lihat saja');if(badge)badge.textContent=canInput?'PENGELOLA · INPUT AKTIF':'VIEW ONLY';if(panel)panel.style.display=canInput?'block':'none';const tx=d?.transactions||[];if(hist)hist.innerHTML=tx.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th>Tanggal</th><th>SPV</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th></tr></thead><tbody>${tx.slice().reverse().map(t=>`<tr><td>${kfEsc(t.date)}</td><td>${kfEsc(t.owner)}</td><td>${kfEsc(t.desc)}</td><td>${t.type==='MASUK'?'Kas Masuk':'Kas Keluar'}</td><td>${kfMoney(t.amount)}</td></tr>`).join('')}</tbody></table>`:'<p>Belum ada transaksi kas futsal.</p>';if(!p&&hist)hist.innerHTML='<p>Halaman Kas Futsal belum dibuat oleh Admin untuk akun SPV ini.</p>';
+      }catch(e){if(hist)hist.innerHTML=`<p style="color:#b91c1c">Gagal memuat dashboard: ${kfEsc(e.message)}.</p>`;if(panel)panel.style.display='none';}
     }
+    async function renderKasFutsalReadonly(prefix){
+      const hist=document.getElementById('kf-'+prefix+'-history');if(hist)hist.innerHTML='<p>Memuat data kas…</p>';try{const pages=await kfRefreshPages(),owner=kfUser();let p=pages.find(x=>String(x.owner).toLowerCase()===owner.toLowerCase());if(!p&&pages.length)p=pages[0];const d=p?await kfGetDashboard(p):null;const tx=d?.transactions||[],incoming=d?.totalIn||0,outgoing=d?.totalOut||0;const put=(suffix,value)=>{const el=document.getElementById('kf-'+prefix+'-'+suffix);if(el)el.textContent=value;};put('balance',kfMoney(incoming-outgoing));put('in',kfMoney(incoming));put('out',kfMoney(outgoing));if(hist)hist.innerHTML=tx.length?`<table><thead><tr><th>Tanggal</th><th>SPV</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th></tr></thead><tbody>${tx.slice().reverse().map(t=>`<tr><td>${kfEsc(t.date)}</td><td>${kfEsc(t.owner)}</td><td>${kfEsc(t.desc)}</td><td>${t.type==='MASUK'?'Kas Masuk':'Kas Keluar'}</td><td>${kfMoney(t.amount)}</td></tr>`).join('')}</tbody></table>`:'<p style="padding:12px;color:#64748b">Belum ada transaksi kas futsal.</p>';if(!p&&hist)hist.innerHTML='<p style="padding:12px;color:#64748b">Halaman Kas Futsal belum dibuat oleh Admin.</p>';}catch(e){if(hist)hist.innerHTML=`<p style="color:#b91c1c">Gagal memuat data: ${kfEsc(e.message)}</p>`;}}
     function renderKasFutsalPic(){renderKasFutsalReadonly('pic');}
 
     function setupNavbarForRole(role) {
