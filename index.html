@@ -8458,13 +8458,39 @@
         await loadAEPosAccountsForDashboard();
         renderAESelectedAccountTurnover();
         const orders=ordersRes.orders||metrics.bigOrders||[];
-        const big=orders.reduce((a,x)=>a+(+x.amount||0),0), event=+metrics.eventOmset||0, sat=+metrics.satelitOmset||0;
+        const big=orders.reduce((a,x)=>a+(+x.amount||0),0);
+        // Omset POS hanya diakui setelah shift berstatus CLOSED/TUTUP.
+        // Tipe transaksi dicocokkan dengan master akun POS jika field tipe tidak ikut dikirim.
+        const posRows=metrics.transactions||[];
+        const getPosAccountForTxn=t=>{
+          const who=String(t.username||t.cashierUsername||t.posUsername||t.accountUsername||t.cashier||t.user||t.createdBy||'').trim().toLowerCase();
+          const id=String(t.accountId||t.posAccountId||t.cashierId||'').trim();
+          return aeLiveAccountsCache.find(a=>(!!a.username&&String(a.username).trim().toLowerCase()===who)||(!!a.id&&id&&String(a.id).trim()===id))||{};
+        };
+        const getTxnPosType=t=>{
+          const a=getPosAccountForTxn(t);
+          // Master akun POS harus mengalahkan salesSource lama seperti "Reguler".
+          return String(t.posType||t.pos_type||t.accountType||
+            a.posType||a.pos_type||a.type||t.type||t.salesSource||'').trim().toUpperCase();
+        };
+        const isShiftClosed=t=>{
+          const s=String(t.shiftStatus||t.shift_status||t.shiftState||t.shift_state||'').trim().toUpperCase();
+          return t.isShiftClosed===true||t.shiftClosed===true||t.shift_closed===true||
+            !!(t.shiftClosedAt||t.shift_closed_at||t.closedAt||t.closed_at)||
+            ['CLOSED','CLOSE','TUTUP','SHIFT CLOSED','SELESAI'].includes(s);
+        };
+        const txnAmount=t=>Number(t.total||t.amount||t.omset||t.grandTotal||t.grand_total||0)||0;
+        const closedPosRows=posRows.filter(isShiftClosed);
+        const eventRows=closedPosRows.filter(t=>getTxnPosType(t)==='EVENT');
+        const satRows=closedPosRows.filter(t=>['SATELIT','SATELLITE'].includes(getTxnPosType(t)));
+        const event=eventRows.reduce((n,t)=>n+txnAmount(t),0);
+        const sat=satRows.reduce((n,t)=>n+txnAmount(t),0);
         const total=big+event+sat;
         [['ae-total',total],['ae-big-total',big],['ae-event-total',event],['ae-sat-total',sat],['ae-big-label',big],['ae-event-label',event],['ae-sat-label',sat]].forEach(([id,n])=>{const el=document.getElementById(id);if(el)el.textContent=aeMoney(n)});
         const max=Math.max(big,event,sat,1);
         [['ae-big-bar',big],['ae-event-bar',event],['ae-sat-bar',sat]].forEach(([id,n])=>{const el=document.getElementById(id);if(el)el.style.width=(n/max*100)+'%'});
-        aeStatus('ae-event-status','Terhubung ke Web Apps POS · '+(metrics.transactions||[]).filter(x=>String(x.salesSource).toLowerCase()==='event').length+' transaksi');
-        aeStatus('ae-sat-status','Terhubung ke Web Apps POS · '+(metrics.transactions||[]).filter(x=>String(x.salesSource).toLowerCase()==='satelit'&&String(x.shiftStatus).toUpperCase()==='CLOSED').length+' transaksi shift tertutup');
+        aeStatus('ae-event-status',eventRows.length+' transaksi dari shift EVENT tertutup');
+        aeStatus('ae-sat-status',satRows.length+' transaksi dari shift SATELIT tertutup');
       } catch(e) {
         [['ae-total',0],['ae-big-total',0],['ae-event-total',0],['ae-sat-total',0],['ae-big-label',0],['ae-event-label',0],['ae-sat-label',0]].forEach(([id,n])=>{const el=document.getElementById(id);if(el)el.textContent=aeMoney(n)});
         aeStatus('ae-event-status','Gagal memuat POS: '+e.message);
@@ -8502,14 +8528,15 @@
       const getWho=t=>String(t.username||t.cashierUsername||t.posUsername||t.accountUsername||t.cashier||t.user||t.createdBy||'').toLowerCase();
       const getId=t=>String(t.accountId||t.posAccountId||t.cashierId||'');
       const matches=(t,a)=>{const who=getWho(t),id=getId(t);return (!!a.username&&who===String(a.username).toLowerCase())||(!!a.id&&id===String(a.id));};
-      const amount=t=>Number(t.total||t.amount||t.omset||t.grandTotal||0)||0;
+      const amount=t=>Number(t.total||t.amount||t.omset||t.grandTotal||t.grand_total||0)||0;
+      const isClosed=t=>{const s=String(t.shiftStatus||t.shift_status||t.shiftState||t.shift_state||'').trim().toUpperCase();return t.isShiftClosed===true||t.shiftClosed===true||t.shift_closed===true||!!(t.shiftClosedAt||t.shift_closed_at||t.closedAt||t.closed_at)||['CLOSED','CLOSE','TUTUP','SHIFT CLOSED','SELESAI'].includes(s);};
       cards.innerHTML=aeLiveAccountsCache.length?aeLiveAccountsCache.map((a,i)=>{
-        const rows=all.filter(t=>matches(t,a));const dayRows=rows.filter(t=>String(t.date||t.createdAt||t.timestamp||'').slice(0,10)===today);
-        const sum=dayRows.reduce((n,t)=>n+amount(t),0);const brand=String(a.brand||'-').toUpperCase();const type=String(a.type||a.posType||'-').toUpperCase();
-        return `<div style="border:1px solid #e2e8f0;border-radius:13px;padding:15px;background:linear-gradient(145deg,#fff,#f8fafc);min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span class="ae-tag" style="background:${brand==='NGEUMI'?'#ffedd5':'#fee2e2'};color:${brand==='NGEUMI'?'#9a3412':'#b91c1c'}">${aeEsc(brand)}</span><span class="ae-tag">${aeEsc(type)}</span></div><h4 style="margin:12px 0 4px;overflow-wrap:anywhere">${aeEsc(a.username||'Akun POS')}</h4><div class="ae-muted" style="font-size:.82rem">${aeEsc(a.resto||'Resto belum ditentukan')}</div><div style="margin-top:15px;font-size:.78rem;color:#64748b">Omset Hari Ini</div><strong style="display:block;font-size:1.35rem;color:#0f766e;margin:3px 0 8px">${aeMoney(sum)}</strong><div class="ae-muted" style="font-size:.8rem">${dayRows.length} transaksi hari ini</div><div class="ae-muted" style="font-size:.75rem;margin-top:8px">${rows.length?'Data transaksi diterima':'Menunggu transaksi / identitas akun'}</div></div>`;
+        const rows=all.filter(t=>matches(t,a));const closedRows=rows.filter(isClosed);const dayRows=closedRows.filter(t=>String(t.date||t.createdAt||t.timestamp||t.shiftClosedAt||t.closedAt||'').slice(0,10)===today);
+        const sum=dayRows.reduce((n,t)=>n+amount(t),0);const brand=String(a.brand||'-').toUpperCase();const type=String(a.type||a.posType||a.pos_type||'-').toUpperCase();
+        return `<div style="border:1px solid #e2e8f0;border-radius:13px;padding:15px;background:linear-gradient(145deg,#fff,#f8fafc);min-width:0"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span class="ae-tag" style="background:${brand==='NGEUMI'?'#ffedd5':'#fee2e2'};color:${brand==='NGEUMI'?'#9a3412':'#b91c1c'}">${aeEsc(brand)}</span><span class="ae-tag">${aeEsc(type)}</span></div><h4 style="margin:12px 0 4px;overflow-wrap:anywhere">${aeEsc(a.username||'Akun POS')}</h4><div class="ae-muted" style="font-size:.82rem">${aeEsc(a.resto||'Resto belum ditentukan')}</div><div style="margin-top:15px;font-size:.78rem;color:#64748b">Omset Hari Ini</div><strong style="display:block;font-size:1.35rem;color:#0f766e;margin:3px 0 8px">${aeMoney(sum)}</strong><div class="ae-muted" style="font-size:.8rem">${dayRows.length} transaksi shift tertutup hari ini</div><div class="ae-muted" style="font-size:.75rem;margin-top:8px">${rows.length?(closedRows.length?'Omset masuk setelah tutup shift':'Menunggu POS tutup shift'):'Menunggu transaksi / identitas akun'}</div></div>`;
       }).join(''):'<p class="ae-muted">Belum ada akun POS terdaftar. Tambahkan akun pada menu Management Account → Akun POS.</p>';
       const allRows=all.slice().sort((a,b)=>String(b.date||b.createdAt||b.timestamp||'').localeCompare(String(a.date||a.createdAt||a.timestamp||''))).slice(0,30);
-      wrap.innerHTML='<table class="ae-table"><thead><tr><th>Waktu</th><th>Akun POS</th><th>Brand</th><th>Resto</th><th>Nominal</th></tr></thead><tbody>'+(allRows.length?allRows.map(t=>{const account=aeLiveAccountsCache.find(a=>matches(t,a));return `<tr><td>${aeEsc(String(t.date||t.createdAt||t.timestamp||'-').slice(0,19))}</td><td>${aeEsc(account?.username||t.username||t.cashierUsername||t.posUsername||t.accountUsername||t.cashier||'-')}</td><td>${aeEsc(account?.brand||t.brand||'-')}</td><td>${aeEsc(account?.resto||t.resto||t.branch||'-')}</td><td>${aeMoney(amount(t))}</td></tr>`}).join(''):'<tr><td colspan="5" style="text-align:center;color:#64748b">Belum ada transaksi yang dikirim endpoint getAEMetrics.</td></tr>')+'</tbody></table>';
+      wrap.innerHTML='<table class="ae-table"><thead><tr><th>Waktu</th><th>Akun POS</th><th>Brand</th><th>Resto</th><th>Status Shift</th><th>Nominal</th></tr></thead><tbody>'+(allRows.length?allRows.map(t=>{const account=aeLiveAccountsCache.find(a=>matches(t,a));return `<tr><td>${aeEsc(String(t.date||t.createdAt||t.timestamp||'-').slice(0,19))}</td><td>${aeEsc(account?.username||t.username||t.cashierUsername||t.posUsername||t.accountUsername||t.cashier||'-')}</td><td>${aeEsc(account?.brand||t.brand||'-')}</td><td>${aeEsc(account?.resto||t.resto||t.branch||'-')}</td><td>${isClosed(t)?'<span class="ae-tag">SHIFT TUTUP</span>':'<span class="ae-tag" style="background:#fef3c7;color:#92400e">BELUM TUTUP</span>'}</td><td>${aeMoney(amount(t))}</td></tr>`}).join(''):'<tr><td colspan="6" style="text-align:center;color:#64748b">Belum ada transaksi yang dikirim endpoint getAEMetrics.</td></tr>')+'</tbody></table>';
       aeStatus('ae-live-pos-status',''+aeLiveAccountsCache.length+' akun POS · diperbarui '+new Date().toLocaleTimeString('id-ID')+' · otomatis 15 detik');
     }
     document.addEventListener('DOMContentLoaded',()=>{
