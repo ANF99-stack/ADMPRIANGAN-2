@@ -3147,6 +3147,46 @@
           <div class="card" style="margin-top:16px;padding:22px"><div class="card-title">Kelola Transaksi Kas</div><p style="font-size:.82rem;color:var(--text-muted)">Admin memiliki akses penuh untuk mengedit dan menghapus transaksi pada halaman preview.</p><div id="kf-admin-history" style="overflow-x:auto;margin-top:12px"></div></div>
         </div>
 
+        <!-- ================= PAGE: EDIT COVERAGE AE (ADMIN ONLY) ================= -->
+        <section id="page-admin-edit-ae-coverage" class="admin-page-content" style="display:none">
+          <div class="admin-card-item" style="border:1px solid #c7d2fe;background:#fff;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:18px;">
+              <div>
+                <h3 style="font-size:1.25rem;font-weight:900;color:#4338ca;"><i class="fa-solid fa-user-shield"></i> EDIT COVERAGE AE</h3>
+                <p style="font-size:.84rem;color:var(--text-muted);margin-top:5px;">Atur daftar resto untuk setiap Account Executive secara terpisah berdasarkan username AE.</p>
+              </div>
+              <button type="button" onclick="loadAdminAECoveragePage(true)" style="border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;padding:9px 13px;border-radius:10px;font-weight:800;cursor:pointer;"><i class="fa-solid fa-rotate"></i> Refresh Data</button>
+            </div>
+            <div id="admin-ae-coverage-status" style="padding:11px 13px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;color:#475569;font-size:.82rem;font-weight:700;margin-bottom:16px;">Pilih user AE untuk mengatur coverage.</div>
+            <div class="admin-input-grid" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr));align-items:end;">
+              <div class="admin-input-group">
+                <label for="admin-ae-coverage-user">PILIH USER ACCOUNT EXECUTIVE</label>
+                <select id="admin-ae-coverage-user" onchange="renderAdminAECoverageEditor()" style="width:100%;padding:11px 12px;border:1.5px solid #c7d2fe;border-radius:10px;background:#fff;font-size:.88rem;font-weight:700;">
+                  <option value="">Memuat daftar AE...</option>
+                </select>
+              </div>
+              <div style="padding:11px 14px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;">
+                <div style="font-size:.7rem;font-weight:900;color:#4338ca;">TOTAL COVERAGE TERPILIH</div>
+                <div id="admin-ae-coverage-count" style="font-size:1.35rem;font-weight:900;color:#312e81;">0 / 10 RESTO</div>
+              </div>
+            </div>
+            <div style="margin-top:17px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px;">
+                <label for="admin-ae-coverage-search" style="font-size:.78rem;font-weight:900;color:var(--text-muted);">PILIH / HAPUS RESTO COVERAGE</label>
+                <input id="admin-ae-coverage-search" type="search" placeholder="Cari nama resto..." oninput="filterAdminAECoverageItems()" style="max-width:320px;width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:9px;font-size:.82rem;">
+              </div>
+              <div id="admin-ae-coverage-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:7px;max-height:430px;overflow:auto;padding:12px;border:1px solid var(--border);border-radius:12px;background:#f8fafc;">
+                <div style="grid-column:1/-1;padding:18px;text-align:center;color:var(--text-muted);font-size:.82rem;">Pilih user AE untuk menampilkan daftar resto.</div>
+              </div>
+              <p style="font-size:.75rem;color:var(--text-muted);margin-top:8px;line-height:1.5;">Maksimal 10 resto untuk setiap AE. Perubahan disimpan berdasarkan username AE pada sheet AECoverage dan disinkronkan ke kolom CoverageRestos di sheet Users.</p>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:17px;">
+              <button type="button" onclick="renderAdminAECoverageEditor(true)" style="border:1px solid var(--border);background:#fff;color:#475569;padding:10px 15px;border-radius:10px;font-weight:800;cursor:pointer;">Reset Pilihan</button>
+              <button id="admin-ae-coverage-save" type="button" onclick="saveAdminAECoverage()" style="border:0;background:linear-gradient(135deg,#4338ca,#3730a3);color:#fff;padding:10px 18px;border-radius:10px;font-weight:900;cursor:pointer;box-shadow:0 5px 14px #4338ca30;"><i class="fa-solid fa-floppy-disk"></i> SIMPAN COVERAGE AE</button>
+            </div>
+          </div>
+        </section>
+
       </div> <!-- CLOSES #admin-view cleanly -->
 
       <!-- WORKSPACE KHUSUS ACCOUNT EXECUTIVE (CLEANLY INSIDE <main>) -->
@@ -5360,6 +5400,7 @@
             <summary><i class="fa-solid fa-store"></i><span>MANAGEMENT RESTO</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
             <div class="admin-nav-group-menu">
               <div class="nav-item" onclick="switchAdminNav('page-spv-coverage-update', this)"><i class="fa-solid fa-store"></i><span>UPDATE COVERAGE SPV</span></div>
+              <div class="nav-item" onclick="switchAdminNav('page-admin-edit-ae-coverage', this)"><i class="fa-solid fa-user-shield"></i><span>EDIT COVERAGE AE</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-checkin-kasir-limit', this)"><i class="fa-solid fa-clock"></i><span>JAM CHECK-IN KASIR</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-links', this)"><i class="fa-solid fa-link"></i><span>KELOLA LINK AREA & CABANG</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-spv-links', this)"><i class="fa-solid fa-user-tie"></i><span>KELOLA LINK SUPERVISOR</span></div>
@@ -7918,6 +7959,8 @@
         } else if (pageId === 'page-checkin-kasir-limit') {
           renderCheckinKasirLimitPage();
           renderCheckinKasirSchedulePage();
+        } else if (pageId === 'page-admin-edit-ae-coverage') {
+          loadAdminAECoveragePage(true);
         } else if (pageId === 'page-omset-area') {
           loadOmsetArea(true);
         }
@@ -8409,6 +8452,134 @@
       document.getElementById('username').value = '';
       document.getElementById('password').value = '';
       errorMsg.style.display = 'none';
+    }
+
+    // ===== ADMIN: EDIT COVERAGE AE =====
+    let adminAECoverageUsers = [];
+    let adminAECoverageRestos = [];
+    let adminAECoverageOriginal = new Set();
+
+    async function loadAdminAECoveragePage(force = false) {
+      const status = document.getElementById('admin-ae-coverage-status');
+      const select = document.getElementById('admin-ae-coverage-user');
+      const list = document.getElementById('admin-ae-coverage-list');
+      if (!select || !list) return;
+      const previous = select.value;
+      if (status) status.textContent = 'Memuat daftar Account Executive dan coverage dari GAS...';
+      list.innerHTML = '<div style="grid-column:1/-1;padding:18px;text-align:center;color:#64748b;">Memuat daftar resto...</div>';
+      try {
+        const result = await gasRequestJson({
+          action: 'getAECoverageAdminData',
+          adminUser: localStorage.getItem('resto_current_user') || ''
+        }, { timeoutMs: 30000, retries: 1 });
+        if (!result || result.status !== 'success') throw new Error(result?.message || 'Gagal mengambil data coverage AE.');
+        adminAECoverageUsers = Array.isArray(result.users) ? result.users : [];
+        const backendRestos = Array.isArray(result.restos) ? result.restos : [];
+        const dashboardRestos = typeof getAvailableRestoListFromDatabase === 'function' ? getAvailableRestoListFromDatabase() : [];
+        adminAECoverageRestos = [...new Map([...backendRestos, ...dashboardRestos]
+          .map(x => [String(x || '').trim().toLowerCase(), String(x || '').trim()])
+          .filter(([key, value]) => key && value)).values()].sort((a,b) => a.localeCompare(b, 'id'));
+        const selectedUser = adminAECoverageUsers.find(u => String(u.username).toLowerCase() === String(previous).toLowerCase());
+        select.innerHTML = '<option value="">-- Pilih Account Executive --</option>' + adminAECoverageUsers.map(u =>
+          `<option value="${escapeHtml(u.username)}">${escapeHtml(u.name || u.username)} (${escapeHtml(u.username)})</option>`
+        ).join('');
+        if (selectedUser) select.value = selectedUser.username;
+        else if (adminAECoverageUsers.length) select.value = adminAECoverageUsers[0].username;
+        document.getElementById('admin-ae-coverage-search').value = '';
+        renderAdminAECoverageEditor();
+        if (status) status.textContent = adminAECoverageUsers.length
+          ? `${adminAECoverageUsers.length} user Account Executive ditemukan. Pilih AE untuk melihat dan mengubah coverage miliknya.`
+          : 'Belum ada user dengan role Account Executive pada sheet Users.';
+      } catch (error) {
+        list.innerHTML = `<div style="grid-column:1/-1;padding:18px;color:#b91c1c;">Gagal memuat coverage AE: ${escapeHtml(error.message || error)}</div>`;
+        if (status) status.textContent = 'Gagal mengambil data dari GAS.';
+      }
+    }
+
+    function renderAdminAECoverageEditor(reset = false) {
+      const select = document.getElementById('admin-ae-coverage-user');
+      const list = document.getElementById('admin-ae-coverage-list');
+      if (!select || !list) return;
+      const username = select.value;
+      const user = adminAECoverageUsers.find(u => String(u.username).toLowerCase() === String(username).toLowerCase());
+      if (!user) {
+        list.innerHTML = '<div style="grid-column:1/-1;padding:18px;text-align:center;color:#64748b;">Pilih user AE terlebih dahulu.</div>';
+        adminAECoverageOriginal = new Set();
+        updateAdminAECoverageCount();
+        return;
+      }
+      let restos = [...new Set([...(adminAECoverageRestos || []), ...(user.coverageRestos || [])].map(x => String(x || '').trim()).filter(Boolean))]
+        .sort((a,b) => a.localeCompare(b, 'id'));
+      adminAECoverageOriginal = new Set((user.coverageRestos || []).map(x => String(x || '').trim()));
+      list.innerHTML = restos.length ? restos.map(resto => {
+        const checked = adminAECoverageOriginal.has(resto) ? 'checked' : '';
+        const safe = escapeHtml(resto);
+        return `<label class="admin-ae-coverage-item" data-search="${safe.toLowerCase()}" style="display:flex;align-items:center;gap:9px;padding:10px 11px;background:#fff;border:1px solid #e2e8f0;border-radius:9px;font-size:.81rem;font-weight:700;color:#334155;cursor:pointer;min-width:0;">
+          <input class="admin-ae-coverage-checkbox" type="checkbox" value="${safe}" ${checked} onchange="updateAdminAECoverageCount()" style="width:17px;height:17px;accent-color:#4338ca;flex:0 0 auto;">
+          <span style="overflow-wrap:anywhere;">${safe}</span>
+        </label>`;
+      }).join('') : '<div style="grid-column:1/-1;padding:18px;text-align:center;color:#64748b;">Daftar resto belum tersedia pada database. Periksa data user cabang.</div>';
+      const search = document.getElementById('admin-ae-coverage-search');
+      if (search) search.value = '';
+      updateAdminAECoverageCount();
+    }
+
+    function filterAdminAECoverageItems() {
+      const query = String(document.getElementById('admin-ae-coverage-search')?.value || '').trim().toLowerCase();
+      document.querySelectorAll('#admin-ae-coverage-list .admin-ae-coverage-item').forEach(item => {
+        const name = String(item.getAttribute('data-search') || '');
+        item.style.display = !query || name.includes(query) ? 'flex' : 'none';
+      });
+    }
+
+    function updateAdminAECoverageCount() {
+      const checked = document.querySelectorAll('#admin-ae-coverage-list .admin-ae-coverage-checkbox:checked').length;
+      const count = document.getElementById('admin-ae-coverage-count');
+      if (count) count.textContent = `${checked} / 10 RESTO`;
+      const save = document.getElementById('admin-ae-coverage-save');
+      if (save) save.disabled = checked < 1 || checked > 10;
+      if (save) save.style.opacity = save.disabled ? '.55' : '1';
+      if (save) save.style.cursor = save.disabled ? 'not-allowed' : 'pointer';
+    }
+
+    async function saveAdminAECoverage() {
+      const select = document.getElementById('admin-ae-coverage-user');
+      const save = document.getElementById('admin-ae-coverage-save');
+      const status = document.getElementById('admin-ae-coverage-status');
+      const username = String(select?.value || '').trim();
+      const user = adminAECoverageUsers.find(u => String(u.username).toLowerCase() === username.toLowerCase());
+      const coverage = Array.from(document.querySelectorAll('#admin-ae-coverage-list .admin-ae-coverage-checkbox:checked')).map(el => el.value);
+      if (!user) { alert('Pilih user AE terlebih dahulu.'); return; }
+      if (!coverage.length) { alert('Minimal pilih 1 resto coverage untuk AE.'); return; }
+      if (coverage.length > 10) { alert('Maksimal 10 resto coverage untuk setiap AE.'); return; }
+      if (save) { save.disabled = true; save.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> MENYIMPAN...'; }
+      if (status) status.textContent = `Menyimpan coverage untuk ${username}...`;
+      try {
+        const result = await gasRequestJson({
+          action: 'saveAECoverageAdmin',
+          adminUser: localStorage.getItem('resto_current_user') || '',
+          targetUser: username,
+          coverageRestos: coverage
+        }, { timeoutMs: 30000, retries: 1 });
+        if (!result || result.status !== 'success') throw new Error(result?.message || 'Coverage AE gagal disimpan.');
+        user.coverageRestos = result.coverageRestos || coverage;
+        user.totalResto = Number(result.totalResto) || coverage.length;
+        const globalUser = (globalDashboardData?.usersList || []).find(u => String(u.username || '').toLowerCase() === username.toLowerCase());
+        if (globalUser) {
+          globalUser.coverage_restos = user.coverageRestos.slice();
+          globalUser.coverageRestos = user.coverageRestos.slice();
+          globalUser.coverageResto = user.coverageRestos.slice();
+          globalUser.total_resto = user.totalResto;
+        }
+        adminAECoverageOriginal = new Set(user.coverageRestos);
+        if (status) status.textContent = `Coverage ${username} berhasil disimpan. ${user.coverageRestos.length} resto terhubung.`;
+        alert(`Coverage AE ${username} berhasil diperbarui.\nTotal: ${user.coverageRestos.length} resto.`);
+      } catch (error) {
+        if (status) status.textContent = `Gagal menyimpan coverage ${username}.`;
+        alert(`Gagal menyimpan coverage AE: ${error.message || error}`);
+      } finally {
+        if (save) { save.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> SIMPAN COVERAGE AE'; updateAdminAECoverageCount(); }
+      }
     }
 
     // ===== ACCOUNT EXECUTIVE UI =====
