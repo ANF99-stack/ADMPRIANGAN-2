@@ -1369,7 +1369,32 @@
   #page-spv-controling-cogs .cogs-shell{padding:14px;border-radius:18px}
 }
 
-  </style>
+  
+/* ===== Modern Kas Futsal Admin page ===== */
+#page-admin-kas-futsal { max-width: 1240px; margin: 0 auto; padding: 28px 22px 42px; }
+#page-admin-kas-futsal .user-banner { border-radius: 24px; overflow:hidden; box-shadow:0 14px 32px rgba(30,41,59,.10); margin-bottom:22px; }
+#page-admin-kas-futsal .user-banner h2 { font-size:clamp(1.35rem,2vw,1.8rem); letter-spacing:-.035em; margin-bottom:8px; }
+#page-admin-kas-futsal .user-banner p { max-width:720px; line-height:1.65; opacity:.94; }
+#page-admin-kas-futsal .card { border:1px solid #e5eaf2; border-radius:20px; padding:24px; background:linear-gradient(180deg,#fff 0%,#fcfdff 100%); box-shadow:0 6px 20px rgba(15,23,42,.045); margin-bottom:18px; }
+#page-admin-kas-futsal .card-title { font-size:1.02rem; font-weight:800; color:#172033; display:flex; align-items:center; gap:10px; }
+#page-admin-kas-futsal .card-title:before { content:""; width:4px; height:20px; border-radius:8px; background:linear-gradient(180deg,#ef2727,#ff7816); }
+#page-admin-kas-futsal label { display:block; font-size:.82rem; font-weight:700; color:#475569; margin-bottom:8px; }
+#page-admin-kas-futsal input, #page-admin-kas-futsal select { min-height:48px; border:1px solid #dbe3ee !important; border-radius:12px !important; padding:11px 14px !important; background:#f8fafc !important; color:#172033 !important; font:inherit; font-size:.92rem; transition:border-color .18s,box-shadow .18s,background .18s; box-sizing:border-box; }
+#page-admin-kas-futsal input:focus, #page-admin-kas-futsal select:focus { outline:none; border-color:#f04432 !important; box-shadow:0 0 0 4px rgba(240,68,50,.10); background:#fff !important; }
+#page-admin-kas-futsal small { display:block; margin-top:8px; font-size:.76rem; line-height:1.5; }
+#page-admin-kas-futsal .btn-login-submit { min-height:48px; border-radius:14px !important; font-weight:800; letter-spacing:.01em; box-shadow:0 8px 18px rgba(239,68,36,.17); transition:transform .18s,box-shadow .18s; }
+#page-admin-kas-futsal .btn-login-submit:hover { transform:translateY(-1px); box-shadow:0 12px 24px rgba(239,68,36,.22); }
+#page-admin-kas-futsal #kf-admin-pages-list table, #page-admin-kas-futsal #kf-admin-history table { width:100%; border-collapse:separate !important; border-spacing:0; font-size:.88rem; }
+#page-admin-kas-futsal table th { background:#f3f6fb; color:#475569; font-size:.75rem; text-transform:uppercase; letter-spacing:.045em; padding:13px 14px; text-align:left; white-space:nowrap; }
+#page-admin-kas-futsal table th:first-child { border-radius:10px 0 0 10px; }
+#page-admin-kas-futsal table th:last-child { border-radius:0 10px 10px 0; }
+#page-admin-kas-futsal table td { padding:14px; border-bottom:1px solid #edf1f6; color:#334155; vertical-align:middle; }
+#page-admin-kas-futsal table tbody tr:hover td { background:#fafbfe; }
+#page-admin-kas-futsal table button { border:1px solid #e2e8f0; border-radius:9px; padding:8px 11px; background:#fff; color:#334155; font-weight:700; cursor:pointer; }
+#page-admin-kas-futsal table button:hover { border-color:#f04432; color:#e83224; background:#fff7f5; }
+@media(max-width:700px){ #page-admin-kas-futsal{padding:16px 12px 28px;} #page-admin-kas-futsal .card{padding:17px;border-radius:16px;} #kf-admin-page-form{grid-template-columns:1fr !important;} }
+
+</style>
 
 <style>
 .shift-confirm-overlay{position:fixed;inset:0;z-index:2147483001;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,23,42,.68);backdrop-filter:blur(6px)}
@@ -1932,6 +1957,28 @@
         </div>
 
       </div>
+
+
+        <div id="page-spv-kas-futsal" class="role-page-content" style="display:none">
+          <div class="user-banner"><div class="banner-header"><div><h2>Dashboard Kas Futsal</h2><p>Dashboard monitoring kas futsal. SPV yang ditunjuk dapat melakukan input kas masuk dan kas keluar; SPV lainnya hanya dapat melihat.</p></div><span id="kf-spv-access-badge" class="status-pill">VIEW ONLY</span></div></div>
+          <div class="grid-container" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:16px 0">
+            <div class="stat-card"><div class="stat-icon" style="background:#dcfce7;color:#15803d"><i class="fa-solid fa-wallet"></i></div><div><div class="stat-label">Saldo Kas</div><div class="stat-num" id="kf-spv-balance">Rp0</div></div></div>
+            <div class="stat-card"><div class="stat-icon" style="background:#dbeafe;color:#1d4ed8"><i class="fa-solid fa-arrow-down"></i></div><div><div class="stat-label">Total Kas Masuk</div><div class="stat-num" id="kf-spv-in">Rp0</div></div></div>
+            <div class="stat-card"><div class="stat-icon" style="background:#fee2e2;color:#b91c1c"><i class="fa-solid fa-arrow-up"></i></div><div><div class="stat-label">Total Kas Keluar</div><div class="stat-num" id="kf-spv-out">Rp0</div></div></div>
+          </div>
+          <div id="kf-spv-input-panel" class="card" style="display:none;margin-bottom:16px">
+            <div class="card-title">Input Transaksi Kas Futsal</div>
+            <form id="kf-spv-form" class="form-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:12px">
+              <div><label>Tanggal</label><input type="date" id="kf-spv-date" required style="width:100%"></div>
+              <div><label>Jenis Transaksi</label><select id="kf-spv-type" required style="width:100%"><option value="MASUK">Kas Masuk (+)</option><option value="KELUAR">Kas Keluar (−)</option></select></div>
+              <div><label>Nominal (Rp)</label><input type="number" id="kf-spv-amount" min="1" step="1" required placeholder="Nominal" style="width:100%"></div>
+              <div><label>Keterangan</label><input id="kf-spv-desc" required maxlength="200" placeholder="Contoh: Iuran futsal" style="width:100%"></div>
+              <div style="display:flex;align-items:end"><button class="btn-login-submit" type="submit" style="width:100%">Simpan Transaksi</button></div>
+            </form>
+            <p style="font-size:.8rem;color:var(--text-muted);margin-top:10px">SPV hanya dapat menambahkan transaksi. Edit dan hapus transaksi dilakukan oleh Admin.</p>
+          </div>
+          <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div class="card-title">Riwayat Kas Futsal</div><span id="kf-spv-view-label" class="status-pill">Mode lihat saja</span></div><div id="kf-spv-history" style="overflow-x:auto;margin-top:12px"></div></div>
+        </div>
 
       <!-- ================= PSD VIEW ================= -->
       <div id="psd-view" style="display: none;">
@@ -3020,6 +3067,21 @@
         <div class="oa-panels"><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-chart-pie"></i> Komposisi Zona Outlet</h3><div id="oa-zone-chart"></div></div><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-people-group"></i> Pencapaian per SPV</h3><div id="oa-spv-chart"></div></div><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-ranking-star"></i> Top 5 Outlet berdasarkan Omset</h3><div id="oa-top-outlet-chart"></div></div></div>
         <div class="oa-bottom"><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-table-list"></i> Data Omset Outlet</h3><div class="oa-table-tools"><span id="oa-table-count" class="oa-muted">0 outlet</span><span style="flex:1"></span><button class="oa-btn" onclick="exportOmsetAreaExcel()"><i class="fa-solid fa-file-excel"></i> Export Excel</button></div><div id="oa-table" class="oa-table-wrap"></div><div class="oa-pagination"><span id="oa-page-info" class="oa-muted"></span><div style="display:flex;gap:7px"><button class="oa-btn" onclick="changeOmsetAreaPage(-1)">‹ Sebelumnya</button><button class="oa-btn" onclick="changeOmsetAreaPage(1)">Berikutnya ›</button></div></div></div></div>
       </section>
+
+
+        <div id="page-admin-kas-futsal" class="admin-page-content" style="display:none;max-width:1400px;margin:0 auto;padding:18px 20px 28px">
+          <div class="user-banner"><div class="banner-header"><div><h2>Kelola Kas Futsal</h2><p>Admin mengatur halaman Kas Futsal, memilih SPV pengelola, serta mengelola seluruh transaksi kas. Preview frontend menggunakan penyimpanan lokal browser.</p></div></div></div>
+          <div class="card" style="margin:16px 0">
+            <div class="card-title">Buat / Atur Halaman Kas Futsal</div>
+            <form id="kf-admin-page-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px">
+              <div><label>Nama Halaman</label><input id="kf-admin-title" required placeholder="Contoh: KAS FUTSAL ZONA A" style="width:100%"></div>
+              <div><label>SPV Pengelola</label><select id="kf-admin-owner" required style="width:100%"><option value="">Memuat daftar SPV...</option></select><small style="color:var(--text-muted)">Pilih SPV dari daftar user dengan role Supervisor.</small></div>
+              <div style="display:flex;align-items:end"><button class="btn-login-submit" type="submit" style="width:100%">Buat / Simpan Halaman</button></div>
+            </form>
+          </div>
+          <div class="card" style="padding:22px"><div class="card-title">Daftar Halaman Kas Futsal</div><div id="kf-admin-pages-list" style="overflow-x:auto;margin-top:12px"></div></div>
+          <div class="card" style="margin-top:16px;padding:22px"><div class="card-title">Kelola Transaksi Kas</div><p style="font-size:.82rem;color:var(--text-muted)">Admin memiliki akses penuh untuk mengedit dan menghapus transaksi pada halaman preview.</p><div id="kf-admin-history" style="overflow-x:auto;margin-top:12px"></div></div>
+        </div>
 
       </div> <!-- CLOSES #admin-view cleanly -->
 
@@ -5130,6 +5192,41 @@
     function changeOmsetAreaPage(delta){const n=Math.max(1,Math.ceil(getFilteredOmsetArea().length/15));omsetAreaPage=Math.max(1,Math.min(n,omsetAreaPage+delta));renderOmsetArea();}
     function exportOmsetAreaExcel(){const rows=getFilteredOmsetArea();const headers=['NO','ID CABANG','SPV','NAMA OUTLET','OMSET','RATA RATA OMSET','TARGET','EXP','ACHIVMENT',omsetAreaZoneHeader];const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const average=key=>rows.length?rows.reduce((sum,r)=>sum+(Number(r[key])||0),0)/rows.length:0;const lines=[headers,...rows.map((r,i)=>[r.no||i+1,r.branchId,r.spv,r.outlet,r.omset,r.avgOmsetPerResto??Math.round((Number(r.omset)||0)/omsetAreaAverageDays),r.target,r.expDisplay||r.exp,r.achievementDisplay||r.achievement,r.zone]),['','RATA-RATA','','('+rows.length+' OUTLET)',average('omset'),average('avgOmsetPerResto'),average('target'),average('exp'),average('achievement'),'']].map(row=>row.map(esc).join(';'));const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='OMSET_AREA_'+omsetAreaSourceSheet.replace(/[^A-Z0-9]+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}
 
+
+    // ===== KAS FUTSAL FRONTEND PREVIEW (belum terhubung ke GAS) =====
+    const KF_STORAGE_KEY = 'preview_kas_futsal_v1';
+    function kfLoad(){ try{return JSON.parse(localStorage.getItem(KF_STORAGE_KEY)||'{"pages":[],"transactions":[]}');}catch(e){return {pages:[],transactions:[]};} }
+    function kfSave(data){ localStorage.setItem(KF_STORAGE_KEY,JSON.stringify(data)); }
+    function kfEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    function kfMoney(v){return 'Rp'+(Number(v)||0).toLocaleString('id-ID');}
+    function kfUser(){return String(localStorage.getItem('resto_current_user')||localStorage.getItem('resto_user_name')||'spv_a').trim();}
+    function kfPage(){const d=kfLoad();return d.pages[0]||null;}
+    function kfPopulateSpvDropdown(){
+      const select=document.getElementById('kf-admin-owner'); if(!select)return;
+      const users=(globalDashboardData&&Array.isArray(globalDashboardData.usersList)?globalDashboardData.usersList:[])
+        .filter(u=>String(u.role||'').toLowerCase()==='supervisor')
+        .sort((a,b)=>String(a.name||a.username).localeCompare(String(b.name||b.username)));
+      const prior=select.value;
+      select.innerHTML='<option value="">-- Pilih SPV Pengelola --</option>'+users.map(u=>`<option value="${kfEsc(u.username)}">${kfEsc(u.name||u.username)} · ${kfEsc(u.username)}</option>`).join('');
+      if(prior&&users.some(u=>String(u.username)===prior))select.value=prior;
+      if(!users.length)select.innerHTML='<option value="">User Supervisor belum tersedia</option>';
+    }
+    function renderKasFutsalAdmin(){
+      kfPopulateSpvDropdown();
+      const d=kfLoad(), list=document.getElementById('kf-admin-pages-list'), history=document.getElementById('kf-admin-history');
+      if(!list||!history)return;
+      list.innerHTML=d.pages.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;padding:10px">Nama Halaman</th><th style="text-align:left;padding:10px">SPV Pengelola</th><th style="text-align:left;padding:10px">Aksi</th></tr></thead><tbody>${d.pages.map((p,i)=>`<tr><td style="padding:10px;border-top:1px solid var(--border)">${kfEsc(p.title)}</td><td style="padding:10px;border-top:1px solid var(--border)">${kfEsc(p.owner)}</td><td style="padding:10px;border-top:1px solid var(--border)"><button onclick="kfAdminDeletePage(${i})">Hapus Halaman</button></td></tr>`).join('')}</tbody></table>`:'<p>Belum ada halaman. Buat halaman baru di form di atas.</p>';
+      const tx=d.transactions.slice().reverse();
+      history.innerHTML=tx.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th>Tanggal</th><th>SPV</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th><th>Aksi Admin</th></tr></thead><tbody>${tx.map(t=>`<tr><td>${kfEsc(t.date)}</td><td>${kfEsc(t.owner)}</td><td>${kfEsc(t.desc)}</td><td>${kfEsc(t.type)}</td><td>${kfMoney(t.amount)}</td><td><button onclick="kfAdminEdit(${kfEsc(JSON.stringify(t.id))})">Edit</button> <button onclick="kfAdminDelete(${kfEsc(JSON.stringify(t.id))})">Hapus</button></td></tr>`).join('')}</tbody></table>`:'<p>Belum ada transaksi.</p>';
+    }
+    function kfAdminDeletePage(i){if(!confirm('Hapus halaman Kas Futsal ini?'))return;const d=kfLoad();d.pages.splice(i,1);kfSave(d);renderKasFutsalAdmin();}
+    function kfAdminDelete(id){if(!confirm('Hapus transaksi ini?'))return;const d=kfLoad();d.transactions=d.transactions.filter(t=>t.id!==id);kfSave(d);renderKasFutsalAdmin();renderKasFutsalSpv();}
+    function kfAdminEdit(id){const d=kfLoad(),t=d.transactions.find(x=>x.id===id);if(!t)return;const amount=prompt('Nominal transaksi (Rp):',t.amount);if(amount===null)return;const desc=prompt('Keterangan:',t.desc);if(desc===null)return;const n=Number(amount);if(!Number.isFinite(n)||n<=0){alert('Nominal harus lebih dari 0');return;}t.amount=n;t.desc=desc.trim();kfSave(d);renderKasFutsalAdmin();renderKasFutsalSpv();}
+    document.getElementById('kf-admin-page-form')?.addEventListener('submit',function(e){e.preventDefault();const title=document.getElementById('kf-admin-title').value.trim(),owner=document.getElementById('kf-admin-owner').value.trim();if(!title||!owner)return;const d=kfLoad();const existing=d.pages.find(p=>p.owner.toLowerCase()===owner.toLowerCase());if(existing){existing.title=title;}else d.pages.push({id:'kf_'+Date.now(),title,owner});kfSave(d);this.reset();renderKasFutsalAdmin();alert('Halaman Kas Futsal tersimpan pada preview frontend.');});
+    document.getElementById('kf-spv-date')&&(document.getElementById('kf-spv-date').value=new Date().toISOString().slice(0,10));
+    document.getElementById('kf-spv-form')?.addEventListener('submit',function(e){e.preventDefault();const p=kfPage(),owner=kfUser();if(!p||p.owner.toLowerCase()!==owner.toLowerCase()){alert('Akun ini hanya memiliki akses lihat saja.');return;}const amount=Number(document.getElementById('kf-spv-amount').value);if(!Number.isFinite(amount)||amount<=0){alert('Nominal harus lebih dari 0');return;}const d=kfLoad();d.transactions.push({id:'tx_'+Date.now(),pageId:p.id,owner,date:document.getElementById('kf-spv-date').value,type:document.getElementById('kf-spv-type').value,amount,desc:document.getElementById('kf-spv-desc').value.trim()});kfSave(d);this.reset();document.getElementById('kf-spv-date').value=new Date().toISOString().slice(0,10);renderKasFutsalSpv();});
+    function renderKasFutsalSpv(){const p=kfPage(),d=kfLoad(),owner=kfUser(),canInput=!!p&&p.owner.toLowerCase()===owner.toLowerCase();const tx=d.transactions.filter(t=>!p||t.pageId===p.id);const incoming=tx.filter(t=>t.type==='MASUK').reduce((s,t)=>s+t.amount,0),outgoing=tx.filter(t=>t.type==='KELUAR').reduce((s,t)=>s+t.amount,0);const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};set('kf-spv-balance',kfMoney(incoming-outgoing));set('kf-spv-in',kfMoney(incoming));set('kf-spv-out',kfMoney(outgoing));set('kf-spv-access-badge',canInput?'PENGELOLA · INPUT AKTIF':'VIEW ONLY');set('kf-spv-view-label',canInput?'SPV Pengelola':'Mode lihat saja');const panel=document.getElementById('kf-spv-input-panel');if(panel)panel.style.display=canInput?'block':'none';const hist=document.getElementById('kf-spv-history');if(hist)hist.innerHTML=tx.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th>Tanggal</th><th>SPV</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th></tr></thead><tbody>${tx.slice().reverse().map(t=>`<tr><td>${kfEsc(t.date)}</td><td>${kfEsc(t.owner)}</td><td>${kfEsc(t.desc)}</td><td>${t.type==='MASUK'?'Kas Masuk':'Kas Keluar'}</td><td>${kfMoney(t.amount)}</td></tr>`).join('')}</tbody></table>`:'<p>Belum ada transaksi kas futsal.</p>';if(!p&&hist)hist.innerHTML='<p>Halaman Kas Futsal belum dibuat oleh Admin.</p>';}
+
     function setupNavbarForRole(role) {
       let html = '';
 
@@ -5158,6 +5255,7 @@
               <div class="nav-item" onclick="switchAdminNav('page-spv-links', this)"><i class="fa-solid fa-user-tie"></i><span>KELOLA LINK SUPERVISOR</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-admin-stok-opname', this)"><i class="fa-solid fa-boxes-stacked"></i><span>STOK OPNAME</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-admin-update-barang', this)"><i class="fa-solid fa-box-open"></i><span>UPDATE BARANG</span></div>
+              <div class="nav-item" onclick="switchAdminNav('page-admin-kas-futsal', this)"><i class="fa-solid fa-futbol"></i><span>KAS FUTSAL</span></div>
               <div class="nav-item" onclick="switchAdminNav('page-psd-links', this)"><i class="fa-solid fa-id-card-clip"></i><span>KELOLA LINK PSD</span></div>
             </div>
           </details>
@@ -5184,6 +5282,7 @@
             </div>
           </details>
           <div class="nav-item" onclick="switchSpvCogsPage('page-spv-controling-cogs', this)"><i class="fa-solid fa-chart-column"></i><span>CONTROLING COGS</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-spv-kas-futsal', this); renderKasFutsalSpv()"><i class="fa-solid fa-futbol"></i><span>KAS FUTSAL</span></div>
         `;
       } else if (role === 'psd') {
         html = `
@@ -5396,6 +5495,7 @@
       
       const targetPage = document.getElementById(pageId);
       if (targetPage) targetPage.style.display = 'block';
+      if (pageId === 'page-spv-kas-futsal') renderKasFutsalSpv();
 
       if (pageId === 'page-check-karyawan') {
         // Saat halaman dibuka, filter tanggal langsung ke hari ini.
@@ -7602,7 +7702,8 @@
         'page-check-karyawan',
         'page-daftar-karyawan',
         'page-groming-kasir',
-        'page-groming-karesto'
+        'page-groming-karesto',
+        'page-admin-kas-futsal'
       ].forEach(id => {
         const page = document.getElementById(id);
         if (page) page.style.display = 'none';
@@ -7610,6 +7711,24 @@
 
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
       if (element) element.classList.add('active');
+
+      if (pageId === 'page-admin-kas-futsal') {
+        // Halaman Kas Futsal Admin berdiri sendiri: sembunyikan dashboard utama,
+        // statistik global, dan seluruh halaman Admin lainnya.
+        ['page-shared-operasional','page-check-karyawan','page-daftar-karyawan',
+         'page-groming-kasir','page-groming-karesto'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.style.display = 'none';
+        });
+        document.querySelectorAll('#admin-view .admin-page-content').forEach(page => page.style.display = 'none');
+        const stats = document.querySelector('#admin-view > .admin-stats-grid');
+        if (stats) stats.style.display = 'none';
+        document.getElementById('admin-view').style.display = 'block';
+        const kasPage = document.getElementById(pageId);
+        if (kasPage) kasPage.style.display = 'block';
+        renderKasFutsalAdmin();
+        return;
+      }
 
       if (pageId === 'page-shared-operasional') {
         document.getElementById('admin-view').style.display = 'none';
