@@ -3948,7 +3948,26 @@
       const restoLabelEl = document.getElementById('checkin_resto_label');
       if (restoLabelEl) {
         const currentName = localStorage.getItem('resto_user_name') || localStorage.getItem('resto_current_user') || 'CABANG';
-        restoLabelEl.value = formatRestoName(currentName);
+        const formattedResto = formatRestoName(currentName);
+        restoLabelEl.value = formattedResto;
+
+        // Shift 3 hanya tersedia untuk resto bertipe 24 JAM.
+        // Tipe resto dibaca dari master resto timing yang sudah digunakan sistem.
+        const shiftSelect = document.getElementById('checkin_shifting');
+        if (shiftSelect && typeof isResto24JamForCheckin === 'function') {
+          const is24Jam = isResto24JamForCheckin(formattedResto);
+          const shift3Option = Array.from(shiftSelect.options).find(opt => String(opt.value).toUpperCase() === 'SHIFT 3');
+
+          if (shift3Option) {
+            shift3Option.hidden = !is24Jam;
+            shift3Option.disabled = !is24Jam;
+          }
+
+          // Jika Shift 3 sudah terpilih tetapi resto Reguler, reset pilihan agar tidak tersubmit.
+          if (!is24Jam && String(shiftSelect.value).toUpperCase() === 'SHIFT 3') {
+            shiftSelect.value = '';
+          }
+        }
       }
     }
 
@@ -5629,7 +5648,6 @@
               <div class="nav-item" onclick="switchCogsPage('page-cogs-order', this)"><i class="fa-solid fa-truck-ramp-box"></i><span>UPDATE ORDERAN</span></div>
             </div>
           </details>
-          <div class="nav-item" onclick="switchRoleNav('page-user-kas-futsal', this); renderKasFutsalPic()"><i class="fa-solid fa-futbol"></i><span>KAS FUTSAL</span></div>
         `;
       }
 
@@ -5838,21 +5856,41 @@
       }
     }
 
+    // Hindari request heartbeat yang tumpang tindih saat login, restore sesi,
+    // dan interval 30 detik berjalan berdekatan.
+    let recordUserActivityPromise = null;
+    let recordUserActivityUsername = '';
+
     async function recordUserActivity(username) {
       if (!username) return;
+      const normalizedUsername = String(username).trim();
       const nowMs = Date.now();
-      
-      localStorage.setItem(`resto_user_last_online_${username}`, nowMs.toString());
 
-      try {
-        await gasRequestJson({
-          action: "updateLastOnline",
-          username: username,
-          timestampMs: nowMs
-        }, { timeoutMs: 5000, retries: 0 });
-      } catch (err) {
-        console.warn("Gagal update last online ke GAS:", err);
+      // Update status lokal secara langsung agar UI tetap responsif.
+      localStorage.setItem(`resto_user_last_online_${normalizedUsername}`, nowMs.toString());
+
+      if (recordUserActivityPromise && recordUserActivityUsername === normalizedUsername) {
+        return recordUserActivityPromise;
       }
+
+      recordUserActivityUsername = normalizedUsername;
+      recordUserActivityPromise = (async () => {
+        try {
+          await gasRequestJson({
+            action: "updateLastOnline",
+            username: normalizedUsername,
+            timestampMs: nowMs
+          }, { timeoutMs: 15000, retries: 1, retryDelayMs: 800 });
+        } catch (err) {
+          // Heartbeat bersifat latar belakang; jangan menghambat login/dashboard.
+          console.warn("Gagal update last online ke GAS:", err);
+        } finally {
+          recordUserActivityPromise = null;
+          recordUserActivityUsername = '';
+        }
+      })();
+
+      return recordUserActivityPromise;
     }
 
     function getUserLastOnlineText(userObj) {
