@@ -4658,92 +4658,136 @@
       }
     }
 
+    function normalizeCheckinPhotoSource(value) {
+      let raw = String(value || '').trim();
+      if (!raw || raw === 'Foto Live Kamera Ada' || raw === '-') return '';
+
+      if (/^(https?:|blob:)/i.test(raw)) return raw;
+
+      // Normalisasi data URL yang berasal dari penyimpanan Base64 / file arsip.
+      if (/^data:image\//i.test(raw)) {
+        const commaIndex = raw.indexOf(',');
+        if (commaIndex < 0) return '';
+        const meta = raw.slice(0, commaIndex + 1);
+        let payload = raw.slice(commaIndex + 1)
+          .replace(/\s/g, '+')
+          .replace(/-/g, '+')
+          .replace(/_/g, '/');
+        if (!payload || !/^[A-Za-z0-9+/]*={0,2}$/.test(payload)) return '';
+        const remainder = payload.length % 4;
+        if (remainder === 1) return '';
+        if (remainder) payload += '='.repeat(4 - remainder);
+        return meta + payload;
+      }
+
+      // Beberapa data lama hanya menyimpan teks Base64 tanpa awalan data:image.
+      let base64 = raw.replace(/\s/g, '+').replace(/-/g, '+').replace(/_/g, '/');
+      if (base64.length >= 100 && /^[A-Za-z0-9+/]*={0,2}$/.test(base64)) {
+        const remainder = base64.length % 4;
+        if (remainder !== 1) {
+          if (remainder) base64 += '='.repeat(4 - remainder);
+          return 'data:image/jpeg;base64,' + base64;
+        }
+      }
+      return '';
+    }
+
     async function openPhotoModal(checkinId) {
       const list = getStoredCheckinData();
-      const shiftConfirmed = await showModernShiftConfirm({
-        nama,
-        resto: formattedRestoName,
-        shift: shifting,
-        waktu: (document.getElementById('checkin_datetime')?.value || new Date().toLocaleString('id-ID')) + ' WIB'
-      });
-      if (!shiftConfirmed) {
-        document.getElementById('checkin_shifting')?.focus();
+      const record = list.find(r => String(r?.id || '') === String(checkinId || ''));
+      if (!record) {
+        alert('Data check-in tidak ditemukan. Silakan muat ulang halaman.');
         return;
       }
 
-      const record = list.find(r => String(r.id) === String(checkinId));
-      if (!record) return;
-
-      let photoSrc = '';
-      const rawPhoto = String(record.photoUrl || record.foto || '').trim();
-
-      if (
-        rawPhoto.startsWith('data:image') ||
-        rawPhoto.startsWith('http') ||
-        rawPhoto.startsWith('blob:')
-      ) {
-        photoSrc = rawPhoto;
-      }
-
-      if (!photoSrc && !['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(String(record.shifting || '').toUpperCase())) {
-        try {
-          const result = await gasRequestJson(
-            { action: "getCheckinPhoto", checkinId: checkinId },
-            { timeoutMs: 15000, retries: 2, retryDelayMs: 700 }
-          );
-
-          if (result?.status === "success") {
-            const serverPhoto = String(result.data?.foto || result.data?.photoUrl || '').trim();
-
-            if (
-              serverPhoto.startsWith('data:image') ||
-              serverPhoto.startsWith('http') ||
-              serverPhoto.startsWith('blob:')
-            ) {
-              photoSrc = serverPhoto;
-              record.foto = serverPhoto;
-              record.photoUrl = serverPhoto;
-              record.hasPhoto = true;
-
-              try {
-                localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
-              } catch (e) {}
-            }
-          }
-        } catch (e) {
-          console.warn("Gagal mengambil foto checkin:", e);
-        }
-      }
-
-      if (!photoSrc) {
-        const shift = String(record.shifting || '').toUpperCase();
-        if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) {
-          alert("Check-in ini berstatus " + shift + ", sehingga memang tidak menggunakan foto kamera.");
-        } else {
-          alert("Foto check-in belum dapat diambil dari server. Silakan coba lagi.");
-        }
+      const shift = String(record.shifting || '').trim().toUpperCase();
+      if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(shift)) {
+        alert('Check-in ini berstatus ' + shift + ', sehingga memang tidak menggunakan foto kamera.');
         return;
       }
 
-      document.getElementById('photo_modal_img').src = photoSrc;
+      const modal = document.getElementById('photo-preview-modal');
+      const img = document.getElementById('photo_modal_img');
+      const downloadLink = document.getElementById('photo_modal_download_btn');
+      if (!modal || !img || !downloadLink) {
+        alert('Komponen pratinjau foto tidak ditemukan pada halaman.');
+        return;
+      }
+
+      // Isi informasi karyawan lebih dahulu. Modal ditampilkan setelah sumber foto siap.
       document.getElementById('photo_modal_nama').textContent = record.nama || '-';
       document.getElementById('photo_modal_nik').textContent = record.nik || '-';
       document.getElementById('photo_modal_resto').textContent = formatRestoName(record.restoName) || '-';
       document.getElementById('photo_modal_time').textContent = record.dateTime || '-';
-      document.getElementById('photo_modal_catatan').textContent = (record.catatan || record.keterangan || record.notes || record.note || record.checkin_catatan || '-').toString();
-      document.getElementById('photo_modal_download_btn').href = photoSrc;
+      document.getElementById('photo_modal_catatan').textContent =
+        (record.catatan || record.keterangan || record.notes || record.note || record.checkin_catatan || '-').toString();
+      document.getElementById('photo_modal_shifting').innerHTML =
+        `<span class="badge-status shift">${shift || '-'}</span>`;
 
-      let badgeHtml = `<span class="badge-status shift">${record.shifting}</span>`;
-      if (['OFF', 'SAKIT', 'IZIN', 'CUTI'].includes(record.shifting)) {
-        badgeHtml = `<span class="badge-status absent">${record.shifting}</span>`;
+      img.onerror = null;
+      img.onload = null;
+      img.removeAttribute('src');
+
+      let photoSrc = normalizeCheckinPhotoSource(record.photoUrl || record.foto);
+      let serverMessage = '';
+
+      // Foto hasil migrasi Drive harus diminta lewat endpoint GAS agar server
+      // mengubah file privat Drive menjadi data URL yang bisa ditampilkan browser.
+      if (!photoSrc) {
+        try {
+          const result = await gasRequestJson(
+            { action: 'getCheckinPhoto', checkinId: String(checkinId) },
+            { timeoutMs: 30000, retries: 1, retryDelayMs: 700 }
+          );
+
+          if (result?.status === 'success' && result.data) {
+            photoSrc = normalizeCheckinPhotoSource(result.data.foto) ||
+                       normalizeCheckinPhotoSource(result.data.photoUrl);
+            serverMessage = String(result.message || '');
+
+            // Simpan hanya referensi URL kecil ke cache; jangan memasukkan Base64
+            // foto berukuran besar ke localStorage.
+            if (photoSrc && /^https?:\/\//i.test(photoSrc)) {
+              record.photoUrl = photoSrc;
+            }
+          } else {
+            serverMessage = String(result?.message || 'Server tidak mengembalikan foto.');
+          }
+        } catch (error) {
+          console.error('Gagal mengambil foto check-in dari GAS:', error);
+          serverMessage = error?.message || String(error);
+        }
       }
-      document.getElementById('photo_modal_shifting').innerHTML = badgeHtml;
 
-      document.getElementById('photo-preview-modal').style.display = 'flex';
+      if (!photoSrc) {
+        alert('Foto check-in belum dapat dibuka. ' + (serverMessage || 'Data foto tidak ditemukan atau format foto tidak valid.'));
+        return;
+      }
+
+      img.onerror = () => {
+        console.error('Browser gagal menampilkan sumber foto check-in:', String(photoSrc).slice(0, 180));
+        img.removeAttribute('src');
+        alert('Data foto ditemukan, tetapi format atau akses file tidak dapat ditampilkan. Periksa kolom FotoFileId / FotoStorageType di database dan izin file Drive.');
+        modal.style.display = 'none';
+      };
+      img.onload = () => {
+        modal.style.display = 'flex';
+      };
+
+      downloadLink.href = photoSrc;
+      downloadLink.download = 'checkin-' + String(record.nik || checkinId).replace(/[^a-zA-Z0-9_-]/g, '_') + '.jpg';
+      img.src = photoSrc;
+
+      // Jika browser memakai cache untuk data URL, event load bisa sangat cepat;
+      // pengecekan complete memastikan modal tetap terbuka.
+      if (img.complete && img.naturalWidth > 0) modal.style.display = 'flex';
     }
 
     function closePhotoModal() {
-      document.getElementById('photo-preview-modal').style.display = 'none';
+      const modal = document.getElementById('photo-preview-modal');
+      const image = document.getElementById('photo_modal_img');
+      if (modal) modal.style.display = 'none';
+      if (image) { image.onload = null; image.onerror = null; image.removeAttribute('src'); }
     }
 
     const operasionalDerivedCache = new WeakMap();
