@@ -1188,6 +1188,12 @@
     .ae-btn{border:0;border-radius:10px;padding:10px 14px;background:#b91c1c;color:#fff;font-weight:800;cursor:pointer;margin-top:12px}
     .ae-btn.secondary{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0}
     .ae-table-wrap{overflow:auto;border:1px solid #e2e8f0;border-radius:12px;margin-top:12px}
+    #ae-history-table{max-height:420px;overflow-y:auto;overflow-x:auto;overscroll-behavior:contain;scrollbar-width:thin}
+    #ae-history-table .ae-history-scroll-controls{position:sticky;top:0;z-index:5;display:flex;justify-content:flex-end;gap:6px;padding:6px;background:#f8fafc;border-bottom:1px solid #e2e8f0}
+    #ae-history-table .ae-history-scroll-controls button{border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:8px;padding:5px 10px;font-size:.72rem;font-weight:800;cursor:pointer}
+    #ae-history-table .ae-history-scroll-controls button:hover{background:#fee2e2;color:#dc2626;border-color:#fecaca}
+    #ae-history-table table{width:100%;min-width:650px}
+    #ae-history-table thead th{position:sticky;top:38px;z-index:3;background:#f8fafc}
     .ae-table{width:100%;border-collapse:collapse;min-width:570px;font-size:.78rem}
     .ae-table th,.ae-table td{text-align:left;padding:10px 12px;border-bottom:1px solid #eef2f7;white-space:nowrap}
     .ae-table th{background:#f8fafc;color:#475569;font-size:.7rem;text-transform:uppercase}
@@ -9340,11 +9346,47 @@
       wrap.innerHTML='<p class="ae-muted" style="padding:12px">Memuat riwayat dari Web Apps POS…</p>';
       try {
         const [m,o]=await Promise.all([aeApi({action:'getAEMetrics'}),aeApi({action:'getBigOrders'})]);
-        let rows=[...(o.orders||[]).map(x=>({...x,source:'Big Order',description:x.name,resto:x.resto||''})),...(m.transactions||[]).filter(x=>['Reguler','Event','Satelit'].includes(String(x.salesSource||'').trim())).map(x=>({...x,source:x.salesSource,description:x.id,resto:x.resto||'-',amount:x.total,date:String(x.date||'').slice(0,10)}))];
-        rows=rows.filter(x=>(!date||String(x.date||'').slice(0,10)===date)&&(source==='ALL'||x.source===source)).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
-        wrap.innerHTML='<table class="ae-table"><thead><tr><th>Tanggal</th><th>Sumber</th><th>Resto</th><th>Keterangan</th><th>Omset</th></tr></thead><tbody>'+(rows.length?rows.map(x=>`<tr><td>${aeEsc(String(x.date||'').slice(0,10)||'-')}</td><td>${aeEsc(x.source)}</td><td>${aeEsc(x.resto||'-')}</td><td>${aeEsc(x.description||'-')}</td><td>${aeMoney(x.amount)}</td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#64748b">Belum ada riwayat untuk filter ini.</td></tr>')+'</tbody></table>';
+        const bigOrderRows=(o.orders||[]).map(x=>({...x,source:'Big Order',description:x.name,resto:x.resto||''}));
+        const posRows=(m.transactions||[])
+          .filter(x=>['Reguler','Event','Satelit'].includes(String(x.salesSource||'').trim()))
+          .map(x=>({...x,source:String(x.salesSource||'').trim(),description:x.id,resto:x.resto||'-',amount:x.total,date:String(x.date||'').slice(0,10)}));
+
+        // Satelit: tampilkan total omset per tanggal dan resto, bukan detail per transaksi POS.
+        const satelitGroups=new Map();
+        posRows.filter(x=>x.source==='Satelit').forEach(x=>{
+          const groupKey=String(x.date||'')+'||'+String(x.resto||'-');
+          if(!satelitGroups.has(groupKey)){
+            satelitGroups.set(groupKey,{...x,source:'Satelit',description:'Total Omset Satelit',amount:0,transactionCount:0});
+          }
+          const group=satelitGroups.get(groupKey);
+          const amount=Number(String(x.amount??0).replace(/[^0-9.-]/g,''))||0;
+          group.amount+=amount;
+          group.transactionCount++;
+        });
+        const satelitRows=Array.from(satelitGroups.values()).map(x=>({...x,description:`Total Omset Satelit (${x.transactionCount} transaksi)`}));
+        let rows=[...bigOrderRows,...posRows.filter(x=>x.source!=='Satelit'),...satelitRows];
+        const normalizeHistoryDate=value=>{
+          const raw=String(value||'').trim();
+          if(/^\d{4}-\d{2}-\d{2}/.test(raw))return raw.slice(0,10);
+          const parsed=new Date(raw);
+          return Number.isNaN(parsed.getTime())?'':`${parsed.getFullYear()}-${String(parsed.getMonth()+1).padStart(2,'0')}-${String(parsed.getDate()).padStart(2,'0')}`;
+        };
+        const shortHistoryDate=value=>{
+          const normalized=normalizeHistoryDate(value);if(!normalized)return '-';
+          const [yy,mm,dd]=normalized.split('-').map(Number);
+          const months=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+          return `${String(dd).padStart(2,'0')} ${months[mm-1]||''} ${yy}`;
+        };
+        rows=rows.filter(x=>(!date||normalizeHistoryDate(x.date)===date)&&(source==='ALL'||x.source===source))
+          .sort((a,b)=>normalizeHistoryDate(b.date).localeCompare(normalizeHistoryDate(a.date)));
+        wrap.innerHTML='<div class="ae-history-scroll-controls"><button type="button" onclick="scrollAEHistory(\'up\')">↑ Scroll ke atas</button><button type="button" onclick="scrollAEHistory(\'down\')">↓ Scroll ke bawah</button></div><table class="ae-table"><thead><tr><th>Tanggal</th><th>Sumber</th><th>Resto</th><th>Keterangan</th><th>Omset</th></tr></thead><tbody>'+(rows.length?rows.map(x=>`<tr><td>${aeEsc(shortHistoryDate(x.date))}</td><td>${aeEsc(x.source)}</td><td>${aeEsc(x.resto||'-')}</td><td>${aeEsc(x.description||'-')}</td><td>${aeMoney(x.amount)}</td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#64748b">Belum ada riwayat untuk filter ini.</td></tr>')+'</tbody></table>';
       }catch(e){wrap.innerHTML=`<p class="ae-muted" style="padding:12px">Gagal memuat riwayat POS: ${aeEsc(e.message)}</p>`}
     }
+    window.scrollAEHistory=function(direction){
+      const el=document.getElementById('ae-history-table');if(!el)return;
+      const distance=Math.max(240,Math.floor(el.clientHeight*.75));
+      el.scrollBy({top:direction==='up'?-distance:distance,behavior:'smooth'});
+    };
     async function populateAEBigOrderRestos(){
       const el=document.getElementById('ae-big-restos'); if(!el) return;
       const selected=new Set(Array.from(el.selectedOptions||[]).map(o=>o.value));
