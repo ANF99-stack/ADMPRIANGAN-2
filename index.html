@@ -2013,6 +2013,90 @@
         </div>
 
       </div>
+        <!-- PAGE: PENGAJUAN CHECK IN SPV -->
+        <div id="page-spv-pengajuan-checkin" class="role-page-content" style="display:none;">
+          <div class="user-banner" style="background:linear-gradient(120deg,#064e3b,#15803d);">
+            <div class="banner-header">
+              <div>
+                <h2><i class="fa-solid fa-calendar-check"></i> PENGAJUAN CHECK IN</h2>
+                <p>Input absensi koreksi untuk karyawan yang lupa check-in. Tanggal dan waktu dapat disesuaikan oleh SPV.</p>
+              </div>
+              <span class="status-pill"><i class="fa-solid fa-user-shield"></i> KHUSUS SPV</span>
+            </div>
+          </div>
+
+          <div class="admin-card-item" style="max-width:900px;margin:18px auto;border:1px solid #bbf7d0;background:#fff;">
+            <div style="border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:18px;">
+              <h3 style="font-size:1.15rem;font-weight:850;color:#15803d;display:flex;align-items:center;gap:10px;">
+                <i class="fa-solid fa-clipboard-check"></i> FORM PENGAJUAN ABSENSI
+              </h3>
+              <p style="font-size:.84rem;color:var(--text-muted);margin-top:5px;">Status MASUK wajib menyertakan foto bukti. OFF, IZIN, CUTI, dan SAKIT tidak wajib foto.</p>
+            </div>
+
+            <form id="spv-correction-checkin-form" onsubmit="submitSpvCheckinCorrection(event)" style="max-width:680px;">
+              <div class="input-group">
+                <label>RESTO CABANG (SESUAI COVERAGE SPV)</label>
+                <select id="spv_corr_resto" onchange="loadSpvCorrectionEmployees(); updateSpvCorrectionShiftOptions();" required>
+                  <option value="" selected disabled>— PILIH RESTO —</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label>NAMA KARYAWAN</label>
+                <select id="spv_corr_employee" onchange="updateSpvCorrectionEmployeeInfo()" required>
+                  <option value="" selected disabled>— PILIH KARYAWAN —</option>
+                </select>
+                <small id="spv_corr_employee_info" style="display:block;color:var(--text-muted);margin-top:6px;"></small>
+              </div>
+              <div class="input-group">
+                <label>TANGGAL ABSENSI</label>
+                <input type="date" id="spv_corr_date" required>
+              </div>
+              <div class="input-group">
+                <label>JAM CHECK IN (WIB)</label>
+                <input type="time" id="spv_corr_time" required>
+              </div>
+              <div class="input-group">
+                <label>STATUS KEHADIRAN</label>
+                <select id="spv_corr_status" onchange="toggleSpvCorrectionFields()" required>
+                  <option value="MASUK" selected>MASUK</option>
+                  <option value="OFF">OFF</option>
+                  <option value="IZIN">IZIN</option>
+                  <option value="CUTI">CUTI</option>
+                  <option value="SAKIT">SAKIT</option>
+                </select>
+              </div>
+              <div class="input-group" id="spv_corr_shift_group">
+                <label>SHIFT (SESUAI JADWAL RESTO)</label>
+                <select id="spv_corr_shift" required>
+                  <option value="" selected disabled>— PILIH SHIFT —</option>
+                  <option value="SHIFT 1">SHIFT 1</option>
+                  <option value="SHIFT 2">SHIFT 2</option>
+                  <option value="SHIFT 3">SHIFT 3</option>
+                  <option value="MIDDLE">MIDDLE</option>
+                </select>
+              </div>
+              <div class="input-group" id="spv_corr_photo_group">
+                <label>UPLOAD FOTO BUKTI KARYAWAN MASUK <span style="color:#dc2626;">*</span></label>
+                <input type="file" id="spv_corr_photo" accept="image/*" onchange="previewSpvCorrectionPhoto(event)">
+                <small style="display:block;color:var(--text-muted);margin-top:6px;">Foto wajib untuk status MASUK. Upload foto bukti aktual karyawan.</small>
+                <img id="spv_corr_photo_preview" alt="Preview foto bukti checkin" style="display:none;max-width:220px;max-height:220px;margin-top:10px;border-radius:12px;border:1px solid #d1d5db;object-fit:contain;">
+              </div>
+              <div class="input-group">
+                <label>ALASAN / CATATAN PENGAJUAN</label>
+                <textarea id="spv_corr_note" rows="3" placeholder="Contoh: Karyawan lupa melakukan check-in di User Cabang." required style="resize:vertical;"></textarea>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+                <button type="submit" id="btn-submit-spv-correction" class="btn-login-submit" style="width:auto;padding:12px 24px;background:#15803d;">
+                  <i class="fa-solid fa-floppy-disk"></i> SIMPAN PENGAJUAN
+                </button>
+                <button type="button" class="btn-outline-banner" onclick="resetSpvCorrectionForm()">
+                  <i class="fa-solid fa-rotate-left"></i> RESET FORM
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
 
 
         <div id="page-spv-kas-futsal" class="role-page-content kf-modern-dashboard" style="display:none">
@@ -5605,6 +5689,7 @@
             <div class="admin-nav-group-menu">
               <div class="nav-item" onclick="switchRoleNav('page-shared-operasional', this)"><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span></div>
               <div class="nav-item" onclick="switchRoleNav('page-check-karyawan', this)"><i class="fa-solid fa-user-check"></i><span>CHECK KARYAWAN</span></div>
+              <div class="nav-item" onclick="switchRoleNav('page-spv-pengajuan-checkin', this)"><i class="fa-solid fa-calendar-check"></i><span>PENGAJUAN CHECK IN</span></div>
               <div class="nav-item" onclick="switchRoleNav('page-daftar-karyawan', this)"><i class="fa-solid fa-address-book"></i><span>DAFTAR KARYAWAN</span></div>
               <div class="nav-item" onclick="switchRoleNav('page-groming-kasir', this)"><i class="fa-solid fa-user-clock"></i><span>GROMING KASIR</span></div>
               <div class="nav-item" onclick="switchRoleNav('page-groming-karesto', this)"><i class="fa-solid fa-user-tie"></i><span>GROMING KARESTO</span></div>
@@ -5815,6 +5900,217 @@
       }
     }
 
+
+    // ================= PENGAJUAN CHECK IN MANUAL OLEH SPV =================
+    function getSpvCorrectionCoverageRestos() {
+      const username = String(localStorage.getItem('resto_current_user') || '').trim().toLowerCase();
+      const individual = globalDashboardData?.spvLinksIndividual || {};
+      const profile = individual[username] || individual[String(localStorage.getItem('resto_current_user') || '').trim()] || {};
+      let raw = profile.resto_names || profile.restoNames || profile.coverage_restos || '';
+      if (Array.isArray(raw)) return raw.map(formatRestoName).filter(Boolean);
+      const rawText = String(raw || '').trim();
+      if (!rawText) return [];
+      try {
+        const parsed = JSON.parse(rawText);
+        if (Array.isArray(parsed)) return parsed.map(formatRestoName).filter(Boolean);
+      } catch (e) {}
+      return rawText.split(/[;,|\\r\\n]+/).map(formatRestoName).filter(Boolean);
+    }
+
+    function initializeSpvCorrectionCheckinPage() {
+      const restoSelect = document.getElementById('spv_corr_resto');
+      const dateInput = document.getElementById('spv_corr_date');
+      const timeInput = document.getElementById('spv_corr_time');
+      if (!restoSelect) return;
+      const currentValue = restoSelect.value;
+      const coverage = getSpvCorrectionCoverageRestos();
+      restoSelect.innerHTML = '<option value="" selected disabled>— PILIH RESTO —</option>' +
+        coverage.map(resto => `<option value="${escapeHtml(resto)}">${escapeHtml(resto)}</option>`).join('');
+      if (currentValue && coverage.includes(currentValue)) restoSelect.value = currentValue;
+      if (dateInput && !dateInput.value) dateInput.value = getTodayYMD();
+      if (timeInput && !timeInput.value) {
+        timeInput.value = new Intl.DateTimeFormat('en-GB', {
+          timeZone:'Asia/Jakarta', hour:'2-digit', minute:'2-digit', hourCycle:'h23'
+        }).format(new Date());
+      }
+      loadSpvCorrectionEmployees();
+      updateSpvCorrectionShiftOptions();
+      toggleSpvCorrectionFields();
+    }
+
+    function loadSpvCorrectionEmployees() {
+      const resto = formatRestoName(document.getElementById('spv_corr_resto')?.value || '');
+      const select = document.getElementById('spv_corr_employee');
+      const info = document.getElementById('spv_corr_employee_info');
+      if (!select) return;
+      const employees = (getStoredKaryawanData() || []).filter(k =>
+        formatRestoName(k.resto || k.namaResto || '') === resto &&
+        !['nonaktif','inactive','keluar'].includes(String(k.status || 'Aktif').trim().toLowerCase())
+      ).sort((a,b) => String(a.nama || '').localeCompare(String(b.nama || ''), 'id'));
+      select.innerHTML = '<option value="" selected disabled>— PILIH KARYAWAN —</option>' +
+        employees.map(k => `<option value="${escapeHtml(String(k.nik || '').trim())}">${escapeHtml(String(k.nama || '').trim())} — ${escapeHtml(String(k.nik || '').trim())}</option>`).join('');
+      if (info) info.textContent = employees.length ? `${employees.length} karyawan aktif pada resto ini.` : 'Data karyawan aktif untuk resto ini tidak ditemukan.';
+    }
+
+    function updateSpvCorrectionEmployeeInfo() {
+      const nik = String(document.getElementById('spv_corr_employee')?.value || '').trim();
+      const employee = (getStoredKaryawanData() || []).find(k => String(k.nik || '').trim() === nik);
+      const info = document.getElementById('spv_corr_employee_info');
+      if (info) info.textContent = employee ? `NIK: ${employee.nik} | Jabatan: ${employee.jabatan || '-'} | Status: ${employee.status || 'Aktif'}` : '';
+    }
+
+    function updateSpvCorrectionShiftOptions() {
+      const resto = document.getElementById('spv_corr_resto')?.value || '';
+      const select = document.getElementById('spv_corr_shift');
+      if (!select) return;
+      const is24Jam = isResto24JamForCheckin(resto);
+      Array.from(select.options).forEach(option => {
+        if (String(option.value).toUpperCase() === 'SHIFT 3') option.hidden = !is24Jam;
+      });
+      if (!is24Jam && String(select.value).toUpperCase() === 'SHIFT 3') select.value = '';
+    }
+
+    function toggleSpvCorrectionFields() {
+      const status = String(document.getElementById('spv_corr_status')?.value || 'MASUK').toUpperCase();
+      const isMasuk = status === 'MASUK';
+      const shiftGroup = document.getElementById('spv_corr_shift_group');
+      const shiftSelect = document.getElementById('spv_corr_shift');
+      const photoInput = document.getElementById('spv_corr_photo');
+      const photoGroup = document.getElementById('spv_corr_photo_group');
+      if (shiftGroup) shiftGroup.style.display = isMasuk ? 'block' : 'none';
+      if (shiftSelect) shiftSelect.required = isMasuk;
+      if (photoInput) photoInput.required = isMasuk;
+      if (photoGroup) {
+        const label = photoGroup.querySelector('label');
+        if (label) label.innerHTML = isMasuk
+          ? 'UPLOAD FOTO BUKTI KARYAWAN MASUK <span style="color:#dc2626;">*</span>'
+          : 'UPLOAD FOTO BUKTI (OPSIONAL)';
+      }
+    }
+
+    function previewSpvCorrectionPhoto(event) {
+      const file = event?.target?.files?.[0];
+      const preview = document.getElementById('spv_corr_photo_preview');
+      if (!preview) return;
+      if (!file) {
+        preview.src = '';
+        preview.style.display = 'none';
+        return;
+      }
+      if (!file.type || !file.type.startsWith('image/')) {
+        alert('File bukti harus berupa gambar.');
+        event.target.value = '';
+        preview.src = '';
+        preview.style.display = 'none';
+        return;
+      }
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+    }
+
+    async function compressSpvCorrectionPhoto(file) {
+      if (!file) return '';
+      const bitmap = await createImageBitmap(file);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      let scale = Math.min(1, 1100 / Math.max(bitmap.width, bitmap.height));
+      let quality = 0.72;
+      let dataUrl = '';
+      for (let pass = 0; pass < 12; pass++) {
+        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+        ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+        dataUrl = canvas.toDataURL('image/jpeg', quality);
+        if (dataUrl.length <= 38000) break;
+        if (quality > 0.38) quality -= 0.08;
+        else scale *= 0.82;
+      }
+      bitmap.close?.();
+      if (dataUrl.length > 38000) throw new Error('Foto belum dapat dikompres ke ukuran aman. Pilih foto lain.');
+      return dataUrl;
+    }
+
+    function resetSpvCorrectionForm() {
+      const form = document.getElementById('spv-correction-checkin-form');
+      if (form) form.reset();
+      const preview = document.getElementById('spv_corr_photo_preview');
+      if (preview) { preview.src = ''; preview.style.display = 'none'; }
+      initializeSpvCorrectionCheckinPage();
+    }
+
+    async function submitSpvCheckinCorrection(event) {
+      event.preventDefault();
+      const username = String(localStorage.getItem('resto_current_user') || '').trim();
+      const restoName = formatRestoName(document.getElementById('spv_corr_resto')?.value || '');
+      const nik = String(document.getElementById('spv_corr_employee')?.value || '').trim().toUpperCase();
+      const employee = (getStoredKaryawanData() || []).find(k => String(k.nik || '').trim().toUpperCase() === nik);
+      const date = String(document.getElementById('spv_corr_date')?.value || '').trim();
+      const time = String(document.getElementById('spv_corr_time')?.value || '').trim();
+      const status = String(document.getElementById('spv_corr_status')?.value || 'MASUK').toUpperCase();
+      const shift = String(document.getElementById('spv_corr_shift')?.value || '').toUpperCase();
+      const catatan = String(document.getElementById('spv_corr_note')?.value || '').trim();
+      const file = document.getElementById('spv_corr_photo')?.files?.[0] || null;
+
+      if (!username || !restoName || !nik || !employee || !date || !time || !catatan) {
+        alert('Lengkapi resto, karyawan, tanggal, waktu, dan alasan pengajuan.');
+        return;
+      }
+      if (status === 'MASUK' && !shift) {
+        alert('Pilih shift untuk status MASUK.');
+        return;
+      }
+      if (status === 'MASUK' && !file) {
+        alert('Foto bukti wajib di-upload untuk status MASUK.');
+        return;
+      }
+
+      let foto = '';
+      try {
+        if (file) foto = await compressSpvCorrectionPhoto(file);
+      } catch (err) {
+        alert(err.message || 'Foto gagal diproses.');
+        return;
+      }
+
+      const attendanceMs = new Date(`${date}T${time}:00+07:00`).getTime();
+      if (!Number.isFinite(attendanceMs)) {
+        alert('Tanggal atau jam absensi tidak valid.');
+        return;
+      }
+      const shifting = status === 'MASUK' ? shift : status;
+      const payload = {
+        action: 'saveSpvCheckinCorrection',
+        username,
+        restoName,
+        nik,
+        nama: String(employee.nama || ''),
+        jabatan: String(employee.jabatan || ''),
+        date,
+        time,
+        status,
+        shifting,
+        catatan,
+        foto,
+        timestampMs: attendanceMs,
+        actualTimestampMs: attendanceMs,
+        restoType: isResto24JamForCheckin(restoName) ? '24jam' : 'reguler'
+      };
+      const button = document.getElementById('btn-submit-spv-correction');
+      const original = button?.innerHTML || '<i class="fa-solid fa-floppy-disk"></i> SIMPAN PENGAJUAN';
+      if (button) { button.disabled = true; button.innerHTML = '<span class="spinner"></span> Menyimpan...'; }
+      try {
+        const result = await gasRequestJson(payload, {timeoutMs:45000,retries:1,retryDelayMs:1200});
+        if (result?.status !== 'success') throw new Error(result?.message || 'Pengajuan checkin gagal disimpan.');
+        alert(result.message || 'Pengajuan checkin berhasil disimpan.');
+        resetSpvCorrectionForm();
+        await fetchInitialDataFromGAS(null, {force:true,minIntervalMs:0});
+      } catch (err) {
+        alert(err.message || 'Gagal menyimpan pengajuan checkin.');
+      } finally {
+        if (button) { button.disabled = false; button.innerHTML = original; }
+      }
+    }
+
     function switchRoleNav(pageId, element) {
       rememberLastPage(pageId);
       stopCameraStream();
@@ -5840,6 +6136,8 @@
         updateCheckinSwitchUI();
         updateAutoDateTimeInput();
         toggleKameraTimestamp();
+      } else if (pageId === 'page-spv-pengajuan-checkin') {
+        initializeSpvCorrectionCheckinPage();
       } else if (pageId === 'page-spv-monitoring') {
         hideSpvAdmRestoSubPage();
         hideSpvStokOpnameSubPage();
