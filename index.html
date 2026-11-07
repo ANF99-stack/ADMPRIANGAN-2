@@ -9351,20 +9351,28 @@
           .filter(x=>['Reguler','Event','Satelit'].includes(String(x.salesSource||'').trim()))
           .map(x=>({...x,source:String(x.salesSource||'').trim(),description:x.id,resto:x.resto||'-',amount:x.total,date:String(x.date||'').slice(0,10)}));
 
-        // Satelit: tampilkan total omset per tanggal dan resto, bukan detail per transaksi POS.
-        const satelitGroups=new Map();
-        posRows.filter(x=>x.source==='Satelit').forEach(x=>{
-          const groupKey=String(x.date||'')+'||'+String(x.resto||'-');
-          if(!satelitGroups.has(groupKey)){
-            satelitGroups.set(groupKey,{...x,source:'Satelit',description:'Total Omset Satelit',amount:0,transactionCount:0});
-          }
-          const group=satelitGroups.get(groupKey);
-          const amount=Number(String(x.amount??0).replace(/[^0-9.-]/g,''))||0;
-          group.amount+=amount;
-          group.transactionCount++;
-        });
-        const satelitRows=Array.from(satelitGroups.values()).map(x=>({...x,description:`Total Omset Satelit (${x.transactionCount} transaksi)`}));
-        let rows=[...bigOrderRows,...posRows.filter(x=>x.source!=='Satelit'),...satelitRows];
+        // Event dan Satelit: tampilkan total omset per tanggal dan resto,
+        // bukan detail per transaksi POS.
+        const aggregatePosHistory=(sourceName,descriptionLabel)=>{
+          const groups=new Map();
+          posRows.filter(x=>x.source===sourceName).forEach(x=>{
+            const groupKey=String(x.date||'')+'||'+String(x.resto||'-');
+            if(!groups.has(groupKey)){
+              groups.set(groupKey,{...x,source:sourceName,description:`Total Omset ${descriptionLabel}`,amount:0,transactionCount:0});
+            }
+            const group=groups.get(groupKey);
+            const amount=Number(String(x.amount??0).replace(/[^0-9.-]/g,''))||0;
+            group.amount+=amount;
+            group.transactionCount++;
+          });
+          return Array.from(groups.values()).map(x=>({
+            ...x,
+            description:`Total Omset ${descriptionLabel} (${x.transactionCount} transaksi)`
+          }));
+        };
+        const eventRows=aggregatePosHistory('Event','Event');
+        const satelitRows=aggregatePosHistory('Satelit','Satelit');
+        let rows=[...bigOrderRows,...posRows.filter(x=>x.source==='Reguler'),...eventRows,...satelitRows];
         const normalizeHistoryDate=value=>{
           const raw=String(value||'').trim();
           if(/^\d{4}-\d{2}-\d{2}/.test(raw))return raw.slice(0,10);
