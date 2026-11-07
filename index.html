@@ -1187,6 +1187,8 @@
     .ae-field input,.ae-field select{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;font-size:.85rem;min-width:0}
     .ae-btn{border:0;border-radius:10px;padding:10px 14px;background:#b91c1c;color:#fff;font-weight:800;cursor:pointer;margin-top:12px}
     .ae-btn.secondary{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0}
+    .ae-btn:disabled,.ae-btn-loading{opacity:.78;cursor:wait;pointer-events:none;filter:saturate(.75)}
+    .ae-btn-loading i{margin-right:6px}
     .ae-table-wrap{overflow:auto;border:1px solid #e2e8f0;border-radius:12px;margin-top:12px}
     #ae-history-table{max-height:420px;overflow-y:auto;overflow-x:auto;overscroll-behavior:contain;scrollbar-width:thin}
     #ae-history-table .ae-history-scroll-controls{position:sticky;top:0;z-index:5;display:flex;justify-content:flex-end;gap:6px;padding:6px;background:#f8fafc;border-bottom:1px solid #e2e8f0}
@@ -9295,22 +9297,47 @@
       wrap.innerHTML='<table class="ae-table"><thead><tr><th>Waktu</th><th>Akun POS</th><th>Brand</th><th>Resto</th><th>Status Shift</th><th>Nominal (TOTAL OMSET)</th></tr></thead><tbody>'+(allRows.length?allRows.map(x=>{const t=x.latest,a=x.account;return `<tr><td>${aeEsc(fmtTime(x.latestTime)||x.dateKey||'-')}</td><td>${aeEsc(x.username||'-')}</td><td>${aeEsc(a?.brand||t.brand||'-')}</td><td>${aeEsc(a?.resto||t.resto||t.branch||'-')}</td><td>${isClosed(t)?'<span class="ae-tag">CLOSED</span>':'<span class="ae-tag" style="background:#dcfce7;color:#166534">AKTIF</span>'}</td><td>${aeMoney(x.total)}</td></tr>`}).join(''):'<tr><td colspan="6" style="text-align:center;color:#64748b">Belum ada transaksi dalam 7 hari terakhir.</td></tr>')+'</tbody></table>';
       aeStatus('ae-live-pos-status',''+aeLiveAccountsCache.length+' akun POS · diperbarui '+new Date().toLocaleTimeString('id-ID')+' · otomatis 3 detik');
     }
+    // Pengaman double-submit untuk semua form penyimpanan di area AE.
+    // Tombol dikunci selama request berlangsung dan menampilkan spinner/loading.
+    function aeSetSubmitLoading(button,loading,label){
+      if(!button)return;
+      if(loading){
+        if(button.dataset.aeOriginalHtml===undefined)button.dataset.aeOriginalHtml=button.innerHTML;
+        button.dataset.aeWasDisabled=button.disabled?'1':'0';
+        button.disabled=true;
+        button.classList.add('ae-btn-loading');
+        button.setAttribute('aria-busy','true');
+        button.innerHTML='<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> '+(label||'Menyimpan...');
+      }else{
+        button.innerHTML=button.dataset.aeOriginalHtml||button.innerHTML;
+        button.disabled=button.dataset.aeWasDisabled==='1';
+        button.classList.remove('ae-btn-loading');
+        button.removeAttribute('aria-busy');
+        delete button.dataset.aeOriginalHtml;
+        delete button.dataset.aeWasDisabled;
+      }
+    }
     document.addEventListener('DOMContentLoaded',()=>{
       const d=document.getElementById('ae-big-date');if(d)d.value=aeDateToday();
       const f=document.getElementById('ae-big-form');
       if(f)f.addEventListener('submit',async e=>{
-        e.preventDefault();const restos=Array.from(document.getElementById('ae-big-restos').selectedOptions).map(o=>o.value);
+        e.preventDefault();if(f.dataset.aeSaving==='1')return;
+        const restos=Array.from(document.getElementById('ae-big-restos').selectedOptions).map(o=>o.value);
         if(!restos.length){alert('Pilih minimal satu resto.');return}
         const order={date:document.getElementById('ae-big-date').value,restos,name:document.getElementById('ae-big-name').value.trim(),amount:Number(document.getElementById('ae-big-amount').value),createdBy:typeof currentUserName!=='undefined'?currentUserName:'AE'};
+        const button=e.submitter||f.querySelector('button[type="submit"]');f.dataset.aeSaving='1';aeSetSubmitLoading(button,true,'Menyimpan Big Order...');
         try { await aeApi({action:'saveBigOrder',order}); f.reset();document.getElementById('ae-big-date').value=aeDateToday();await renderAEHistory();await renderAEDashboard();alert('Big Order tersimpan di Google Sheets.'); }
         catch(err){alert('Big Order gagal disimpan ke server POS: '+err.message)}
+        finally{f.dataset.aeSaving='0';aeSetSubmitLoading(button,false)}
       });
       const mf=document.getElementById('ae-menu-form');
       if(mf){document.getElementById('ae-menu-name')?.addEventListener('input',updateAESku);updateAESku();mf.addEventListener('submit',async e=>{
-        e.preventDefault();const brand=window.aeCurrentBrand||'LAZATTO';
+        e.preventDefault();if(mf.dataset.aeSaving==='1')return;const brand=window.aeCurrentBrand||'LAZATTO';
         const name=document.getElementById('ae-menu-name').value.trim();const product={id:Date.now(),brand,name,price:Number(document.getElementById('ae-menu-price').value),category:document.getElementById('ae-menu-category').value.trim(),sku:makeAESku(brand,name),icon:'package'};
+        const button=e.submitter||mf.querySelector('button[type="submit"]');mf.dataset.aeSaving='1';aeSetSubmitLoading(button,true,'Menyimpan Menu...');
         try {await aeApi({action:'saveProduct',product});mf.reset();await renderAEMenus();alert('Menu disimpan ke daftar produk POS di Google Sheets.')}
         catch(err){alert('Menu gagal disimpan: '+err.message)}
+        finally{mf.dataset.aeSaving='0';aeSetSubmitLoading(button,false)}
       });}
       const pf=document.getElementById('ae-pos-form');
       if(pf){
@@ -9320,7 +9347,7 @@
         document.getElementById('ae-pos-resto')?.addEventListener('mousedown',populateAEPosRestos);
         document.getElementById('ae-pos-brand')?.addEventListener('change',populateAEPosRestos);
         pf.addEventListener('submit',async e=>{
-          e.preventDefault();
+          e.preventDefault();if(pf.dataset.aeSaving==='1')return;
           const posType=String(document.getElementById('ae-pos-type').value||'').trim().toUpperCase();
           const brand=String(document.getElementById('ae-pos-brand').value||'').trim().toUpperCase();
           const resto=document.getElementById('ae-pos-resto').value;
@@ -9330,12 +9357,14 @@
           if(!['SATELIT','EVENT'].includes(posType)){alert('Tipe POS harus SATELIT atau EVENT.');return}
           // Simpan type dan posType sekaligus agar kompatibel dengan backend POS yang membaca salah satunya.
           const account={username,password,type:posType,posType,pos_type:posType,brand,resto,aeManager:getAERequestContext().userId};
+          const button=e.submitter||pf.querySelector('button[type="submit"]');pf.dataset.aeSaving='1';aeSetSubmitLoading(button,true,'Menyimpan Akun POS...');
           try {
             const result=await aeApi({action:'savePosAccount',account});
             if(result && result.status==='error')throw new Error(result.message||'Server menolak penyimpanan akun.');
             pf.reset();populateAEPosRestos();await renderAEPosAccounts();await loadAEPosAccountsForDashboard();
             alert('Akun POS tersimpan. AE Pengelola: '+getAERequestContext().userId+'. Tipe POS: '+posType+'.');
           } catch(err){alert('Akun POS gagal disimpan: '+err.message)}
+          finally{pf.dataset.aeSaving='0';aeSetSubmitLoading(button,false)}
         });
       }
     });
