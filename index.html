@@ -9819,5 +9819,50 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&pendingResolve)close(false);});
 })();
 </script>
+
+<script id="admin-psd-spv-action-guard">
+/* Guard klik ganda untuk aksi refresh/muat data/simpan: UI-only, backend tidak diubah. */
+(function(){
+  if(window.__actionGuardInstalled) return;
+  window.__actionGuardInstalled=true;
+  const words=/\b(refresh|perbarui|muat ulang|ambil data|simpan|save|submit|load data|sync|sinkronisasi|import)\b/i;
+  const excluded=/\b(reset|bersihkan|clear|kembali|cancel|batal|logout|login)\b/i;
+  const locks=new WeakMap();
+  const style=document.createElement('style');
+  style.textContent=`
+    .action-guard-busy{opacity:.82!important;cursor:wait!important;pointer-events:none!important;filter:saturate(.78)}
+    .action-guard-busy .action-guard-spinner{display:inline-block!important}
+    .action-guard-spinner{width:1em;height:1em;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;display:inline-block;vertical-align:-.12em;margin-right:7px;animation:actionGuardSpin .7s linear infinite}
+    @keyframes actionGuardSpin{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){.action-guard-spinner{animation:none}}
+  `;
+  document.head.appendChild(style);
+  document.addEventListener('click',function(ev){
+    const btn=ev.target.closest('button,[role="button"],input[type="submit"]');
+    if(!btn) return;
+    const label=(btn.innerText||btn.value||btn.getAttribute('aria-label')||btn.title||'').trim();
+    if(!words.test(label)||excluded.test(label)) return;
+    if(locks.has(btn)){ev.preventDefault();ev.stopImmediatePropagation();return;}
+    const original=btn.innerHTML;
+    const originalDisabled=btn.disabled;
+    locks.set(btn,true);
+    btn.classList.add('action-guard-busy');
+    window.setTimeout(function(){if(locks.has(btn))btn.disabled=true;},0);
+    if(btn.tagName==='INPUT') btn.value='Memproses…';
+    else btn.innerHTML='<span class="action-guard-spinner" aria-hidden="true"></span>Memproses…';
+    btn.setAttribute('aria-busy','true');
+    /* Pengaman timeout; operasi panjang tetap terlindungi dari klik berulang. */
+    window.setTimeout(function(){
+      if(!locks.has(btn)) return;
+      locks.delete(btn);
+      btn.classList.remove('action-guard-busy');
+      btn.disabled=originalDisabled;
+      if(btn.tagName==='INPUT') btn.value=label;
+      else btn.innerHTML=original;
+      btn.removeAttribute('aria-busy');
+    },12000);
+  },true);
+})();
+</script>
 </body>
 </html>
