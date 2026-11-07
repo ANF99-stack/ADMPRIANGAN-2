@@ -1015,6 +1015,13 @@
     @keyframes checkinPulse{0%{transform:scale(.5);box-shadow:0 0 0 18px rgba(34,197,94,.2)}70%{transform:scale(1.08);box-shadow:0 0 0 8px rgba(34,197,94,.08)}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(34,197,94,0)}}
     @keyframes checkinTick{from{opacity:0;transform:scale(.3) rotate(-35deg)}to{opacity:1;transform:scale(1) rotate(0)}}
     @media(prefers-reduced-motion:reduce){.checkin-success-overlay,.checkin-success-card,.checkin-success-icon,.checkin-success-icon i{animation:none!important}}
+/* ADMIN SYSTEM DASHBOARD */
+.adm-dashboard{display:flex;flex-direction:column;gap:20px}.adm-dash-hero{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:28px 32px;border-radius:22px;color:#fff;background:linear-gradient(125deg,#111827,#312e81 52%,#dc2626);box-shadow:0 15px 35px #1e293b24}.adm-dash-eyebrow{display:inline-flex;gap:8px;font-size:.72rem;font-weight:900;letter-spacing:.12em;margin-bottom:10px}.adm-dash-hero h2{font-size:1.65rem;font-weight:900;margin-bottom:7px}.adm-dash-hero p{font-size:.86rem;line-height:1.55;opacity:.86}.adm-dash-hero-icon{width:80px;height:80px;border-radius:24px;background:#ffffff20;display:grid;place-items:center;font-size:2.2rem;flex-shrink:0}
+.adm-dash-section-head,.adm-dash-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.adm-dash-section-head h3,.adm-dash-panel-head h3{font-size:1rem;font-weight:900;color:#0f172a}.adm-dash-section-head p,.adm-dash-panel-head p{font-size:.76rem;color:#64748b;margin-top:4px}
+.adm-dash-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.adm-dash-kpi{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #e2e8f0;border-radius:17px;padding:18px;box-shadow:0 4px 12px #0f172a06;min-width:0}.adm-dash-kpi-icon{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-size:1.15rem;flex-shrink:0}.adm-dash-kpi-icon.red{background:#fee2e2;color:#dc2626}.adm-dash-kpi-icon.blue{background:#dbeafe;color:#2563eb}.adm-dash-kpi-icon.violet{background:#ede9fe;color:#7c3aed}.adm-dash-kpi-icon.green{background:#dcfce7;color:#16a34a}.adm-dash-kpi-icon.amber{background:#fef3c7;color:#d97706}.adm-dash-kpi-icon.cyan{background:#cffafe;color:#0891b2}.adm-dash-kpi span{display:block;color:#64748b;font-size:.75rem;font-weight:800}.adm-dash-kpi strong{display:block;font-size:1.55rem;font-weight:900;color:#0f172a;margin:3px 0}.adm-dash-kpi small{display:block;font-size:.68rem;color:#94a3b8;line-height:1.35}
+.adm-dash-two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}.adm-dash-panel{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:20px;box-shadow:0 4px 12px #0f172a06;min-width:0}.adm-dash-panel-head{margin-bottom:16px}.adm-dash-panel-head>i{font-size:1.25rem;color:#94a3b8}.adm-role-breakdown{display:flex;flex-direction:column;gap:12px}.adm-role-row{display:grid;grid-template-columns:100px minmax(0,1fr) 38px;gap:10px;align-items:center}.adm-role-label{font-size:.76rem;font-weight:800;color:#475569;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.adm-role-track{height:9px;border-radius:99px;background:#f1f5f9;overflow:hidden}.adm-role-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#dc2626,#f97316)}.adm-role-count{text-align:right;font-size:.78rem;font-weight:900;color:#0f172a}.adm-dash-branch-stats>div{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f1f5f9}.adm-dash-branch-stats span{font-size:.8rem;color:#64748b;font-weight:700}.adm-dash-branch-stats strong{font-size:1rem;font-weight:900}.adm-dash-note{font-size:.72rem;color:#64748b;background:#f8fafc;border-radius:10px;padding:10px;margin-top:10px}.adm-dash-module-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.adm-dash-module-grid>div{display:flex;flex-direction:column;gap:7px;padding:15px;border:1px solid #eef2f7;border-radius:13px;background:#fafcff}.adm-dash-module-grid i{font-size:1.1rem;color:#dc2626}.adm-dash-module-grid b{font-size:.8rem;font-weight:900;color:#1e293b}.adm-dash-module-grid span{font-size:.7rem;color:#64748b;line-height:1.45}.adm-dash-empty{font-size:.78rem;color:#94a3b8;padding:15px 0}.adm-dash-footer{font-size:.72rem;color:#94a3b8;display:flex;gap:7px}
+.adm-system-health{background:linear-gradient(180deg,#fff,#f8fafc)}.adm-health-refresh{border:1px solid #c7d2fe;background:#eef2ff;color:#4338ca;padding:8px 12px;border-radius:10px;font-weight:800;font-size:.75rem;cursor:pointer}.adm-health-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.adm-health-item{border:1px solid #e2e8f0;border-radius:14px;padding:14px;background:#fff;min-width:0}.adm-health-top{display:flex;justify-content:space-between;gap:8px;color:#64748b;font-size:.72rem;font-weight:800}.adm-health-top i{color:#6366f1}.adm-health-item strong{display:block;color:#0f172a;font-size:1.35rem;font-weight:900;margin:10px 0}.adm-health-track{height:7px;background:#e2e8f0;border-radius:20px;overflow:hidden}.adm-health-fill{height:100%;width:0%;background:linear-gradient(90deg,#4f46e5,#06b6d4);border-radius:20px;transition:width .35s ease}.adm-health-item small{display:block;color:#94a3b8;font-size:.67rem;margin-top:8px;line-height:1.4}.adm-health-status{display:flex;align-items:center;gap:8px;background:#f1f5f9;color:#475569;padding:10px 12px;border-radius:10px;font-size:.73rem;font-weight:700;margin-top:12px}.adm-health-status.good{background:#ecfdf5;color:#047857}.adm-health-status.warn{background:#fff7ed;color:#c2410c}
+@media(max-width:980px){.adm-health-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.adm-dash-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.adm-dash-module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.adm-dash-hero{padding:22px}.adm-dash-hero h2{font-size:1.3rem}.adm-dash-hero-icon{width:55px;height:55px;font-size:1.5rem}.adm-dash-kpis{gap:9px}.adm-dash-kpi{padding:12px;gap:9px}.adm-dash-kpi-icon{width:38px;height:38px;font-size:.95rem}.adm-dash-kpi strong{font-size:1.25rem}.adm-dash-kpi small{font-size:.62rem}.adm-dash-two-col{grid-template-columns:1fr}.adm-health-grid{grid-template-columns:1fr 1fr}.adm-dash-panel{padding:15px}.adm-dash-module-grid{grid-template-columns:1fr 1fr}.adm-role-row{grid-template-columns:82px minmax(0,1fr) 30px}}
     @media(max-width:980px){.operasional-dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}.op-dashboard-panels{grid-template-columns:1fr}}
     @media (max-width: 768px) {
       /* Dropdown navigasi harus berada di atas konten dan mudah disentuh di Safari iPhone. */
@@ -2690,222 +2697,37 @@
 
       <!-- ================= ADMIN VIEW ================= -->
       <div id="admin-view" style="display: none;">
-        
-        <div class="admin-stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon"><i class="fa-solid fa-store"></i></div>
-            <div>
-              <div class="stat-num" id="stat-total-branches">0</div>
-              <div class="stat-label">Total Outlet Cabang</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon" style="background: #e0e7ff; color: #4338ca;"><i class="fa-solid fa-user-tie"></i></div>
-            <div>
-              <div class="stat-num" id="stat-total-spv">0</div>
-              <div class="stat-label">Total Supervisor</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon" style="background: #dcfce7; color: #15803d;"><i class="fa-solid fa-id-card-clip"></i></div>
-            <div>
-              <div class="stat-num" id="stat-total-psd">0</div>
-              <div class="stat-label">Total User PSD</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon" style="background: #fef3c7; color: #92400e;"><i class="fa-solid fa-link"></i></div>
-            <div>
-              <div class="stat-num" id="stat-total-links">0</div>
-              <div class="stat-label">Link Terhubung</div>
-            </div>
-          </div>
-        </div>
 
         <!-- PAGE 1: PREVIEW USER & REKAP AREA -->
         <div id="page-preview-user" class="admin-page-content">
-          <div id="adm-main-rekap-view">
-            <div class="user-banner">
-              <div class="banner-header">
-                <div>
-                  <h2>Dashboard Rekapitulasi Area</h2>
-                  <p>Akses cepat ke rekapitulasi omset, promo, kotor/bersih, tracking COGS operasional, serta administrasi resto.</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="grid-container">
-              <div class="card" style="border: 2px solid var(--lazatto-red); background: #fef2f2;">
-                <div class="card-top">
-                  <div class="card-icon icon-rose"><i class="fa-solid fa-building-user"></i></div>
-                  <div class="card-title" style="color: var(--lazatto-red);">ADM RESTO</div>
-                  <div class="card-desc">Portal laporan operasional, KPH, ganti minyak, expense, dan setor uang cabang.</div>
-                </div>
-                <button onclick="showAdmRestoSubPage()" class="card-link-btn" style="background: var(--lazatto-red); color: white;">
-                  <span>Buka ADM RESTO</span>
-                  <i class="fa-solid fa-folder-open"></i>
-                </button>
-              </div>
+<section class="adm-dashboard">
+<div class="adm-dash-hero"><div><span class="adm-dash-eyebrow"><i class="fa-solid fa-shield-halved"></i> SYSTEM OVERVIEW</span><h2>Dashboard Administrasi</h2><p>Ringkasan menyeluruh pengguna, outlet, konfigurasi, dan aktivitas sistem ADM Priangan 2.</p></div><div class="adm-dash-hero-icon"><i class="fa-solid fa-gauge-high"></i></div></div>
+<div class="adm-dash-section-head"><div><h3>Statistik Utama</h3><p>Data mengikuti master dashboard yang berhasil dimuat.</p></div></div>
+<div class="adm-dash-kpis">
+<article class="adm-dash-kpi"><div class="adm-dash-kpi-icon red"><i class="fa-solid fa-users"></i></div><div><span>Total User</span><strong id="adm-kpi-users">0</strong><small id="adm-kpi-users-sub">Semua akun terdaftar</small></div></article>
+<article class="adm-dash-kpi"><div class="adm-dash-kpi-icon blue"><i class="fa-solid fa-store"></i></div><div><span>Total Outlet</span><strong id="adm-kpi-branches">0</strong><small>Akun cabang terdaftar</small></div></article>
+<article class="adm-dash-kpi"><div class="adm-dash-kpi-icon violet"><i class="fa-solid fa-user-tie"></i></div><div><span>Supervisor</span><strong id="adm-kpi-spv">0</strong><small>User role SPV</small></div></article>
+<article class="adm-dash-kpi"><div class="adm-dash-kpi-icon green"><i class="fa-solid fa-id-card"></i></div><div><span>User PSD</span><strong id="adm-kpi-psd">0</strong><small>User role PSD</small></div></article>
+<article class="adm-dash-kpi"><div class="adm-dash-kpi-icon amber"><i class="fa-solid fa-user-check"></i></div><div><span>User Internal</span><strong id="adm-kpi-internal">0</strong><small>AE, admin, dan role internal</small></div></article>
+<article class="adm-dash-kpi"><div class="adm-dash-kpi-icon cyan"><i class="fa-solid fa-link"></i></div><div><span>Link Terkonfigurasi</span><strong id="adm-kpi-links">0</strong><small>Estimasi link/master tersedia</small></div></article></div>
+<div class="adm-dash-two-col">
+<section class="adm-dash-panel"><div class="adm-dash-panel-head"><div><h3>Komposisi Pengguna</h3><p>Distribusi berdasarkan role.</p></div><i class="fa-solid fa-chart-pie"></i></div><div id="adm-role-breakdown" class="adm-role-breakdown"><div class="adm-dash-empty">Data role dimuat setelah dashboard.</div></div></section>
+<section class="adm-dash-panel"><div class="adm-dash-panel-head"><div><h3>Ringkasan Outlet</h3><p>Gambaran konfigurasi cabang.</p></div><i class="fa-solid fa-building"></i></div><div class="adm-dash-branch-stats"><div><span>Outlet terdaftar</span><strong id="adm-branch-count">0</strong></div><div><span>SPV terdaftar</span><strong id="adm-branch-spv-count">0</strong></div><div><span>Rata-rata outlet per SPV</span><strong id="adm-branch-per-spv">0</strong></div></div><div class="adm-dash-note"><i class="fa-solid fa-circle-info"></i> Angka bersumber dari data master yang tersedia.</div></section></div>
+<section class="adm-dash-panel adm-dash-modules"><div class="adm-dash-panel-head"><div><h3>Modul & Administrasi Sistem</h3><p>Ringkasan area pengelolaan web.</p></div><i class="fa-solid fa-layer-group"></i></div><div class="adm-dash-module-grid">
+<div><i class="fa-solid fa-user-gear"></i><b>Manajemen User</b><span>Kelola akun, role, dan akses.</span></div><div><i class="fa-solid fa-link"></i><b>Master Link</b><span>Pengaturan link area dan cabang.</span></div><div><i class="fa-solid fa-clipboard-check"></i><b>Operasional</b><span>Check-in, karyawan, grooming.</span></div><div><i class="fa-solid fa-chart-column"></i><b>Omset Area</b><span>Performa dan pencapaian area.</span></div><div><i class="fa-solid fa-boxes-stacked"></i><b>Master Barang</b><span>Data barang dan stok.</span></div><div><i class="fa-solid fa-sliders"></i><b>Konfigurasi</b><span>Batas check-in dan coverage AE.</span></div></div></section>
+<div class="adm-dash-footer"><i class="fa-solid fa-rotate"></i> Statistik diperbarui saat data dashboard dimuat atau diperbarui.</div>
+<section class="adm-dash-panel adm-system-health">
+<div class="adm-dash-panel-head"><div><h3><i class="fa-solid fa-microchip" style="color:#4f46e5;margin-right:7px"></i>Kapasitas & Kecepatan Sistem</h3><p>Diagnostik performa sisi browser saat dashboard dibuka (bukan metrik server/GAS).</p></div><button type="button" class="adm-health-refresh" onclick="updateAdminSystemHealth()"><i class="fa-solid fa-rotate"></i> Perbarui</button></div>
+<div class="adm-health-grid">
+<article class="adm-health-item"><div class="adm-health-top"><span>Waktu muat halaman</span><i class="fa-solid fa-stopwatch"></i></div><strong id="adm-health-load">Mengukur…</strong><div class="adm-health-track"><div id="adm-health-load-bar" class="adm-health-fill"></div></div><small id="adm-health-load-note">Menghitung durasi pemuatan</small></article>
+<article class="adm-health-item"><div class="adm-health-top"><span>Penggunaan memori JS</span><i class="fa-solid fa-memory"></i></div><strong id="adm-health-memory">Tidak tersedia</strong><div class="adm-health-track"><div id="adm-health-memory-bar" class="adm-health-fill"></div></div><small id="adm-health-memory-note">Dukungan tergantung browser</small></article>
+<article class="adm-health-item"><div class="adm-health-top"><span>Elemen DOM</span><i class="fa-solid fa-code"></i></div><strong id="adm-health-dom">—</strong><div class="adm-health-track"><div id="adm-health-dom-bar" class="adm-health-fill"></div></div><small id="adm-health-dom-note">Kompleksitas tampilan halaman</small></article>
+<article class="adm-health-item"><div class="adm-health-top"><span>Resource termuat</span><i class="fa-solid fa-network-wired"></i></div><strong id="adm-health-resources">—</strong><div class="adm-health-track"><div id="adm-health-resources-bar" class="adm-health-fill"></div></div><small id="adm-health-resources-note">Asset dan request yang terdeteksi</small></article><article class="adm-health-item"><div class="adm-health-top"><span>Database Sheets</span><i class="fa-solid fa-database"></i></div><strong id="adm-health-db">Mengukur…</strong><div class="adm-health-track"><div id="adm-health-db-bar" class="adm-health-fill"></div></div><small id="adm-health-db-note">Jumlah tab & estimasi cells terpakai</small></article>
+<article class="adm-health-item"><div class="adm-health-top"><span>Respons GAS</span><i class="fa-solid fa-bolt"></i></div><strong id="adm-health-gas">Mengukur…</strong><div class="adm-health-track"><div id="adm-health-gas-bar" class="adm-health-fill"></div></div><small id="adm-health-gas-note">Waktu round-trip browser ke GAS</small></article>
+</div><div class="adm-health-status" id="adm-health-status"><i class="fa-solid fa-circle-check"></i> Diagnostik browser siap.</div>
+</section></section></div>
 
-              <div class="card">
-                <div class="card-top">
-                  <div class="card-icon icon-amber"><i class="fa-solid fa-chart-pie"></i></div>
-                  <div class="card-title">Omset Area</div>
-                  <div class="card-desc">Buku rekapitulasi total omset gabungan seluruh cabang area.</div>
-                </div>
-                <a id="btn_preview_omset" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                  <span>Buka Sheet</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-              </div>
-
-              <div class="card">
-                <div class="card-top">
-                  <div class="card-icon icon-purple"><i class="fa-solid fa-bullhorn"></i></div>
-                  <div class="card-title">Promo Area</div>
-                  <div class="card-desc">Rekapitulasi performa promo & campaign marketing area.</div>
-                </div>
-                <a id="btn_preview_promo" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                  <span>Buka Sheet</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-              </div>
-
-              <div class="card">
-                <div class="card-top">
-                  <div class="card-icon icon-teal"><i class="fa-solid fa-scale-balanced"></i></div>
-                  <div class="card-title">Omset Kotor & Bersih</div>
-                  <div class="card-desc">Laporan perbandingan Gross Revenue vs Net Revenue cabang.</div>
-                </div>
-                <a id="btn_preview_kotor_bersih" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                  <span>Buka Sheet</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-              </div>
-
-              <div class="card">
-                <div class="card-top">
-                  <div class="card-icon icon-rose"><i class="fa-solid fa-cubes"></i></div>
-                  <div class="card-title">Track COGS Lazatto</div>
-                  <div class="card-desc">Pencatatan & analisis HPP / Cost of Goods Sold produk Lazatto.</div>
-                </div>
-                <a id="btn_preview_cogs_lazatto" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                  <span>Buka Sheet</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-              </div>
-
-              <div class="card">
-                <div class="card-top">
-                  <div class="card-icon icon-indigo"><i class="fa-solid fa-bowl-rice"></i></div>
-                  <div class="card-title">Track COGS Ngeumi</div>
-                  <div class="card-desc">Pencatatan & analisis HPP / Cost of Goods Sold produk Ngeumi.</div>
-                </div>
-                <a id="btn_preview_cogs_ngeumi" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                  <span>Buka Sheet</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-              </div>
-
-              <div class="card" style="border:2px solid #f59e0b; background:#fffbeb;">
-                <div class="card-top">
-                  <div class="card-icon icon-amber"><i class="fa-solid fa-boxes-stacked"></i></div>
-                  <div class="card-title" style="color:#b45309;">STOK OPNAME</div>
-                  <div class="card-desc">Portal input dan pemeriksaan data Stok Opname area.</div>
-                </div>
-                <button type="button" onclick="showAdminStokOpnameSubPage()" class="card-link-btn" style="background:#f59e0b;color:white;">
-                  <span>Buka STOK OPNAME</span><i class="fa-solid fa-arrow-right"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div id="admin-stok-opname-sub-view" style="display:none;">
-            <div class="user-banner" style="background:linear-gradient(135deg,#78350f 0%,#f59e0b 100%);"><div class="banner-header"><div><h2>Portal Stok Opname (Admin)</h2><p>Akses input dan pemeriksaan Stok Opname menggunakan link master.</p></div><button onclick="hideAdminStokOpnameSubPage()" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:white;padding:8px 16px;border-radius:12px;font-weight:700;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i> Kembali</button></div></div>
-            <div class="grid-container">
-              <div class="card"><div class="card-top"><div class="card-icon icon-orange"><i class="fa-solid fa-pen-to-square"></i></div><div class="card-title">INPUT STOK OPNAME</div><div class="card-desc">Form untuk melakukan input Stok Opname resto area.</div></div><a id="btn_admin_rekap_input_so" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn"><span>Buka Input Stok Opname</span><i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
-              <div class="card"><div class="card-top"><div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-check"></i></div><div class="card-title">CEK STOK OPNAME</div><div class="card-desc">Pemeriksaan dan rekapitulasi data Stok Opname.</div></div><a id="btn_admin_rekap_cek_so" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn"><span>Buka Cek Stok Opname</span><i class="fa-solid fa-arrow-up-right-from-square"></i></a></div>
-            </div>
-          </div>
-
-          <div id="adm-resto-sub-view" style="display: none;">
-            <div class="user-banner" style="background: linear-gradient(135deg, #1e1b4b 0%, #dc2626 100%);">
-              <div class="banner-header">
-                <div>
-                  <h2>Portal Laporan ADM RESTO</h2>
-                  <p>Halaman khusus laporan operasional resto yang terhubung secara otomatis dengan Master Link Supervisor.</p>
-                </div>
-                <button onclick="hideAdmRestoSubPage()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                  <i class="fa-solid fa-arrow-left"></i> Kembali
-                </button>
-              </div>
-            </div>
-
-            <div class="grid-container">
-              <div class="card">
-                <div class="card-top">
-                  <div class="card-icon icon-orange"><i class="fa-solid fa-chart-line"></i></div>
-                  <div class="card-title">Laporan Penjualan</div>
-                  <div class="card-desc">Laporan detail hasil penjualan harian resto area.</div>
-                </div>
-                <a id="btn_adm_penjualan" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                  <span>Buka Sheet</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-              </div>
-
-              <div class="card">
-                <div class="card-top">
-                  <div class="card-icon icon-amber"><i class="fa-solid fa-clipboard-list"></i></div>
-                  <div class="card-title">KPH</div>
-                  <div class="card-desc">Kartu Persiapan Harian untuk kontrol bahan baku area.</div>
-                </div>
-                <a id="btn_adm_kph" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                  <span>Buka Sheet</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-              </div>
-
-              <div class="card">
-                <div class="card-top">
-                  <div class="card-icon icon-teal"><i class="fa-solid fa-droplet"></i></div>
-                  <div class="card-title">Form Ganti Minyak</div>
-                  <div class="card-desc">Pencatatan & pengawasan penggunaan minyak goreng area.</div>
-                </div>
-                <a id="btn_adm_ganti_minyak" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                  <span>Buka Sheet</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-              </div>
-
-              <div class="card">
-                <div class="card-top">
-                  <div class="card-icon icon-purple"><i class="fa-solid fa-wallet"></i></div>
-                  <div class="card-title">Tracking Expense</div>
-                  <div class="card-desc">Monitoring & pencatatan pengeluaran operasional resto area.</div>
-                </div>
-                <a id="btn_adm_expense" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                  <span>Buka Sheet</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-              </div>
-
-              <div class="card">
-                <div class="card-top">
-                  <div class="card-icon icon-indigo"><i class="fa-solid fa-money-bill-transfer"></i></div>
-                  <div class="card-title">Form Setor Uang</div>
-                  <div class="card-desc">Validasi dan rekapitulasi setoran uang harian resto.</div>
-                </div>
-                <a id="btn_adm_setor" href="#" target="_blank" rel="noopener noreferrer" class="card-link-btn">
-                  <span>Buka Sheet</span>
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PAGE 2: KELOLA LINK AREA & CABANG -->
+<!-- PAGE 2: KELOLA LINK AREA & CABANG -->
         <div id="page-links" class="admin-page-content" style="display: none;">
           <div class="admin-card-item" style="border: 2px solid #bfdbfe; background: #f8fafc; margin-bottom: 24px;">
             <div class="action-header-mobile" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
@@ -5651,7 +5473,7 @@
 
       if (role === 'admin') {
         html = `
-          <div class="nav-item active" onclick="switchAdminNav('page-preview-user', this)"><i class="fa-solid fa-chart-line"></i><span>REKAPITULASI AREA</span></div>
+          <div class="nav-item active" onclick="switchAdminNav('page-preview-user', this)"><i class="fa-solid fa-chart-line"></i><span>DASHBOARD ADMIN</span></div>
           <div class="nav-item" onclick="switchAdminNav('page-omset-area', this)"><i class="fa-solid fa-chart-column"></i><span>OMSET AREA</span></div>
 
           <details class="admin-nav-group">
@@ -6905,20 +6727,31 @@
     }
 
     function showAdmRestoSubPage() {
-      document.getElementById('adm-main-rekap-view').style.display = 'none';
-      document.getElementById('adm-resto-sub-view').style.display = 'block';
+      // Dashboard admin baru menggantikan adm-main-rekap-view lama.
+      const mainView = document.getElementById('adm-main-rekap-view') || document.getElementById('page-preview-user');
+      const subView = document.getElementById('adm-resto-sub-view');
+      if (mainView) mainView.style.display = 'none';
+      if (subView) subView.style.display = 'block';
 
       const spvMaster = globalDashboardData.spvLinksMaster || {};
-      document.getElementById('btn_adm_penjualan').href = spvMaster.penjualan || '#';
-      document.getElementById('btn_adm_kph').href = spvMaster.kph || '#';
-      document.getElementById('btn_adm_ganti_minyak').href = spvMaster.ganti_minyak || '#';
-      document.getElementById('btn_adm_expense').href = spvMaster.expense || '#';
-      document.getElementById('btn_adm_setor').href = spvMaster.setor || '#';
+      const linkMap = {
+        btn_adm_penjualan: spvMaster.penjualan,
+        btn_adm_kph: spvMaster.kph,
+        btn_adm_ganti_minyak: spvMaster.ganti_minyak,
+        btn_adm_expense: spvMaster.expense,
+        btn_adm_setor: spvMaster.setor
+      };
+      Object.entries(linkMap).forEach(([id, url]) => {
+        const button = document.getElementById(id);
+        if (button) button.href = url || '#';
+      });
     }
 
     function hideAdmRestoSubPage() {
-      document.getElementById('adm-resto-sub-view').style.display = 'none';
-      document.getElementById('adm-main-rekap-view').style.display = 'block';
+      const subView = document.getElementById('adm-resto-sub-view');
+      const mainView = document.getElementById('adm-main-rekap-view') || document.getElementById('page-preview-user');
+      if (subView) subView.style.display = 'none';
+      if (mainView) mainView.style.display = 'block';
     }
 
     function showSpvAdmRestoSubPage() {
@@ -7014,18 +6847,27 @@
 
     function loadAreaLinks() {
       const areaLinks = globalDashboardData.areaLinks || {};
-      document.getElementById('area_link_omset').value = areaLinks.omset || '';
-      document.getElementById('area_link_promo').value = areaLinks.promo || '';
-      document.getElementById('area_link_kotor_bersih').value = areaLinks.kotor_bersih || '';
-      document.getElementById('area_link_cogs_lazatto').value = areaLinks.cogs_lazatto || '';
-      document.getElementById('area_link_cogs_ngeumi').value = areaLinks.cogs_ngeumi || '';
-      document.getElementById('area_link_promo_penjualan_master').value = areaLinks.promo_penjualan_master || '';
+      const safeSetValue = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.value = value || '';
+      };
+      const safeSetHref = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.href = value || '#';
+      };
 
-      document.getElementById('btn_preview_omset').href = areaLinks.omset || '#';
-      document.getElementById('btn_preview_promo').href = areaLinks.promo || '#';
-      document.getElementById('btn_preview_kotor_bersih').href = areaLinks.kotor_bersih || '#';
-      document.getElementById('btn_preview_cogs_lazatto').href = areaLinks.cogs_lazatto || '#';
-      document.getElementById('btn_preview_cogs_ngeumi').href = areaLinks.cogs_ngeumi || '#';
+      safeSetValue('area_link_omset', areaLinks.omset);
+      safeSetValue('area_link_promo', areaLinks.promo);
+      safeSetValue('area_link_kotor_bersih', areaLinks.kotor_bersih);
+      safeSetValue('area_link_cogs_lazatto', areaLinks.cogs_lazatto);
+      safeSetValue('area_link_cogs_ngeumi', areaLinks.cogs_ngeumi);
+      safeSetValue('area_link_promo_penjualan_master', areaLinks.promo_penjualan_master);
+
+      safeSetHref('btn_preview_omset', areaLinks.omset);
+      safeSetHref('btn_preview_promo', areaLinks.promo);
+      safeSetHref('btn_preview_kotor_bersih', areaLinks.kotor_bersih);
+      safeSetHref('btn_preview_cogs_lazatto', areaLinks.cogs_lazatto);
+      safeSetHref('btn_preview_cogs_ngeumi', areaLinks.cogs_ngeumi);
     }
 
     function loadSpvMasterLinksForm() {
@@ -8464,19 +8306,91 @@
       }
     }
 
-    function updateAdminStats() {
-      const branches = globalDashboardData.branchLinks || {};
-      const users = globalDashboardData.usersList || [];
-      const spvCount = users.filter(u => u.role === 'supervisor').length;
-      const psdCount = users.filter(u => u.role === 'psd').length;
-      
-      const count = Object.keys(branches).length;
-      document.getElementById('stat-total-branches').textContent = count;
-      document.getElementById('stat-total-spv').textContent = spvCount;
-      document.getElementById('stat-total-psd').textContent = psdCount;
-      document.getElementById('stat-total-links').textContent = (count * 6) + spvCount + 20;
+    function updateAdminSystemHealth() {
+      const put=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+      const bar=(id,pct)=>{const el=document.getElementById(id);if(el)el.style.width=Math.max(0,Math.min(100,pct))+'%';};
+      let loadMs=null;
+      try {
+        const nav=performance.getEntriesByType('navigation')[0];
+        if(nav && nav.loadEventEnd>0) loadMs=nav.loadEventEnd-nav.startTime;
+        else if(performance.timing && performance.timing.loadEventEnd) loadMs=performance.timing.loadEventEnd-performance.timing.navigationStart;
+      } catch(e) {}
+      if(loadMs!==null && Number.isFinite(loadMs)){
+        put('adm-health-load',(loadMs/1000).toFixed(2)+' s');
+        put('adm-health-load-note',loadMs<2000?'Responsif • waktu muat cepat':loadMs<5000?'Normal • dapat ditingkatkan':'Lambat • cek asset/API');
+        bar('adm-health-load-bar',Math.max(5,100-Math.min(100,loadMs/50)));
+      } else {put('adm-health-load','N/A');put('adm-health-load-note','Timing browser tidak tersedia');bar('adm-health-load-bar',0);}
+      let memory=null;
+      try { if(performance.memory && performance.memory.usedJSHeapSize) memory=performance.memory; } catch(e) {}
+      if(memory){
+        const used=memory.usedJSHeapSize/1048576,limit=memory.jsHeapSizeLimit/1048576;
+        put('adm-health-memory',used.toFixed(1)+' MB');
+        put('adm-health-memory-note','Batas heap browser: '+limit.toFixed(0)+' MB');
+        bar('adm-health-memory-bar',limit?used/limit*100:0);
+      } else {put('adm-health-memory','Tidak tersedia');put('adm-health-memory-note','Browser ini tidak membuka metrik heap JS');bar('adm-health-memory-bar',0);}
+      const domCount=document.getElementsByTagName('*').length;
+      put('adm-health-dom',domCount.toLocaleString('id-ID'));
+      put('adm-health-dom-note',domCount<2500?'DOM relatif ringan':domCount<6000?'DOM menengah':'DOM besar • optimasi dapat membantu');
+      bar('adm-health-dom-bar',Math.min(100,domCount/60));
+      let resourceCount=0;
+      try {resourceCount=performance.getEntriesByType('resource').length;}catch(e){}
+      put('adm-health-resources',resourceCount.toLocaleString('id-ID'));
+      put('adm-health-resources-note','Resource tercatat sejak halaman dibuka');
+      bar('adm-health-resources-bar',Math.min(100,resourceCount/2));
+      // Request monitoring ke backend GAS hanya saat tombol diagnostik ditekan / dashboard dirender.
+      const dbEl=document.getElementById('adm-health-db'), gasEl=document.getElementById('adm-health-gas');
+      if(dbEl) dbEl.textContent='Memuat…';
+      if(gasEl) gasEl.textContent='Memuat…';
+      const adminUser=String(localStorage.getItem('resto_current_user')||localStorage.getItem('resto_user_name')||'').trim();
+      const t0=performance.now();
+      fetch(GAS_API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',body:JSON.stringify({action:'getSystemHealth',adminUser:adminUser})})
+        .then(r=>r.json()).then(data=>{
+          const roundTrip=performance.now()-t0;
+          put('adm-health-gas',roundTrip.toFixed(0)+' ms');
+          put('adm-health-gas-note',roundTrip<800?'Respons cepat':roundTrip<2000?'Respons sedang':'Respons lambat • cek GAS / Sheets');
+          bar('adm-health-gas-bar',Math.min(100,roundTrip/20));
+          if(data&&data.status==='success'&&data.spreadsheet){
+            const db=data.spreadsheet;
+            put('adm-health-db',db.sheetCount+' tab');
+            put('adm-health-db-note',db.totalRows.toLocaleString('id-ID')+' baris • ~'+db.estimatedUsedCells.toLocaleString('id-ID')+' cells');
+            bar('adm-health-db-bar',Math.min(100,db.estimatedUsedCells/10000));
+            put('adm-health-status','Backend GAS terhubung • proses server '+(data.serverProcessingMs||0)+' ms');
+          } else {
+            put('adm-health-db','Akses ditolak');
+            put('adm-health-db-note',(data&&data.message)||'Data backend tidak tersedia');
+            bar('adm-health-db-bar',0);
+          }
+        }).catch(err=>{
+          put('adm-health-gas','Gagal');
+          put('adm-health-gas-note','GAS tidak merespons / koneksi terputus');
+          put('adm-health-db','N/A');put('adm-health-db-note','Tidak dapat membaca spreadsheet');
+          bar('adm-health-gas-bar',0);bar('adm-health-db-bar',0);
+        });
+      const status=document.getElementById('adm-health-status');
+      if(status){
+        const slow=loadMs!==null&&loadMs>5000,heavy=domCount>6000;
+        status.className='adm-health-status '+(slow||heavy?'warn':'good');
+        status.innerHTML=(slow||heavy?'<i class="fa-solid fa-triangle-exclamation"></i>':'<i class="fa-solid fa-circle-check"></i>')+(slow?' Waktu muat tinggi. Pertimbangkan optimasi asset dan request.':heavy?' Jumlah elemen DOM cukup besar.':' Performa browser dalam rentang wajar berdasarkan indikator yang tersedia.');
+      }
     }
 
+    function updateAdminStats() {
+      const branches=globalDashboardData.branchLinks||{},users=Array.isArray(globalDashboardData.usersList)?globalDashboardData.usersList:[];
+      const roleOf=u=>String(u.role||u.user_role||'').trim().toLowerCase(),countRole=r=>users.filter(u=>roleOf(u)===r).length;
+      const spv=countRole('supervisor'),psd=countRole('psd'),branchCount=Object.keys(branches).length,admin=countRole('admin');
+      const ae=users.filter(u=>['ae','account executive','account_executive'].includes(roleOf(u))).length;
+      const internal=users.filter(u=>!['user','cabang','branch','supervisor','psd'].includes(roleOf(u))).length,links=branchCount*6+spv+20;
+      const put=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+      put('stat-total-branches',branchCount);put('stat-total-spv',spv);put('stat-total-psd',psd);put('stat-total-links',links);
+      put('adm-kpi-users',users.length);put('adm-kpi-users-sub',`${admin} Admin • ${ae} AE`);put('adm-kpi-branches',branchCount);put('adm-kpi-spv',spv);put('adm-kpi-psd',psd);put('adm-kpi-internal',internal);put('adm-kpi-links',links);
+      put('adm-branch-count',branchCount);put('adm-branch-spv-count',spv);put('adm-branch-per-spv',spv?(branchCount/spv).toFixed(1):'0');
+      const labels={admin:'Admin',supervisor:'Supervisor',psd:'PSD',user:'User Cabang',cabang:'User Cabang',ae:'Account Executive','account executive':'Account Executive',account_executive:'Account Executive'},counts={};
+      users.forEach(u=>{const r=roleOf(u)||'lainnya';counts[r]=(counts[r]||0)+1;});
+      const host=document.getElementById('adm-role-breakdown');
+      if(host){const rows=Object.entries(counts).sort((a,b)=>b[1]-a[1]),max=Math.max(1,...rows.map(x=>x[1]));
+      host.innerHTML=rows.length?rows.map(([r,n])=>`<div class="adm-role-row"><span class="adm-role-label">${escapeHtml(labels[r]||r.toUpperCase())}</span><div class="adm-role-track"><div class="adm-role-fill" style="width:${Math.max(3,n/max*100)}%"></div></div><span class="adm-role-count">${n}</span></div>`).join(''):'<div class="adm-dash-empty">Belum ada data pengguna.</div>';
+      updateAdminSystemHealth();}
+    }
     function normalizeBranchSpvName(value) {
       return formatRestoName(String(value || '').trim())
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
