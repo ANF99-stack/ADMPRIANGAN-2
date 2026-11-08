@@ -1469,8 +1469,18 @@
 #page-admin-kas-futsal table tbody tr:hover td { background:#fafbfe; }
 #page-admin-kas-futsal table button { border:1px solid #e2e8f0; border-radius:9px; padding:8px 11px; background:#fff; color:#334155; font-weight:700; cursor:pointer; }
 #page-admin-kas-futsal table button:hover { border-color:#f04432; color:#e83224; background:#fff7f5; }
+#page-admin-kas-futsal .kf-admin-metrics .stat-card{border:1px solid #e5eaf2!important;border-radius:20px!important;background:linear-gradient(180deg,#fff,#fbfdff)!important;box-shadow:0 5px 16px rgba(15,23,42,.04)!important;padding:22px!important;min-width:0}
+#page-admin-kas-futsal .kf-admin-metrics .stat-num{font-size:clamp(1.15rem,2vw,1.65rem)!important;font-weight:850!important;letter-spacing:-.035em;overflow-wrap:anywhere}
+@media(max-width:760px){#page-admin-kas-futsal .kf-admin-metrics{grid-template-columns:1fr!important;gap:12px!important}#page-admin-kas-futsal .kf-admin-metrics .stat-card{padding:16px!important;border-radius:16px!important}}
 @media(max-width:700px){ #page-admin-kas-futsal{padding:16px 12px 28px;} #page-admin-kas-futsal .card{padding:17px;border-radius:16px;} #kf-admin-page-form{grid-template-columns:1fr !important;} }
 
+
+    .ae-menu-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .ae-menu-excel-actions{display:flex;gap:9px;flex-wrap:wrap}
+    .ae-menu-excel-actions .ae-btn{display:inline-flex;align-items:center;gap:8px;margin:0;padding:10px 14px;border-radius:11px;font-weight:700}
+    .ae-menu-excel-actions .ae-btn.secondary{background:#f8fafc;color:#334155;border:1px solid #dbe3ef}
+    .ae-menu-excel-actions .ae-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px #0f172a12}
+    @media(max-width:640px){.ae-menu-toolbar{align-items:stretch}.ae-menu-excel-actions{display:grid;grid-template-columns:1fr}.ae-menu-excel-actions .ae-btn{justify-content:center}}
 </style>
 
 <style>
@@ -2807,27 +2817,77 @@
           </div>
         </div>
 
+<style id="mb-modern-design">
+#page-admin-update-barang{--mb-red:#dc2626;--mb-orange:#f97316}
+#page-admin-update-barang .mb-modern-hero{position:relative;display:flex;align-items:center;gap:20px;overflow:hidden;padding:26px 30px;margin:0 0 18px;border-radius:22px;color:#fff;background:linear-gradient(115deg,#991b1b 0%,#dc2626 45%,#f97316 100%);box-shadow:0 12px 26px #dc26261c}
+#page-admin-update-barang .mb-hero-icon{display:grid;place-items:center;width:62px;height:62px;flex-shrink:0;border-radius:18px;background:#ffffff20;border:1px solid #ffffff35;font-size:1.7rem}
+#page-admin-update-barang .mb-eyebrow{font-size:.65rem;letter-spacing:.13em;font-weight:900;opacity:.8}
+#page-admin-update-barang .mb-hero-copy h2{font-size:1.55rem;font-weight:900;margin:4px 0;letter-spacing:-.03em}
+#page-admin-update-barang .mb-hero-copy p{font-size:.83rem;line-height:1.5;opacity:.9}
+#page-admin-update-barang .mb-hero-decoration{position:absolute;right:38px;font-size:5rem;color:#ffffff15;transform:rotate(-12deg)}
+#page-admin-update-barang .mb-modern-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
+#page-admin-update-barang .mb-stat{display:flex;align-items:center;gap:14px;padding:17px;background:linear-gradient(145deg,#fff,#fbfdff);border:1px solid #e2e8f0;border-radius:17px;box-shadow:0 4px 14px #0f172a06;min-width:0}
+#page-admin-update-barang .mb-stat-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;font-size:1.15rem;flex-shrink:0}
+#page-admin-update-barang .mb-stat-icon.rose{background:#ffe4e6;color:#e11d48}#page-admin-update-barang .mb-stat-icon.violet{background:#ede9fe;color:#7c3aed}#page-admin-update-barang .mb-stat-icon.blue{background:#dbeafe;color:#2563eb}#page-admin-update-barang .mb-stat-icon.green{background:#dcfce7;color:#16a34a}
+#page-admin-update-barang .mb-stat span,#page-admin-update-barang .mb-stat small{display:block;color:#64748b;font-size:.72rem;font-weight:750}#page-admin-update-barang .mb-stat strong{display:block;color:#0f172a;font-size:1.4rem;font-weight:900;margin:2px 0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}#page-admin-update-barang .mb-stat small{font-size:.65rem;font-weight:500}
+#page-admin-update-barang .mb-modern-form-card,#page-admin-update-barang .mb-modern-table-card{border:1px solid #e2e8f0!important;border-radius:20px!important;padding:22px!important;box-shadow:0 5px 18px #0f172a06!important}
+#page-admin-update-barang .mb-section-heading{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+#page-admin-update-barang .mb-section-heading>div:first-child{display:flex;align-items:center;gap:12px}
+#page-admin-update-barang .mb-section-mark{width:5px;height:32px;border-radius:8px;background:linear-gradient(#ef4444,#f97316);flex-shrink:0}
+#page-admin-update-barang .mb-section-heading h3{font-size:1.02rem;font-weight:900;color:#0f172a}#page-admin-update-barang .mb-section-heading p{font-size:.72rem;color:#94a3b8;margin-top:3px}
+#page-admin-update-barang .mb-toolbar-actions{display:flex;gap:8px;flex-wrap:wrap}
+#page-admin-update-barang .mb-tool-btn{border:1px solid #dbe3ef;background:#f8fafc;color:#334155;padding:9px 12px;border-radius:10px;font-size:.72rem;font-weight:800;cursor:pointer;transition:.2s}
+#page-admin-update-barang .mb-tool-btn:hover{background:#fff1f2;color:#dc2626;border-color:#fecaca;transform:translateY(-1px)}
+#page-admin-update-barang .mb-modern-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+#page-admin-update-barang .admin-input-group label{font-size:.73rem;font-weight:850;color:#475569;margin-bottom:7px}
+#page-admin-update-barang .admin-input-group label i{color:#94a3b8;margin-right:5px;width:14px}
+#page-admin-update-barang .admin-input-group input{padding:11px 13px;border:1px solid #dbe3ef;border-radius:11px;background:#f8fafc;font-size:.82rem;transition:border-color .2s,box-shadow .2s}
+#page-admin-update-barang .admin-input-group input:focus{border-color:#f97316;background:#fff;box-shadow:0 0 0 3px #f9731615}
+#page-admin-update-barang .mb-form-actions{display:flex;align-items:end;gap:9px;flex-wrap:wrap}
+#page-admin-update-barang .mb-save-btn,#page-admin-update-barang .mb-reset-btn{border:0;border-radius:11px;padding:11px 15px;font-size:.78rem;font-weight:850;cursor:pointer;transition:.2s;white-space:nowrap}
+#page-admin-update-barang .mb-save-btn{background:linear-gradient(110deg,#dc2626,#f97316);color:#fff;box-shadow:0 5px 12px #dc262620}#page-admin-update-barang .mb-save-btn:hover{transform:translateY(-1px);box-shadow:0 7px 15px #dc262630}
+#page-admin-update-barang .mb-reset-btn{background:#f1f5f9;border:1px solid #e2e8f0;color:#475569}#page-admin-update-barang .mb-reset-btn:hover{background:#fff7ed;color:#c2410c}
+#page-admin-update-barang .mb-search-wrap{display:flex;align-items:center;gap:9px;min-width:min(100%,300px);padding:9px 12px;border:1px solid #dbe3ef;border-radius:11px;background:#f8fafc;color:#94a3b8}#page-admin-update-barang .mb-search-wrap input{width:100%;border:0;outline:0;background:transparent;font-size:.78rem;color:#334155}
+#page-admin-update-barang .mb-table-wrap{overflow:auto;border:1px solid #e8edf5;border-radius:13px;scrollbar-width:thin}
+#page-admin-update-barang .mb-table-wrap table{min-width:850px;width:100%;border-collapse:separate;border-spacing:0;font-size:.78rem}
+#page-admin-update-barang .mb-table-wrap thead th{position:sticky;top:0;background:linear-gradient(100deg,#dc2626,#f97316);color:#fff;padding:12px 11px;text-align:left;font-size:.7rem;font-weight:850;white-space:nowrap;border:0}
+#page-admin-update-barang .mb-table-wrap tbody td{padding:11px;border-bottom:1px solid #edf1f7;color:#334155;white-space:nowrap}
+#page-admin-update-barang .mb-table-wrap tbody tr:nth-child(even){background:#f8fafc}#page-admin-update-barang .mb-table-wrap tbody tr:hover{background:#fff7ed}
+@media(max-width:1000px){#page-admin-update-barang .mb-modern-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#page-admin-update-barang .mb-modern-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){#page-admin-update-barang .mb-modern-hero{padding:20px;border-radius:17px;gap:12px}#page-admin-update-barang .mb-hero-icon{width:48px;height:48px;font-size:1.3rem}#page-admin-update-barang .mb-hero-copy h2{font-size:1.2rem}#page-admin-update-barang .mb-hero-copy p{font-size:.73rem}#page-admin-update-barang .mb-hero-decoration{right:12px;font-size:3.5rem}#page-admin-update-barang .mb-modern-stats{gap:10px}#page-admin-update-barang .mb-stat{padding:12px;gap:9px;border-radius:14px}#page-admin-update-barang .mb-stat-icon{width:38px;height:38px;border-radius:11px;font-size:.95rem}#page-admin-update-barang .mb-stat strong{font-size:1.12rem}#page-admin-update-barang .mb-stat span{font-size:.65rem}#page-admin-update-barang .mb-stat small{font-size:.58rem}#page-admin-update-barang .mb-modern-form-card,#page-admin-update-barang .mb-modern-table-card{padding:15px!important;border-radius:16px!important}#page-admin-update-barang .mb-modern-form{grid-template-columns:1fr;gap:12px}#page-admin-update-barang .mb-form-actions{display:grid;grid-template-columns:1fr 1fr}#page-admin-update-barang .mb-save-btn,#page-admin-update-barang .mb-reset-btn{width:100%}#page-admin-update-barang .mb-toolbar-actions{width:100%}#page-admin-update-barang .mb-tool-btn{flex:1;padding:9px 7px;font-size:.65rem}#page-admin-update-barang .mb-search-wrap{width:100%;min-width:0}}
+</style>
+
         <!-- MASTER BARANG STOK CABANG: modul terpisah, tidak mengubah halaman lama -->
         <div id="page-admin-update-barang" class="admin-page-content" style="display:none;">
-          <div class="admin-card-item" style="border:1px solid var(--border);margin-bottom:18px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
-              <div><h3 style="font-size:1.2rem;font-weight:800;"><i class="fa-solid fa-box-open"></i> UPDATE BARANG</h3><p style="color:var(--text-muted);font-size:.85rem;margin-top:5px;">Kelola master barang untuk kebutuhan stok pada user cabang.</p></div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="btn-primary" onclick="downloadMasterBarangTemplate()"><i class="fa-solid fa-download"></i> Template Excel</button><button type="button" class="btn-primary" onclick="document.getElementById('master-barang-file').click()"><i class="fa-solid fa-file-import"></i> Import Excel</button><button type="button" class="btn-primary" onclick="loadMasterBarangStok()"><i class="fa-solid fa-rotate"></i> Muat Ulang</button></div>
+          <section class="mb-modern-hero">
+            <div class="mb-hero-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+            <div class="mb-hero-copy"><span class="mb-eyebrow">MASTER INVENTORY • ADMIN</span><h2>UPDATE BARANG</h2><p>Kelola master barang, satuan, konversi, dan stok kebutuhan cabang dalam satu tempat.</p></div>
+            <div class="mb-hero-decoration"><i class="fa-solid fa-cubes-stacked"></i></div>
+          </section>
+          <div class="mb-modern-stats">
+            <div class="mb-stat"><div class="mb-stat-icon rose"><i class="fa-solid fa-box"></i></div><div><span>Total Barang</span><strong id="mb-stat-count">—</strong><small>Master item terdaftar</small></div></div>
+            <div class="mb-stat"><div class="mb-stat-icon violet"><i class="fa-solid fa-store"></i></div><div><span>Total Resto</span><strong id="mb-stat-resto">—</strong><small>Cabang yang tercatat</small></div></div>
+            <div class="mb-stat"><div class="mb-stat-icon blue"><i class="fa-solid fa-layer-group"></i></div><div><span>Total Stok Awal</span><strong id="mb-stat-stock">—</strong><small>Akumulasi stok awal</small></div></div>
+            <div class="mb-stat"><div class="mb-stat-icon green"><i class="fa-solid fa-arrows-rotate"></i></div><div><span>Data Konversi</span><strong id="mb-stat-conversion">—</strong><small>Barang dengan konversi</small></div></div>
+          </div>
+          <div class="admin-card-item mb-modern-form-card">
+            <div class="mb-section-heading"><div><span class="mb-section-mark"></span><div><h3>Form Update Barang</h3><p>Lengkapi detail barang untuk master stok cabang.</p></div></div>
+              <div class="mb-toolbar-actions"><button type="button" class="mb-tool-btn" onclick="downloadMasterBarangTemplate()"><i class="fa-solid fa-download"></i> Template Excel</button><button type="button" class="mb-tool-btn" onclick="document.getElementById('master-barang-file').click()"><i class="fa-solid fa-file-import"></i> Import Excel</button><button type="button" class="mb-tool-btn" onclick="loadMasterBarangStok()"><i class="fa-solid fa-rotate"></i> Muat Ulang</button></div>
             </div>
             <input type="file" id="master-barang-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importMasterBarangExcel(event)">
-            <form id="master-barang-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
-              <div class="admin-input-group"><label>Resto Tujuan</label><input id="mb-resto" required placeholder="Contoh: LAZATTO TEST" value="SEMUA CABANG"></div>
-              <div class="admin-input-group"><label>Kode Barang</label><input id="mb-kode" required placeholder="BRG001"></div>
-              <div class="admin-input-group"><label>Nama Barang</label><input id="mb-nama" required placeholder="Nama barang"></div>
-              <div class="admin-input-group"><label>Satuan Pakai</label><input id="mb-satuan" required placeholder="Pcs / Gram / ml"></div>
-              <div class="admin-input-group"><label>Satuan Order</label><input id="mb-satuan-order" placeholder="Dus / Pack / Kg"></div>
-              <div class="admin-input-group"><label>Produk</label><input id="mb-produk" placeholder="Logistik"></div>
-              <div class="admin-input-group"><label>Konversi</label><input id="mb-konversi" placeholder="Contoh: 1 dus = 12 pcs"></div>
-              <div class="admin-input-group"><label>Stok Awal</label><input id="mb-stok-awal" type="number" min="0" step="any" value="0" required></div>
-              <div style="display:flex;align-items:end;gap:8px;flex-wrap:wrap;"><button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Barang</button><button type="button" class="btn-primary" onclick="resetMasterBarangForm()">Bersihkan</button></div>
+            <form id="master-barang-form" class="mb-modern-form">
+              <div class="admin-input-group"><label><i class="fa-solid fa-store"></i> Resto Tujuan</label><input id="mb-resto" required placeholder="Contoh: LAZATTO TEST" value="SEMUA CABANG"></div>
+              <div class="admin-input-group"><label><i class="fa-solid fa-barcode"></i> Kode Barang</label><input id="mb-kode" required placeholder="BRG001"></div>
+              <div class="admin-input-group"><label><i class="fa-solid fa-cube"></i> Nama Barang</label><input id="mb-nama" required placeholder="Nama barang"></div>
+              <div class="admin-input-group"><label><i class="fa-solid fa-scale-balanced"></i> Satuan Pakai</label><input id="mb-satuan" required placeholder="Pcs / Gram / ml"></div>
+              <div class="admin-input-group"><label><i class="fa-solid fa-boxes-stacked"></i> Satuan Order</label><input id="mb-satuan-order" placeholder="Dus / Pack / Kg"></div>
+              <div class="admin-input-group"><label><i class="fa-solid fa-tags"></i> Produk</label><input id="mb-produk" placeholder="Logistik"></div>
+              <div class="admin-input-group"><label><i class="fa-solid fa-arrows-left-right"></i> Konversi</label><input id="mb-konversi" placeholder="Contoh: 1 dus = 12 pcs"></div>
+              <div class="admin-input-group"><label><i class="fa-solid fa-box-open"></i> Stok Awal</label><input id="mb-stok-awal" type="number" min="0" step="any" value="0" required></div>
+              <div class="mb-form-actions"><button type="submit" class="mb-save-btn"><i class="fa-solid fa-floppy-disk"></i> Simpan Barang</button><button type="button" class="mb-reset-btn" onclick="resetMasterBarangForm()"><i class="fa-solid fa-rotate-left"></i> Bersihkan</button></div>
             </form>
           </div>
-          <div class="admin-card-item"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;"><h3 style="font-weight:800;">Daftar Master Barang</h3><input id="mb-search" placeholder="Cari kode, nama, atau resto…" oninput="renderMasterBarangTable()" style="max-width:320px;padding:10px;border:1px solid var(--border);border-radius:8px;"></div><div id="master-barang-table" style="overflow:auto;">Klik Muat Ulang untuk membaca data master.</div></div>
+          <div class="admin-card-item mb-modern-table-card"><div class="mb-section-heading mb-table-heading"><div><span class="mb-section-mark"></span><div><h3>Daftar Master Barang</h3><p>Telusuri dan cek detail master barang yang sudah tersimpan.</p></div></div><div class="mb-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input id="mb-search" placeholder="Cari kode, nama, atau resto…" oninput="renderMasterBarangTable()"></div></div><div id="master-barang-table" class="mb-table-wrap">Klik Muat Ulang untuk membaca data master.</div></div>
         </div>
 
         <!-- PAGE 4: STOK OPNAME UNTUK ADMIN -->
@@ -3078,6 +3138,11 @@
 
         <div id="page-admin-kas-futsal" class="admin-page-content" style="display:none;max-width:1400px;margin:0 auto;padding:18px 20px 28px">
           <div class="user-banner"><div class="banner-header"><div><h2>Kelola Kas Futsal</h2><p>Admin mengatur halaman Kas Futsal, memilih SPV pengelola, serta mengelola seluruh transaksi kas. Preview frontend menggunakan penyimpanan lokal browser.</p></div></div></div>
+          <div class="grid-container kf-admin-metrics" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:16px 0">
+            <div class="stat-card"><div class="stat-icon" style="background:#dcfce7;color:#15803d"><i class="fa-solid fa-wallet"></i></div><div><div class="stat-label">Total Saldo Kas</div><div class="stat-num" id="kf-admin-balance">Rp0</div></div></div>
+            <div class="stat-card"><div class="stat-icon" style="background:#dbeafe;color:#1d4ed8"><i class="fa-solid fa-arrow-down"></i></div><div><div class="stat-label">Total Kas Masuk</div><div class="stat-num" id="kf-admin-in">Rp0</div></div></div>
+            <div class="stat-card"><div class="stat-icon" style="background:#fee2e2;color:#b91c1c"><i class="fa-solid fa-arrow-up"></i></div><div><div class="stat-label">Total Kas Keluar</div><div class="stat-num" id="kf-admin-out">Rp0</div></div></div>
+          </div>
           <div class="card" style="margin:16px 0">
             <div class="card-title">Buat / Atur Halaman Kas Futsal</div>
             <form id="kf-admin-page-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px">
@@ -3149,7 +3214,7 @@
           <div class="ae-layout"><div class="ae-panel"><h3><i class="fa-solid fa-chart-column" style="color:#b91c1c"></i> Sumber Pencapaian</h3><div class="ae-bars"><div><div class="ae-bar-head"><span>Omset Reguler</span><b id="ae-reguler-label">Rp0</b></div><div class="ae-track"><div class="ae-fill" id="ae-reguler-bar" style="width:0%;background:linear-gradient(90deg,#0f766e,#2dd4bf)"></div></div></div><div><div class="ae-bar-head"><span>Big Order</span><b id="ae-big-label">Rp0</b></div><div class="ae-track"><div class="ae-fill" id="ae-big-bar" style="width:0%"></div></div></div><div><div class="ae-bar-head"><span>Event</span><b id="ae-event-label">Rp0</b></div><div class="ae-track"><div class="ae-fill" id="ae-event-bar" style="width:0%;background:linear-gradient(90deg,#2563eb,#38bdf8)"></div></div></div><div><div class="ae-bar-head"><span>Satelit</span><b id="ae-sat-label">Rp0</b></div><div class="ae-track"><div class="ae-fill" id="ae-sat-bar" style="width:0%;background:linear-gradient(90deg,#059669,#34d399)"></div></div></div></div><p class="ae-muted" style="margin-top:16px">Grafik mengikuti data yang tersedia. Omset Reguler dikreditkan ke Primary AE, Event/Satelit ke AE Pengelola akun POS, dan Big Order ke AE pembuat order.</p></div><div class="ae-panel"><h3><i class="fa-solid fa-bolt" style="color:#d97706"></i> Status Integrasi</h3><div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #eef2f7"><span class="ae-muted">Input Big Order</span><span class="ae-tag">AKTIF</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #eef2f7"><span class="ae-muted">POS Event</span><span class="ae-tag" style="background:#dcfce7;color:#166534">TERHUBUNG</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0"><span class="ae-muted">POS Satelit / tutup shift</span><span class="ae-tag" style="background:#dcfce7;color:#166534">TERHUBUNG</span></div><div class="ae-notice">Pencapaian Event/Satelit dikreditkan kepada AE Pengelola akun POS setelah shift ditutup. Omset Reguler mengikuti Primary AE, sedangkan Big Order mengikuti username pembuat order.</div></div></div>
         </div>
         <div id="page-ae-input" class="role-page-content" style="display:none"><div class="ae-hero"><div><h2>Input Pencapaian</h2><p>Catat big order dan tinjau riwayat pencapaian per hari.</p></div></div><div class="ae-panel"><h3>Input Big Order</h3><form id="ae-big-form"><div class="ae-form-grid"><div class="ae-field"><label>Tanggal</label><input type="date" id="ae-big-date" required></div><div class="ae-field"><label>Resto (bisa pilih lebih dari satu)</label><select id="ae-big-restos" multiple size="5" required></select><small class="ae-muted">Daftar resto diambil dari data aplikasi yang tersedia. Gunakan Ctrl/⌘ untuk memilih beberapa resto.</small></div><div class="ae-field"><label>Nama / Keterangan Order</label><input id="ae-big-name" placeholder="Contoh: Order kantor / katering" required></div><div class="ae-field"><label>Omset (Rp)</label><input id="ae-big-amount" type="number" min="1" step="1" placeholder="0" required></div></div><button class="ae-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Simpan Big Order</button></form></div><div class="ae-panel" style="margin-top:14px"><h3>Riwayat Omset Reguler, Event, Satelit & Big Order per Hari</h3><div class="ae-form-grid"><div class="ae-field"><label>Filter tanggal</label><input type="date" id="ae-history-date" onchange="renderAEHistory()"></div><div class="ae-field"><label>Sumber</label><select id="ae-history-source" onchange="renderAEHistory()"><option value="ALL">Semua sumber</option><option value="Reguler">Reguler (POS)</option><option value="Big Order">Big Order</option><option value="Satelit">Satelit (POS)</option><option value="Event">Event (POS)</option></select></div></div><div id="ae-history-table" class="ae-table-wrap"></div><p class="ae-muted" style="margin-top:8px">Riwayat menampilkan transaksi yang teratribusi ke AE ini. Omset Event/Satelit diakui setelah shift ditutup.</p></div></div>
-        <div id="page-ae-menu" class="role-page-content" style="display:none"><div class="ae-hero"><div><h2>Inventaris Menu POS</h2><p>Kelola menu manual per brand. Listing berubah sesuai brand terpilih.</p></div></div><div class="ae-panel"><div class="ae-brand-tabs"><button id="ae-tab-lazatto" class="active" onclick="setAEBrand('LAZATTO')">LAZATTO</button><button id="ae-tab-ngeumi" onclick="setAEBrand('NGEUMI')">NGEUMI</button></div><form id="ae-menu-form"><div class="ae-form-grid"><div class="ae-field"><label>Nama Menu</label><input id="ae-menu-name" required placeholder="Contoh: Paket Ayam 1"></div><div class="ae-field"><label>Harga Jual (Rp)</label><input id="ae-menu-price" type="number" min="0" required placeholder="0"></div><div class="ae-field"><label>Kategori</label><input id="ae-menu-category" placeholder="Makanan / Minuman"></div><div class="ae-field"><label>Kode / SKU (otomatis)</label><input id="ae-menu-sku" placeholder="SKU otomatis" readonly></div></div><button class="ae-btn" type="submit">Tambah Menu</button></form><div id="ae-menu-table" class="ae-table-wrap"></div></div></div>
+        <div id="page-ae-menu" class="role-page-content" style="display:none"><div class="ae-hero"><div><h2>Inventaris Menu POS</h2><p>Kelola menu manual per brand. Listing berubah sesuai brand terpilih.</p></div></div><div class="ae-panel"><div class="ae-menu-toolbar"><div class="ae-brand-tabs"><button id="ae-tab-lazatto" class="active" onclick="setAEBrand('LAZATTO')">LAZATTO</button><button id="ae-tab-ngeumi" onclick="setAEBrand('NGEUMI')">NGEUMI</button></div><div class="ae-menu-excel-actions"><button type="button" class="ae-btn secondary" onclick="downloadAEMenuTemplate()"><i class="fa-solid fa-download"></i> Download Template</button><button type="button" class="ae-btn" onclick="document.getElementById('ae-menu-excel-file').click()"><i class="fa-solid fa-file-excel"></i> Import dari Excel</button><input id="ae-menu-excel-file" type="file" accept=".xlsx,.xls,.csv" hidden onchange="importAEMenusExcel(event)"></div></div><form id="ae-menu-form"><div class="ae-form-grid"><div class="ae-field"><label>Nama Menu</label><input id="ae-menu-name" required placeholder="Contoh: Paket Ayam 1"></div><div class="ae-field"><label>Harga Jual (Rp)</label><input id="ae-menu-price" type="number" min="0" required placeholder="0"></div><div class="ae-field"><label>Kategori</label><input id="ae-menu-category" placeholder="Makanan / Minuman"></div><div class="ae-field"><label>Kode / SKU (otomatis)</label><input id="ae-menu-sku" placeholder="SKU otomatis" readonly></div></div><button class="ae-btn" type="submit">Tambah Menu</button></form><div id="ae-menu-table" class="ae-table-wrap"></div></div></div>
         <div id="page-ae-accounts" class="role-page-content" style="display:none"><div class="ae-hero"><div><h2>Management Account</h2><p>Kelola akun login POS dan lihat daftar akun berdasarkan tipe POS.</p></div></div><div class="ae-panel"><h3>Input Account Login Kasir POS</h3><form id="ae-pos-form"><div class="ae-form-grid"><div class="ae-field"><label>Username</label><input id="ae-pos-user" required autocomplete="off"></div><div class="ae-field"><label>Password</label><input id="ae-pos-pass" type="text" required autocomplete="off"></div><div class="ae-field"><label>Tipe POS</label><select id="ae-pos-type"><option value="SATELIT">SATELIT</option><option value="EVENT">EVENT</option></select></div><div class="ae-field"><label>Brand</label><select id="ae-pos-brand" required><option value="LAZATTO">LAZATTO</option><option value="NGEUMI">NGEUMI</option></select></div><div class="ae-field"><label>Resto</label><select id="ae-pos-resto" required><option value="">Memuat daftar resto…</option></select><small class="ae-muted">Daftar resto diambil dari database aplikasi yang tersedia.</small></div></div><button class="ae-btn" type="submit">Simpan Akun POS</button></form><div class="ae-notice">Password akun POS akan ditampilkan jika backend mengirimkan nilai password. Password disimpan sebagai teks biasa pada database POS; batasi akses spreadsheet dan halaman ini hanya untuk admin/AE yang berwenang.</div><div id="ae-pos-table" class="ae-table-wrap"></div></div></div>
       </section>
 
@@ -5470,6 +5535,13 @@
       kfPopulateSpvDropdown();const list=document.getElementById('kf-admin-pages-list'),history=document.getElementById('kf-admin-history');if(!list||!history)return;
       list.innerHTML='<p>Memuat halaman dari database…</p>';history.innerHTML='<p>Memuat transaksi…</p>';
       try{await kfRefreshPages();const dashboards=await Promise.all(kfPagesCache.map(p=>kfGetDashboard(p)));kfDashboardCache=dashboards;kfTxCache=dashboards.flatMap(d=>d?.transactions||[]);
+        const totalBalance=dashboards.reduce((sum,d)=>sum+(Number(d?.balance)||0),0);
+        const totalIn=dashboards.reduce((sum,d)=>sum+(Number(d?.totalIn)||0),0);
+        const totalOut=dashboards.reduce((sum,d)=>sum+(Number(d?.totalOut)||0),0);
+        const balanceEl=document.getElementById('kf-admin-balance'),inEl=document.getElementById('kf-admin-in'),outEl=document.getElementById('kf-admin-out');
+        if(balanceEl)balanceEl.textContent=kfMoney(totalBalance);
+        if(inEl)inEl.textContent=kfMoney(totalIn);
+        if(outEl)outEl.textContent=kfMoney(totalOut);
         list.innerHTML=kfPagesCache.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;padding:10px">Nama Halaman</th><th style="text-align:left;padding:10px">SPV Pengelola</th><th style="text-align:left;padding:10px">Aksi</th></tr></thead><tbody>${kfPagesCache.map((p,i)=>`<tr><td style="padding:10px;border-top:1px solid var(--border)">${kfEsc(p.title)}</td><td style="padding:10px;border-top:1px solid var(--border)">${kfEsc(p.owner)}</td><td style="padding:10px;border-top:1px solid var(--border)"><button onclick="kfAdminDeletePage('${kfEsc(p.id)}')" disabled title="Penghapusan halaman belum disediakan backend">Hapus Halaman</button></td></tr>`).join('')}</tbody></table>`:'<p>Belum ada halaman. Buat halaman baru di form di atas.</p>';
         const tx=kfTxCache.slice().reverse();history.innerHTML=tx.length?`<table style="width:100%;border-collapse:collapse"><thead><tr><th>Tanggal</th><th>SPV</th><th>Keterangan</th><th>Jenis</th><th>Nominal</th><th>Aksi Admin</th></tr></thead><tbody>${tx.map(t=>`<tr><td>${kfEsc(t.date)}</td><td>${kfEsc(t.owner)}</td><td>${kfEsc(t.desc)}</td><td>${kfEsc(t.type)}</td><td>${kfMoney(t.amount)}</td><td><button onclick="kfAdminEdit('${kfEsc(t.id)}')">Edit</button> <button onclick="kfAdminDelete('${kfEsc(t.id)}')">Hapus</button></td></tr>`).join('')}</tbody></table>`:'<p>Belum ada transaksi.</p>';
       }catch(e){list.innerHTML=`<p style="color:#b91c1c">Gagal memuat halaman: ${kfEsc(e.message)}. Pastikan GAS telah diterapkan (deploy) dengan action Kas Futsal terbaru.</p>`;history.innerHTML='<p>Data transaksi belum dapat dimuat.</p>';}
@@ -9402,6 +9474,54 @@
       return (brand==='NGEUMI'?'NG-':'LZ-')+(slug||'MENU');
     }
     function updateAESku(){const name=document.getElementById('ae-menu-name')?.value||'';const sku=document.getElementById('ae-menu-sku');if(sku)sku.value=makeAESku(window.aeCurrentBrand||'LAZATTO',name)}
+    function downloadAEMenuTemplate(){
+      const csv='BRAND,MENU,KATEGORI,HARGA\r\nLAZATTO,Paket Ayam 1,Makanan,25000\r\nLAZATTO,Es Teh,Minuman,5000\r\nNGEUMI,Contoh Menu,Makanan,18000';
+      const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+      const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='Template_Import_Menu_POS.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    }
+    async function importAEMenusExcel(event){
+      const file=event.target.files?.[0];if(!file)return;
+      const input=event.target;
+      try{
+        const XLSX=await ensureXLSXLoaded();
+        const buffer=await file.arrayBuffer();
+        const workbook=XLSX.read(buffer,{type:'array'});
+        const sheet=workbook.Sheets[workbook.SheetNames[0]];
+        const raw=XLSX.utils.sheet_to_json(sheet,{defval:'',raw:true});
+        if(!raw.length)throw new Error('File Excel tidak berisi data menu.');
+        const headerMap={};
+        Object.keys(raw[0]).forEach(key=>{
+          const normalized=String(key).trim().toUpperCase().replace(/[ _-]+/g,'');
+          if(['MENU','NAMAMENU','NAMA'].includes(normalized))headerMap.menu=key;
+          if(['KATEGORI','CATEGORY'].includes(normalized))headerMap.category=key;
+          if(['HARGA','HARGAJUAL','PRICE'].includes(normalized))headerMap.price=key;
+          if(['BRAND','MEREK'].includes(normalized))headerMap.brand=key;
+        });
+        if(!headerMap.menu||!headerMap.price)throw new Error('Kolom wajib tidak ditemukan. Gunakan header MENU, KATEGORI, HARGA (BRAND opsional).');
+        const parsed=raw.map((row,index)=>{
+          const name=String(row[headerMap.menu]||'').trim();
+          const price=Number(String(row[headerMap.price]??'').replace(/[Rp\s.,]/g,''));
+          const category=headerMap.category?String(row[headerMap.category]||'').trim():'';
+          const brand=String(headerMap.brand?row[headerMap.brand]:window.aeCurrentBrand||'LAZATTO').trim().toUpperCase()||window.aeCurrentBrand||'LAZATTO';
+          return {row:index+2,name,price,category,brand};
+        }).filter(x=>x.name);
+        if(!parsed.length)throw new Error('Tidak ada baris menu dengan nama yang terisi.');
+        const invalid=parsed.filter(x=>!Number.isFinite(x.price)||x.price<0);
+        if(invalid.length)throw new Error('Harga tidak valid pada baris Excel: '+invalid.map(x=>x.row).join(', '));
+        const summary=parsed.reduce((acc,x)=>(acc[x.brand]=(acc[x.brand]||0)+1,acc),{});
+        if(!confirm('Import '+parsed.length+' menu ke server POS?\\n'+Object.entries(summary).map(([b,n])=>b+': '+n+' menu').join('\\n')+'\\n\\nMenu ditambahkan tanpa menimpa menu lama.'))return;
+        let success=0;const errors=[];
+        for(const item of parsed){
+          const product={id:Date.now()+success,brand:item.brand,name:item.name,price:item.price,category:item.category,sku:makeAESku(item.brand,item.name),icon:'package'};
+          try{const result=await aeApi({action:'saveProduct',product});if(result&&result.status==='error')throw new Error(result.message||'Server menolak');success++}
+          catch(err){errors.push('Baris '+item.row+' ('+item.name+'): '+err.message)}
+        }
+        await renderAEMenus();
+        if(errors.length)alert('Import selesai. Berhasil: '+success+'; gagal: '+errors.length+'\\n\\n'+errors.slice(0,8).join('\\n'));
+        else alert('Berhasil mengimport '+success+' menu ke server POS.');
+      }catch(err){alert('Import Excel gagal: '+err.message)}
+      finally{input.value=''}
+    }
     function setAEBrand(brand){window.aeCurrentBrand=brand;document.getElementById('ae-tab-lazatto')?.classList.toggle('active',brand==='LAZATTO');document.getElementById('ae-tab-ngeumi')?.classList.toggle('active',brand==='NGEUMI');updateAESku();renderAEMenus()}
     async function renderAEMenus(){
       const wrap=document.getElementById('ae-menu-table');if(!wrap)return;wrap.innerHTML='<p class="ae-muted" style="padding:12px">Memuat menu dari server POS…</p>';
@@ -9675,6 +9795,14 @@
     function renderMasterBarangTable(){
       const el=document.getElementById('master-barang-table'); if(!el)return; const q=(document.getElementById('mb-search')?.value||'').toLowerCase();
       const rows=masterBarangRows.filter(x=>[x.resto,x.kode,x.nama,x.satuan,x.satuanOrder,x.produk].some(v=>String(v||'').toLowerCase().includes(q)));
+      const distinctRestos=new Set(masterBarangRows.map(x=>String(x.resto||'').trim()).filter(x=>x&&x.toUpperCase()!=='SEMUA CABANG'));
+      const stockTotal=masterBarangRows.reduce((sum,x)=>sum+(Number(String(x.stokAwal??0).replace(/,/g,''))||0),0);
+      const conversions=masterBarangRows.filter(x=>String(x.konversi||'').trim()).length;
+      const statCount=document.getElementById('mb-stat-count'),statResto=document.getElementById('mb-stat-resto'),statStock=document.getElementById('mb-stat-stock'),statConv=document.getElementById('mb-stat-conversion');
+      if(statCount)statCount.textContent=masterBarangRows.length.toLocaleString('id-ID');
+      if(statResto)statResto.textContent=distinctRestos.size.toLocaleString('id-ID');
+      if(statStock)statStock.textContent=stockTotal.toLocaleString('id-ID',{maximumFractionDigits:2});
+      if(statConv)statConv.textContent=conversions.toLocaleString('id-ID');
       if(!rows.length){el.innerHTML='<p style="padding:16px;color:var(--text-muted)">Belum ada data barang yang cocok.</p>';return;}
       el.innerHTML='<table style="width:100%;border-collapse:collapse;min-width:850px"><thead><tr>'+['No','Resto','Kode','Nama Barang','Satuan Pakai','Satuan Order','Produk','Konversi','Stok Awal'].map(x=>'<th style="padding:10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap">'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.map((x,i)=>'<tr>'+[i+1,x.resto,x.kode,x.nama,x.satuan,x.satuanOrder,x.produk,x.konversi,x.stokAwal].map(v=>'<td style="padding:10px;border-bottom:1px solid var(--border)">'+escapeMasterBarangHtml(String(v??''))+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
     }
