@@ -10437,12 +10437,7 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
 
     function setProfitMonthChoice(month, checked) {
       if (checked) {
-        if (!selectedProfitMonths.includes(month)) {
-          const checkbox = [...document.querySelectorAll('#profit-month-options-list input[type="checkbox"]')].find(el => el.value === month);
-          if (checkbox) checkbox.checked = false;
-          
-          return;
-        }
+        // Tambahkan bulan yang dipilih; tidak ada lagi batas maksimum pilihan.
         if (!selectedProfitMonths.includes(month)) selectedProfitMonths.push(month);
       } else {
         selectedProfitMonths = selectedProfitMonths.filter(m => m !== month);
