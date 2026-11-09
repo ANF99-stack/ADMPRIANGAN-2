@@ -1536,6 +1536,11 @@
 @keyframes kfNotifyFade{from{opacity:0}to{opacity:1}}@keyframes kfNotifyPop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:480px){.kf-notify-card{padding:24px 20px 18px;border-radius:20px}.kf-notify-icon{width:64px;height:64px;font-size:30px}}
 </style>
+
+<style id="profit-sync-diagnostics-style">
+#page-spv-laporan-profit .profit-sync-error{margin-top:8px;max-width:760px;padding:9px 12px;border:1px solid rgba(254,202,202,.35);border-radius:10px;background:rgba(127,29,29,.28);color:#fee2e2;font-size:.72rem;line-height:1.5;overflow-wrap:anywhere}
+#page-spv-laporan-profit .profit-live.profit-live-error>span{background:#f87171;box-shadow:0 0 0 4px rgba(248,113,113,.15)}
+</style>
 </head>
 <body>
   <div id="session-restore-screen" role="status" aria-live="polite">
@@ -2189,6 +2194,42 @@
           <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div class="card-title">Riwayat Kas Futsal</div><span id="kf-spv-view-label" class="status-pill">Mode lihat saja</span></div><div id="kf-spv-history" style="overflow-x:auto;margin-top:12px"></div></div>
         </div>
       </div>
+
+        <div id="page-spv-laporan-profit" class="role-page-content" style="display:none">
+          <section class="profit-page-shell">
+            <div class="profit-hero">
+              <div><span class="profit-eyebrow"><i class="fa-solid fa-chart-line"></i> FINANCIAL PERFORMANCE</span><h2>LAPORAN PROFIT</h2><p>Monitoring omset, COGS, cost, dan profit yang tersinkronisasi dengan MASTER PROFIT.</p><div class="profit-live" aria-live="polite"><span></span><b id="profit-sync-status">Menunggu koneksi GAS</b><small id="profit-last-sync">Belum disinkronkan</small></div><div id="profit-sync-error" class="profit-sync-error" role="status" style="display:none"></div></div>
+              <button id="profit-refresh-btn" class="profit-refresh" type="button" onclick="loadMasterProfit(true)"><i class="fa-solid fa-rotate"></i> Sinkronkan Data</button>
+            </div>
+            <div class="profit-filter-card">
+              <label>Tahun<select id="profit-filter-year" onchange="handleProfitYearChange()"><option value="">Semua Tahun</option></select></label>
+              <div class="profit-filter-field">
+                <span class="profit-filter-label">Bulan <small style="font-size:.62rem;color:#94a3b8;font-weight:700">Pilih hingga 3 bulan</small></span>
+                <div class="profit-month-picker" id="profit-month-picker">
+                  <button type="button" id="profit-month-toggle" class="profit-month-toggle" aria-expanded="false" aria-controls="profit-month-options" onclick="toggleProfitMonthPicker(event)"><span id="profit-month-summary">Semua Bulan</span><i class="fa-solid fa-chevron-down"></i></button>
+                  <div id="profit-month-options" class="profit-month-options" hidden>
+                    <div class="profit-month-options-head"><span>Pilih maksimal 3 bulan</span><button type="button" onclick="clearProfitMonths()">Semua bulan</button></div>
+                    <div id="profit-month-options-list"></div>
+                    <div class="profit-month-options-foot"><span id="profit-month-count">0/3 dipilih</span><button type="button" onclick="closeProfitMonthPicker()">Selesai</button></div>
+                  </div>
+                </div>
+              </div>
+              <label>Entitas<select id="profit-filter-entity" onchange="renderMasterProfit()"><option value="">Semua Entitas</option></select></label>
+              <label class="profit-search">Cari resto / kode<input id="profit-filter-search" type="search" placeholder="Ketik nama resto atau kode…" oninput="renderMasterProfit()"></label>
+            </div>
+            <div class="profit-kpis">
+              <article><span><i class="fa-solid fa-store"></i> Total Resto</span><strong id="profit-kpi-resto">—</strong><small>Dalam filter aktif</small></article>
+              <article><span><i class="fa-solid fa-sack-dollar"></i> Omzet Bersih</span><strong id="profit-kpi-omzet">—</strong><small>Akumulasi data OMSET BGHL</small></article>
+              <article><span><i class="fa-solid fa-mobile-screen-button"></i> Penjualan Online</span><strong id="profit-kpi-online">—</strong><small>Akumulasi penjualan online</small></article>
+              <article><span><i class="fa-solid fa-cash-register"></i> Penjualan Offline</span><strong id="profit-kpi-offline">—</strong><small>Akumulasi penjualan offline</small></article>
+            </div>
+            <div class="profit-data-card">
+              <div class="profit-tabs" id="profit-sheet-tabs"><button class="active" data-sheet="OMSET BGHL" onclick="selectProfitSheet('OMSET BGHL',this)">OMSET BGHL</button><button data-sheet="COGS BGHL" onclick="selectProfitSheet('COGS BGHL',this)">COGS BGHL</button><button data-sheet="COST" onclick="selectProfitSheet('COST',this)">COST</button><button data-sheet="PROFIT" onclick="selectProfitSheet('PROFIT',this)">PROFIT</button></div>
+              <div class="profit-table-head"><div><h3 id="profit-table-title">OMSET BGHL</h3><p id="profit-table-subtitle">Data langsung dari spreadsheet MASTER PROFIT.</p></div><span id="profit-row-count">0 baris</span></div>
+              <div id="profit-table-wrap" class="profit-table-wrap"><div class="profit-empty"><i class="fa-solid fa-cloud-arrow-down"></i><b>Data belum dimuat</b><span>Tekan Sinkronkan Data untuk mengambil data terbaru.</span></div></div>
+            </div>
+          </section>
+        </div>
 
       <!-- ================= PSD VIEW ================= -->
       <div id="psd-view" style="display: none;">
@@ -2882,6 +2923,72 @@
 #page-admin-update-barang .mb-table-wrap tbody tr:nth-child(even){background:#f8fafc}#page-admin-update-barang .mb-table-wrap tbody tr:hover{background:#fff7ed}
 @media(max-width:1000px){#page-admin-update-barang .mb-modern-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#page-admin-update-barang .mb-modern-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){#page-admin-update-barang .mb-modern-hero{padding:20px;border-radius:17px;gap:12px}#page-admin-update-barang .mb-hero-icon{width:48px;height:48px;font-size:1.3rem}#page-admin-update-barang .mb-hero-copy h2{font-size:1.2rem}#page-admin-update-barang .mb-hero-copy p{font-size:.73rem}#page-admin-update-barang .mb-hero-decoration{right:12px;font-size:3.5rem}#page-admin-update-barang .mb-modern-stats{gap:10px}#page-admin-update-barang .mb-stat{padding:12px;gap:9px;border-radius:14px}#page-admin-update-barang .mb-stat-icon{width:38px;height:38px;border-radius:11px;font-size:.95rem}#page-admin-update-barang .mb-stat strong{font-size:1.12rem}#page-admin-update-barang .mb-stat span{font-size:.65rem}#page-admin-update-barang .mb-stat small{font-size:.58rem}#page-admin-update-barang .mb-modern-form-card,#page-admin-update-barang .mb-modern-table-card{padding:15px!important;border-radius:16px!important}#page-admin-update-barang .mb-modern-form{grid-template-columns:1fr;gap:12px}#page-admin-update-barang .mb-form-actions{display:grid;grid-template-columns:1fr 1fr}#page-admin-update-barang .mb-save-btn,#page-admin-update-barang .mb-reset-btn{width:100%}#page-admin-update-barang .mb-toolbar-actions{width:100%}#page-admin-update-barang .mb-tool-btn{flex:1;padding:9px 7px;font-size:.65rem}#page-admin-update-barang .mb-search-wrap{width:100%;min-width:0}}
+
+/* ===== LAPORAN PROFIT • modern SPV workspace ===== */
+#page-spv-laporan-profit{padding:clamp(12px,2vw,28px)!important;}
+#page-spv-laporan-profit .profit-page-shell{width:100%;max-width:1600px;margin:0 auto;display:flex;flex-direction:column;gap:20px;color:#172033;font-family:inherit}
+#page-spv-laporan-profit .profit-hero{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:clamp(22px,3vw,34px);border-radius:24px;background:linear-gradient(125deg,#111827 0%,#1e293b 52%,#7f1d1d 100%);color:#fff;box-shadow:0 16px 40px rgba(15,23,42,.16);isolation:isolate}
+#page-spv-laporan-profit .profit-hero:before{content:"";position:absolute;width:360px;height:360px;border-radius:50%;right:-100px;top:-180px;background:radial-gradient(circle,rgba(248,113,113,.28),transparent 68%);z-index:-1}
+#page-spv-laporan-profit .profit-hero:after{content:"";position:absolute;width:240px;height:240px;border:1px solid rgba(255,255,255,.09);border-radius:50%;right:45px;bottom:-170px;box-shadow:0 0 0 28px rgba(255,255,255,.025),0 0 0 58px rgba(255,255,255,.02);z-index:-1}
+#page-spv-laporan-profit .profit-eyebrow{display:inline-flex;align-items:center;gap:8px;color:#fecaca;font-size:.72rem;font-weight:850;letter-spacing:.13em;text-transform:uppercase}
+#page-spv-laporan-profit .profit-hero h2{font-size:clamp(1.5rem,3vw,2.15rem);line-height:1.15;font-weight:950;letter-spacing:-.035em;color:#fff;margin:9px 0 8px}
+#page-spv-laporan-profit .profit-hero p{max-width:680px;color:#cbd5e1;font-size:.88rem;line-height:1.65;margin:0}
+#page-spv-laporan-profit .profit-live{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:18px;color:#e2e8f0;font-size:.74rem}
+#page-spv-laporan-profit .profit-live>span{width:9px;height:9px;border-radius:50%;background:#fbbf24;box-shadow:0 0 0 4px rgba(251,191,36,.13)}
+#page-spv-laporan-profit .profit-live b{font-weight:850}
+#page-spv-laporan-profit .profit-live small{color:#94a3b8;padding-left:8px;border-left:1px solid #475569}
+#page-spv-laporan-profit .profit-refresh{display:inline-flex;align-items:center;justify-content:center;gap:9px;flex-shrink:0;border:1px solid rgba(255,255,255,.22);border-radius:13px;padding:12px 17px;background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;font-size:.78rem;font-weight:850;box-shadow:0 8px 20px rgba(127,29,29,.28);cursor:pointer;transition:transform .2s,filter .2s,opacity .2s}
+#page-spv-laporan-profit .profit-refresh:hover{transform:translateY(-2px);filter:brightness(1.08)}
+#page-spv-laporan-profit .profit-refresh:disabled{opacity:.65;cursor:wait;transform:none}
+#page-spv-laporan-profit .profit-filter-card{display:grid;grid-template-columns:repeat(3,minmax(150px,.8fr)) minmax(240px,1.5fr);gap:14px;align-items:end;padding:18px;background:#fff;border:1px solid #e5eaf2;border-radius:19px;box-shadow:0 5px 20px rgba(15,23,42,.035)}
+#page-spv-laporan-profit .profit-filter-card label{display:flex;flex-direction:column;gap:7px;color:#64748b;font-size:.7rem;font-weight:850;letter-spacing:.025em;min-width:0}
+#page-spv-laporan-profit .profit-filter-card select,#page-spv-laporan-profit .profit-filter-card input{width:100%;min-height:42px;padding:10px 12px;border:1px solid #dbe3ef;border-radius:11px;background:#f8fafc;color:#1e293b;font-size:.78rem;font-weight:650;outline:none;transition:border-color .2s,box-shadow .2s}
+#page-spv-laporan-profit .profit-filter-card select:focus,#page-spv-laporan-profit .profit-filter-card input:focus{border-color:#ef4444;background:#fff;box-shadow:0 0 0 3px rgba(239,68,68,.10)}
+#page-spv-laporan-profit .profit-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
+#page-spv-laporan-profit .profit-kpis article{position:relative;overflow:hidden;min-width:0;padding:20px;border:1px solid #e5eaf2;border-radius:18px;background:linear-gradient(145deg,#fff,#fbfcff);box-shadow:0 5px 18px rgba(15,23,42,.035)}
+#page-spv-laporan-profit .profit-kpis article:after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;right:-35px;bottom:-45px;background:rgba(239,68,68,.045)}
+#page-spv-laporan-profit .profit-kpis article>span{display:flex;align-items:center;gap:8px;color:#64748b;font-size:.72rem;font-weight:850}
+#page-spv-laporan-profit .profit-kpis article>span i{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#fff1f2;color:#dc2626}
+#page-spv-laporan-profit .profit-kpis article>strong{display:block;margin:15px 0 5px;color:#0f172a;font-size:clamp(1.05rem,1.8vw,1.55rem);font-weight:950;line-height:1.2;letter-spacing:-.03em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#page-spv-laporan-profit .profit-kpis article>small{color:#94a3b8;font-size:.68rem;font-weight:600}
+#page-spv-laporan-profit .profit-data-card{overflow:hidden;border:1px solid #e5eaf2;border-radius:20px;background:#fff;box-shadow:0 7px 24px rgba(15,23,42,.04)}
+#page-spv-laporan-profit .profit-tabs{display:flex;gap:7px;flex-wrap:wrap;padding:15px 18px;border-bottom:1px solid #edf1f7;background:#f8fafc}
+#page-spv-laporan-profit .profit-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #e2e8f0;border-radius:10px;padding:9px 13px;background:#fff;color:#64748b;font-size:.72rem;font-weight:850;cursor:pointer;transition:all .18s}
+#page-spv-laporan-profit .profit-tabs button:hover{border-color:#fecaca;color:#dc2626;background:#fff7f7}
+#page-spv-laporan-profit .profit-tabs button.active{border-color:#dc2626;background:linear-gradient(110deg,#dc2626,#ef4444);color:#fff;box-shadow:0 4px 12px rgba(220,38,38,.18)}
+#page-spv-laporan-profit .profit-table-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:20px 20px 14px}
+#page-spv-laporan-profit .profit-table-head h3{margin:0;color:#0f172a;font-size:1rem;font-weight:950}
+#page-spv-laporan-profit .profit-table-head p{margin:5px 0 0;color:#94a3b8;font-size:.72rem}
+#page-spv-laporan-profit #profit-row-count{flex-shrink:0;border:1px solid #e2e8f0;border-radius:999px;padding:6px 10px;background:#f8fafc;color:#64748b;font-size:.68rem;font-weight:850}
+#page-spv-laporan-profit .profit-table-wrap{overflow:auto;max-height:min(68vh,760px);min-height:180px;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent}
+#page-spv-laporan-profit .profit-table-wrap table{width:100%;min-width:900px;border-collapse:separate;border-spacing:0;font-size:.74rem}
+#page-spv-laporan-profit .profit-table-wrap thead th{position:sticky;top:0;z-index:2;padding:12px 14px;background:#1e293b;color:#f8fafc;text-align:left;font-size:.68rem;font-weight:850;white-space:nowrap;border-bottom:1px solid #334155}
+#page-spv-laporan-profit .profit-table-wrap tbody td{padding:11px 14px;border-bottom:1px solid #edf1f7;color:#334155;white-space:nowrap;font-variant-numeric:tabular-nums}
+#page-spv-laporan-profit .profit-table-wrap tbody tr:nth-child(even){background:#f8fafc}
+#page-spv-laporan-profit .profit-table-wrap tbody tr:hover{background:#fff1f2}
+#page-spv-laporan-profit .profit-empty{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;min-height:230px;padding:30px;text-align:center;color:#94a3b8}
+#page-spv-laporan-profit .profit-empty i{display:grid;place-items:center;width:54px;height:54px;border-radius:16px;background:#f1f5f9;color:#64748b;font-size:1.35rem}
+#page-spv-laporan-profit .profit-empty b{color:#334155;font-size:.88rem;font-weight:900}
+#page-spv-laporan-profit .profit-empty span{max-width:460px;font-size:.75rem;line-height:1.6}
+#page-spv-laporan-profit .profit-filter-card .profit-filter-field{display:flex;flex-direction:column;gap:7px;color:#64748b;font-size:.7rem;font-weight:850;letter-spacing:.025em;min-width:0}
+#page-spv-laporan-profit .profit-filter-label{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+#page-spv-laporan-profit .profit-month-picker{position:relative;width:100%;z-index:8}
+#page-spv-laporan-profit .profit-month-toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:42px;padding:10px 12px;border:1px solid #dbe3ef;border-radius:11px;background:#f8fafc;color:#1e293b;font-size:.78rem;font-weight:750;text-align:left;cursor:pointer}
+#page-spv-laporan-profit .profit-month-toggle:hover,#page-spv-laporan-profit .profit-month-toggle[aria-expanded="true"]{border-color:#fca5a5;background:#fff;box-shadow:0 0 0 3px rgba(239,68,68,.08)}
+#page-spv-laporan-profit .profit-month-toggle i{color:#94a3b8;font-size:.7rem;transition:transform .18s}
+#page-spv-laporan-profit .profit-month-toggle[aria-expanded="true"] i{transform:rotate(180deg)}
+#page-spv-laporan-profit .profit-month-options{position:absolute;top:calc(100% + 7px);left:0;right:0;min-width:220px;max-height:310px;overflow:auto;padding:10px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 16px 34px rgba(15,23,42,.16);z-index:10020}
+#page-spv-laporan-profit .profit-month-options[hidden]{display:none}
+#page-spv-laporan-profit .profit-month-options-head,#page-spv-laporan-profit .profit-month-options-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 2px 9px;color:#64748b;font-size:.66rem;font-weight:850}
+#page-spv-laporan-profit .profit-month-options-head button,#page-spv-laporan-profit .profit-month-options-foot button{border:0;background:#fff1f2;color:#dc2626;border-radius:8px;padding:6px 9px;font-size:.65rem;font-weight:850;cursor:pointer}
+#page-spv-laporan-profit .profit-month-options-foot{border-top:1px solid #edf1f7;margin-top:6px;padding:9px 2px 2px}
+#page-spv-laporan-profit .profit-month-option{display:flex;flex-direction:row!important;align-items:center;gap:9px;padding:8px 7px;border-radius:8px;color:#334155!important;font-size:.74rem!important;font-weight:750!important;letter-spacing:0!important;cursor:pointer}
+#page-spv-laporan-profit .profit-month-option:hover{background:#f8fafc}
+#page-spv-laporan-profit .profit-month-option input[type="checkbox"]{width:16px!important;min-width:16px;min-height:16px!important;height:16px;margin:0;padding:0;accent-color:#dc2626}
+#page-spv-laporan-profit .profit-kpis article>span{min-height:30px}
+@media(max-width:1050px){#page-spv-laporan-profit .profit-filter-card{grid-template-columns:repeat(2,minmax(0,1fr))}#page-spv-laporan-profit .profit-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){#page-spv-laporan-profit{padding:10px!important}#page-spv-laporan-profit .profit-page-shell{gap:12px}#page-spv-laporan-profit .profit-hero{align-items:flex-start;flex-direction:column;padding:20px;border-radius:18px;gap:18px}#page-spv-laporan-profit .profit-hero h2{font-size:1.45rem}#page-spv-laporan-profit .profit-hero p{font-size:.78rem}#page-spv-laporan-profit .profit-refresh{width:100%}#page-spv-laporan-profit .profit-live{font-size:.68rem}#page-spv-laporan-profit .profit-live small{padding-left:0;border-left:0;width:100%}#page-spv-laporan-profit .profit-filter-card{grid-template-columns:1fr;padding:13px;border-radius:15px;gap:11px}#page-spv-laporan-profit .profit-kpis{gap:10px}#page-spv-laporan-profit .profit-kpis article{padding:13px;border-radius:14px}#page-spv-laporan-profit .profit-kpis article>span{font-size:.64rem;gap:6px}#page-spv-laporan-profit .profit-kpis article>span i{width:26px;height:26px}#page-spv-laporan-profit .profit-kpis article>strong{font-size:1rem;margin:11px 0 5px}#page-spv-laporan-profit .profit-kpis article>small{font-size:.59rem}#page-spv-laporan-profit .profit-data-card{border-radius:15px}#page-spv-laporan-profit .profit-tabs{padding:11px;gap:6px}#page-spv-laporan-profit .profit-tabs button{flex:1;padding:9px 7px;font-size:.62rem}#page-spv-laporan-profit .profit-table-head{padding:15px 13px 12px}#page-spv-laporan-profit .profit-table-head h3{font-size:.9rem}#page-spv-laporan-profit .profit-table-wrap{max-height:60vh}#page-spv-laporan-profit .profit-empty{min-height:190px;padding:22px}}
+
 </style>
 
         <!-- MASTER BARANG STOK CABANG: modul terpisah, tidak mengubah halaman lama -->
@@ -5660,6 +5767,7 @@
       } else if (role === 'supervisor') {
         html = `
           <div class="nav-item active" onclick="switchRoleNav('page-spv-monitoring', this)"><i class="fa-solid fa-chart-pie"></i><span>Dashboard Monitoring</span></div>
+          <div class="nav-item" onclick="switchRoleNav('page-spv-laporan-profit', this)"><i class="fa-solid fa-file-invoice-dollar"></i><span>LAPORAN PROFIT</span></div>
           <div class="nav-item" onclick="switchSupervisorOmsetArea(this)"><i class="fa-solid fa-chart-column"></i><span>OMSET AREA</span></div>
           <details class="admin-nav-group">
             <summary><i class="fa-solid fa-clipboard-user"></i><span>OPERASIONAL RESTO</span><i class="fa-solid fa-chevron-down" style="font-size:.6rem;"></i></summary>
@@ -6099,6 +6207,7 @@
       const targetPage = document.getElementById(pageId);
       if (targetPage) targetPage.style.display = 'block';
       if (pageId === 'page-spv-kas-futsal') renderKasFutsalSpv();
+      if (pageId === 'page-spv-laporan-profit' && !masterProfitPayload) loadMasterProfit(false);
       if (pageId === 'page-user-kas-futsal') renderKasFutsalPic();
 
       if (pageId === 'page-check-karyawan') {
@@ -10045,6 +10154,418 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
     },12000);
   },true);
 })();
+
+    // ===== MASTER PROFIT API (GAS JSONP; read-only) =====
+    const MASTER_PROFIT_API_URL = 'https://script.google.com/macros/s/AKfycbwOMR4cBFkv5WA9W-kvW5WW2EEDh9hu0xwCYDKC913KjimlATKHS87Le1JtvEW5pIIy/exec';
+    let masterProfitPayload = null;
+    let activeProfitSheet = 'OMSET BGHL';
+    // Kosong berarti semua bulan; jika dipilih, maksimal tiga bulan sekaligus.
+    let selectedProfitMonths = [];
+    let masterProfitLoading = false;
+
+    function requestMasterProfitJsonp(url, action = 'all') {
+      return new Promise((resolve, reject) => {
+        const callbackName = '__masterProfitCb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+        const script = document.createElement('script');
+        let settled = false;
+        const cleanup = () => {
+          clearTimeout(timer);
+          script.onerror = null;
+          script.onload = null;
+          if (script.parentNode) script.parentNode.removeChild(script);
+          try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
+        };
+        const finish = (fn, value) => { if (settled) return; settled = true; cleanup(); fn(value); };
+        const timer = setTimeout(() => finish(reject, new Error('Permintaan ke GAS melewati batas waktu 35 detik. Periksa deployment dan izin akses Web App.')), 35000);
+        window[callbackName] = data => finish(resolve, data);
+        script.async = true;
+        script.onerror = () => finish(reject, new Error('Browser tidak dapat memuat Web App GAS. Periksa URL /exec, status deployment, dan izin akses.'));
+        script.onload = () => {
+          // HTML login/JSON biasa dapat selesai dimuat tanpa pernah memanggil callback JSONP.
+          setTimeout(() => {
+            if (!settled) finish(reject, new Error('GAS merespons tetapi callback JSONP tidak ditemukan. Perbarui deployment dengan Code_MASTER_PROFIT.gs terbaru.'));
+          }, 900);
+        };
+        const separator = url.includes('?') ? '&' : '?';
+        script.src = url + separator + 'action=' + encodeURIComponent(action) + '&callback=' + encodeURIComponent(callbackName) + '&_=' + Date.now();
+        document.head.appendChild(script);
+      });
+    }
+
+    function setMasterProfitStatus(message, detail = '', isError = false) {
+      const status = document.getElementById('profit-sync-status');
+      const last = document.getElementById('profit-last-sync');
+      const error = document.getElementById('profit-sync-error');
+      const live = status?.closest('.profit-live');
+      if (status) status.textContent = message;
+      if (last && !isError && detail) last.textContent = detail;
+      if (error) {
+        error.textContent = isError ? detail : '';
+        error.style.display = isError && detail ? 'block' : 'none';
+      }
+      if (live) live.classList.toggle('profit-live-error', !!isError);
+    }
+
+    async function loadMasterProfit(force) {
+      if (masterProfitLoading) return;
+      const btn = document.getElementById('profit-refresh-btn');
+      if (!MASTER_PROFIT_API_URL || MASTER_PROFIT_API_URL.includes('PASTE_MASTER')) {
+        setMasterProfitStatus('URL GAS belum dipasang', 'Masukkan URL Web App MASTER PROFIT.', true);
+        return;
+      }
+      masterProfitLoading = true;
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengambil Data…'; }
+      setMasterProfitStatus('Menghubungkan ke GAS…', 'Membaca empat tab MASTER PROFIT.');
+      try {
+        const data = await requestMasterProfitJsonp(MASTER_PROFIT_API_URL, force ? 'refresh' : 'all');
+        if (!data || data.status !== 'success') throw new Error(data?.message || 'GAS mengembalikan respons yang tidak valid.');
+        const expectedSheets = ['OMSET BGHL', 'COGS BGHL', 'COST', 'PROFIT'];
+        const missing = expectedSheets.filter(name => !data.tabs || !data.tabs[name] || !data.tabs[name].exists);
+        if (missing.length === expectedSheets.length) throw new Error('Keempat tab tidak ditemukan. Periksa nama tab dan Spreadsheet ID pada Code_MASTER_PROFIT.gs.');
+        masterProfitPayload = data;
+        populateProfitFilters();
+        renderMasterProfit();
+        const cachedText = data.cached ? ' • cache server' : ' • sumber terbaru';
+        setMasterProfitStatus('Terhubung • Data berhasil dimuat', 'Sinkronisasi: ' + new Date(data.generatedAt || Date.now()).toLocaleString('id-ID') + cachedText);
+        if (missing.length) {
+          setMasterProfitStatus('Terhubung • Sebagian tab tidak ditemukan', 'Tab tidak ditemukan: ' + missing.join(', '), true);
+        }
+      } catch (err) {
+        const message = String(err?.message || err || 'Kesalahan tidak diketahui');
+        setMasterProfitStatus('Gagal sinkronisasi', message, true);
+        const wrap = document.getElementById('profit-table-wrap');
+        if (wrap) wrap.innerHTML = '<div class="profit-empty"><i class="fa-solid fa-triangle-exclamation"></i><b>Koneksi data gagal</b><span>' + message.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) + '</span><span style="margin-top:8px">Pastikan Code_MASTER_PROFIT.gs terbaru sudah disimpan dan deployment Web App sudah diperbarui.</span></div>';
+      } finally {
+        masterProfitLoading = false;
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sinkronkan Data'; }
+      }
+    }
+
+    // Helper normalisasi header dan angka untuk modul LAPORAN PROFIT.
+    // Ditambahkan pada scope global agar render KPI tidak gagal saat sinkronisasi.
+    function profitNormalizeHeader(value) {
+      return String(value == null ? '' : value)
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    function profitFindKey(row, parts) {
+      if (!row || typeof row !== 'object') return '';
+      const keys = Object.keys(row);
+      const needles = (Array.isArray(parts) ? parts : [parts])
+        .map(profitNormalizeHeader).filter(Boolean);
+      if (!needles.length) return '';
+      // Utamakan kecocokan tepat, lalu kecocokan yang mengandung seluruh kata kunci.
+      for (const key of keys) {
+        const normalized = profitNormalizeHeader(key);
+        if (needles.some(needle => normalized === needle)) return key;
+      }
+      for (const key of keys) {
+        const normalized = profitNormalizeHeader(key);
+        if (needles.every(needle => normalized.includes(needle))) return key;
+      }
+      return '';
+    }
+
+    function profitNumber(value) {
+      if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+      let text = String(value == null ? '' : value).trim();
+      if (!text || /^[-–—]$/.test(text)) return 0;
+      const negative = /^\(.*\)$/.test(text);
+      text = text.replace(/[()]/g, '').replace(/Rp/gi, '').replace(/idr/gi, '')
+        .replace(/\s/g, '').replace(/[^0-9.,+\-]/g, '');
+      if (!text) return 0;
+      if (text.includes('.') && text.includes(',')) {
+        // Format Indonesia: 1.234.567,89
+        text = text.replace(/\./g, '').replace(',', '.');
+      } else if (text.includes(',')) {
+        const decimals = text.split(',').pop();
+        text = decimals && decimals.length <= 2 ? text.replace(',', '.') : text.replace(/,/g, '');
+      } else if (/^-?\d{1,3}(\.\d{3})+$/.test(text)) {
+        // Format ribuan umum: 1.234.567
+        text = text.replace(/\./g, '');
+      }
+      const number = Number(text);
+      const result = Number.isFinite(number) ? number : 0;
+      return negative ? -Math.abs(result) : result;
+    }
+
+    function profitCurrency(value) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency', currency: 'IDR', maximumFractionDigits: 0
+      }).format(profitNumber(value));
+    }
+
+    function profitAllRows() {
+      const tabs = masterProfitPayload?.tabs || {};
+      return Object.values(tabs).flatMap(tab => Array.isArray(tab?.rows) ? tab.rows : []);
+    }
+
+    function profitFieldKey(row, field) {
+      const aliases = {
+        year: ['tahun', 'year'],
+        month: ['bulan', 'month', 'namabulan', 'periodebulan'],
+        entity: ['entitas', 'entity'],
+        resto: ['resto', 'namaresto', 'outlet', 'namaoutlet'],
+        code: ['koderesto', 'kodecabang', 'idresto', 'kodeoutlet']
+      };
+      return profitFindKey(row, aliases[field] || [field]);
+    }
+
+    function profitRowValue(row, field) {
+      const key = profitFieldKey(row, field);
+      return key ? row[key] : '';
+    }
+
+    function profitEscapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    const PROFIT_MONTH_ORDER = {
+      JANUARI:1, JAN:1, FEBRUARI:2, FEB:2, MARET:3, MAR:3,
+      APRIL:4, APR:4, MEI:5, MAY:5, JUNI:6, JUN:6,
+      JULI:7, JUL:7, AGUSTUS:8, AGU:8, AUG:8,
+      SEPTEMBER:9, SEP:9, OKTOBER:10, OKT:10, OCT:10,
+      NOVEMBER:11, NOV:11, DESEMBER:12, DES:12, DEC:12
+    };
+
+    function profitSortMonths(values) {
+      return [...new Set(values.map(v => String(v).trim()).filter(Boolean))].sort((a,b) => {
+        const aa = PROFIT_MONTH_ORDER[a.toUpperCase()] || 99;
+        const bb = PROFIT_MONTH_ORDER[b.toUpperCase()] || 99;
+        return aa - bb || a.localeCompare(b, 'id');
+      });
+    }
+
+    function populateProfitFilters() {
+      const rows = profitAllRows();
+      const fill = (id, values, label) => {
+        const el = document.getElementById(id); if (!el) return;
+        const old = el.value;
+        const unique = [...new Set(values.filter(v => v != null && String(v).trim() !== '').map(String))].sort((a,b) => a.localeCompare(b, 'id'));
+        el.innerHTML = '<option value="">' + label + '</option>' + unique.map(v => '<option value="' + profitEscapeHtml(v) + '">' + profitEscapeHtml(v) + '</option>').join('');
+        if ([...el.options].some(o => o.value === old)) el.value = old;
+      };
+      fill('profit-filter-year', rows.map(r => profitRowValue(r, 'year')), 'Semua Tahun');
+      fill('profit-filter-entity', rows.map(r => profitRowValue(r, 'entity')), 'Semua Entitas');
+      populateProfitMonthOptions();
+    }
+
+    function populateProfitMonthOptions() {
+      const list = document.getElementById('profit-month-options-list');
+      if (!list) return;
+      const selectedYear = document.getElementById('profit-filter-year')?.value || '';
+      const rows = profitAllRows().filter(r => !selectedYear || String(profitRowValue(r, 'year')) === selectedYear);
+      const months = profitSortMonths(rows.map(r => profitRowValue(r, 'month')));
+      selectedProfitMonths = selectedProfitMonths.filter(m => months.includes(m)).slice(0, 3);
+      if (!months.length) {
+        list.innerHTML = '<div style="padding:12px 6px;color:#94a3b8;font-size:.72rem">Data bulan tidak tersedia.</div>';
+      } else {
+        list.innerHTML = months.map(month => {
+          const checked = selectedProfitMonths.includes(month) ? ' checked' : '';
+          const disabled = !checked && selectedProfitMonths.length >= 3 ? ' disabled' : '';
+          return '<label class="profit-month-option"><input type="checkbox" value="' + profitEscapeHtml(month) + '"' + checked + disabled + ' onchange="setProfitMonthChoice(this.value,this.checked)"><span>' + profitEscapeHtml(month) + '</span></label>';
+        }).join('');
+      }
+      updateProfitMonthSummary();
+    }
+
+    function updateProfitMonthSummary() {
+      const summary = document.getElementById('profit-month-summary');
+      const count = document.getElementById('profit-month-count');
+      if (summary) summary.textContent = selectedProfitMonths.length ? selectedProfitMonths.join(', ') : 'Semua Bulan';
+      if (count) count.textContent = selectedProfitMonths.length + '/3 dipilih';
+    }
+
+    function toggleProfitMonthPicker(event) {
+      if (event) event.stopPropagation();
+      const panel = document.getElementById('profit-month-options');
+      const button = document.getElementById('profit-month-toggle');
+      if (!panel || !button) return;
+      const opening = panel.hidden;
+      panel.hidden = !opening;
+      button.setAttribute('aria-expanded', String(opening));
+    }
+
+    function closeProfitMonthPicker() {
+      const panel = document.getElementById('profit-month-options');
+      const button = document.getElementById('profit-month-toggle');
+      if (panel) panel.hidden = true;
+      if (button) button.setAttribute('aria-expanded', 'false');
+    }
+
+    function clearProfitMonths() {
+      selectedProfitMonths = [];
+      populateProfitMonthOptions();
+      renderMasterProfit();
+      closeProfitMonthPicker();
+    }
+
+    function setProfitMonthChoice(month, checked) {
+      if (checked) {
+        if (!selectedProfitMonths.includes(month) && selectedProfitMonths.length >= 3) {
+          const checkbox = [...document.querySelectorAll('#profit-month-options-list input[type="checkbox"]')].find(el => el.value === month);
+          if (checkbox) checkbox.checked = false;
+          alert('Maksimal 3 bulan dapat dipilih sekaligus.');
+          return;
+        }
+        if (!selectedProfitMonths.includes(month)) selectedProfitMonths.push(month);
+      } else {
+        selectedProfitMonths = selectedProfitMonths.filter(m => m !== month);
+      }
+      populateProfitMonthOptions();
+      renderMasterProfit();
+    }
+
+    function handleProfitYearChange() {
+      populateProfitMonthOptions();
+      renderMasterProfit();
+    }
+
+    // Tutup dropdown ketika pengguna menekan area di luar pemilih bulan.
+    if (!window.__profitMonthOutsideHandler) {
+      window.__profitMonthOutsideHandler = true;
+      document.addEventListener('click', event => {
+        const picker = document.getElementById('profit-month-picker');
+        if (picker && !picker.contains(event.target)) closeProfitMonthPicker();
+      });
+    }
+
+    function getFilteredProfitRows() {
+      const rows = masterProfitPayload?.tabs?.[activeProfitSheet]?.rows || [];
+      const y = document.getElementById('profit-filter-year')?.value || '';
+      const e = document.getElementById('profit-filter-entity')?.value || '';
+      const q = (document.getElementById('profit-filter-search')?.value || '').toLowerCase();
+      return rows.filter(r => {
+        const rowYear = profitRowValue(r, 'year');
+        const rowMonth = profitRowValue(r, 'month');
+        const rowEntity = profitRowValue(r, 'entity');
+        const monthOk = !selectedProfitMonths.length || !rowMonth || selectedProfitMonths.includes(String(rowMonth));
+        return (!y || !rowYear || String(rowYear) === y) && monthOk && (!e || !rowEntity || String(rowEntity) === e) && (!q || Object.values(r).some(v => String(v).toLowerCase().includes(q)));
+      });
+    }
+
+    function profitIsNumericValue(value) {
+      if (typeof value === 'number') return Number.isFinite(value);
+      let s = String(value == null ? '' : value).trim();
+      if (!s || /^[-–—]$/.test(s)) return false;
+      s = s.replace(/[()]/g, '').replace(/Rp/gi, '').replace(/idr/gi, '').replace(/[%\s]/g, '').replace(/[+-]/g, '');
+      return /\d/.test(s) && /^[\d.,]+$/.test(s);
+    }
+
+    function profitMetricKeys(tab, rows) {
+      const headers = tab?.headers || Object.keys(rows[0] || {});
+      const excluded = /^(tahun|year|bulan|month|entitas|entity|koderesto|kodecabang|kodeoutlet|id|no|nomor|resto|namaresto|outlet|namaoutlet|tanggal|date|periode|nik|hari|shift)$/;
+      const rowsToCheck = rows.length ? rows : (tab?.rows || []);
+      const candidates = headers.map((header, index) => {
+        const normalized = profitNormalizeHeader(header);
+        if (!normalized || excluded.test(normalized) || /(koderesto|kodecabang|kodeoutlet|namaresto|namaoutlet|tanggal|timestamp|tahun|bulan|entitas|alamat|keterangan|catatan|deskripsi|nomor|^no$|^id$)/.test(normalized)) return null;
+        const vals = rowsToCheck.map(r => r[header]).filter(v => v != null && String(v).trim() !== '');
+        if (!vals.length) return null;
+        const numeric = vals.filter(profitIsNumericValue);
+        if (numeric.length / vals.length < 0.55) return null;
+        let score = 0;
+        const priorityBySheet = {
+          'COGS BGHL': ['cogs','hpp','persencogs','totalcogs','nilaicogs'],
+          'COST': ['cost','biaya','expense','persencost','totalcost'],
+          'PROFIT': ['profit','laba','margin','netincome','keuntungan']
+        }[activeProfitSheet] || [];
+        if (priorityBySheet.some(word => normalized.includes(word))) score += 100;
+        if (/(total|rata|persen|margin|nominal|nilai|biaya|cost|cogs|profit|laba|hpp)/.test(normalized)) score += 25;
+        return { key: header, score, index };
+      }).filter(Boolean);
+      candidates.sort((a,b) => b.score - a.score || a.index - b.index);
+      return candidates.slice(0, 4).map(x => x.key);
+    }
+
+    function profitAverage(rows, key) {
+      const nums = rows.map(r => r[key]).filter(profitIsNumericValue).map(profitNumber);
+      return nums.length ? nums.reduce((a,b) => a+b, 0) / nums.length : null;
+    }
+
+    function profitMetricFormat(value, key, rows) {
+      if (value == null) return '—';
+      const normalized = profitNormalizeHeader(key);
+      const sample = rows.find(r => String(r[key] ?? '').trim() !== '')?.[key];
+      if (/(persen|percent|margin|rasio|ratio|rate)/.test(normalized) || String(sample ?? '').includes('%')) {
+        const n = Math.abs(value) <= 1 && !String(sample ?? '').includes('%') ? value * 100 : value;
+        return new Intl.NumberFormat('id-ID', {maximumFractionDigits:2}).format(n) + '%';
+      }
+      if (/(jumlah|qty|quantity|count|hari|jam|pcs|unit|totalresto)/.test(normalized)) {
+        return new Intl.NumberFormat('id-ID', {maximumFractionDigits:2}).format(value);
+      }
+      return profitCurrency(value);
+    }
+
+    function setProfitKpiCard(index, icon, label, value, description) {
+      const cards = document.querySelectorAll('#page-spv-laporan-profit .profit-kpis article');
+      const card = cards[index]; if (!card) return;
+      const title = card.querySelector('span');
+      const strong = card.querySelector('strong');
+      const small = card.querySelector('small');
+      if (title) title.innerHTML = '<i class="fa-solid ' + icon + '"></i> ' + profitEscapeHtml(label);
+      if (strong) strong.textContent = value;
+      if (small) small.textContent = description;
+    }
+
+    function renderProfitKpis(rows, tab) {
+      if (activeProfitSheet === 'OMSET BGHL') {
+        const sampleRow = rows[0] || (tab?.rows || [])[0] || {};
+        const key = (parts, fallback) => profitFindKey(sampleRow, parts) || fallback;
+        const restoKey = key(['resto'], 'Resto');
+        const omzetKey = key(['omzetbersih'], 'Omzet Bersih');
+        const onlineKey = key(['penjualanonline'], 'Penjualan Online');
+        const offlineKey = key(['penjualanoffline'], 'Penjualan Offline');
+        const sum = k => rows.reduce((a, r) => a + profitNumber(r[k]), 0);
+        setProfitKpiCard(0, 'fa-store', 'Total Resto', new Set(rows.map(r => r[restoKey]).filter(Boolean)).size.toLocaleString('id-ID'), 'Jumlah resto dalam filter aktif');
+        setProfitKpiCard(1, 'fa-sack-dollar', 'Omzet Bersih', profitCurrency(sum(omzetKey)), 'Akumulasi data OMSET BGHL');
+        setProfitKpiCard(2, 'fa-mobile-screen-button', 'Penjualan Online', profitCurrency(sum(onlineKey)), 'Akumulasi penjualan online');
+        setProfitKpiCard(3, 'fa-cash-register', 'Penjualan Offline', profitCurrency(sum(offlineKey)), 'Akumulasi penjualan offline');
+        return;
+      }
+
+      const keys = profitMetricKeys(tab, rows);
+      for (let i = 0; i < 4; i++) {
+        const key = keys[i];
+        if (!key) {
+          setProfitKpiCard(i, 'fa-chart-column', 'Rata-rata', '—', 'Kolom angka tidak tersedia pada tab ini');
+          continue;
+        }
+        const avg = profitAverage(rows, key);
+        setProfitKpiCard(i, 'fa-chart-line', 'Rata-rata ' + key, profitMetricFormat(avg, key, rows), 'Rata-rata dari ' + rows.length.toLocaleString('id-ID') + ' baris terfilter');
+      }
+    }
+
+    function renderMasterProfit() {
+      if (!masterProfitPayload) return;
+      const rows = getFilteredProfitRows();
+      const tab = masterProfitPayload.tabs?.[activeProfitSheet];
+      const title = document.getElementById('profit-table-title'); if (title) title.textContent = activeProfitSheet;
+      const selectedMonthsText = selectedProfitMonths.length ? selectedProfitMonths.join(', ') : 'semua bulan';
+      const sub = document.getElementById('profit-table-subtitle'); if (sub) sub.textContent = tab?.exists ? 'Data MASTER PROFIT • Filter: ' + selectedMonthsText + '.' : 'Nama tab tidak ditemukan pada spreadsheet.';
+      const count = document.getElementById('profit-row-count'); if (count) count.textContent = rows.length.toLocaleString('id-ID') + ' baris';
+      const wrap = document.getElementById('profit-table-wrap'); if (!wrap) return;
+      if (!tab?.exists) {
+        wrap.innerHTML = '<div class="profit-empty"><i class="fa-solid fa-file-circle-question"></i><b>Tab tidak ditemukan</b><span>Periksa nama tab pada spreadsheet.</span></div>';
+        renderProfitKpis([], tab);
+        return;
+      }
+      if (!rows.length) {
+        wrap.innerHTML = '<div class="profit-empty"><i class="fa-solid fa-filter-circle-xmark"></i><b>Tidak ada data</b><span>Ubah filter bulan, tahun, entitas, atau pencarian.</span></div>';
+      } else {
+        const headers = tab.headers || Object.keys(rows[0]);
+        wrap.innerHTML = '<table><thead><tr>' + headers.map(h => '<th>' + profitEscapeHtml(h) + '</th>').join('') + '</tr></thead><tbody>' + rows.map(r => '<tr>' + headers.map(h => '<td>' + profitEscapeHtml(r[h]) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+      }
+      renderProfitKpis(rows, tab);
+    }
+
+    function selectProfitSheet(name, button) {
+      activeProfitSheet = name;
+      document.querySelectorAll('#profit-sheet-tabs button').forEach(b => b.classList.toggle('active', b.dataset.sheet === name));
+      renderMasterProfit();
+    }
+
+
 </script>
 </body>
 </html>
