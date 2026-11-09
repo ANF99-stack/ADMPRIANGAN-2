@@ -2204,18 +2204,18 @@
             <div class="profit-filter-card">
               <label>Tahun<select id="profit-filter-year" onchange="handleProfitYearChange()"><option value="">Semua Tahun</option></select></label>
               <div class="profit-filter-field">
-                <span class="profit-filter-label">Bulan <small style="font-size:.62rem;color:#94a3b8;font-weight:700">Pilih hingga 3 bulan</small></span>
+                <span class="profit-filter-label">Bulan <small style="font-size:.62rem;color:#94a3b8;font-weight:700">Pilih beberapa bulan</small></span>
                 <div class="profit-month-picker" id="profit-month-picker">
                   <button type="button" id="profit-month-toggle" class="profit-month-toggle" aria-expanded="false" aria-controls="profit-month-options" onclick="toggleProfitMonthPicker(event)"><span id="profit-month-summary">Semua Bulan</span><i class="fa-solid fa-chevron-down"></i></button>
                   <div id="profit-month-options" class="profit-month-options" hidden>
-                    <div class="profit-month-options-head"><span>Pilih maksimal 3 bulan</span><button type="button" onclick="clearProfitMonths()">Semua bulan</button></div>
+                    <div class="profit-month-options-head"><span>Pilih bulan (bebas)</span><button type="button" onclick="clearProfitMonths()">Semua bulan</button></div>
                     <div id="profit-month-options-list"></div>
-                    <div class="profit-month-options-foot"><span id="profit-month-count">0/3 dipilih</span><button type="button" onclick="closeProfitMonthPicker()">Selesai</button></div>
+                    <div class="profit-month-options-foot"><span id="profit-month-count">0 dipilih</span><button type="button" onclick="closeProfitMonthPicker()">Selesai</button></div>
                   </div>
                 </div>
               </div>
-              <label>Entitas<select id="profit-filter-entity" onchange="renderMasterProfit()"><option value="">Semua Entitas</option></select></label>
-              <label class="profit-search">Cari resto / kode<input id="profit-filter-search" type="search" placeholder="Ketik nama resto atau kode…" oninput="renderMasterProfit()"></label>
+              <label>Entitas<select id="profit-filter-entity" onchange="saveProfitFilterState();renderMasterProfit()"><option value="">Semua Entitas</option></select></label>
+              <label class="profit-search">Cari resto / kode<input id="profit-filter-search" type="search" placeholder="Ketik nama resto atau kode…" oninput="saveProfitFilterState();renderMasterProfit()"></label>
             </div>
             <div class="profit-kpis">
               <article><span><i class="fa-solid fa-store"></i> Total Resto</span><strong id="profit-kpi-resto">—</strong><small>Dalam filter aktif</small></article>
@@ -10159,7 +10159,7 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
     const MASTER_PROFIT_API_URL = 'https://script.google.com/macros/s/AKfycbwOMR4cBFkv5WA9W-kvW5WW2EEDh9hu0xwCYDKC913KjimlATKHS87Le1JtvEW5pIIy/exec';
     let masterProfitPayload = null;
     let activeProfitSheet = 'OMSET BGHL';
-    // Kosong berarti semua bulan; jika dipilih, maksimal tiga bulan sekaligus.
+    // Kosong berarti semua bulan; pilihan bulan tidak dibatasi.
     let selectedProfitMonths = [];
     let masterProfitLoading = false;
 
@@ -10206,6 +10206,38 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
       if (live) live.classList.toggle('profit-live-error', !!isError);
     }
 
+    // Filter LAPORAN PROFIT disimpan terpisah per akun SPV (bukan global).
+    function getProfitFilterStorageKey() {
+      const username = String(localStorage.getItem('resto_current_user') || 'guest').trim().toLowerCase();
+      const role = String(localStorage.getItem('resto_user_role') || 'user').trim().toLowerCase();
+      // sessionStorage terpisah per tab/browser session: filter akun lain tidak ikut terbaca.
+      return 'adm_profit_filter_v3_' + (username + '_' + role).replace(/[^a-z0-9_-]/g, '_');
+    }
+    function saveProfitFilterState() {
+      try {
+        sessionStorage.setItem(getProfitFilterStorageKey(), JSON.stringify({
+          year: document.getElementById('profit-filter-year')?.value || '',
+          entity: document.getElementById('profit-filter-entity')?.value || '',
+          search: document.getElementById('profit-filter-search')?.value || '',
+          months: selectedProfitMonths
+        }));
+      } catch (_) {}
+    }
+    function restoreProfitFilterState() {
+      let saved = null;
+      try { saved = JSON.parse(sessionStorage.getItem(getProfitFilterStorageKey()) || 'null'); } catch (_) {}
+      if (!saved) { selectedProfitMonths = []; return; }
+      const year = document.getElementById('profit-filter-year');
+      const entity = document.getElementById('profit-filter-entity');
+      const search = document.getElementById('profit-filter-search');
+      if (year && [...year.options].some(o => o.value === String(saved.year || ''))) year.value = String(saved.year || '');
+      if (entity && [...entity.options].some(o => o.value === String(saved.entity || ''))) entity.value = String(saved.entity || '');
+      if (search) search.value = String(saved.search || '');
+      selectedProfitMonths = Array.isArray(saved.months) ? saved.months.map(String) : [];
+      populateProfitMonthOptions();
+      saveProfitFilterState();
+    }
+
     async function loadMasterProfit(force) {
       if (masterProfitLoading) return;
       const btn = document.getElementById('profit-refresh-btn');
@@ -10224,6 +10256,7 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
         if (missing.length === expectedSheets.length) throw new Error('Keempat tab tidak ditemukan. Periksa nama tab dan Spreadsheet ID pada Code_MASTER_PROFIT.gs.');
         masterProfitPayload = data;
         populateProfitFilters();
+        restoreProfitFilterState();
         renderMasterProfit();
         const cachedText = data.cached ? ' • cache server' : ' • sumber terbaru';
         setMasterProfitStatus('Terhubung • Data berhasil dimuat', 'Sinkronisasi: ' + new Date(data.generatedAt || Date.now()).toLocaleString('id-ID') + cachedText);
@@ -10357,13 +10390,13 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
       const selectedYear = document.getElementById('profit-filter-year')?.value || '';
       const rows = profitAllRows().filter(r => !selectedYear || String(profitRowValue(r, 'year')) === selectedYear);
       const months = profitSortMonths(rows.map(r => profitRowValue(r, 'month')));
-      selectedProfitMonths = selectedProfitMonths.filter(m => months.includes(m)).slice(0, 3);
+      selectedProfitMonths = selectedProfitMonths.filter(m => months.includes(m));
       if (!months.length) {
         list.innerHTML = '<div style="padding:12px 6px;color:#94a3b8;font-size:.72rem">Data bulan tidak tersedia.</div>';
       } else {
         list.innerHTML = months.map(month => {
           const checked = selectedProfitMonths.includes(month) ? ' checked' : '';
-          const disabled = !checked && selectedProfitMonths.length >= 3 ? ' disabled' : '';
+          const disabled = '';
           return '<label class="profit-month-option"><input type="checkbox" value="' + profitEscapeHtml(month) + '"' + checked + disabled + ' onchange="setProfitMonthChoice(this.value,this.checked)"><span>' + profitEscapeHtml(month) + '</span></label>';
         }).join('');
       }
@@ -10374,7 +10407,7 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
       const summary = document.getElementById('profit-month-summary');
       const count = document.getElementById('profit-month-count');
       if (summary) summary.textContent = selectedProfitMonths.length ? selectedProfitMonths.join(', ') : 'Semua Bulan';
-      if (count) count.textContent = selectedProfitMonths.length + '/3 dipilih';
+      if (count) count.textContent = selectedProfitMonths.length + ' bulan dipilih';
     }
 
     function toggleProfitMonthPicker(event) {
@@ -10397,16 +10430,17 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
     function clearProfitMonths() {
       selectedProfitMonths = [];
       populateProfitMonthOptions();
+      saveProfitFilterState();
       renderMasterProfit();
       closeProfitMonthPicker();
     }
 
     function setProfitMonthChoice(month, checked) {
       if (checked) {
-        if (!selectedProfitMonths.includes(month) && selectedProfitMonths.length >= 3) {
+        if (!selectedProfitMonths.includes(month)) {
           const checkbox = [...document.querySelectorAll('#profit-month-options-list input[type="checkbox"]')].find(el => el.value === month);
           if (checkbox) checkbox.checked = false;
-          alert('Maksimal 3 bulan dapat dipilih sekaligus.');
+          
           return;
         }
         if (!selectedProfitMonths.includes(month)) selectedProfitMonths.push(month);
@@ -10414,11 +10448,13 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
         selectedProfitMonths = selectedProfitMonths.filter(m => m !== month);
       }
       populateProfitMonthOptions();
+      saveProfitFilterState();
       renderMasterProfit();
     }
 
     function handleProfitYearChange() {
       populateProfitMonthOptions();
+      saveProfitFilterState();
       renderMasterProfit();
     }
 
