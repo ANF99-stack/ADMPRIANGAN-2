@@ -1367,6 +1367,17 @@
   text-decoration: underline;
 }
   
+/* Batasi tinggi tabel CONTROLING COGS agar halaman tidak memanjang.
+   Header tabel tetap terlihat saat isi tabel digulir. */
+#page-spv-controling-cogs .cogs-table-wrap{
+  max-height: min(460px, 62vh);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+#page-spv-controling-cogs .cogs-table-wrap::-webkit-scrollbar{width:8px;height:8px}
+#page-spv-controling-cogs .cogs-table-wrap::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:20px}
+#page-spv-controling-cogs .cogs-table-wrap::-webkit-scrollbar-track{background:#f1f5f9;border-radius:20px}
 /* Modern UI for SPV Controling COGS */
 #page-spv-controling-cogs .cogs-spv-tabs{
   display:flex; flex-wrap:wrap; gap:10px; margin:18px 0 12px;
