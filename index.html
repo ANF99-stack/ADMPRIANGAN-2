@@ -3264,7 +3264,7 @@
         <div class="oa-hero"><div><h2 class="oa-title"><i class="fa-solid fa-chart-column" style="color:#e11d2e"></i> OMSET AREA</h2><p class="oa-subtitle">Monitoring pencapaian omset dan performa seluruh outlet</p></div><div class="oa-actions" style="display:flex;gap:8px;flex-wrap:wrap"><button class="oa-btn" onclick="loadOmsetArea(true)"><i class="fa-solid fa-rotate"></i> Refresh</button><button class="oa-btn export" onclick="exportOmsetAreaExcel()"><i class="fa-solid fa-file-excel"></i> Export Excel</button></div></div>
         <div class="oa-filter"><div class="oa-field"><label>PERIODE DATA</label><select id="oa-period" onchange="changeOmsetAreaPeriod()"><option value="OMSET">OMSET (Lazatto)</option><option value="OMSET NGEUMI">OMSET NGEUMI</option></select></div><div class="oa-field"><label>ZONA</label><select id="oa-zone" onchange="renderOmsetArea()"><option value="ALL">Semua Zona</option><option value="GREEN">Green Zone</option><option value="YELLOW">Yellow Zone</option><option value="RED">Red Zone</option></select></div><div class="oa-field"><label>SPV</label><select id="oa-spv" onchange="renderOmsetArea()"><option value="ALL">Semua SPV</option></select></div><div class="oa-field"><label>CARI OUTLET / ID CABANG</label><input id="oa-search" placeholder="Ketik nama outlet atau ID..." oninput="renderOmsetArea()"></div><button class="oa-btn primary" onclick="renderOmsetArea()"><i class="fa-solid fa-filter"></i> Terapkan</button></div>
         <div id="oa-status" class="oa-status" style="margin-bottom:14px">Memuat data OMSET dari server...</div>
-        <div class="oa-kpis"><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-coins" style="color:#e11d2e"></i> TOTAL OMSET AREA</div><div id="oa-total-omset" class="oa-kpi-value">Rp0</div><div class="oa-kpi-note">Sesuai filter outlet dan SPV</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-bullseye" style="color:#f59e0b"></i> TOTAL TARGET</div><div id="oa-total-target" class="oa-kpi-value">Rp0</div><div class="oa-kpi-note">Target area dari ringkasan sheet OMSET</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-trophy" style="color:#10b981"></i> ACHIEVEMENT AREA</div><div id="oa-achievement" class="oa-kpi-value">0%</div><div class="oa-kpi-note">Actual area ÷ target area dari sheet OMSET</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-store" style="color:#6366f1"></i> TOTAL OUTLET</div><div id="oa-outlet-count" class="oa-kpi-value">0</div><div class="oa-kpi-note">Outlet yang sesuai filter</div></div></div>
+        <div class="oa-kpis"><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-coins" style="color:#e11d2e"></i> TOTAL OMSET AREA</div><div id="oa-total-omset" class="oa-kpi-value">Rp0</div><div class="oa-kpi-note">Sesuai filter outlet dan SPV</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-bullseye" style="color:#f59e0b"></i> TOTAL TARGET</div><div id="oa-total-target" class="oa-kpi-value">Rp0</div><div class="oa-kpi-note">Target harian setiap outlet × jumlah hari dalam bulan</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-trophy" style="color:#10b981"></i> ACHIEVEMENT AREA</div><div id="oa-achievement" class="oa-kpi-value">0%</div><div class="oa-kpi-note">Actual area ÷ target area dari sheet OMSET</div></div><div class="oa-card oa-kpi"><div class="oa-kpi-label"><i class="fa-solid fa-store" style="color:#6366f1"></i> TOTAL OUTLET</div><div id="oa-outlet-count" class="oa-kpi-value">0</div><div class="oa-kpi-note">Outlet yang sesuai filter</div></div></div>
         <div class="oa-panels"><div class="oa-zone-ae-stack"><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-chart-pie"></i> Komposisi Zona Outlet</h3><div id="oa-zone-chart"></div></div><div class="oa-card oa-target-achievement-card"><h3 class="oa-card-title"><i class="fa-solid fa-bullseye"></i> Achivment Target</h3><div id="oa-target-achievement"></div></div><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-user-tie"></i> Pencapaian AE</h3><div id="oa-ae-achievement"><div class="oa-muted">Memuat pencapaian AE...</div></div></div></div><div class="oa-zone-ae-stack"><div class="oa-card oa-spv-card"><h3 class="oa-card-title"><i class="fa-solid fa-people-group"></i> Pencapaian per SPV</h3><div id="oa-spv-chart"></div></div><div class="oa-card oa-bottom-outlet-card"><h3 class="oa-card-title"><i class="fa-solid fa-arrow-trend-down" style="color:#e11d2e"></i> 3 Resto Omset Terbawah</h3><div id="oa-bottom-outlet-chart"></div></div></div><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-ranking-star"></i> Top 5 Resto Omset Tertinggi</h3><div id="oa-top-outlet-chart"></div></div></div>
         <div class="oa-bottom"><div class="oa-card"><h3 class="oa-card-title"><i class="fa-solid fa-table-list"></i> Data Omset Outlet</h3><div class="oa-table-tools"><span id="oa-table-count" class="oa-muted">0 outlet</span><span style="flex:1"></span><button class="oa-btn" onclick="exportOmsetAreaExcel()"><i class="fa-solid fa-file-excel"></i> Export Excel</button></div><div id="oa-table" class="oa-table-wrap"></div><div class="oa-pagination"><span id="oa-page-info" class="oa-muted"></span><div style="display:flex;gap:7px"><button class="oa-btn" onclick="changeOmsetAreaPage(-1)">‹ Sebelumnya</button><button class="oa-btn" onclick="changeOmsetAreaPage(1)">Berikutnya ›</button></div></div></div></div>
       </section>
@@ -5425,7 +5425,7 @@
     }
 
     // OMSET AREA: data dibaca dari sheet sumber tanpa menulis/mengubah data spreadsheet.
-    let omsetAreaRows = [], omsetAreaHeaders = [], omsetAreaPage = 1, omsetAreaSort = {key:'achievement',dir:'desc'}, omsetAreaLoaded = false, omsetAreaLoadedSource = '', omsetAreaSourceSheet = 'OMSET', omsetAreaSummary = {actual:null,target:null}, omsetAreaAverageDays = 1, omsetAreaZoneHeader = 'ZONA';
+    let omsetAreaRows = [], omsetAreaHeaders = [], omsetAreaPage = 1, omsetAreaSort = {key:'omset',dir:-1}, omsetAreaLoaded = false, omsetAreaLoadedSource = '', omsetAreaSourceSheet = 'OMSET', omsetAreaSummary = {actual:null,target:null}, omsetAreaAverageDays = 1, omsetAreaDaysInMonth = new Date().getDate(), omsetAreaZoneHeader = 'ZONA';
     const oaMoney = n => 'Rp' + Math.round(Number(n) || 0).toLocaleString('id-ID', { maximumFractionDigits: 0 });
     const oaNum = v => { if(typeof v==='number') return v; let s=String(v??'').trim().replace(/Rp/gi,'').replace(/\s/g,''); if(!s)return 0; if(s.includes(',')&&s.includes('.')) s=s.replace(/\./g,'').replace(',','.'); else if(s.includes(',')) s=s.replace(',','.'); else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,''); else if(/\.\d{3}$/.test(s))s=s.replace('.',''); return Number(s.replace(/[^\d.-]/g,''))||0; };
     const oaEsc = v => String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -5449,24 +5449,73 @@
         if(res.status!=='success')throw new Error(res.message||`Gagal membaca data ${source}`);
         omsetAreaHeaders=res.headers||[];
         omsetAreaSummary={actual:res.areaActual==null?null:oaNum(res.areaActual),target:res.areaTarget==null?null:oaNum(res.areaTarget)};
-        const snapMatch=String(res.snapshotDate||'').match(/(\\d{1,2})[\\/.-](\\d{1,2})[\\/.-](\\d{4})/);
-        const snapDay=snapMatch?Number(snapMatch[1]):new Date().getDate();
+        const snapshotText=String(res.snapshotDate||'').trim();
+        const snapMatch=snapshotText.match(/(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})/);
+        const isoMatch=snapshotText.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+        const snapDay=snapMatch?Number(snapMatch[1]):(isoMatch?Number(isoMatch[3]):new Date().getDate());
+        const snapMonth=snapMatch?Number(snapMatch[2]):(isoMatch?Number(isoMatch[2]):new Date().getMonth()+1);
+        const snapYear=snapMatch?Number(snapMatch[3]):(isoMatch?Number(isoMatch[1]):new Date().getFullYear());
+        omsetAreaDaysInMonth=new Date(snapYear,snapMonth,0).getDate();
         omsetAreaAverageDays=Math.max(1,snapDay-1);
         omsetAreaZoneHeader=res.zoneHeader|| (source==='OMSET NGEUMI'?'ZONA NOVEMBER':'ZONA JUNI');
         omsetAreaRows=(res.rows||[]).map((r,i)=>({...r,_index:i+1,omset:oaNum(r.omset),
           avgOmsetPerResto:r.avgOmsetPerResto!=null?oaNum(r.avgOmsetPerResto):Math.round(oaNum(r.omset)/omsetAreaAverageDays),
-          target:oaNum(r.target),exp:oaNum(r.exp),achievement:oaNum(r.achievement),zone:oaZone(r)}));
+          target:oaNum(r.target),targetBulanan:oaNum(r.target)*omsetAreaDaysInMonth,
+          exp:oaNum(r.exp),achievement:oaNum(r.achievement),zone:oaZone(r)}));
         const spvs=[...new Set(omsetAreaRows.map(r=>r.spv).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));
         const spvEl=document.getElementById('oa-spv'),old=spvEl.value||'ALL';
-        spvEl.innerHTML='<option value="ALL">Semua SPV</option>'+spvs.map(x=>`<option value="${oaEsc(x)}">${oaEsc(x)}</option>`).join('');
-        spvEl.value=spvs.includes(old)?old:'ALL';
-        status.textContent=`Data berhasil diambil: ${omsetAreaRows.length} outlet · Sumber: sheet ${source}${res.snapshotDate?' · Tanggal data: '+res.snapshotDate:''}${res.fetchedAt?' · Diperbarui: '+new Date(res.fetchedAt).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''}. Data sumber tidak diubah.`;
+        const role=String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase();
+        const spvField=spvEl?.closest('.oa-field');
+        if(role==='supervisor'){
+          if(spvField)spvField.style.display='none';
+          spvEl.innerHTML='<option value="ALL">Coverage Saya</option>';
+          spvEl.value='ALL';
+        }else{
+          if(spvField)spvField.style.display='';
+          spvEl.innerHTML='<option value="ALL">Semua SPV</option>'+spvs.map(x=>`<option value="${oaEsc(x)}">${oaEsc(x)}</option>`).join('');
+          spvEl.value=spvs.includes(old)?old:'ALL';
+        }
+        const currentRole=String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase();
+        const visibleCount=currentRole==='supervisor'?getFilteredOmsetArea().length:omsetAreaRows.length;
+        status.textContent=`Data berhasil diambil: ${visibleCount} outlet${currentRole==='supervisor'?' sesuai coverage Anda':''} · Sumber: sheet ${source}${res.snapshotDate?' · Tanggal data: '+res.snapshotDate:''}${res.fetchedAt?' · Diperbarui: '+new Date(res.fetchedAt).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):''}. Data sumber tidak diubah.`;
         omsetAreaLoaded=true;omsetAreaLoadedSource=source;omsetAreaPage=1;renderOmsetArea();
       }catch(e){
         omsetAreaLoaded=false;status.textContent=`Gagal memuat data ${source}: ${e.message}. Periksa fungsi GAS dan pastikan sheet ${source} tersedia.`;
       }
     }
-    function getFilteredOmsetArea(){const zone=document.getElementById('oa-zone')?.value||'ALL',spv=document.getElementById('oa-spv')?.value||'ALL',q=(document.getElementById('oa-search')?.value||'').trim().toLowerCase();return omsetAreaRows.filter(r=>(zone==='ALL'||r.zone===zone)&&(spv==='ALL'||r.spv===spv)&&(!q||[r.branchId,r.spv,r.outlet].some(v=>String(v||'').toLowerCase().includes(q))));}
+    // Coverage OMSET AREA: Supervisor hanya boleh melihat outlet yang ditetapkan
+    // pada master spvLinksIndividual. Admin tetap melihat seluruh outlet.
+    function getOmsetAreaCurrentSpvCoverage(){
+      const username=String(localStorage.getItem('resto_current_user')||'').trim();
+      const profiles=globalDashboardData?.spvLinksIndividual||{};
+      const profile=profiles[username]||profiles[username.toLowerCase()]||
+        Object.entries(profiles).find(([key])=>String(key).trim().toLowerCase()===username.toLowerCase())?.[1]||{};
+      let raw=profile.resto_names??profile.restoNames??profile.coverage_restos??profile.coverageRestos??[];
+      if(typeof raw==='string'){
+        const value=raw.trim();
+        if(!value)return [];
+        try{const parsed=JSON.parse(value);if(Array.isArray(parsed))raw=parsed;else raw=value;}catch(e){raw=value;}
+      }
+      if(!Array.isArray(raw))raw=String(raw||'').split(/[;,|\\r\\n]+/);
+      return [...new Set(raw.map(v=>formatRestoName(v)).filter(Boolean))];
+    }
+    function getFilteredOmsetArea(){
+      const role=String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase();
+      const isAdmin=role==='admin';
+      const zone=document.getElementById('oa-zone')?.value||'ALL';
+      const spv=document.getElementById('oa-spv')?.value||'ALL';
+      const q=(document.getElementById('oa-search')?.value||'').trim().toLowerCase();
+      const coverage=role==='supervisor'?new Set(getOmsetAreaCurrentSpvCoverage().map(v=>v.toLowerCase())):null;
+      return omsetAreaRows.filter(r=>{
+        if(coverage){
+          const outlet=formatRestoName(r.outlet||r.namaResto||r.resto||'').toLowerCase();
+          if(!outlet||!coverage.has(outlet))return false;
+        }
+        return (zone==='ALL'||r.zone===zone)&&
+          (isAdmin?(spv==='ALL'||r.spv===spv):true)&&
+          (!q||[r.branchId,r.spv,r.outlet].some(v=>String(v||'').toLowerCase().includes(q)));
+      });
+    }
     let omsetAreaAEAchievementCache=null, omsetAreaAEAchievementLoading=false;
     async function fetchAEMetricsForSPV(username){
       const user=String(username||'').trim();
@@ -5526,6 +5575,10 @@
     }
     async function loadOmsetAreaAEAchievement(force=false){
       const target=document.getElementById('oa-ae-achievement');if(!target)return;
+      const role=String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase();
+      const card=target.closest('.oa-card');
+      if(role==='supervisor'){if(card)card.style.display='none';return;}
+      if(card)card.style.display='';
       if(omsetAreaAEAchievementCache&&!force){renderOmsetAreaAEAchievement();return;}
       if(omsetAreaAEAchievementLoading)return;
       omsetAreaAEAchievementLoading=true;
@@ -5568,13 +5621,18 @@
 
     function renderOmsetArea(){
       const rows=getFilteredOmsetArea();
-      const sum=rows.reduce((a,r)=>a+r.omset,0),sumTarget=rows.reduce((a,r)=>a+r.target,0);
-      const allArea=(document.getElementById('oa-zone')?.value||'ALL')==='ALL'&&(document.getElementById('oa-spv')?.value||'ALL')==='ALL'&&!(document.getElementById('oa-search')?.value||'').trim();
+      const sum=rows.reduce((a,r)=>a+r.omset,0);
+      // TARGET per outlet adalah target harian; KPI menampilkan akumulasi target bulanan.
+      const sumTarget=rows.reduce((a,r)=>a+(Number(r.targetBulanan)||0),0);
+      const currentRole=String(localStorage.getItem('resto_user_role')||'').trim().toLowerCase();
+      const allArea=currentRole!=='supervisor'&&(document.getElementById('oa-zone')?.value||'ALL')==='ALL'&&(document.getElementById('oa-spv')?.value||'ALL')==='ALL'&&!(document.getElementById('oa-search')?.value||'').trim();
       const areaActual=allArea&&omsetAreaSummary.actual!=null?omsetAreaSummary.actual:sum;
-      const target=allArea&&omsetAreaSummary.target!=null?omsetAreaSummary.target:sumTarget;
+      const target=sumTarget;
       const ach=target?areaActual/target*100:0;
       document.getElementById('oa-total-omset').textContent=oaMoney(areaActual);
       document.getElementById('oa-total-target').textContent=oaMoney(target);
+      const targetNote=document.querySelector('#oa-total-target')?.parentElement?.querySelector('.oa-kpi-note');
+      if(targetNote)targetNote.textContent=`Akumulasi target harian outlet × ${omsetAreaDaysInMonth} hari`;
       document.getElementById('oa-achievement').textContent=ach.toLocaleString('id-ID',{maximumFractionDigits:1})+'%';
       const achClamped=Math.max(0,Math.min(100,ach));
       // Achieve Target dihitung berdasarkan kolom ACHIVMENT yang tampil pada tabel Data Omset Outlet.
@@ -5935,6 +5993,8 @@
       if (adminStatsGrid) adminStatsGrid.style.display = 'none';
       const page = document.getElementById('page-omset-area');
       if (page) page.style.display = 'block';
+      omsetAreaSort={key:'omset',dir:-1};
+      omsetAreaPage=1;
       loadOmsetArea(true);
       loadOmsetAreaAEAchievement(true);
     }
@@ -6202,6 +6262,10 @@
       closeAdminNavGroups();
       document.querySelectorAll('#app-navbar-items .nav-item').forEach(item => item.classList.remove('active'));
       document.querySelectorAll('.role-page-content').forEach(page => page.style.display = 'none');
+      // Tutup OMSET AREA yang memakai container admin saat SPV berpindah ke menu lain.
+      document.querySelectorAll('.admin-page-content').forEach(page => page.style.display = 'none');
+      const adminViewForSpv = document.getElementById('admin-view');
+      if (adminViewForSpv) adminViewForSpv.style.display = 'none';
       if (element) element.classList.add('active');
       
       const targetPage = document.getElementById(pageId);
@@ -8555,6 +8619,8 @@
         } else if (pageId === 'page-admin-edit-ae-coverage') {
           loadAdminAECoveragePage(true);
         } else if (pageId === 'page-omset-area') {
+          omsetAreaSort={key:'omset',dir:-1};
+          omsetAreaPage=1;
           loadOmsetArea(true);
           // Panggil widget Pencapaian AE saat menu Omset Area dibuka.
           // Sebelumnya hanya teks placeholder yang tampil karena loader tidak dipanggil.
