@@ -6627,6 +6627,13 @@
     }
 
     window.onload = function() {
+      // Jangan jalankan pemulihan sesi/dashboard utama pada halaman form publik Buku Tamu.
+      // Tanpa guard ini, showDashboard() dapat menampilkan dashboard kembali setelah gbStartPublic() berjalan.
+      if (new URLSearchParams(window.location.search).get('guestbook') === '1') {
+        document.getElementById('login-section')?.style.setProperty('display', 'none', 'important');
+        document.getElementById('app-section')?.style.setProperty('display', 'none', 'important');
+        return;
+      }
       setupOperasionalDateFilterLimits();
       const restoreScreen = document.getElementById('session-restore-screen');
       const finishSessionRestore = () => {
