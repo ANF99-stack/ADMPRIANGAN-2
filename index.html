@@ -1748,7 +1748,7 @@
             <div class="gb-hero"><div><span class="gb-kicker">ADM PRIANGAN 2</span><h2>BUKU TAMU DIGITAL</h2><p>Kelola kunjungan dan bagikan QR Code agar setiap pengunjung dapat mengisi sendiri melalui HP.</p></div><div class="gb-hero-icon"><i class="fa-solid fa-book-open"></i></div></div>
             <div class="gb-stats"><div class="gb-stat"><span>Total Hari Ini</span><b id="gb-today-count">0</b></div><div class="gb-stat"><span>Total Bulan Ini</span><b id="gb-month-count">0</b></div><div class="gb-stat"><span>Total Kunjungan</span><b id="gb-total-count">0</b></div></div>
             <div class="gb-panel"><div class="gb-panel-head"><div><h3>QR Code Buku Tamu Cabang</h3><p>Pengunjung scan QR atau gunakan tablet/HP cabang.</p></div><button class="gb-btn secondary" type="button" onclick="gbRefresh()"><i class="fa-solid fa-rotate"></i> Refresh</button></div>
-              <div class="gb-qr-row"><div class="gb-qr-preview"><img id="gb-qr-image" alt="QR Code Buku Tamu"/><small id="gb-qr-branch-label"></small></div><div class="gb-qr-info"><b>Link pengisian publik</b><p id="gb-public-link" class="gb-link-text"></p><div class="gb-actions"><button class="gb-btn" onclick="gbCopyLink()"><i class="fa-regular fa-copy"></i> Salin Link</button><button class="gb-btn secondary" onclick="gbOpenPublic()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Form</button></div><small>QR ini diarahkan ke form publik cabang yang sedang login.</small></div></div>
+              <div class="gb-qr-row"><div class="gb-qr-preview"><img id="gb-qr-image" alt="QR Code Buku Tamu"/><small id="gb-qr-branch-label"></small></div><div class="gb-qr-info"><b>Link pengisian publik</b><p id="gb-public-link" class="gb-link-text"></p><div class="gb-actions"><button class="gb-btn" onclick="gbCopyLink()"><i class="fa-regular fa-copy"></i> Salin Link</button><button class="gb-btn secondary" onclick="gbOpenPublic()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Form</button><button class="gb-btn secondary" type="button" onclick="gbDownloadQr()"><i class="fa-solid fa-download"></i> Unduh QR PNG</button><button class="gb-btn secondary" type="button" onclick="gbPrintQr()"><i class="fa-solid fa-print"></i> Cetak QR</button></div><small>QR ini diarahkan ke form publik cabang yang sedang login.</small></div></div>
             </div>
             <div class="gb-panel"><div class="gb-panel-head"><div><h3>Riwayat Kunjungan <span class="gb-live-indicator">LIVE</span></h3><p>Data cabang ini diperbarui otomatis setiap 15 detik.</p></div><button class="gb-btn secondary" onclick="gbExportCsv()"><i class="fa-solid fa-file-csv"></i> Export CSV</button></div>
               <div class="gb-filters"><input id="gb-filter-date" type="date" onchange="gbRenderTable()"/><input id="gb-search" type="search" placeholder="Cari nama visitor / jabatan / uraian tugas / keterangan..." oninput="gbRenderTable()"/></div>
@@ -10728,6 +10728,20 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
   function gbPublicUrl(token){return 'https://anf99-stack.github.io/BUKU_TAMU/?token='+encodeURIComponent(token);}
   window.gbCopyLink=async function(){const el=document.getElementById('gb-public-link');if(!el)return;try{await navigator.clipboard.writeText(el.textContent);alert('Link buku tamu berhasil disalin.');}catch(e){prompt('Salin link buku tamu:',el.textContent);}};
   window.gbOpenPublic=function(){const u=document.getElementById('gb-public-link')?.textContent;if(u)window.open(u,'_blank','noopener');};
+  function gbQrImageUrl(url,size=1000){return 'https://api.qrserver.com/v1/create-qr-code/?format=png&size='+size+'x'+size+'&qzone=3&data='+encodeURIComponent(url);}
+  function gbQrFileName(){return 'QR-Buku-Tamu-'+(gbBranchName||'Cabang').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'');}
+  window.gbDownloadQr=async function(){
+    const link=document.getElementById('gb-public-link')?.textContent;if(!link||!gbToken){alert('QR belum siap. Silakan refresh data terlebih dahulu.');return;}
+    const url=gbQrImageUrl(link,1200);
+    try{const response=await fetch(url);if(!response.ok)throw new Error('Unduhan QR gagal');const blob=await response.blob();const objectUrl=URL.createObjectURL(blob);const a=document.createElement('a');a.href=objectUrl;a.download=gbQrFileName()+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(objectUrl),1500);}
+    catch(error){window.open(url,'_blank','noopener');alert('QR dibuka di tab baru. Klik kanan gambar lalu pilih Simpan gambar untuk mengunduh PNG.');}
+  };
+  window.gbPrintQr=function(){
+    const link=document.getElementById('gb-public-link')?.textContent;if(!link||!gbToken){alert('QR belum siap. Silakan refresh data terlebih dahulu.');return;}
+    const image=gbQrImageUrl(link,1200),name=gbEsc(gbBranchName||'Cabang');
+    const w=window.open('','_blank','width=650,height=760');if(!w){alert('Izinkan pop-up browser untuk mencetak QR.');return;}
+    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>QR Buku Tamu - '+name+'</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:35px;color:#111}img{width:380px;height:380px;max-width:85vw;image-rendering:pixelated}h1{font-size:24px;margin:12px 0 6px}.sub{color:#555;font-size:14px} @media print{button{display:none}body{padding:10mm}}</style></head><body><h1>BUKU TAMU DIGITAL</h1><div class="sub">'+name+'</div><p><img id="qr" src="'+image+'" alt="QR Buku Tamu"></p><p class="sub">Scan untuk mengisi buku tamu cabang</p><button onclick="window.print()">Cetak QR</button><script>document.getElementById("qr").onload=function(){setTimeout(function(){window.print()},300)};<\\/script></body></html>');w.document.close();
+  };
   window.gbRefresh=async function(){await gbLoad();};
   let gbLoadInFlight = false;
   window.gbLoad=async function(options={}){
@@ -10742,7 +10756,7 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
       const branch=info.branch||info.data||{};gbBranchName=String(branch.name||branch.branchName||'');gbToken=String(branch.token||'');
       if(!gbToken||!gbBranchName)throw new Error('Token QR cabang belum tersedia. Jalankan sinkronisasi master cabang pada backend Buku Tamu.');
       const url=gbPublicUrl(gbToken),link=document.getElementById('gb-public-link');if(link)link.textContent=url;
-      const qr=document.getElementById('gb-qr-image');if(qr&&!qr.src)qr.src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(url);
+      const qr=document.getElementById('gb-qr-image');if(qr){qr.alt='QR Code Buku Tamu '+gbBranchName;qr.src=gbQrImageUrl(url,500)+'&refresh='+Date.now();}
       const lbl=document.getElementById('gb-qr-branch-label');if(lbl)lbl.textContent=gbBranchName;
       const result=await gbPost({action:'getGuestbookEntries',username});
       const summary=await gbPost({action:'getGuestbookSummary',username});
