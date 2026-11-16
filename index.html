@@ -1750,8 +1750,8 @@
             <div class="gb-panel"><div class="gb-panel-head"><div><h3>QR Code Buku Tamu Cabang</h3><p>Pengunjung scan QR atau gunakan tablet/HP cabang.</p></div><button class="gb-btn secondary" type="button" onclick="gbRefresh()"><i class="fa-solid fa-rotate"></i> Refresh</button></div>
               <div class="gb-qr-row"><div class="gb-qr-preview"><img id="gb-qr-image" alt="QR Code Buku Tamu"/><small id="gb-qr-branch-label"></small></div><div class="gb-qr-info"><b>Link pengisian publik</b><p id="gb-public-link" class="gb-link-text"></p><div class="gb-actions"><button class="gb-btn" onclick="gbCopyLink()"><i class="fa-regular fa-copy"></i> Salin Link</button><button class="gb-btn secondary" onclick="gbOpenPublic()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Form</button></div><small>QR ini diarahkan ke form publik cabang yang sedang login.</small></div></div>
             </div>
-            <div class="gb-panel"><div class="gb-panel-head"><div><h3>Riwayat Kunjungan</h3><p>Data hanya menampilkan kunjungan cabang ini.</p></div><button class="gb-btn secondary" onclick="gbExportCsv()"><i class="fa-solid fa-file-csv"></i> Export CSV</button></div>
-              <div class="gb-filters"><input id="gb-filter-date" type="date" onchange="gbRenderTable()"/><input id="gb-search" type="search" placeholder="Cari nama / perusahaan / keperluan..." oninput="gbRenderTable()"/></div>
+            <div class="gb-panel"><div class="gb-panel-head"><div><h3>Riwayat Kunjungan <span class="gb-live-indicator">LIVE</span></h3><p>Data cabang ini diperbarui otomatis setiap 15 detik.</p></div><button class="gb-btn secondary" onclick="gbExportCsv()"><i class="fa-solid fa-file-csv"></i> Export CSV</button></div>
+              <div class="gb-filters"><input id="gb-filter-date" type="date" onchange="gbRenderTable()"/><input id="gb-search" type="search" placeholder="Cari nama visitor / jabatan / uraian tugas / keterangan..." oninput="gbRenderTable()"/></div>
               <div id="gb-status" class="gb-status">Memuat data buku tamu…</div><div id="gb-table-wrap" class="gb-table-wrap"></div>
             </div>
           </section>
@@ -10694,6 +10694,18 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
 
 <style>
 .gb-shell{max-width:1200px;margin:18px auto;padding:0 4px;color:#172033}.gb-hero{background:linear-gradient(120deg,#7f1d1d,#dc2626);border-radius:18px;padding:25px 28px;color:#fff;display:flex;justify-content:space-between;align-items:center;box-shadow:0 10px 28px #991b1b22}.gb-kicker{font-size:11px;letter-spacing:2px;font-weight:800;opacity:.8}.gb-hero h2{margin:7px 0;font-size:25px}.gb-hero p{margin:0;opacity:.9}.gb-hero-icon{font-size:44px;opacity:.8}.gb-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}.gb-stat,.gb-panel{background:#fff;border:1px solid #e5e7eb;border-radius:15px;padding:17px;box-shadow:0 4px 16px #0f172a08}.gb-stat span{display:block;color:#64748b;font-size:13px}.gb-stat b{display:block;font-size:26px;margin-top:6px;color:#991b1b}.gb-panel{margin:14px 0}.gb-panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.gb-panel-head h3{margin:0 0 5px;font-size:17px}.gb-panel-head p,.gb-qr-info p{margin:0;color:#64748b;font-size:13px}.gb-qr-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap}.gb-qr-preview{width:170px;text-align:center}.gb-qr-preview img{width:150px;height:150px;object-fit:contain;border:1px solid #e5e7eb;border-radius:12px;padding:7px}.gb-qr-preview small{display:block;margin-top:6px;color:#64748b}.gb-qr-info{flex:1;min-width:240px}.gb-link-text{word-break:break-all;margin:7px 0 12px!important;color:#991b1b!important}.gb-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.gb-btn{border:0;border-radius:9px;background:#b91c1c;color:white;padding:10px 14px;font-weight:700;cursor:pointer}.gb-btn.secondary{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0}.gb-filters{display:flex;gap:10px;margin-bottom:12px}.gb-filters input{border:1px solid #cbd5e1;border-radius:9px;padding:10px;min-width:180px}.gb-table-wrap{overflow:auto}.gb-table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}.gb-table th,.gb-table td{padding:10px;border-bottom:1px solid #e5e7eb;text-align:left;white-space:nowrap}.gb-table th{background:#f8fafc;color:#475569}.gb-status{font-size:13px;color:#64748b;margin:8px 0}.gb-public-page{max-width:620px;margin:32px auto;padding:18px;font-family:inherit;color:#172033}.gb-public-card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;padding:24px;box-shadow:0 12px 36px #0f172a12}.gb-public-brand{font-size:11px;letter-spacing:2px;color:#b91c1c;font-weight:800}.gb-public-card h1{font-size:24px;margin:8px 0}.gb-public-card p{color:#64748b}.gb-field{margin:14px 0}.gb-field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.gb-field input,.gb-field textarea{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font:inherit}.gb-submit{width:100%;padding:13px;border:0;border-radius:10px;background:#b91c1c;color:#fff;font-weight:800;font-size:15px;cursor:pointer}.gb-submit:disabled{opacity:.6;cursor:wait}.gb-success{text-align:center;padding:24px 8px}.gb-success i{font-size:48px;color:#16a34a}.gb-error{color:#b91c1c;font-size:13px;margin-top:10px}@media(max-width:650px){.gb-stats{grid-template-columns:1fr}.gb-filters{flex-direction:column}.gb-filters input{width:100%;box-sizing:border-box}.gb-hero{padding:20px}.gb-hero h2{font-size:21px}.gb-panel{padding:13px}.gb-panel-head{align-items:flex-start}.gb-public-page{margin:12px auto;padding:10px}}
+
+.gb-table-wrap{width:100%;min-width:0}
+.gb-table-scroll{width:100%;max-height:430px;overflow:auto;overscroll-behavior:contain;border:1px solid #e2e8f0;border-radius:12px;scrollbar-width:thin}
+.gb-table-scroll .gb-table{min-width:860px;width:100%;border-collapse:separate;border-spacing:0}
+.gb-table-scroll .gb-table thead th{position:sticky;top:0;z-index:3;white-space:nowrap;background:#f8fafc;color:#334155;font-size:.72rem;font-weight:800;letter-spacing:.035em;box-shadow:0 1px 0 #e2e8f0}
+.gb-table-scroll .gb-table td{vertical-align:top;max-width:260px;white-space:normal;overflow-wrap:anywhere}
+.gb-live-indicator{display:inline-flex;align-items:center;gap:6px;margin-left:8px;font-size:11px;font-weight:800;color:#15803d}
+.gb-live-indicator:before{content:"";width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px #dcfce7}
+@media(max-width:650px){.gb-table-scroll{max-height:55vh}.gb-table-scroll .gb-table{min-width:780px}}
+.gb-table-scroll .gb-table{min-width:860px;width:100%;border-collapse:separate;border-spacing:0}
+.gb-table-scroll .gb-table th{white-space:nowrap;background:#f8fafc;color:#334155;font-size:.72rem;font-weight:800;letter-spacing:.035em}
+.gb-table-scroll .gb-table td{vertical-align:top;max-width:260px;white-space:normal;overflow-wrap:anywhere}
 </style>
 
 
@@ -10717,36 +10729,42 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
   window.gbCopyLink=async function(){const el=document.getElementById('gb-public-link');if(!el)return;try{await navigator.clipboard.writeText(el.textContent);alert('Link buku tamu berhasil disalin.');}catch(e){prompt('Salin link buku tamu:',el.textContent);}};
   window.gbOpenPublic=function(){const u=document.getElementById('gb-public-link')?.textContent;if(u)window.open(u,'_blank','noopener');};
   window.gbRefresh=async function(){await gbLoad();};
-  window.gbLoad=async function(){
-    const username=gbCurrentUsername(); if(!username){gbSetStatus('Sesi User Cabang tidak ditemukan. Silakan login ulang.',true);return;}
-    gbSetStatus('Menghubungkan ke database Buku Tamu…');
+  let gbLoadInFlight = false;
+  window.gbLoad=async function(options={}){
+    const silent=!!options.silent;
+    if(gbLoadInFlight)return;
+    const username=gbCurrentUsername();
+    if(!username){if(!silent)gbSetStatus('Sesi User Cabang tidak ditemukan. Silakan login ulang.',true);return;}
+    gbLoadInFlight=true;
+    if(!silent)gbSetStatus('Menghubungkan ke database Buku Tamu…');
     try{
-      // Ambil token QR cabang dari backend Buku Tamu yang terpisah.
       const info=await gbPost({action:'getGuestbookBranchInfo',username});
       const branch=info.branch||info.data||{};gbBranchName=String(branch.name||branch.branchName||'');gbToken=String(branch.token||'');
       if(!gbToken||!gbBranchName)throw new Error('Token QR cabang belum tersedia. Jalankan sinkronisasi master cabang pada backend Buku Tamu.');
       const url=gbPublicUrl(gbToken),link=document.getElementById('gb-public-link');if(link)link.textContent=url;
-      const qr=document.getElementById('gb-qr-image');if(qr)qr.src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(url);
+      const qr=document.getElementById('gb-qr-image');if(qr&&!qr.src)qr.src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(url);
       const lbl=document.getElementById('gb-qr-branch-label');if(lbl)lbl.textContent=gbBranchName;
-      const [result,summary]=await Promise.all([
-        gbPost({action:'getGuestbookEntries',username}),
-        gbPost({action:'getGuestbookSummary',username})
-      ]);
+      const result=await gbPost({action:'getGuestbookEntries',username});
+      const summary=await gbPost({action:'getGuestbookSummary',username});
       const d=result.entries||result.data||result.items||[];gbRows=Array.isArray(d)?d:[];
       gbSummary=summary||{};
-      gbRenderTable();gbSetStatus(`${gbRows.length} riwayat terbaru berhasil dimuat.`);
-    }catch(e){gbRows=[];gbSummary={};gbRenderTable();gbSetStatus('Buku Tamu belum dapat dimuat: '+e.message,true);}
+      gbRenderTable();
+      if(!silent)gbSetStatus(`${gbRows.length} riwayat terbaru berhasil dimuat.`);
+      else gbSetStatus(`Pembaruan otomatis aktif · terakhir diperbarui ${new Date().toLocaleTimeString('id-ID')}`);
+    }catch(e){
+      if(!silent){gbRows=[];gbSummary={};gbRenderTable();gbSetStatus('Buku Tamu belum dapat dimuat: '+e.message,true);}
+    }finally{gbLoadInFlight=false;}
   };
   window.gbRenderTable=function(){
     const today=gbToday(),month=today.slice(0,7);
     const elToday=document.getElementById('gb-today-count'),elMonth=document.getElementById('gb-month-count'),elTotal=document.getElementById('gb-total-count');
     if(elToday)elToday.textContent=Number(gbSummary.today||0);if(elMonth)elMonth.textContent=Number(gbSummary.month||0);if(elTotal)elTotal.textContent=Number(gbSummary.total||0);
     const date=document.getElementById('gb-filter-date')?.value||'',q=(document.getElementById('gb-search')?.value||'').toLowerCase();
-    const rows=gbRows.filter(x=>{const dt=String(x.date||'');return(!date||dt===date)&&[x.nama,x.name,x.instansi,x.perusahaan,x.keperluan,x.bertamu,x.pegawai,x.whatsapp].some(v=>String(v||'').toLowerCase().includes(q));});
+    const rows=gbRows.filter(x=>{const dt=String(x.date||'');return(!date||dt===date)&&[x.nama,x.name,x.jabatan,x.uraianTugas,x.purpose,x.paraf,x.keterangan].some(v=>String(v||'').toLowerCase().includes(q));});
     const wrap=document.getElementById('gb-table-wrap');if(!wrap)return;
-    wrap.innerHTML=rows.length?'<table class="gb-table"><thead><tr><th>No</th><th>Waktu</th><th>Nama Pengunjung</th><th>Instansi</th><th>No. WhatsApp</th><th>Keperluan</th><th>Bertemu</th></tr></thead><tbody>'+rows.map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+gbEsc((x.tanggal||'')+' '+(x.jam||''))+'</td><td>'+gbEsc(x.nama||x.name||'-')+'</td><td>'+gbEsc(x.instansi||x.perusahaan||'-')+'</td><td>'+gbEsc(x.whatsapp||'-')+'</td><td>'+gbEsc(x.keperluan||'-')+'</td><td>'+gbEsc(x.bertamu||x.pegawai||'-')+'</td></tr>').join('')+'</tbody></table>':'<p style="padding:18px;text-align:center;color:#64748b">Belum ada data kunjungan yang sesuai.</p>';
+    wrap.innerHTML=rows.length?'<div class="gb-table-scroll"><table class="gb-table"><thead><tr><th>NO</th><th>TANGGAL</th><th>NAMA VISITOR</th><th>JABATAN</th><th>URAIAN TUGAS</th><th>PARAF</th><th>KETERANGAN</th></tr></thead><tbody>'+rows.map((x,i)=>'<tr><td>'+gbEsc(x.no||i+1)+'</td><td>'+gbEsc(x.tanggal||'-')+'</td><td>'+gbEsc(x.nama||x.name||'-')+'</td><td>'+gbEsc(x.jabatan||'-')+'</td><td>'+gbEsc(x.uraianTugas||x.purpose||'-')+'</td><td>'+gbEsc(x.paraf||'-')+'</td><td>'+gbEsc(x.keterangan||'-')+'</td></tr>').join('')+'</tbody></table></div>':'<p style="padding:18px;text-align:center;color:#64748b">Belum ada data kunjungan yang sesuai.</p>';
   };
-  window.gbExportCsv=function(){const cols=['tanggal','jam','nama','instansi','whatsapp','keperluan','bertamu'];const csv=[cols.join(','),...gbRows.map(x=>cols.map(k=>'"'+String(x[k]??'').replace(/"/g,'""')+'"').join(','))].join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='buku-tamu-'+(gbBranchName||'cabang').replace(/[^a-z0-9]+/gi,'-')+'.csv';a.click();URL.revokeObjectURL(a.href);};
+  window.gbExportCsv=function(){const cols=[['NO','no'],['TANGGAL','tanggal'],['NAMA VISITOR','nama'],['JABATAN','jabatan'],['URAIAN TUGAS','uraianTugas'],['PARAF','paraf'],['KETERANGAN','keterangan']];const csv=[cols.map(c=>c[0]).join(','),...gbRows.map((x,i)=>cols.map(([h,k])=>'"'+String(k==='no'?(x[k]||i+1):(x[k]??'')).replace(/"/g,'""')+'"').join(','))].join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='buku-tamu-'+(gbBranchName||'cabang').replace(/[^a-z0-9]+/gi,'-')+'.csv';a.click();URL.revokeObjectURL(a.href);};
   async function gbSubmitPublic(event){
     event.preventDefault();const form=event.currentTarget,btn=form.querySelector('button[type=submit]');if(btn.disabled)return;
     const token=(new URLSearchParams(location.search).get('token')||'').trim();
@@ -10771,6 +10789,18 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
     }catch(e){wrap.innerHTML='<p class="gb-error">Link Buku Tamu tidak valid atau tidak aktif. '+gbEsc(e.message)+'</p>';}
   }
   if(new URLSearchParams(location.search).get('guestbook')==='1'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',gbStartPublic,{once:true});else gbStartPublic();}
+  // Sinkronisasi otomatis: cek data baru setiap 15 detik hanya saat halaman Buku Tamu sedang dibuka.
+  if(!window.__gbAutoRefreshStarted){
+    window.__gbAutoRefreshStarted=true;
+    window.setInterval(()=>{
+      const page=document.getElementById('page-user-buku-tamu');
+      if(!document.hidden && page && page.style.display!=='none')window.gbLoad({silent:true});
+    },15000);
+    document.addEventListener('visibilitychange',()=>{
+      const page=document.getElementById('page-user-buku-tamu');
+      if(!document.hidden && page && page.style.display!=='none')window.gbLoad({silent:true});
+    });
+  }
   document.addEventListener('click',e=>{const item=e.target.closest('#app-navbar-items .nav-item');if(item&&(item.getAttribute('onclick')||'').includes('page-user-buku-tamu'))setTimeout(()=>gbLoad(),0);});
 })();
 </script>
