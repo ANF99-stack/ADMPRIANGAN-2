@@ -1748,7 +1748,7 @@
             <div class="gb-hero"><div><span class="gb-kicker">ADM PRIANGAN 2</span><h2>BUKU TAMU DIGITAL</h2><p>Kelola kunjungan dan bagikan QR Code agar setiap pengunjung dapat mengisi sendiri melalui HP.</p></div><div class="gb-hero-icon"><i class="fa-solid fa-book-open"></i></div></div>
             <div class="gb-stats"><div class="gb-stat"><span>Total Hari Ini</span><b id="gb-today-count">0</b></div><div class="gb-stat"><span>Total Bulan Ini</span><b id="gb-month-count">0</b></div><div class="gb-stat"><span>Total Kunjungan</span><b id="gb-total-count">0</b></div></div>
             <div class="gb-panel"><div class="gb-panel-head"><div><h3>QR Code Buku Tamu Cabang</h3><p>Pengunjung scan QR atau gunakan tablet/HP cabang.</p></div><button class="gb-btn secondary" type="button" onclick="gbRefresh()"><i class="fa-solid fa-rotate"></i> Refresh</button></div>
-              <div class="gb-qr-row"><div class="gb-qr-preview"><img id="gb-qr-image" alt="QR Code Buku Tamu"/><small id="gb-qr-branch-label"></small></div><div class="gb-qr-info"><b>Link pengisian publik</b><p id="gb-public-link" class="gb-link-text"></p><div class="gb-actions"><button class="gb-btn" onclick="gbCopyLink()"><i class="fa-regular fa-copy"></i> Salin Link</button><button class="gb-btn secondary" onclick="gbOpenPublic()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Form</button><button class="gb-btn secondary" type="button" onclick="gbDownloadQr()"><i class="fa-solid fa-download"></i> Unduh QR PNG</button><button class="gb-btn secondary" type="button" onclick="gbPrintQr()"><i class="fa-solid fa-print"></i> Cetak QR</button></div><small>QR ini diarahkan ke form publik cabang yang sedang login.</small></div></div>
+              <div class="gb-qr-row"><div class="gb-qr-preview"><img id="gb-qr-image" alt="QR Code Buku Tamu"/><small id="gb-qr-branch-label"></small></div><div class="gb-qr-info"><b>Link pengisian publik</b><p id="gb-public-link" class="gb-link-text"></p><div class="gb-actions"><button class="gb-btn" onclick="gbCopyLink()"><i class="fa-regular fa-copy"></i> Salin Link</button><button class="gb-btn secondary" onclick="gbOpenPublic()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Form</button><button class="gb-btn secondary" type="button" onclick="gbDownloadQr()"><i class="fa-solid fa-download"></i> Unduh QR PNG</button></div><small>QR ini diarahkan ke form publik cabang yang sedang login.</small></div></div>
             </div>
             <div class="gb-panel"><div class="gb-panel-head"><div><h3>Riwayat Kunjungan <span class="gb-live-indicator">LIVE</span></h3><p>Data cabang ini diperbarui otomatis setiap 15 detik.</p></div><button class="gb-btn secondary" onclick="gbExportCsv()"><i class="fa-solid fa-file-csv"></i> Export CSV</button></div>
               <div class="gb-filters"><input id="gb-filter-date" type="date" onchange="gbRenderTable()"/><input id="gb-search" type="search" placeholder="Cari nama visitor / jabatan / uraian tugas / keterangan..." oninput="gbRenderTable()"/></div>
@@ -10731,16 +10731,61 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
   function gbQrImageUrl(url,size=1000){return 'https://api.qrserver.com/v1/create-qr-code/?format=png&size='+size+'x'+size+'&qzone=3&data='+encodeURIComponent(url);}
   function gbQrFileName(){return 'QR-Buku-Tamu-'+(gbBranchName||'Cabang').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'');}
   window.gbDownloadQr=async function(){
-    const link=document.getElementById('gb-public-link')?.textContent;if(!link||!gbToken){alert('QR belum siap. Silakan refresh data terlebih dahulu.');return;}
-    const url=gbQrImageUrl(link,1200);
-    try{const response=await fetch(url);if(!response.ok)throw new Error('Unduhan QR gagal');const blob=await response.blob();const objectUrl=URL.createObjectURL(blob);const a=document.createElement('a');a.href=objectUrl;a.download=gbQrFileName()+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(objectUrl),1500);}
-    catch(error){window.open(url,'_blank','noopener');alert('QR dibuka di tab baru. Klik kanan gambar lalu pilih Simpan gambar untuk mengunduh PNG.');}
-  };
-  window.gbPrintQr=function(){
-    const link=document.getElementById('gb-public-link')?.textContent;if(!link||!gbToken){alert('QR belum siap. Silakan refresh data terlebih dahulu.');return;}
-    const image=gbQrImageUrl(link,1200),name=gbEsc(gbBranchName||'Cabang');
-    const w=window.open('','_blank','width=650,height=760');if(!w){alert('Izinkan pop-up browser untuk mencetak QR.');return;}
-    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>QR Buku Tamu - '+name+'</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:35px;color:#111}img{width:380px;height:380px;max-width:85vw;image-rendering:pixelated}h1{font-size:24px;margin:12px 0 6px}.sub{color:#555;font-size:14px} @media print{button{display:none}body{padding:10mm}}</style></head><body><h1>BUKU TAMU DIGITAL</h1><div class="sub">'+name+'</div><p><img id="qr" src="'+image+'" alt="QR Buku Tamu"></p><p class="sub">Scan untuk mengisi buku tamu cabang</p><button onclick="window.print()">Cetak QR</button><script>document.getElementById("qr").onload=function(){setTimeout(function(){window.print()},300)};<\\/script></body></html>');w.document.close();
+    const link=document.getElementById('gb-public-link')?.textContent;
+    if(!link||!gbToken){alert('QR belum siap. Silakan refresh data terlebih dahulu.');return;}
+    try{
+      const response=await fetch(gbQrImageUrl(link,1200));
+      if(!response.ok)throw new Error('QR tidak dapat diambil dari server.');
+      const qrBlob=await response.blob();
+      const qrBitmap=await createImageBitmap(qrBlob);
+
+      // Poster PNG portrait: title, nama cabang, QR besar, dan instruksi scan.
+      const canvas=document.createElement('canvas');
+      canvas.width=1000; canvas.height=1250;
+      const ctx=canvas.getContext('2d');
+      ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      ctx.fillStyle='#991b1b';
+      ctx.fillRect(0,0,canvas.width,18);
+      ctx.textAlign='center';
+      ctx.fillStyle='#111827';
+      ctx.font='800 48px Arial, sans-serif';
+      ctx.fillText('BUKU TAMU DIGITAL',500,155);
+
+      ctx.fillStyle='#64748b';
+      ctx.font='600 30px Arial, sans-serif';
+      const branchName=String(gbBranchName||'CABANG').toUpperCase();
+      ctx.fillText(branchName,500,215);
+
+      const qrSize=650, qrX=(canvas.width-qrSize)/2, qrY=285;
+      ctx.fillStyle='#ffffff';
+      ctx.fillRect(qrX-18,qrY-18,qrSize+36,qrSize+36);
+      ctx.drawImage(qrBitmap,qrX,qrY,qrSize,qrSize);
+
+      ctx.fillStyle='#334155';
+      ctx.font='500 27px Arial, sans-serif';
+      ctx.fillText('Scan untuk mengisi buku tamu cabang',500,1045);
+
+      ctx.fillStyle='#991b1b';
+      ctx.font='700 22px Arial, sans-serif';
+      ctx.fillText('ADM PRIANGAN 2',500,1120);
+
+      ctx.fillStyle='#cbd5e1';
+      ctx.fillRect(110,1170,780,2);
+
+      const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+      if(!blob)throw new Error('Gagal membuat file PNG.');
+      const objectUrl=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=objectUrl;
+      a.download=gbQrFileName()+'.png';
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(objectUrl),2000);
+      qrBitmap.close?.();
+    }catch(error){
+      console.error('Unduh QR:',error);
+      alert('QR belum berhasil diunduh. Periksa koneksi internet lalu coba kembali.');
+    }
   };
   window.gbRefresh=async function(){await gbLoad();};
   let gbLoadInFlight = false;
@@ -10769,16 +10814,25 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
       if(!silent){gbRows=[];gbSummary={};gbRenderTable();gbSetStatus('Buku Tamu belum dapat dimuat: '+e.message,true);}
     }finally{gbLoadInFlight=false;}
   };
+  function gbEntryTimestamp(x){
+    const iso=String(x.date||'').trim();
+    if(iso){const t=Date.parse(iso);if(Number.isFinite(t))return t;}
+    const shown=String(x.tanggal||'').trim();
+    const m=shown.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+    if(m)return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0)).getTime();
+    return 0;
+  }
+  function gbNewestFirst(rows){return [...rows].sort((a,b)=>gbEntryTimestamp(b)-gbEntryTimestamp(a));}
   window.gbRenderTable=function(){
     const today=gbToday(),month=today.slice(0,7);
     const elToday=document.getElementById('gb-today-count'),elMonth=document.getElementById('gb-month-count'),elTotal=document.getElementById('gb-total-count');
     if(elToday)elToday.textContent=Number(gbSummary.today||0);if(elMonth)elMonth.textContent=Number(gbSummary.month||0);if(elTotal)elTotal.textContent=Number(gbSummary.total||0);
     const date=document.getElementById('gb-filter-date')?.value||'',q=(document.getElementById('gb-search')?.value||'').toLowerCase();
-    const rows=gbRows.filter(x=>{const dt=String(x.date||'');return(!date||dt===date)&&[x.nama,x.name,x.jabatan,x.uraianTugas,x.purpose,x.paraf,x.keterangan].some(v=>String(v||'').toLowerCase().includes(q));});
+    const rows=gbNewestFirst(gbRows).filter(x=>{const dt=String(x.date||'');return(!date||dt===date)&&[x.nama,x.name,x.jabatan,x.uraianTugas,x.purpose,x.paraf,x.keterangan].some(v=>String(v||'').toLowerCase().includes(q));});
     const wrap=document.getElementById('gb-table-wrap');if(!wrap)return;
-    wrap.innerHTML=rows.length?'<div class="gb-table-scroll"><table class="gb-table"><thead><tr><th>NO</th><th>TANGGAL</th><th>NAMA VISITOR</th><th>JABATAN</th><th>URAIAN TUGAS</th><th>PARAF</th><th>KETERANGAN</th></tr></thead><tbody>'+rows.map((x,i)=>'<tr><td>'+gbEsc(x.no||i+1)+'</td><td>'+gbEsc(x.tanggal||'-')+'</td><td>'+gbEsc(x.nama||x.name||'-')+'</td><td>'+gbEsc(x.jabatan||'-')+'</td><td>'+gbEsc(x.uraianTugas||x.purpose||'-')+'</td><td>'+gbEsc(x.paraf||'-')+'</td><td>'+gbEsc(x.keterangan||'-')+'</td></tr>').join('')+'</tbody></table></div>':'<p style="padding:18px;text-align:center;color:#64748b">Belum ada data kunjungan yang sesuai.</p>';
+    wrap.innerHTML=rows.length?'<div class="gb-table-scroll"><table class="gb-table"><thead><tr><th>NO</th><th>TANGGAL</th><th>NAMA VISITOR</th><th>JABATAN</th><th>URAIAN TUGAS</th><th>PARAF</th><th>KETERANGAN</th></tr></thead><tbody>'+rows.map((x,i)=>'<tr><td>'+gbEsc(i+1)+'</td><td>'+gbEsc(x.tanggal||'-')+'</td><td>'+gbEsc(x.nama||x.name||'-')+'</td><td>'+gbEsc(x.jabatan||'-')+'</td><td>'+gbEsc(x.uraianTugas||x.purpose||'-')+'</td><td>'+gbEsc(x.paraf||'-')+'</td><td>'+gbEsc(x.keterangan||'-')+'</td></tr>').join('')+'</tbody></table></div>':'<p style="padding:18px;text-align:center;color:#64748b">Belum ada data kunjungan yang sesuai.</p>';
   };
-  window.gbExportCsv=function(){const cols=[['NO','no'],['TANGGAL','tanggal'],['NAMA VISITOR','nama'],['JABATAN','jabatan'],['URAIAN TUGAS','uraianTugas'],['PARAF','paraf'],['KETERANGAN','keterangan']];const csv=[cols.map(c=>c[0]).join(','),...gbRows.map((x,i)=>cols.map(([h,k])=>'"'+String(k==='no'?(x[k]||i+1):(x[k]??'')).replace(/"/g,'""')+'"').join(','))].join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='buku-tamu-'+(gbBranchName||'cabang').replace(/[^a-z0-9]+/gi,'-')+'.csv';a.click();URL.revokeObjectURL(a.href);};
+  window.gbExportCsv=function(){const cols=[['NO','no'],['TANGGAL','tanggal'],['NAMA VISITOR','nama'],['JABATAN','jabatan'],['URAIAN TUGAS','uraianTugas'],['PARAF','paraf'],['KETERANGAN','keterangan']];const exportRows=gbNewestFirst(gbRows);const csv=[cols.map(c=>c[0]).join(','),...exportRows.map((x,i)=>cols.map(([h,k])=>'"'+String(k==='no'?(i+1):(x[k]??'')).replace(/"/g,'""')+'"').join(','))].join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='buku-tamu-'+(gbBranchName||'cabang').replace(/[^a-z0-9]+/gi,'-')+'.csv';a.click();URL.revokeObjectURL(a.href);};
   async function gbSubmitPublic(event){
     event.preventDefault();const form=event.currentTarget,btn=form.querySelector('button[type=submit]');if(btn.disabled)return;
     const token=(new URLSearchParams(location.search).get('token')||'').trim();
