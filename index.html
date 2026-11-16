@@ -6627,13 +6627,6 @@
     }
 
     window.onload = function() {
-      // Jangan jalankan pemulihan sesi/dashboard utama pada halaman form publik Buku Tamu.
-      // Tanpa guard ini, showDashboard() dapat menampilkan dashboard kembali setelah gbStartPublic() berjalan.
-      if (new URLSearchParams(window.location.search).get('guestbook') === '1') {
-        document.getElementById('login-section')?.style.setProperty('display', 'none', 'important');
-        document.getElementById('app-section')?.style.setProperty('display', 'none', 'important');
-        return;
-      }
       setupOperasionalDateFilterLimits();
       const restoreScreen = document.getElementById('session-restore-screen');
       const finishSessionRestore = () => {
@@ -10720,7 +10713,7 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
   };
   function gbCurrentUsername(){return String(localStorage.getItem('resto_current_user')||'').trim();}
   function gbSetStatus(msg,isError=false){const el=document.getElementById('gb-status');if(el){el.textContent=msg;el.style.color=isError?'#b91c1c':'#64748b';}}
-  function gbPublicUrl(token){const u=new URL(window.location.href);u.search='';u.hash='';u.searchParams.set('guestbook','1');u.searchParams.set('token',token);return u.toString();}
+  function gbPublicUrl(token){return 'https://anf99-stack.github.io/BUKU_TAMU/?token='+encodeURIComponent(token);}
   window.gbCopyLink=async function(){const el=document.getElementById('gb-public-link');if(!el)return;try{await navigator.clipboard.writeText(el.textContent);alert('Link buku tamu berhasil disalin.');}catch(e){prompt('Salin link buku tamu:',el.textContent);}};
   window.gbOpenPublic=function(){const u=document.getElementById('gb-public-link')?.textContent;if(u)window.open(u,'_blank','noopener');};
   window.gbRefresh=async function(){await gbLoad();};
