@@ -1742,6 +1742,43 @@
           </div>
         </div>
 
+        <!-- PAGE BUKU TAMU DIGITAL: khusus User Cabang -->
+        <div id="page-user-buku-tamu" class="role-page-content" style="display:none">
+          <section class="gb-shell">
+            <div class="gb-hero">
+              <div class="gb-hero-copy">
+                <span class="gb-kicker"><i class="fa-solid fa-shield-halved"></i> ADM PRIANGAN 2 · VISITOR MANAGEMENT</span>
+                <h2>Buku Tamu Digital</h2>
+                <p>Kelola pencatatan kunjungan cabang dengan praktis, rapi, dan terpusat.</p>
+                <div class="gb-hero-meta"><span><i class="fa-solid fa-circle-check"></i> Pencatatan otomatis</span><span><i class="fa-solid fa-qrcode"></i> QR Code cabang</span></div>
+              </div>
+              <div class="gb-hero-icon"><i class="fa-solid fa-book-open"></i></div>
+            </div>
+
+            <div class="gb-stats">
+              <div class="gb-stat"><div class="gb-stat-icon red"><i class="fa-solid fa-calendar-day"></i></div><div><span>Kunjungan Hari Ini</span><b id="gb-today-count">0</b><small>Data masuk hari ini</small></div></div>
+              <div class="gb-stat"><div class="gb-stat-icon amber"><i class="fa-solid fa-calendar-week"></i></div><div><span>Kunjungan Bulan Ini</span><b id="gb-month-count">0</b><small>Akumulasi bulan berjalan</small></div></div>
+              <div class="gb-stat"><div class="gb-stat-icon green"><i class="fa-solid fa-users"></i></div><div><span>Total Kunjungan</span><b id="gb-total-count">0</b><small>Seluruh riwayat cabang</small></div></div>
+            </div>
+
+            <div class="gb-panel gb-qr-panel">
+              <div class="gb-panel-head"><div class="gb-section-title"><span class="gb-section-icon"><i class="fa-solid fa-qrcode"></i></span><div><h3>QR Code Buku Tamu</h3><p>Bagikan QR kepada pengunjung untuk mengisi formulir melalui HP.</p></div></div><button class="gb-btn secondary" type="button" onclick="gbRefresh()"><i class="fa-solid fa-rotate"></i> Refresh Data</button></div>
+              <div class="gb-qr-row">
+                <div class="gb-qr-preview"><div class="gb-qr-frame"><img id="gb-qr-image" alt="QR Code Buku Tamu"/></div><small><i class="fa-solid fa-location-dot"></i> <span id="gb-qr-branch-label">Memuat cabang…</span></small></div>
+                <div class="gb-qr-info"><span class="gb-mini-label">PUBLIC VISITOR FORM</span><h4>Formulir Kunjungan Cabang</h4><p>Pengunjung dapat scan QR atau membuka tautan khusus cabang. Data akan langsung tersimpan setelah formulir dikirim.</p><div class="gb-link-box"><i class="fa-solid fa-link"></i><span id="gb-public-link">Menyiapkan tautan…</span></div><div class="gb-actions"><button class="gb-btn" onclick="gbCopyLink()"><i class="fa-regular fa-copy"></i> Salin Link</button><button class="gb-btn secondary" onclick="gbOpenPublic()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Form</button></div><div class="gb-secure-note"><i class="fa-solid fa-circle-info"></i> Tautan QR terhubung dengan token unik cabang yang sedang login.</div></div>
+              </div>
+            </div>
+
+            <div class="gb-panel gb-history-panel">
+              <div class="gb-panel-head"><div class="gb-section-title"><span class="gb-section-icon blue"><i class="fa-solid fa-clipboard-list"></i></span><div><h3>Riwayat Kunjungan</h3><p>Daftar pengunjung yang tercatat pada cabang ini.</p></div></div><button class="gb-btn secondary" onclick="gbExportCsv()"><i class="fa-solid fa-file-csv"></i> Export CSV</button></div>
+              <div class="gb-toolbar"><div class="gb-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input id="gb-search" type="search" placeholder="Cari nama visitor, jabatan, uraian tugas..." oninput="gbRenderTable()"/></div><label class="gb-date-filter"><i class="fa-regular fa-calendar"></i><input id="gb-filter-date" type="date" aria-label="Filter tanggal" onchange="gbRenderTable()"/></label></div>
+              <div id="gb-status" class="gb-status"><i class="fa-solid fa-circle-notch fa-spin"></i> Memuat data buku tamu…</div>
+              <div id="gb-table-wrap" class="gb-table-wrap"></div>
+              <div class="gb-table-foot"><span><i class="fa-solid fa-lock"></i> Data ditampilkan berdasarkan cabang yang login.</span><span>ADM PRIANGAN 2</span></div>
+            </div>
+          </section>
+        </div>
+
         <!-- PAGE 2: SIDEBAR PAGE - CHECKIN KARYAWAN REALTIME KAMERA -->
 
 
@@ -5896,6 +5933,7 @@
               <div class="nav-item" onclick="switchCogsPage('page-cogs-order', this)"><i class="fa-solid fa-truck-ramp-box"></i><span>UPDATE ORDERAN</span></div>
             </div>
           </details>
+          <div class="nav-item" onclick="switchRoleNav('page-user-buku-tamu', this)"><i class="fa-solid fa-book-open"></i><span>BUKU TAMU</span></div>
         `;
       }
 
@@ -10675,5 +10713,100 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
 
 
 </script>
+
+<style>
+/* BUKU TAMU DIGITAL — modern responsive UI */
+.gb-shell{--gb-ink:#172033;--gb-muted:#718096;--gb-line:#e8edf4;--gb-red:#dc2626;max-width:1220px;margin:22px auto;padding:0 8px;color:var(--gb-ink)}
+.gb-hero{position:relative;isolation:isolate;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:30px 34px;border-radius:24px;color:#fff;background:linear-gradient(118deg,#111827 0%,#3b1b35 48%,#dc2626 100%);box-shadow:0 18px 38px #991b1b20}
+.gb-hero:after{content:"";position:absolute;z-index:-1;width:290px;height:290px;right:7%;top:-190px;border:1px solid #ffffff25;border-radius:50%;box-shadow:0 0 0 34px #ffffff0b,0 0 0 68px #ffffff08}
+.gb-hero-copy{min-width:0}.gb-kicker{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:1.8px;font-weight:900;color:#fecaca}.gb-hero h2{font-size:clamp(23px,3vw,31px);font-weight:900;letter-spacing:-.7px;margin:10px 0 7px;color:#fff}.gb-hero p{font-size:13px;line-height:1.6;color:#fce7e7;max-width:620px;margin:0}.gb-hero-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:17px}.gb-hero-meta span{font-size:11px;font-weight:800;color:#fff;display:inline-flex;align-items:center;gap:7px}.gb-hero-meta i{color:#86efac}.gb-hero-icon{width:74px;height:74px;border:1px solid #ffffff35;background:#ffffff15;backdrop-filter:blur(8px);border-radius:22px;display:grid;place-items:center;font-size:32px;flex-shrink:0}
+.gb-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:17px 0}.gb-stat{display:flex;align-items:center;gap:15px;min-width:0;background:#fff;border:1px solid var(--gb-line);border-radius:18px;padding:18px;box-shadow:0 5px 18px #0f172a07}.gb-stat-icon{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-size:18px;flex-shrink:0}.gb-stat-icon.red{background:#fff1f2;color:#dc2626}.gb-stat-icon.amber{background:#fffbeb;color:#d97706}.gb-stat-icon.green{background:#ecfdf5;color:#059669}.gb-stat span{display:block;color:#64748b;font-size:11px;font-weight:800}.gb-stat b{display:block;font-size:27px;line-height:1.2;margin:3px 0;color:#111827;font-weight:900;font-variant-numeric:tabular-nums}.gb-stat small{display:block;color:#94a3b8;font-size:10px}
+.gb-panel{background:#fff;border:1px solid var(--gb-line);border-radius:20px;padding:21px;margin:15px 0;box-shadow:0 6px 22px #0f172a06}.gb-panel-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:18px}.gb-section-title{display:flex;align-items:center;gap:12px;min-width:0}.gb-section-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#fff1f2;color:#dc2626;font-size:17px;flex-shrink:0}.gb-section-icon.blue{background:#eff6ff;color:#2563eb}.gb-panel-head h3{margin:0 0 4px;font-size:15px;font-weight:900;color:#172033}.gb-panel-head p{margin:0;color:#8793a5;font-size:11px;line-height:1.5}
+.gb-qr-panel{background:linear-gradient(135deg,#fff 0%,#fff 58%,#fff7f7 100%)}.gb-qr-row{display:flex;align-items:center;gap:25px;flex-wrap:wrap;padding:4px 2px 2px}.gb-qr-preview{width:190px;flex-shrink:0;text-align:center}.gb-qr-frame{width:174px;height:174px;margin:auto;display:grid;place-items:center;background:#fff;border:1px solid #e9edf3;border-radius:19px;box-shadow:0 8px 24px #0f172a0b}.gb-qr-preview img{width:150px;height:150px;object-fit:contain}.gb-qr-preview small{display:block;margin-top:10px;color:#475569;font-size:11px;font-weight:800}.gb-qr-preview small i{color:#dc2626;margin-right:4px}.gb-qr-info{flex:1;min-width:240px}.gb-mini-label{font-size:9px;letter-spacing:1.5px;font-weight:900;color:#dc2626}.gb-qr-info h4{font-size:19px;font-weight:900;margin:6px 0;color:#172033}.gb-qr-info>p{font-size:12px;line-height:1.65;color:#718096;max-width:590px;margin:0 0 13px}.gb-link-box{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px dashed #f3b4b4;background:#fffafa;border-radius:12px;color:#9f1239;font-size:11px;font-weight:700}.gb-link-box i{flex-shrink:0}.gb-link-box span{overflow-wrap:anywhere}.gb-actions{display:flex;gap:9px;flex-wrap:wrap;margin:13px 0 10px}.gb-btn{border:0;border-radius:11px;background:linear-gradient(135deg,#dc2626,#f97316);color:#fff;padding:10px 15px;font-size:11px;font-weight:850;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .18s,box-shadow .18s}.gb-btn:hover{transform:translateY(-1px);box-shadow:0 7px 16px #dc26262a}.gb-btn:active{transform:scale(.98)}.gb-btn.secondary{background:#fff;color:#475569;border:1px solid #e2e8f0;box-shadow:none}.gb-btn.secondary:hover{border-color:#fca5a5;color:#b91c1c;background:#fffafa}.gb-secure-note{font-size:10px;color:#8491a3;display:flex;align-items:center;gap:7px}.gb-secure-note i{color:#16a34a}
+.gb-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}.gb-search-wrap,.gb-date-filter{height:42px;display:flex;align-items:center;gap:9px;padding:0 12px;border:1px solid #e2e8f0;border-radius:11px;background:#fbfcfe;color:#94a3b8}.gb-search-wrap{flex:1;min-width:180px}.gb-search-wrap input,.gb-date-filter input{border:0;outline:0;background:transparent;font:inherit;font-size:11px;color:#334155;width:100%;min-width:0}.gb-date-filter{min-width:175px}.gb-date-filter input{cursor:pointer}
+.gb-table-wrap{overflow:auto;border:1px solid #e8edf4;border-radius:13px;max-height:500px;overscroll-behavior:contain;scrollbar-width:thin}.gb-table{width:100%;border-collapse:separate;border-spacing:0;min-width:850px;font-size:11px}.gb-table th,.gb-table td{padding:12px 13px;border-bottom:1px solid #edf1f5;text-align:left;white-space:nowrap}.gb-table th{position:sticky;top:0;z-index:2;background:#f8fafc;color:#64748b;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.55px}.gb-table td{color:#334155;background:#fff}.gb-table tbody tr:hover td{background:#fffafa}.gb-table tbody tr:last-child td{border-bottom:0}.gb-status{font-size:10px;color:#718096;margin:9px 0 11px;display:flex;align-items:center;gap:7px}.gb-empty{padding:34px 16px;display:flex;flex-direction:column;align-items:center;gap:7px;color:#94a3b8;text-align:center}.gb-empty i{font-size:25px;color:#cbd5e1}.gb-empty strong{font-size:12px;color:#475569}.gb-empty span{font-size:10px}.gb-table-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;color:#9aa4b2;font-size:9px;font-weight:700}.gb-table-foot i{margin-right:5px;color:#16a34a}
+.gb-public-page{min-height:100vh;max-width:100%;margin:0 auto;padding:32px 16px;display:flex;align-items:flex-start;justify-content:center;background:radial-gradient(circle at 12% 8%,#fee2e2 0,transparent 28%),linear-gradient(135deg,#f8fafc,#fff7f7 55%,#f1f5f9);color:#172033}.gb-public-card{width:100%;max-width:570px;background:#fff;border:1px solid #e7ebf1;border-radius:24px;padding:28px;box-shadow:0 22px 60px #0f172a14}.gb-public-brand{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:1.5px;color:#dc2626;font-weight:900}.gb-public-card h1{font-size:27px;font-weight:900;letter-spacing:-.6px;margin:10px 0 7px}.gb-public-card>p{color:#718096;font-size:12px;line-height:1.6;margin-bottom:18px}.gb-public-card #gb-public-branch{background:#fff1f2!important;color:#9f1239!important;padding:12px 14px!important;border-radius:12px!important;font-size:12px;margin-bottom:18px;border:1px solid #ffe4e6}.gb-field{margin:14px 0}.gb-field label{display:block;font-size:11px;font-weight:850;margin-bottom:7px;color:#334155}.gb-field input,.gb-field textarea{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid #dce3ec;border-radius:11px;font:inherit;font-size:12px;background:#fbfcfe;outline:none;transition:border .18s,box-shadow .18s}.gb-field input:focus,.gb-field textarea:focus{border-color:#f87171;background:#fff;box-shadow:0 0 0 4px #fee2e255}.gb-submit{width:100%;padding:14px;border:0;border-radius:12px;background:linear-gradient(120deg,#dc2626,#f97316);color:#fff;font-weight:900;font-size:12px;letter-spacing:.3px;cursor:pointer;box-shadow:0 8px 18px #dc262626}.gb-submit:disabled{opacity:.6;cursor:wait}.gb-success{text-align:center;padding:28px 8px}.gb-success i{font-size:52px;color:#16a34a}.gb-success h2{font-size:22px;margin:12px 0 6px}.gb-success p{font-size:12px;color:#64748b}.gb-error{color:#b91c1c;font-size:11px;margin-top:10px}
+@media(max-width:760px){.gb-shell{padding:0 2px;margin:12px auto}.gb-hero{padding:22px 20px;border-radius:19px}.gb-hero-icon{width:55px;height:55px;border-radius:17px;font-size:24px}.gb-hero-meta{gap:10px}.gb-stats{gap:9px}.gb-stat{padding:13px;gap:10px;border-radius:14px}.gb-stat-icon{width:39px;height:39px;border-radius:12px;font-size:15px}.gb-stat b{font-size:22px}.gb-stat span{font-size:10px}.gb-stat small{font-size:9px}.gb-panel{padding:15px;border-radius:16px}.gb-panel-head{align-items:flex-start}.gb-panel-head>.gb-btn{flex-shrink:0;padding:9px 10px}.gb-qr-row{justify-content:center;gap:17px}.gb-qr-info{flex-basis:100%}.gb-qr-preview{width:100%}.gb-qr-frame{width:160px;height:160px}.gb-qr-preview img{width:138px;height:138px}.gb-toolbar{flex-direction:column;align-items:stretch}.gb-search-wrap,.gb-date-filter{width:100%;box-sizing:border-box}.gb-public-page{padding:14px 10px}.gb-public-card{padding:21px 17px;border-radius:19px}}
+@media(max-width:480px){.gb-hero{align-items:flex-start}.gb-hero-icon{display:none}.gb-stats{grid-template-columns:1fr}.gb-stat{padding:12px 14px}.gb-stat b{font-size:21px}.gb-panel-head{flex-direction:column}.gb-panel-head>.gb-btn{align-self:flex-start}.gb-qr-info h4{font-size:17px}.gb-actions .gb-btn{flex:1}.gb-table-foot{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.gb-btn,.gb-field input,.gb-field textarea{transition:none}}
+</style>
+
+
+<script>
+// ================= BUKU TAMU DIGITAL ADM PRIANGAN 2 =================
+// Modul Buku Tamu menggunakan backend GAS TERPISAH; backend utama ADM tidak diubah.
+(function(){
+  const GB_API = 'https://script.google.com/macros/s/AKfycbxjk1LKASe0zd5rTkf0eXKtBdBie1uoDHA9HAs2YM2P8DhiKaYQsrZ_xZ88eD8nucdL_g/exec';
+  let gbRows = [], gbBranchName = '', gbToken = '';
+  const gbEsc = v => String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const gbToday = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+  const gbPost = async payload => {
+    const r=await fetch(GB_API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},redirect:'follow',body:JSON.stringify(payload)});
+    const data=await r.json();
+    if(!r.ok || data?.status==='error' || data?.success===false) throw new Error(data?.message||`Permintaan gagal (${r.status})`);
+    return data;
+  };
+  function gbCurrentUsername(){return String(localStorage.getItem('resto_current_user')||'').trim();}
+  function gbSetStatus(msg,isError=false){const el=document.getElementById('gb-status');if(el){el.textContent=msg;el.style.color=isError?'#b91c1c':'#64748b';}}
+  function gbPublicUrl(token){const u=new URL(window.location.href);u.search='';u.hash='';u.searchParams.set('guestbook','1');u.searchParams.set('token',token);return u.toString();}
+  window.gbCopyLink=async function(){const el=document.getElementById('gb-public-link');if(!el)return;try{await navigator.clipboard.writeText(el.textContent);alert('Link buku tamu berhasil disalin.');}catch(e){prompt('Salin link buku tamu:',el.textContent);}};
+  window.gbOpenPublic=function(){const u=document.getElementById('gb-public-link')?.textContent;if(u)window.open(u,'_blank','noopener');};
+  window.gbRefresh=async function(){await gbLoad();};
+  window.gbLoad=async function(){
+    const username=gbCurrentUsername(); if(!username){gbSetStatus('Sesi User Cabang tidak ditemukan. Silakan login ulang.',true);return;}
+    gbSetStatus('Menghubungkan ke database Buku Tamu…');
+    try{
+      // Backend perlu menyediakan action getGuestbookBranchInfo untuk mengambil token QR cabang.
+      const info=await gbPost({action:'getGuestbookBranchInfo',username});
+      const branch=info.branch||info.data||{};gbBranchName=String(branch.name||branch.branchName||'');gbToken=String(branch.token||'');
+      if(!gbToken||!gbBranchName)throw new Error('Token QR cabang belum tersedia. Jalankan sinkronisasi master cabang pada backend Buku Tamu.');
+      const url=gbPublicUrl(gbToken),link=document.getElementById('gb-public-link');if(link)link.textContent=url;
+      const qr=document.getElementById('gb-qr-image');if(qr)qr.src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(url);
+      const lbl=document.getElementById('gb-qr-branch-label');if(lbl)lbl.textContent=gbBranchName;
+      const result=await gbPost({action:'getGuestbookEntries',username});
+      const d=result.entries||result.data||result.items||[];gbRows=Array.isArray(d)?d:[];
+      gbRenderTable();gbSetStatus(`${gbRows.length} kunjungan berhasil dimuat.`);
+    }catch(e){gbRows=[];gbRenderTable();gbSetStatus('Buku Tamu belum dapat dimuat: '+e.message,true);}
+  };
+  window.gbRenderTable=function(){
+    const today=gbToday(),month=today.slice(0,7);
+    const dayCount=gbRows.filter(x=>String(x.tanggal||x.timestamp||'').slice(0,10)===today).length;
+    const monthCount=gbRows.filter(x=>String(x.tanggal||x.timestamp||'').slice(0,7)===month).length;
+    const elToday=document.getElementById('gb-today-count'),elMonth=document.getElementById('gb-month-count'),elTotal=document.getElementById('gb-total-count');
+    if(elToday)elToday.textContent=dayCount;if(elMonth)elMonth.textContent=monthCount;if(elTotal)elTotal.textContent=gbRows.length;
+    const date=document.getElementById('gb-filter-date')?.value||'',q=(document.getElementById('gb-search')?.value||'').toLowerCase();
+    const rows=gbRows.filter(x=>{const dt=String(x.tanggal||x.timestamp||'').slice(0,10);return(!date||dt===date)&&[x.nama,x.name,x.jabatan,x.instansi,x.perusahaan,x.uraianTugas,x.keperluan,x.bertamu,x.pegawai,x.whatsapp,x.keterangan].some(v=>String(v||'').toLowerCase().includes(q));});
+    const wrap=document.getElementById('gb-table-wrap');if(!wrap)return;
+    wrap.innerHTML=rows.length?'<table class="gb-table"><thead><tr><th>NO</th><th>TANGGAL</th><th>NAMA VISITOR</th><th>JABATAN</th><th>URAIAN TUGAS</th><th>PARAF</th><th>KETERANGAN</th></tr></thead><tbody>'+rows.map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+gbEsc((x.tanggal||x.timestamp||'-')+(x.jam?' '+x.jam:''))+'</td><td><strong>'+gbEsc(x.nama||x.name||'-')+'</strong></td><td>'+gbEsc(x.jabatan||x.instansi||x.perusahaan||'-')+'</td><td>'+gbEsc(x.uraianTugas||x.keperluan||x.purpose||'-')+'</td><td>'+gbEsc(x.paraf||'')+'</td><td>'+gbEsc(x.keterangan||[x.bertamu||x.pegawai,x.whatsapp].filter(Boolean).join(' · ')||'-')+'</td></tr>').join('')+'</tbody></table>':'<div class="gb-empty"><i class="fa-regular fa-folder-open"></i><strong>Belum ada kunjungan</strong><span>Data pengunjung akan muncul di sini setelah formulir dikirim.</span></div>';
+  };
+  window.gbExportCsv=function(){const headers=['NO','TANGGAL','NAMA VISITOR','JABATAN','URAIAN TUGAS','PARAF','KETERANGAN'];const rows=gbRows.map((x,i)=>[i+1,x.tanggal||x.timestamp||'',x.nama||x.name||'',x.jabatan||x.instansi||x.perusahaan||'',x.uraianTugas||x.keperluan||x.purpose||'',x.paraf||'',x.keterangan||[x.bertamu||x.pegawai,x.whatsapp].filter(Boolean).join(' · ')]);const esc=v=>'\"'+String(v??'').replace(/\"/g,'\"\"')+'\"';const csv=[headers,...rows].map(row=>row.map(esc).join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='buku-tamu-'+(gbBranchName||'cabang').replace(/[^a-z0-9]+/gi,'-')+'.csv';a.click();URL.revokeObjectURL(a.href);};
+  async function gbSubmitPublic(event){
+    event.preventDefault();const form=event.currentTarget,btn=form.querySelector('button[type=submit]');if(btn.disabled)return;
+    const token=(new URLSearchParams(location.search).get('token')||'').trim();
+    const payload={action:'saveGuestbookEntry',token,name:form.nama.value.trim(),company:form.perusahaan.value.trim(),whatsapp:form.whatsapp.value.trim(),purpose:form.keperluan.value.trim(),person:form.bertamu.value.trim()};
+    const error=document.getElementById('gb-public-error');
+    if(!token||!payload.name||!payload.whatsapp||!payload.purpose||!payload.person){error.textContent='Mohon lengkapi nama, WhatsApp, keperluan, dan orang yang ditemui.';return;}
+    btn.disabled=true;btn.textContent='Menyimpan…';
+    try{await gbPost(payload);document.getElementById('gb-public-form-wrap').innerHTML='<div class="gb-success"><i class="fa-solid fa-circle-check"></i><h2>Terima kasih!</h2><p>Data kunjungan Anda berhasil disimpan.</p></div>';}
+    catch(e){error.textContent='Gagal menyimpan kunjungan: '+e.message;btn.disabled=false;btn.textContent='SIMPAN KUNJUNGAN';}
+  }
+  async function gbStartPublic(){
+    const token=(new URLSearchParams(location.search).get('token')||'').trim();
+    document.getElementById('login-section')?.style.setProperty('display','none','important');document.getElementById('app-section')?.style.setProperty('display','none','important');
+    document.body.insertAdjacentHTML('beforeend',`<main class="gb-public-page"><section class="gb-public-card"><div class="gb-public-brand">ADM PRIANGAN 2 · BUKU TAMU</div><h1>Form Buku Tamu</h1><p>Silakan isi data kunjungan Anda. Data akan langsung tercatat setelah dikirim.</p><div id="gb-public-branch" style="background:#fff1f2;color:#9f1239;padding:10px;border-radius:8px;font-weight:700">Memvalidasi link cabang…</div><div id="gb-public-form-wrap"></div></section></main>`);
+    const wrap=document.getElementById('gb-public-form-wrap');
+    if(!token){wrap.innerHTML='<p class="gb-error">Link Buku Tamu tidak valid karena token tidak tersedia.</p>';return;}
+    try{
+      const result=await gbPost({action:'getGuestbookPublicInfo',token});const branch=result.branch||{};
+      document.getElementById('gb-public-branch').textContent='Cabang: '+(branch.name||'ADM Priangan 2');
+      wrap.innerHTML=`<form id="gb-public-form"><div class="gb-field"><label>Nama lengkap *</label><input name="nama" maxlength="100" required autocomplete="name" placeholder="Nama lengkap Anda"></div><div class="gb-field"><label>Jabatan / instansi</label><input name="perusahaan" maxlength="120" placeholder="Nama perusahaan / instansi"></div><div class="gb-field"><label>Nomor WhatsApp *</label><input name="whatsapp" type="tel" maxlength="30" required autocomplete="tel" placeholder="08xxxxxxxxxx"></div><div class="gb-field"><label>Keperluan kunjungan *</label><textarea name="keperluan" maxlength="500" rows="3" required placeholder="Tuliskan keperluan kunjungan"></textarea></div><div class="gb-field"><label>Keterangan / bertemu dengan *</label><input name="bertamu" maxlength="100" required placeholder="Nama karyawan / penanggung jawab"></div><button class="gb-submit" type="submit">SIMPAN KUNJUNGAN</button><div id="gb-public-error" class="gb-error" role="alert"></div></form>`;
+      document.getElementById('gb-public-form').addEventListener('submit',gbSubmitPublic);
+    }catch(e){wrap.innerHTML='<p class="gb-error">Link Buku Tamu tidak valid atau tidak aktif. '+gbEsc(e.message)+'</p>';}
+  }
+  if(new URLSearchParams(location.search).get('guestbook')==='1'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',gbStartPublic,{once:true});else gbStartPublic();}
+  document.addEventListener('click',e=>{const item=e.target.closest('#app-navbar-items .nav-item');if(item&&(item.getAttribute('onclick')||'').includes('page-user-buku-tamu'))setTimeout(()=>gbLoad(),0);});
+})();
+</script>
+
 </body>
 </html>
