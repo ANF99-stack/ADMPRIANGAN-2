@@ -6417,6 +6417,57 @@
     }, 30000);
 
     let checkinSyncInProgress = false;
+    let checkinHistoryLoadInProgress = false;
+
+    // Riwayat lama dimuat per 500 baris setelah dashboard tampil.
+    // Ini menjaga seluruh histori tetap tersedia tanpa membebani request awal.
+    async function loadOlderCheckinHistoryInBackground(beforeRow) {
+      if (checkinHistoryLoadInProgress) return;
+      let cursor = Math.max(1, Math.floor(Number(beforeRow) || 1));
+      if (cursor <= 1) return;
+      checkinHistoryLoadInProgress = true;
+      try {
+        while (cursor > 1 && localStorage.getItem('resto_current_user')) {
+          const result = await gasRequestJson(
+            { action: 'getCheckinHistoryBatch', beforeRow: cursor },
+            { timeoutMs: 20000, retries: 1, retryDelayMs: 700 }
+          );
+          if (!result || result.status !== 'success' || !result.data) break;
+
+          const batch = Array.isArray(result.data.checkinsList) ? result.data.checkinsList : [];
+          const current = Array.isArray(globalDashboardData.checkinsList) ? globalDashboardData.checkinsList : [];
+          const knownIds = new Set(current.map(item => String(item?.id || '')));
+          const older = batch.filter(item => item && item.id && !knownIds.has(String(item.id)));
+          if (older.length) globalDashboardData.checkinsList = current.concat(older);
+
+          const nextCursor = Math.max(1, Math.floor(Number(result.data.nextBeforeRow) || 1));
+          if (nextCursor >= cursor && result.data.hasMore) break;
+          cursor = nextCursor;
+          globalDashboardData.checkinsHistoryBeforeRow = cursor;
+          try {
+            localStorage.setItem('resto_cached_data', JSON.stringify(globalDashboardData));
+            localStorage.setItem('resto_cached_data_at', String(Date.now()));
+          } catch (cacheError) {
+            console.warn('Cache histori check-in belum dapat diperbarui:', cacheError);
+          }
+
+          if (older.length) {
+            updateCheckinSwitchUI();
+            renderOperasionalTable();
+            renderKaryawanTable();
+            if (document.getElementById('page-groming-kasir')?.style.display !== 'none') renderGromingKasirPage();
+            if (document.getElementById('page-groming-karesto')?.style.display !== 'none') renderGromingKaRestoPage();
+            if (document.getElementById('page-check-karyawan')?.style.display !== 'none') renderCheckKaryawanPage();
+          }
+          if (!result.data.hasMore || cursor <= 1) break;
+          await new Promise(resolve => setTimeout(resolve, 1200));
+        }
+      } catch (error) {
+        console.warn('Pemuatan histori check-in bertahap tertunda:', error);
+      } finally {
+        checkinHistoryLoadInProgress = false;
+      }
+    }
 
     async function fetchCheckinUpdatesFromGAS() {
       const loggedUser = localStorage.getItem('resto_current_user');
@@ -6647,7 +6698,9 @@
         // Tampilkan cache terlebih dahulu supaya UI segera terbuka, lalu ambil data terbaru dari GAS.
         restoreCachedDashboardData();
         recordUserActivity(loggedUser);
-        showDashboard(loggedUser);
+        // Startup sudah menjalankan satu fetch terkontrol di bawah. Hindari fetch kedua
+        // dari showDashboard agar getInitialData tidak dipanggil dua kali bersamaan.
+        showDashboard(loggedUser, { skipInitialDataFetch: true });
         // Pulihkan halaman terakhir segera dari cache; jangan tampilkan login di belakang loader.
         if (savedLastPage) restoreLastPage(loggedUser, savedLastPage);
 
@@ -6872,7 +6925,9 @@
       const minIntervalMs = Number(options.minIntervalMs ?? 12000);
       const now = Date.now();
 
-      if (!force && initialDataFetchPromise) {
+      // Semua pemanggil berbagi request yang sedang berjalan, termasuk pemanggil force.
+      // Force hanya melewati jeda cache waktu, bukan membuat request paralel baru.
+      if (initialDataFetchPromise) {
         const sharedResult = await initialDataFetchPromise;
         if (sharedResult && onSuccess) onSuccess();
         return !!sharedResult;
@@ -6901,6 +6956,23 @@
           if (!Array.isArray(data.karyawanList)) data.karyawanList = [];
           normalizeSpvIndividualLookupKeys(data);
 
+          // Pertahankan histori yang sudah ada di cache, lalu gabungkan data terbaru
+          // dari server tanpa duplikasi ID.
+          const cachedCheckins = Array.isArray(globalDashboardData?.checkinsList)
+            ? globalDashboardData.checkinsList : [];
+          const freshCheckins = Array.isArray(data.checkinsList) ? data.checkinsList : [];
+          const freshIds = new Set(freshCheckins.map(item => String(item?.id || '')));
+          data.checkinsList = freshCheckins.concat(
+            cachedCheckins.filter(item => item && item.id && !freshIds.has(String(item.id)))
+          );
+          // Jika cache sebelumnya sudah memuat seluruh histori (cursor 1), jangan
+          // meminta ulang batch lama pada setiap refresh konfigurasi.
+          const cachedHistoryCursor = Number(globalDashboardData?.checkinsHistoryBeforeRow);
+          const freshHistoryCursor = Number(data.checkinsHistoryBeforeRow || 1);
+          if (Number.isFinite(cachedHistoryCursor) && cachedHistoryCursor >= 1) {
+            data.checkinsHistoryBeforeRow = Math.min(freshHistoryCursor, cachedHistoryCursor);
+          }
+
           globalDashboardData = data;
           localStorage.setItem('resto_checkin_feature_enabled', data.checkinEnabled ? 'true' : 'false');
           try {
@@ -6919,6 +6991,12 @@
       const request = initialDataFetchPromise;
       const success = await request;
       if (initialDataFetchPromise === request) initialDataFetchPromise = null;
+      if (success) {
+        const historyBeforeRow = Number(globalDashboardData?.checkinsHistoryBeforeRow || 1);
+        if (historyBeforeRow > 1) {
+          setTimeout(() => loadOlderCheckinHistoryInBackground(historyBeforeRow), 1800);
+        }
+      }
       if (success && onSuccess) onSuccess();
       return success;
     }
@@ -7013,7 +7091,7 @@
       }
     }
 
-    function showDashboard(username) {
+    function showDashboard(username, options = {}) {
       loginSection.style.display = 'none';
       appSection.style.display = 'flex';
 
@@ -7069,9 +7147,11 @@
 
       applyDashboardDataToUI(username, userRole);
 
-      fetchInitialDataFromGAS(() => {
-        applyDashboardDataToUI(username, userRole);
-      });
+      if (options.skipInitialDataFetch !== true) {
+        fetchInitialDataFromGAS(() => {
+          applyDashboardDataToUI(username, userRole);
+        });
+      }
     }
 
     function showAdmRestoSubPage() {
