@@ -6297,6 +6297,11 @@
       
       const targetPage = document.getElementById(pageId);
       if (targetPage) targetPage.style.display = 'block';
+      if ([
+        'page-user-checkin', 'page-shared-operasional', 'page-check-karyawan',
+        'page-daftar-karyawan', 'page-groming-kasir', 'page-groming-karesto',
+        'page-spv-monitoring', 'page-psd-monitoring', 'page-spv-pengajuan-checkin'
+      ].includes(pageId)) ensureCheckinHistoryForModule();
       if (pageId === 'page-spv-kas-futsal') renderKasFutsalSpv();
       if (pageId === 'page-spv-laporan-profit' && !masterProfitPayload) loadMasterProfit(false);
       if (pageId === 'page-user-kas-futsal') renderKasFutsalPic();
@@ -6419,8 +6424,16 @@
     let checkinSyncInProgress = false;
     let checkinHistoryLoadInProgress = false;
 
-    // Riwayat lama dimuat per 500 baris setelah dashboard tampil.
-    // Ini menjaga seluruh histori tetap tersedia tanpa membebani request awal.
+    // Riwayat lama dimuat per 500 baris hanya saat pengguna membuka modul
+    // yang membutuhkan histori check-in. Ini menghindari transfer histori penuh
+    // pada startup untuk pengguna yang tidak membuka modul tersebut.
+    function ensureCheckinHistoryForModule() {
+      const cursor = Number(globalDashboardData?.checkinsHistoryBeforeRow || 1);
+      if (cursor > 1 && !checkinHistoryLoadInProgress) {
+        loadOlderCheckinHistoryInBackground(cursor);
+      }
+    }
+
     async function loadOlderCheckinHistoryInBackground(beforeRow) {
       if (checkinHistoryLoadInProgress) return;
       let cursor = Math.max(1, Math.floor(Number(beforeRow) || 1));
@@ -6453,11 +6466,13 @@
 
           if (older.length) {
             updateCheckinSwitchUI();
-            renderOperasionalTable();
-            renderKaryawanTable();
-            if (document.getElementById('page-groming-kasir')?.style.display !== 'none') renderGromingKasirPage();
-            if (document.getElementById('page-groming-karesto')?.style.display !== 'none') renderGromingKaRestoPage();
-            if (document.getElementById('page-check-karyawan')?.style.display !== 'none') renderCheckKaryawanPage();
+            // Render hanya modul yang sedang terlihat. Modul lain akan membaca
+            // globalDashboardData terbaru ketika pengguna membukanya.
+            if (isModulePageVisible('page-shared-operasional')) renderOperasionalTable();
+            if (isModulePageVisible('page-daftar-karyawan')) renderKaryawanTable();
+            if (isModulePageVisible('page-groming-kasir')) renderGromingKasirPage();
+            if (isModulePageVisible('page-groming-karesto')) renderGromingKaRestoPage();
+            if (isModulePageVisible('page-check-karyawan')) renderCheckKaryawanPage();
           }
           if (!result.data.hasMore || cursor <= 1) break;
           await new Promise(resolve => setTimeout(resolve, 1200));
@@ -6480,8 +6495,9 @@
       if (!Number.isFinite(cursor) || cursor < 0) {
         fetchInitialDataFromGAS(() => {
           updateCheckinSwitchUI();
-          renderOperasionalTable();
-          renderKaryawanTable();
+          if (isModulePageVisible('page-shared-operasional')) renderOperasionalTable();
+          if (isModulePageVisible('page-daftar-karyawan')) renderKaryawanTable();
+          if (isModulePageVisible('page-check-karyawan')) renderCheckKaryawanPage();
         });
         return;
       }
@@ -6509,20 +6525,13 @@
             localStorage.setItem('resto_cached_data_at', String(Date.now()));
           } catch (e) {}
           updateCheckinSwitchUI();
-          renderOperasionalTable();
-          renderKaryawanTable();
-
-          // Jika halaman Groming sedang terbuka, perbarui dari cache terbaru tanpa
-          // mengirim ulang permintaan getInitialData yang berat.
-          if (document.getElementById('page-groming-kasir')?.style.display !== 'none') {
-            renderGromingKasirPage();
-          }
-          if (document.getElementById('page-groming-karesto')?.style.display !== 'none') {
-            renderGromingKaRestoPage();
-          }
-          if (document.getElementById('page-check-karyawan')?.style.display !== 'none') {
-            renderCheckKaryawanPage();
-          }
+          // Pembaruan data disimpan di cache bersama; hanya tampilan modul aktif
+          // yang dirender ulang agar modul tersembunyi tidak menghabiskan CPU.
+          if (isModulePageVisible('page-shared-operasional')) renderOperasionalTable();
+          if (isModulePageVisible('page-daftar-karyawan')) renderKaryawanTable();
+          if (isModulePageVisible('page-groming-kasir')) renderGromingKasirPage();
+          if (isModulePageVisible('page-groming-karesto')) renderGromingKaRestoPage();
+          if (isModulePageVisible('page-check-karyawan')) renderCheckKaryawanPage();
         }
 
         globalDashboardData.checkinsRowCount = Number(data.checkinsRowCount ?? cursor);
@@ -6541,8 +6550,15 @@
     // Saat tab tersembunyi, request dihentikan agar tidak membebani GAS/spreadsheet.
     setInterval(fetchCheckinUpdatesFromGAS, 15000);
 
-    // Data konfigurasi/user/coverage tidak perlu dibaca ulang setiap menit.
-    // Refresh penuh dilakukan tiap 2 menit dan hanya ketika aplikasi aktif.
+    // Deteksi visibilitas sampai ke ancestor. getClientRects() bernilai kosong
+    // jika halaman berada di dalam container yang sedang disembunyikan.
+    function isModulePageVisible(pageId) {
+      const page = document.getElementById(pageId);
+      return !!(page && page.getClientRects && page.getClientRects().length > 0);
+    }
+
+    // Data konfigurasi/user/coverage tetap disinkronkan tiap 2 menit, tetapi
+    // hanya modul yang sedang dibuka yang dirender ulang setelah sinkronisasi.
     let lastConfigRefreshAt = Date.now();
     async function refreshConfigDataInBackground() {
       const loggedUser = localStorage.getItem('resto_current_user');
@@ -6551,9 +6567,12 @@
       if (!refreshed) return;
       lastConfigRefreshAt = Date.now();
       updateCheckinSwitchUI();
-      renderOperasionalTable();
-      renderKaryawanTable();
-      if (localStorage.getItem('resto_user_role') === 'admin') renderUserTable();
+      if (isModulePageVisible('page-shared-operasional')) renderOperasionalTable();
+      if (isModulePageVisible('page-daftar-karyawan')) renderKaryawanTable();
+      if (isModulePageVisible('page-check-karyawan')) renderCheckKaryawanPage();
+      if (isModulePageVisible('page-groming-kasir')) renderGromingKasirPage();
+      if (isModulePageVisible('page-groming-karesto')) renderGromingKaRestoPage();
+      if (localStorage.getItem('resto_user_role') === 'admin' && isModulePageVisible('page-users')) renderUserTable();
     }
     setInterval(refreshConfigDataInBackground, 120000);
 
@@ -7004,12 +7023,8 @@
       const request = initialDataFetchPromise;
       const success = await request;
       if (initialDataFetchPromise === request) initialDataFetchPromise = null;
-      if (success) {
-        const historyBeforeRow = Number(globalDashboardData?.checkinsHistoryBeforeRow || 1);
-        if (historyBeforeRow > 1) {
-          setTimeout(() => loadOlderCheckinHistoryInBackground(historyBeforeRow), 1800);
-        }
-      }
+      // Histori lama tidak diunduh otomatis saat startup. Modul terkait akan
+      // memintanya secara on-demand melalui ensureCheckinHistoryForModule().
       if (success && onSuccess) onSuccess();
       return success;
     }
@@ -8621,6 +8636,10 @@
       rememberLastPage(pageId);
       stopCameraStream();
       closeAdminNavGroups();
+      if ([
+        'page-shared-operasional', 'page-check-karyawan', 'page-daftar-karyawan',
+        'page-groming-kasir', 'page-groming-karesto'
+      ].includes(pageId)) ensureCheckinHistoryForModule();
 
       // FIX BUG TUMPUKAN HALAMAN:
       // Setiap perpindahan menu admin dimulai dengan menyembunyikan seluruh
