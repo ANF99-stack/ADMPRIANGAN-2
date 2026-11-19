@@ -6544,16 +6544,16 @@
     // Data konfigurasi/user/coverage tidak perlu dibaca ulang setiap menit.
     // Refresh penuh dilakukan tiap 2 menit dan hanya ketika aplikasi aktif.
     let lastConfigRefreshAt = Date.now();
-    function refreshConfigDataInBackground() {
+    async function refreshConfigDataInBackground() {
       const loggedUser = localStorage.getItem('resto_current_user');
       if (!loggedUser || document.hidden) return;
+      const refreshed = await fetchInitialDataFromGAS();
+      if (!refreshed) return;
       lastConfigRefreshAt = Date.now();
-      fetchInitialDataFromGAS(() => {
-        updateCheckinSwitchUI();
-        renderOperasionalTable();
-        renderKaryawanTable();
-        if (localStorage.getItem('resto_user_role') === 'admin') renderUserTable();
-      });
+      updateCheckinSwitchUI();
+      renderOperasionalTable();
+      renderKaryawanTable();
+      if (localStorage.getItem('resto_user_role') === 'admin') renderUserTable();
     }
     setInterval(refreshConfigDataInBackground, 120000);
 
@@ -9507,13 +9507,24 @@
       const page=document.getElementById(pageId);
       if(page)page.style.display='block';
       if(aeLiveRefreshTimer){clearInterval(aeLiveRefreshTimer);aeLiveRefreshTimer=null;}
-      if(pageId==='page-ae-dashboard'){renderAEDashboard();aeLiveRefreshTimer=setInterval(()=>{if(document.getElementById('page-ae-dashboard')?.style.display!=='none')renderAEDashboard()},3000);}
+      if(pageId==='page-ae-dashboard'){
+        renderAEDashboard();
+        // Refresh 30 detik menggantikan polling 3 detik yang terlalu rapat.
+        aeLiveRefreshTimer=setInterval(()=>{
+          if(!document.hidden && document.getElementById('page-ae-dashboard')?.style.display!=='none') renderAEDashboard();
+        },30000);
+      }
       if(pageId==='page-ae-input')renderAEHistory();
       if(pageId==='page-ae-menu')renderAEMenus();
       if(pageId==='page-ae-accounts')renderAEPosAccounts();if(pageId==='page-ae-input')populateAEBigOrderRestos()
     }
 
     const AE_POS_GAS_URL = "https://script.google.com/macros/s/AKfycbwso6ypbHe9fbHaab7E1dN9oDXvPCjgxuDhQ5fo3JXu2qq3X4f4Gyn41H1QyXuBFEILUQ/exec";
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden) return;
+      const aeDashboard=document.getElementById('page-ae-dashboard');
+      if(aeDashboard && aeDashboard.style.display!=='none' && localStorage.getItem('resto_current_user')) renderAEDashboard();
+    });
     
     function getAERequestContext(){
       const username=String(localStorage.getItem('resto_current_user')||'').trim();
@@ -9541,7 +9552,11 @@
     function aeStatus(elId,text){const el=document.getElementById(elId);if(el)el.textContent=text}
 
     let aeLiveMetricsCache=null, aeLiveAccountsCache=[], aeLiveRefreshTimer=null, aeLiveAccountsLoaded=false;
+    // Hindari request metrics bertumpuk jika server POS lebih lambat dari interval refresh.
+    let aeDashboardRequestInFlight=false;
     async function renderAEDashboard(){
+      if (aeDashboardRequestInFlight || document.hidden) return;
+      aeDashboardRequestInFlight=true;
       try {
         // getAEMetrics sudah menyertakan bigOrders; satu request menjaga refresh realtime tetap ringan.
         const metrics=await aeApi({action:'getAEMetrics'});
@@ -9587,9 +9602,12 @@
         aeStatus('ae-event-status',eventRows.length+' transaksi Event tertutup');
         aeStatus('ae-sat-status',satRows.length+' transaksi Satelit tertutup');
       } catch(e) {
-        [['ae-total',0],['ae-reguler-total',0],['ae-big-total',0],['ae-event-total',0],['ae-sat-total',0],['ae-reguler-label',0],['ae-big-label',0],['ae-event-label',0],['ae-sat-label',0]].forEach(([id,n])=>{const el=document.getElementById(id);if(el)el.textContent=aeMoney(n)});
-        aeStatus('ae-event-status','Gagal memuat POS: '+e.message);
-        aeStatus('ae-sat-status','Data belum dapat dimuat dari server POS');
+        // Pertahankan angka terakhir yang berhasil dimuat; jangan mengubahnya menjadi nol
+        // hanya karena satu refresh sementara gagal.
+        aeStatus('ae-event-status','Pembaruan tertunda: '+e.message);
+        aeStatus('ae-sat-status','Menampilkan data terakhir yang berhasil dimuat');
+      } finally {
+        aeDashboardRequestInFlight=false;
       }
     }
 
