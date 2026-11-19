@@ -9596,15 +9596,20 @@
     
     function getAERequestContext(){
       const username=String(localStorage.getItem('resto_current_user')||'').trim();
-      const storedRole=String(localStorage.getItem('resto_user_role')||'ae').trim();
+      // Jangan menganggap sesi tanpa role sebagai AE. Ini mencegah halaman admin
+      // mengirim request coverage AE dengan username kosong.
+      const storedRole=String(localStorage.getItem('resto_user_role')||'').trim();
       const compact=storedRole.toLowerCase().replace(/[^a-z0-9]/g,'');
       const role=(compact==='ae'||compact.includes('accountexecutive')||compact.includes('accounteksekutif')||compact.includes('acounteksekutif'))?'ae':storedRole;
       return {userId:username,username:username,requester:username,role:role,userRole:role};
     }
     async function aeApi(payload) {
-      // Seluruh request dari workspace AE membawa identitas sesi. Backend POS
-      // mengambil coverage dari database ADM berdasarkan username ini, bukan dari browser.
-      const requestPayload=Object.assign({},payload||{},getAERequestContext());
+      // Seluruh request dari workspace AE membawa identitas sesi yang valid.
+      const aeContext=getAERequestContext();
+      if(!aeContext.username || !isAERole(aeContext.role)) throw new Error('Sesi Account Executive tidak valid. Silakan login menggunakan akun AE.');
+      // Backend POS mengambil coverage dari database ADM berdasarkan username ini,
+      // bukan mempercayai username yang dipilih atau dikirim dari form browser.
+      const requestPayload=Object.assign({},payload||{},aeContext);
       const response = await fetch(AE_POS_GAS_URL, {
         method: "POST", headers: {"Content-Type":"text/plain;charset=utf-8"},
         cache:"no-store", body:JSON.stringify(requestPayload)
@@ -9686,21 +9691,36 @@
       }catch(e){console.warn('Daftar resto AE:',e)}
       return [...new Set(values.map(x=>String(typeof x==='string'?x:(x?.resto||x?.namaResto||x?.branch||x?.nama_cabang||x?.name||x?.nama||'')).trim()).filter(Boolean).filter(x=>!/\bOT\b/i.test(x)))].sort((a,b)=>a.localeCompare(b,'id'));
     }
+    let aeCoverageRequestPromise=null;
+    let aeCoverageLoadedFor='';
     async function populateAEPosRestos(){
       const el=document.getElementById('ae-pos-resto');if(!el)return;
+      const context=getAERequestContext();
+      // Form Akun POS ada di DOM untuk semua role, meskipun panelnya tersembunyi.
+      // Hanya sesi AE yang boleh meminta coverage AE ke backend POS.
+      if(!context.username || !isAERole(context.role)){
+        el.innerHTML='<option value="">Khusus akun Account Executive</option>';
+        return;
+      }
+      if(aeCoverageRequestPromise)return aeCoverageRequestPromise;
+      if(aeCoverageLoadedFor===context.username && el.dataset.source==='coverage-ae-server')return;
       const previous=el.value;
       el.innerHTML='<option value="">Memuat coverage AE...</option>';
-      try{
-        const result=await aeApi({action:'getAECoverage'});
-        const names=[...new Set((result.coverage||[]).map(x=>String(x||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));
-        el.innerHTML='<option value="">'+(names.length?'Pilih resto dalam coverage Anda':'Coverage AE belum diatur Admin')+'</option>'+
-          names.map(n=>`<option value="${aeEsc(n)}">${aeEsc(n)}</option>`).join('');
-        if(previous&&names.includes(previous))el.value=previous;
-        el.dataset.source='coverage-ae-server';
-      }catch(e){
-        console.error('Coverage akun POS AE gagal dimuat:',e);
-        el.innerHTML='<option value="">Gagal memuat coverage AE</option>';
-      }
+      aeCoverageRequestPromise=(async()=>{
+        try{
+          const result=await aeApi({action:'getAECoverage'});
+          const names=[...new Set((result.coverage||[]).map(x=>String(x||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));
+          el.innerHTML='<option value="">'+(names.length?'Pilih resto dalam coverage Anda':'Coverage AE belum diatur Admin')+'</option>'+ 
+            names.map(n=>`<option value="${aeEsc(n)}">${aeEsc(n)}</option>`).join('');
+          if(previous&&names.includes(previous))el.value=previous;
+          el.dataset.source='coverage-ae-server';
+          aeCoverageLoadedFor=context.username;
+        }catch(e){
+          console.error('Coverage akun POS AE gagal dimuat:',e);
+          el.innerHTML='<option value="">Gagal memuat coverage AE</option>';
+        }finally{aeCoverageRequestPromise=null;}
+      })();
+      return aeCoverageRequestPromise;
     }
     async function loadAEPosAccountsForDashboard(){
       const wrap=document.getElementById('ae-live-pos-cards');if(!wrap)return;
@@ -9804,7 +9824,7 @@
         finally{mf.dataset.aeSaving='0';aeSetSubmitLoading(button,false)}
       });}
       const pf=document.getElementById('ae-pos-form');
-      if(pf){
+      if(pf && isAERole(localStorage.getItem('resto_user_role')) && String(localStorage.getItem('resto_current_user')||'').trim()){
         populateAEPosRestos();
         // Database cabang kadang selesai dimuat setelah halaman AE dirender; segarkan saat dropdown dipakai.
         document.getElementById('ae-pos-resto')?.addEventListener('focus',populateAEPosRestos);
