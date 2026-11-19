@@ -6471,7 +6471,9 @@
 
     async function fetchCheckinUpdatesFromGAS() {
       const loggedUser = localStorage.getItem('resto_current_user');
-      if (!loggedUser || checkinSyncInProgress) return;
+      // Tidak melakukan polling saat tab tidak terlihat; sinkronisasi dilanjutkan
+      // segera setelah pengguna kembali ke aplikasi.
+      if (!loggedUser || document.hidden || checkinSyncInProgress) return;
 
       // Jika data awal belum memuat cursor, lakukan sinkronisasi penuh satu kali.
       const cursor = Number(globalDashboardData?.checkinsRowCount);
@@ -6535,22 +6537,33 @@
       }
     }
 
-    // Check-in baru disinkronkan tiap 10 detik dengan endpoint ringan (baris baru saja).
-    setInterval(fetchCheckinUpdatesFromGAS, 10000);
+    // Check-in baru disinkronkan tiap 15 detik saat aplikasi terlihat.
+    // Saat tab tersembunyi, request dihentikan agar tidak membebani GAS/spreadsheet.
+    setInterval(fetchCheckinUpdatesFromGAS, 15000);
 
-    // Data konfigurasi/user/coverage disegarkan penuh lebih jarang, agar tidak membaca
-    // semua sheet berulang kali. Perubahan konfigurasi tetap tersinkron dalam ~60 detik.
-    setInterval(() => {
+    // Data konfigurasi/user/coverage tidak perlu dibaca ulang setiap menit.
+    // Refresh penuh dilakukan tiap 2 menit dan hanya ketika aplikasi aktif.
+    let lastConfigRefreshAt = Date.now();
+    function refreshConfigDataInBackground() {
       const loggedUser = localStorage.getItem('resto_current_user');
-      if (loggedUser) {
-        fetchInitialDataFromGAS(() => {
-          updateCheckinSwitchUI();
-          renderOperasionalTable();
-          renderKaryawanTable();
-          if (localStorage.getItem('resto_user_role') === 'admin') renderUserTable();
-        });
-      }
-    }, 60000);
+      if (!loggedUser || document.hidden) return;
+      lastConfigRefreshAt = Date.now();
+      fetchInitialDataFromGAS(() => {
+        updateCheckinSwitchUI();
+        renderOperasionalTable();
+        renderKaryawanTable();
+        if (localStorage.getItem('resto_user_role') === 'admin') renderUserTable();
+      });
+    }
+    setInterval(refreshConfigDataInBackground, 120000);
+
+    // Setelah pengguna kembali ke tab, sinkronkan check-in segera. Refresh master
+    // hanya dilakukan bila sudah lewat 2 menit sejak sinkronisasi terakhir.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden || !localStorage.getItem('resto_current_user')) return;
+      fetchCheckinUpdatesFromGAS();
+      if (Date.now() - lastConfigRefreshAt >= 120000) refreshConfigDataInBackground();
+    });
 
     function getStoredMessages() {
       const msgs = localStorage.getItem('resto_system_messages');
