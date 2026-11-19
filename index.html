@@ -3483,8 +3483,13 @@
         <button onclick="closePhotoModal()" style="border:none; background:none; cursor:pointer; font-size:1.2rem; color:var(--text-muted);">✕</button>
       </div>
 
-      <div style="text-align:center; background:#0f172a; border-radius:16px; padding:12px; border:2px solid var(--border); margin-bottom:16px; overflow:hidden;">
-        <img id="photo_modal_img" src="" alt="Bukti Checkin Karyawan" style="max-width:100%; max-height:420px; object-fit:contain; border-radius:12px; display:block; margin:0 auto; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+      <div style="position:relative; text-align:center; background:#0f172a; border-radius:16px; padding:12px; border:2px solid var(--border); margin-bottom:16px; overflow:hidden; min-height:180px; display:flex; align-items:center; justify-content:center;">
+        <div id="photo_modal_loading" role="status" aria-live="polite" style="display:none; width:100%; min-height:156px; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#fff;">
+          <span class="photo-loading-spinner" aria-hidden="true"></span>
+          <b id="photo_modal_loading_text" style="font-size:.9rem;">Mengambil foto...</b>
+          <small style="color:#cbd5e1;">Mohon tunggu sebentar</small>
+        </div>
+        <img id="photo_modal_img" src="" alt="Bukti Checkin Karyawan" style="max-width:100%; max-height:420px; object-fit:contain; border-radius:12px; display:none; margin:0 auto; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
       </div>
 
       <div style="background:#f8fafc; border-radius:16px; border:1px solid var(--border); padding:16px; margin-bottom:16px;">
@@ -4879,7 +4884,11 @@
       return '';
     }
 
+    let activePhotoRequestToken = 0;
+    let photoRequestInProgress = false;
+
     async function openPhotoModal(checkinId) {
+      if (photoRequestInProgress) return;
       const list = getStoredCheckinData();
       const record = list.find(r => String(r?.id || '') === String(checkinId || ''));
       if (!record) {
@@ -4896,12 +4905,23 @@
       const modal = document.getElementById('photo-preview-modal');
       const img = document.getElementById('photo_modal_img');
       const downloadLink = document.getElementById('photo_modal_download_btn');
-      if (!modal || !img || !downloadLink) {
+      const loader = document.getElementById('photo_modal_loading');
+      const loaderText = document.getElementById('photo_modal_loading_text');
+      if (!modal || !img || !downloadLink || !loader) {
         alert('Komponen pratinjau foto tidak ditemukan pada halaman.');
         return;
       }
 
-      // Isi informasi karyawan lebih dahulu. Modal ditampilkan setelah sumber foto siap.
+      photoRequestInProgress = true;
+      const requestToken = ++activePhotoRequestToken;
+      const isCurrent = () => requestToken === activePhotoRequestToken;
+      const showLoading = (message) => {
+        loader.style.display = 'flex';
+        if (loaderText) loaderText.textContent = message || 'Mengambil foto...';
+        img.style.display = 'none';
+      };
+      const hideLoading = () => { loader.style.display = 'none'; };
+
       document.getElementById('photo_modal_nama').textContent = record.nama || '-';
       document.getElementById('photo_modal_nik').textContent = record.nik || '-';
       document.getElementById('photo_modal_resto').textContent = formatRestoName(record.restoName) || '-';
@@ -4914,67 +4934,68 @@
       img.onerror = null;
       img.onload = null;
       img.removeAttribute('src');
+      showLoading('Menyiapkan foto check-in...');
+      modal.style.display = 'flex';
 
-      let photoSrc = normalizeCheckinPhotoSource(record.photoUrl || record.foto);
-      let serverMessage = '';
+      try {
+        let photoSrc = normalizeCheckinPhotoSource(record.photoUrl || record.foto);
+        let serverMessage = '';
 
-      // Foto hasil migrasi Drive harus diminta lewat endpoint GAS agar server
-      // mengubah file privat Drive menjadi data URL yang bisa ditampilkan browser.
-      if (!photoSrc) {
-        try {
+        if (!photoSrc) {
+          showLoading('Mengambil foto dari server...');
           const result = await gasRequestJson(
             { action: 'getCheckinPhoto', checkinId: String(checkinId) },
             { timeoutMs: 30000, retries: 1, retryDelayMs: 700 }
           );
 
+          if (!isCurrent()) return;
           if (result?.status === 'success' && result.data) {
             photoSrc = normalizeCheckinPhotoSource(result.data.foto) ||
                        normalizeCheckinPhotoSource(result.data.photoUrl);
             serverMessage = String(result.message || '');
-
-            // Simpan hanya referensi URL kecil ke cache; jangan memasukkan Base64
-            // foto berukuran besar ke localStorage.
-            if (photoSrc && /^https?:\/\//i.test(photoSrc)) {
-              record.photoUrl = photoSrc;
-            }
+            if (photoSrc && /^https?:\/\//i.test(photoSrc)) record.photoUrl = photoSrc;
           } else {
             serverMessage = String(result?.message || 'Server tidak mengembalikan foto.');
           }
-        } catch (error) {
-          console.error('Gagal mengambil foto check-in dari GAS:', error);
-          serverMessage = error?.message || String(error);
         }
-      }
 
-      if (!photoSrc) {
-        alert('Foto check-in belum dapat dibuka. ' + (serverMessage || 'Data foto tidak ditemukan atau format foto tidak valid.'));
-        return;
-      }
+        if (!photoSrc) throw new Error(serverMessage || 'Data foto tidak ditemukan atau format foto tidak valid.');
 
-      img.onerror = () => {
-        console.error('Browser gagal menampilkan sumber foto check-in:', String(photoSrc).slice(0, 180));
-        img.removeAttribute('src');
-        alert('Data foto ditemukan, tetapi format atau akses file tidak dapat ditampilkan. Periksa kolom FotoFileId / FotoStorageType di database dan izin file Drive.');
+        showLoading('Memuat pratinjau foto...');
+        downloadLink.href = photoSrc;
+        downloadLink.download = 'checkin-' + String(record.nik || checkinId).replace(/[^a-zA-Z0-9_-]/g, '_') + '.jpg';
+
+        await new Promise((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = () => reject(new Error('Foto ditemukan, tetapi browser tidak dapat menampilkan file. Periksa izin dan format foto Drive.'));
+          img.src = photoSrc;
+          if (img.complete && img.naturalWidth > 0) resolve();
+        });
+
+        if (!isCurrent()) return;
+        hideLoading();
+        img.style.display = 'block';
+      } catch (error) {
+        if (!isCurrent()) return;
+        console.error('Gagal membuka foto check-in:', error);
+        hideLoading();
+        img.style.display = 'none';
+        alert('Foto check-in belum dapat dibuka. ' + (error?.message || String(error)));
         modal.style.display = 'none';
-      };
-      img.onload = () => {
-        modal.style.display = 'flex';
-      };
-
-      downloadLink.href = photoSrc;
-      downloadLink.download = 'checkin-' + String(record.nik || checkinId).replace(/[^a-zA-Z0-9_-]/g, '_') + '.jpg';
-      img.src = photoSrc;
-
-      // Jika browser memakai cache untuk data URL, event load bisa sangat cepat;
-      // pengecekan complete memastikan modal tetap terbuka.
-      if (img.complete && img.naturalWidth > 0) modal.style.display = 'flex';
+      } finally {
+        if (isCurrent()) photoRequestInProgress = false;
+      }
     }
 
     function closePhotoModal() {
+      activePhotoRequestToken++;
+      photoRequestInProgress = false;
       const modal = document.getElementById('photo-preview-modal');
       const image = document.getElementById('photo_modal_img');
+      const loader = document.getElementById('photo_modal_loading');
       if (modal) modal.style.display = 'none';
-      if (image) { image.onload = null; image.onerror = null; image.removeAttribute('src'); }
+      if (loader) loader.style.display = 'none';
+      if (image) { image.onload = null; image.onerror = null; image.style.display = 'none'; image.removeAttribute('src'); }
     }
 
     const operasionalDerivedCache = new WeakMap();
@@ -6766,7 +6787,32 @@
       });
     };
 
+    // Phase 7: metrik performa endpoint disimpan di memori browser (tidak mengirim data ke server).
+    window.ADM_PERF_STATS = window.ADM_PERF_STATS || { requests: [], byAction: {} };
+    window.ADM_PERF_REPORT = function () {
+      const rows = Object.entries(window.ADM_PERF_STATS.byAction).map(([action, v]) => ({
+        action, total: v.total, success: v.success, failed: v.failed,
+        avgMs: Math.round(v.totalMs / Math.max(1, v.total)), maxMs: v.maxMs
+      })).sort((a,b) => b.avgMs - a.avgMs);
+      console.table(rows);
+      return rows;
+    };
+    function recordAdmRequestMetric(action, durationMs, ok) {
+      const stats = window.ADM_PERF_STATS;
+      const key = String(action || 'unknown');
+      const item = stats.byAction[key] || (stats.byAction[key] = { total:0, success:0, failed:0, totalMs:0, maxMs:0 });
+      item.total++;
+      if (ok) item.success++; else item.failed++;
+      item.totalMs += durationMs;
+      item.maxMs = Math.max(item.maxMs, durationMs);
+      stats.requests.push({ action:key, durationMs, ok, at:new Date().toISOString() });
+      if (stats.requests.length > 100) stats.requests.shift();
+    }
+
     async function gasRequestJson(payload, options = {}) {
+      const requestStartedAt = Date.now();
+      const metricAction = String(payload?.action || 'unknown');
+      let metricRecorded = false;
       // GAS dapat lambat saat membaca banyak sheet; gunakan timeout yang dapat dikonfigurasi.
       const timeoutMs = Number(options.timeoutMs || 45000);
       const retries = Number(options.retries ?? 2);
@@ -6804,6 +6850,8 @@
             throw new Error(result?.message || `Permintaan GAS gagal (HTTP ${response.status}).`);
           }
 
+          recordAdmRequestMetric(metricAction, Date.now() - requestStartedAt, true);
+          metricRecorded = true;
           return result;
         } catch (err) {
           lastError = timedOut
@@ -6817,6 +6865,7 @@
         }
       }
 
+      if (!metricRecorded) recordAdmRequestMetric(metricAction, Date.now() - requestStartedAt, false);
       throw lastError || new Error("Gagal terhubung ke GAS.");
     }
 
@@ -10836,6 +10885,11 @@ if (typeof window.handleSaveCheckinKasirSchedules !== 'function') {
 .gb-table-scroll .gb-table{min-width:860px;width:100%;border-collapse:separate;border-spacing:0}
 .gb-table-scroll .gb-table th{white-space:nowrap;background:#f8fafc;color:#334155;font-size:.72rem;font-weight:800;letter-spacing:.035em}
 .gb-table-scroll .gb-table td{vertical-align:top;max-width:260px;white-space:normal;overflow-wrap:anywhere}
+
+    /* Phase 7: indikator loading saat mengambil dan menampilkan foto check-in. */
+    .photo-loading-spinner{width:42px;height:42px;border:4px solid rgba(255,255,255,.22);border-top-color:#fff;border-right-color:#f97316;border-radius:50%;animation:photoLoadingSpin .75s linear infinite;box-shadow:0 0 18px rgba(249,115,22,.22)}
+    @keyframes photoLoadingSpin{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){.photo-loading-spinner{animation:none;border-top-color:#f97316}}
 </style>
 
 
